@@ -1020,7 +1020,7 @@ class Plugin extends DAV\ServerPlugin {
             return;
         }
 
-        $result = HTTP\Util::negotiate(
+        $result = HTTP\negotiateContentType(
             $request->getHeader('Accept'),
             ['text/calendar', 'application/calendar+json']
         );

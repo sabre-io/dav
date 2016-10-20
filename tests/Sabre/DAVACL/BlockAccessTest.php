@@ -28,7 +28,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         );
         // Login
         $this->server->getPlugin('auth')->beforeMethod(
-            new \Sabre\HTTP\Request(),
+            new \Sabre\HTTP\Request('GET', '/'),
             new \Sabre\HTTP\Response()
         );
         $this->server->addPlugin($this->plugin);

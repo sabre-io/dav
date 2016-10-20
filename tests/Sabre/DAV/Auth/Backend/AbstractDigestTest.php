@@ -8,7 +8,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckNoHeaders() {
 
-        $request = new HTTP\Request();
+        $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
@@ -22,6 +22,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $header = 'username=null, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD'  => 'GET',
+            'REQUEST_URI'     => '/',
             'PHP_AUTH_DIGEST' => $header,
         ]);
         $response = new HTTP\Response();
@@ -40,6 +42,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD'  => 'GET',
+            'REQUEST_URI'     => '/',
             'PHP_AUTH_DIGEST' => $header,
         ]);
 
@@ -54,6 +58,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $header = 'username=false, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD'  => 'GET',
+            'REQUEST_URI'     => '/',
             'PHP_AUTH_DIGEST' => $header,
         ]);
 
@@ -70,8 +76,9 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
-            'PHP_AUTH_DIGEST' => $header,
             'REQUEST_METHOD'  => 'PUT',
+            'REQUEST_URI'     => '/',
+            'PHP_AUTH_DIGEST' => $header,
         ]);
 
         $response = new HTTP\Response();
@@ -89,8 +96,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=' . $digestHash . ', opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD'  => 'GET',
-            'PHP_AUTH_DIGEST' => $header,
             'REQUEST_URI'     => '/',
+            'PHP_AUTH_DIGEST' => $header,
         ]);
 
         $response = new HTTP\Response();
@@ -105,7 +112,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request();
+        $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();

@@ -15,7 +15,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     function testNoHeader() {
 
-        $request = new HTTP\Request();
+        $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
         $backend = new Apache();
 
@@ -28,7 +28,9 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
     function testRemoteUser() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REMOTE_USER' => 'username',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI'    => '/',
+            'REMOTE_USER'    => 'username',
         ]);
         $response = new HTTP\Response();
         $backend = new Apache();
@@ -43,6 +45,8 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
     function testRedirectRemoteUser() {
 
         $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD'       => 'GET',
+            'REQUEST_URI'          => '/',
             'REDIRECT_REMOTE_USER' => 'username',
         ]);
         $response = new HTTP\Response();
@@ -57,7 +61,7 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request();
+        $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
         $backend = new Apache();

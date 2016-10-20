@@ -27,7 +27,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin(new Backend\Mock());
         $fakeServer->addPlugin($plugin);
         $this->assertTrue(
-            $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()])
+            $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()])
         );
 
     }
@@ -44,7 +44,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin($backend);
         $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()]);
+        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
 
     }
 
@@ -61,7 +61,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $plugin->autoRequireLogin = false;
         $fakeServer->addPlugin($plugin);
         $this->assertTrue(
-            $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()])
+            $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()])
         );
         $this->assertEquals(1, count($plugin->getLoginFailedReasons()));
 
@@ -82,7 +82,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $plugin->addBackend($backend2);
 
         $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()]);
+        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
 
         $this->assertEquals('principals/admin', $plugin->getCurrentPrincipal());
 
@@ -98,7 +98,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin();
         $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()]);
+        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
 
     }
     /**
@@ -113,7 +113,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin($backend);
         $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()]);
+        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
 
     }
 
@@ -125,7 +125,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock());
         $fakeServer->addPlugin($plugin);
-        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request(), new HTTP\Response()]);
+        $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
         $this->assertEquals('principals/admin', $plugin->getCurrentPrincipal());
 
     }

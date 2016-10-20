@@ -9,6 +9,7 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+use Sabre\Uri;
 use Sabre\VObject;
 
 /**
@@ -218,7 +219,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function getAddressbookHomeForPrincipal($principal) {
 
-        list(, $principalId) = \Sabre\HTTP\URLUtil::splitPath($principal);
+        list(, $principalId) = Uri\split($principal);
         return self::ADDRESSBOOK_ROOT . '/' . $principalId;
 
     }
@@ -803,7 +804,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function negotiateVCard($input, &$mimeType = null) {
 
-        $result = HTTP\Util::negotiate(
+        $result = HTTP\negotiateContentType(
             $input,
             [
                 // Most often used mime-type. Version 3

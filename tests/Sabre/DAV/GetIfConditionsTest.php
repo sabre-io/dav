@@ -11,7 +11,7 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testNoConditions() {
 
-        $request = new HTTP\Request();
+        $request = new HTTP\Request('GET', '/foo');
 
         $conditions = $this->server->getIfConditions($request);
         $this->assertEquals([], $conditions);
@@ -45,12 +45,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testNotLockToken() {
 
-        $serverVars = [
-            'HTTP_IF'     => '(Not <opaquelocktoken:token1>)',
-            'REQUEST_URI' => '/bla'
-        ];
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(Not <opaquelocktoken:token1>)',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -74,11 +72,9 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testLockTokenUrl() {
 
-        $serverVars = [
-            'HTTP_IF' => '<http://www.example.com/> (<opaquelocktoken:token1>)',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '<http://www.example.com/> (<opaquelocktoken:token1>)',
+        ]);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -102,12 +98,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2LockTokens() {
 
-        $serverVars = [
-            'HTTP_IF'     => '(<opaquelocktoken:token1>) (Not <opaquelocktoken:token2>)',
-            'REQUEST_URI' => '/bla',
-        ];
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(<opaquelocktoken:token1>) (Not <opaquelocktoken:token2>)',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -136,11 +130,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2UriLockTokens() {
 
-        $serverVars = [
-            'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) <http://www.example.org/node2> (Not <opaquelocktoken:token2>)',
-        ];
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) <http://www.example.org/node2> (Not <opaquelocktoken:token2>)',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -174,11 +167,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2UriMultiLockTokens() {
 
-        $serverVars = [
-            'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) (<opaquelocktoken:token2>) <http://www.example.org/node2> (Not <opaquelocktoken:token3>)',
-        ];
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) (<opaquelocktoken:token2>) <http://www.example.org/node2> (Not <opaquelocktoken:token3>)',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -217,12 +209,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testEtag() {
 
-        $serverVars = [
-            'HTTP_IF'     => '(["etag1"])',
-            'REQUEST_URI' => '/foo',
-        ];
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(["etag1"])',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -245,11 +235,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2Etags() {
 
-        $serverVars = [
-            'HTTP_IF' => '<http://www.example.org/> (["etag1"]) (["etag2"])',
-        ];
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '<http://www.example.org/> (["etag1"]) (["etag2"])',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [
@@ -277,13 +266,12 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testComplexIf() {
 
-        $serverVars = [
-            'HTTP_IF' => '<http://www.example.org/node1> (<opaquelocktoken:token1> ["etag1"]) ' .
-                         '(Not <opaquelocktoken:token2>) (["etag2"]) <http://www.example.org/node2> ' .
-                         '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) (["etag3"])',
-        ];
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1> ["etag1"]) ' .
+                    '(Not <opaquelocktoken:token2>) (["etag2"]) <http://www.example.org/node2> ' .
+                    '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) (["etag3"])',
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $conditions = $this->server->getIfConditions($request);
 
         $compare = [

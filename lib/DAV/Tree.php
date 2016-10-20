@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-use Sabre\HTTP\URLUtil;
+use Sabre\Uri;
 
 /**
  * The tree object is responsible for basic tree operations.
@@ -61,7 +61,7 @@ class Tree {
         }
 
         // Attempting to fetch its parent
-        list($parentName, $baseName) = URLUtil::splitPath($path);
+        list($parentName, $baseName) = Uri\split($path);
 
         // If there was no parent, we must simply ask it from the root node.
         if ($parentName === "") {
@@ -98,7 +98,7 @@ class Tree {
             // The root always exists
             if ($path === '') return true;
 
-            list($parent, $base) = URLUtil::splitPath($path);
+            list($parent, $base) = Uri\split($path);
 
             $parentNode = $this->getNodeForPath($parent);
             if (!$parentNode instanceof ICollection) return false;
@@ -124,7 +124,7 @@ class Tree {
         $sourceNode = $this->getNodeForPath($sourcePath);
 
         // grab the dirname and basename components
-        list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
+        list($destinationDir, $destinationName) = Uri\split($destinationPath);
 
         $destinationParent = $this->getNodeForPath($destinationDir);
         $this->copyNode($sourceNode, $destinationParent, $destinationName);
@@ -142,8 +142,8 @@ class Tree {
      */
     function move($sourcePath, $destinationPath) {
 
-        list($sourceDir) = URLUtil::splitPath($sourcePath);
-        list($destinationDir, $destinationName) = URLUtil::splitPath($destinationPath);
+        list($sourceDir) = Uri\split($sourcePath);
+        list($destinationDir, $destinationName) = Uri\split($destinationPath);
 
         if ($sourceDir === $destinationDir) {
             // If this is a 'local' rename, it means we can just trigger a rename.
@@ -178,7 +178,7 @@ class Tree {
         $node = $this->getNodeForPath($path);
         $node->delete();
 
-        list($parent) = URLUtil::splitPath($path);
+        list($parent) = Uri\split($path);
         $this->markDirty($parent);
 
     }
@@ -255,7 +255,7 @@ class Tree {
         // Finding common parents
         $parents = [];
         foreach ($paths as $path) {
-            list($parent, $node) = URLUtil::splitPath($path);
+            list($parent, $node) = Uri\split($path);
             if (!isset($parents[$parent])) {
                 $parents[$parent] = [$node];
             } else {

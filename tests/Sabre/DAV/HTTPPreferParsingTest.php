@@ -6,83 +6,82 @@ use Sabre\HTTP;
 
 class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
 
-    function testParseSimple() {
+    function assertParseResult($input, $expected) {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_PREFER' => 'return-asynch',
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'Prefer' => $input,
         ]);
 
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals([
-            'respond-async' => true,
-            'return'        => null,
-            'handling'      => null,
-            'wait'          => null,
-        ], $server->getHTTPPrefer());
+        $this->assertEquals(
+            $expected,
+            $server->getHTTPPrefer()
+        );
+
+    }
+
+    function testParseSimple() {
+
+        $this->assertParseResult(
+            'return-asynch',
+            [
+                'respond-async' => true,
+                'return'        => null,
+                'handling'      => null,
+                'wait'          => null,
+            ]
+        );
 
     }
 
     function testParseValue() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_PREFER' => 'wait=10',
-        ]);
-
-        $server = new Server();
-        $server->httpRequest = $httpRequest;
-
-        $this->assertEquals([
-            'respond-async' => false,
-            'return'        => null,
-            'handling'      => null,
-            'wait'          => '10',
-        ], $server->getHTTPPrefer());
+        $this->assertParseResult(
+            'wait=10',
+            [
+                'respond-async' => false,
+                'return'        => null,
+                'handling'      => null,
+                'wait'          => '10',
+            ]
+        );
 
     }
 
     function testParseMultiple() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_PREFER' => 'return-minimal, strict,lenient',
-        ]);
-
-        $server = new Server();
-        $server->httpRequest = $httpRequest;
-
-        $this->assertEquals([
-            'respond-async' => false,
-            'return'        => 'minimal',
-            'handling'      => 'lenient',
-            'wait'          => null,
-        ], $server->getHTTPPrefer());
+        $this->assertParseResult(
+            'return-minimal, strict,lenient',
+            [
+                'respond-async' => false,
+                'return'        => 'minimal',
+                'handling'      => 'lenient',
+                'wait'          => null,
+            ]
+        );
 
     }
 
     function testParseWeirdValue() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_PREFER' => 'BOOOH',
-        ]);
-
-        $server = new Server();
-        $server->httpRequest = $httpRequest;
-
-        $this->assertEquals([
-            'respond-async' => false,
-            'return'        => null,
-            'handling'      => null,
-            'wait'          => null,
-            'boooh'         => true,
-        ], $server->getHTTPPrefer());
-
+        $this->assertParseResult(
+            'BOOOH',
+            [
+                'respond-async' => false,
+                'return'        => null,
+                'handling'      => null,
+                'wait'          => null,
+                'boooh'         => true,
+            ]
+        );
     }
 
     function testBrief() {
 
-        $httpRequest = HTTP\Sapi::createFromServerArray([
-            'HTTP_BRIEF' => 't',
+        $httpRequest = new HTTP\Request('GET', '/foo', [
+            'Brief' => 't',
         ]);
 
         $server = new Server();
@@ -104,10 +103,8 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
      */
     function testpropfindMinimal() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PROPFIND',
-            'REQUEST_URI'    => '/',
-            'HTTP_PREFER'    => 'return-minimal',
+        $request = new HTTP\Request('PROPFIND', '/', [
+            'Prefer' => 'return-minimal',
         ]);
         $request->setBody(<<<BLA
 <?xml version="1.0"?>

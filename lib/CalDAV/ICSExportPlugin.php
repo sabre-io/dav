@@ -131,7 +131,7 @@ class ICSExportPlugin extends DAV\ServerPlugin {
             $componentType = $queryParams['componentType'];
         }
 
-        $format = \Sabre\HTTP\Util::Negotiate(
+        $format = \Sabre\HTTP\negotiateContentType(
             $request->getHeader('Accept'),
             [
                 'text/calendar',

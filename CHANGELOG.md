@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+3.3.0 (????-??-??)
+------------------
+
+* SimpleCollection can now take arrays and strings as argument for super
+  simple tree creation.
+
+
 3.2.1 (????-??-??)
 ------------------
 

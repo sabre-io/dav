@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use InvalidArgumentException;
+
 /**
  * SimpleCollection
  *
@@ -40,9 +42,15 @@ class SimpleCollection extends Collection {
     function __construct($name, array $children = []) {
 
         $this->name = $name;
-        foreach ($children as $child) {
+        foreach ($children as $key => $child) {
 
-            if (!($child instanceof INode)) throw new Exception('Only instances of Sabre\DAV\INode are allowed to be passed in the children argument');
+            if (is_string($child)) {
+                $child = new SimpleFile($key, $child);
+            } elseif (is_array($child)) {
+                $child = new self($key, $child);
+            } elseif (!$child instanceof INode) {
+                throw new InvalidArgumentException('Children must be specified as strings, arrays or instances of Sabre\DAV\INode');
+            }
             $this->addChild($child);
 
         }

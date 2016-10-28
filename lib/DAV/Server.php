@@ -206,14 +206,6 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             $this->tree = new Tree($treeOrNode);
         } elseif (is_array($treeOrNode)) {
 
-            // If it's an array, a list of nodes was passed, and we need to
-            // create the root node.
-            foreach ($treeOrNode as $node) {
-                if (!($node instanceof INode)) {
-                    throw new Exception('Invalid argument passed to constructor. If you\'re passing an array, all the values must implement Sabre\\DAV\\INode');
-                }
-            }
-
             $root = new SimpleCollection('root', $treeOrNode);
             $this->tree = new Tree($root);
 

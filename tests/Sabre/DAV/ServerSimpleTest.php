@@ -17,19 +17,6 @@ class ServerSimpleTest extends AbstractServer{
 
     }
 
-    /**
-     * @expectedException Sabre\DAV\Exception
-     */
-    function testConstructIncorrectObj() {
-
-        $nodes = [
-            new SimpleCollection('hello'),
-            new \STDClass(),
-        ];
-
-        $server = new Server($nodes);
-
-    }
 
     /**
      * @expectedException Sabre\DAV\Exception

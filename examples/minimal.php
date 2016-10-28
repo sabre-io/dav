@@ -17,4 +17,4 @@ $server->addPlugin(
     new Sabre\DAV\Browser\Plugin()
 );
 
-$server->exec();
+$server->start();

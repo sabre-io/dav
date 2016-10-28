@@ -6,6 +6,9 @@ ChangeLog
 
 * SimpleCollection can now take arrays and strings as argument for super
   simple tree creation.
+* Added `Sabre\DAV\Server::start()`. This replaces `::exec()`. `::exec()`
+  is now deprecated, but we're keeping it around for a year or two to make
+  the transition easier.
 
 
 3.2.1 (????-??-??)

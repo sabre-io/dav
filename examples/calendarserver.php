@@ -77,4 +77,4 @@ $browser = new Sabre\DAV\Browser\Plugin();
 $server->addPlugin($browser);
 
 // And off we go!
-$server->exec();
+$server->start();

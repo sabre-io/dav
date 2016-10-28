@@ -98,4 +98,4 @@ $server->addPlugin(new \Sabre\CardDAV\Plugin());
 $server->addPlugin(new \Sabre\CardDAV\VCFExportPlugin());
 
 // And off we go!
-$server->exec();
+$server->start();

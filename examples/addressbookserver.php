@@ -54,4 +54,4 @@ $server->addPlugin(new Sabre\DAVACL\Plugin());
 $server->addPlugin(new Sabre\DAV\Sync\Plugin());
 
 // And off we go!
-$server->exec();
+$server->start();

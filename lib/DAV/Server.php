@@ -229,7 +229,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @return void
      */
-    function exec() {
+    function start() {
 
         try {
 
@@ -312,6 +312,18 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             $this->sapi->sendResponse($this->httpResponse);
 
         }
+
+    }
+
+    /**
+     * Alias of start().
+     *
+     * @deprecated
+     * @return void
+     */
+    function exec() {
+
+        $this->start();
 
     }
 

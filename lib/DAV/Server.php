@@ -884,7 +884,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      *
      * @param PropFind $propFind
      * @param array $yieldFirst
-     * @return \Iterator
+     * @return \Traversable
      */
     private function generatePathNodes(PropFind $propFind, array $yieldFirst = null) {
         if ($yieldFirst !== null) {

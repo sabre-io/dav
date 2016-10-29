@@ -9,6 +9,10 @@ ChangeLog
 * Added `Sabre\DAV\Server::start()`. This replaces `::exec()`. `::exec()`
   is now deprecated, but we're keeping it around for a year or two to make
   the transition easier.
+* `getChildren()` function in any collection may now return an iterator
+  instead of an array. This can result in memory savings for large
+  collections.
+* `Tree::getChildren()` now returns an Iterator instead of an array.
 
 
 3.2.1 (????-??-??)

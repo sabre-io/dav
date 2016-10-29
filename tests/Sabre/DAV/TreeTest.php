@@ -56,8 +56,8 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
         $tree = new TreeMock();
         $children = $tree->getChildren('');
-        $this->assertEquals(2, count($children));
-        $this->assertEquals('hi', $children[0]->getName());
+        $firstChild = $children->current();
+        $this->assertEquals('hi', $firstChild->getName());
 
     }
 

@@ -13,6 +13,8 @@ ChangeLog
   instead of an array. This can result in memory savings for large
   collections.
 * `Tree::getChildren()` now returns an Iterator instead of an array.
+* Added `$overrideName` to all `Sabre\DAV\FS` and `Sabre\DAV\FSExt` classes,
+  so users can specify under what name these nodes show up in the tree.
 
 
 3.2.1 (????-??-??)

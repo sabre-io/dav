@@ -2,7 +2,8 @@
 
 namespace Sabre\DAV\FS;
 
-use Sabre\DAV;
+use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\INode;
 use Sabre\Uri;
 
 /**
@@ -14,7 +15,7 @@ use Sabre\Uri;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class Node implements DAV\INode {
+abstract class Node implements INode {
 
     /**
      * The path to the current node

@@ -29,6 +29,13 @@ class AddressBookQueryReport implements XmlDeserializable {
     public $properties;
 
     /**
+     * An array with requested vcard properties.
+     *
+     * @var array
+     */
+    public $addressDataProperties = [];
+
+    /**
      * List of property/component filters.
      *
      * This is an array with filters. Every item is a property filter. Every

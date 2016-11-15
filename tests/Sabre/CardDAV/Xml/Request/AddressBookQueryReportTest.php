@@ -300,4 +300,51 @@ XML;
         $this->parse($xml);
 
     }
+
+    function testDeserializeAddressbookElements() {
+
+        $xml = <<<XML
+<?xml version="1.0"?>
+<c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
+    <d:prop>
+      <d:getetag />
+      <c:address-data>
+        <c:prop name="VERSION"/>
+        <c:prop name="UID"/>
+        <c:prop name="NICKNAME"/>
+        <c:prop name="EMAIL"/>
+        <c:prop name="FN"/>
+        <c:prop name="TEL"/>
+      </c:address-data>
+    </d:prop>
+</c:addressbook-query>
+XML;
+
+        $result = $this->parse($xml);
+        $addressBookQueryReport = new AddressBookQueryReport();
+        $addressBookQueryReport->properties = [
+            '{DAV:}getetag',
+            '{urn:ietf:params:xml:ns:carddav}address-data'
+        ];
+        $addressBookQueryReport->filters = [];
+        $addressBookQueryReport->test = 'anyof';
+        $addressBookQueryReport->contentType = 'text/vcard';
+        $addressBookQueryReport->version = '3.0';
+        $addressBookQueryReport->addressDataProperties = [
+            'VERSION',
+            'UID',
+            'NICKNAME',
+            'EMAIL',
+            'FN',
+            'TEL',
+        ];
+
+        $this->assertEquals(
+            $addressBookQueryReport,
+            $result['value']
+        );
+
+    }
+
+
 }

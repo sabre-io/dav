@@ -90,7 +90,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     function testGetChildren() {
 
         $children = $this->s->getChildren();
-        $this->assertEquals(1, count($children));
+        $this->assertEquals(2, count($children));
         $this->assertInstanceOf('Sabre\\CardDAV\\AddressBook', $children[0]);
         $this->assertEquals('book1', $children[0]->getName());
 
@@ -109,7 +109,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
             'uri'               => 'book2',
             '{DAV:}displayname' => 'a-book 2',
             'principaluri'      => 'principals/user1',
-        ], $this->backend->addressBooks[1]);
+        ], $this->backend->addressBooks[2]);
 
     }
 

@@ -85,7 +85,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     function testDelete() {
 
         $this->ab->delete();
-        $this->assertEquals(array(), $this->backend->addressBooks);
+        $this->assertEquals(1, count($this->backend->addressBooks));
 
     }
 

@@ -207,14 +207,6 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             $this->tree = new Tree($treeOrNode);
         } elseif (is_array($treeOrNode)) {
 
-            // If it's an array, a list of nodes was passed, and we need to
-            // create the root node.
-            foreach ($treeOrNode as $node) {
-                if (!($node instanceof INode)) {
-                    throw new Exception('Invalid argument passed to constructor. If you\'re passing an array, all the values must implement Sabre\\DAV\\INode');
-                }
-            }
-
             $root = new SimpleCollection('root', $treeOrNode);
             $this->tree = new Tree($root);
 
@@ -238,7 +230,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      *
      * @return void
      */
-    function exec() {
+    function start() {
 
         try {
 
@@ -321,6 +313,18 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             $this->sapi->sendResponse($this->httpResponse);
 
         }
+
+    }
+
+    /**
+     * Alias of start().
+     *
+     * @deprecated
+     * @return void
+     */
+    function exec() {
+
+        $this->start();
 
     }
 
@@ -877,7 +881,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      *
      * @param PropFind $propFind
      * @param array $yieldFirst
-     * @return \Iterator
+     * @return \Traversable
      */
     private function generatePathNodes(PropFind $propFind, array $yieldFirst = null) {
         if ($yieldFirst !== null) {

@@ -53,4 +53,4 @@ $tempFF = new \Sabre\DAV\TemporaryFileFilterPlugin($tmpDir);
 $server->addPlugin($tempFF);
 
 // And off we go!
-$server->exec();
+$server->start();

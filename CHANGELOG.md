@@ -13,6 +13,22 @@ ChangeLog
 * #322: Imap authentication backend. (@c0d3z3r0).
 
 
+3.3.0 (????-??-??)
+-----------------
+
+* SimpleCollection can now take arrays and strings as argument for super
+  simple tree creation.
+* Added `Sabre\DAV\Server::start()`. This replaces `::exec()`. `::exec()`
+  is now deprecated, but we're keeping it around for a year or two to make
+  the transition easier.
+* `getChildren()` function in any collection may now return an iterator
+  instead of an array. This can result in memory savings for large
+  collections.
+* `Tree::getChildren()` now returns an Iterator instead of an array.
+* Added `$overrideName` to all `Sabre\DAV\FS` and `Sabre\DAV\FSExt` classes,
+  so users can specify under what name these nodes show up in the tree.
+
+
 3.2.1 (????-??-??)
 ------------------
 

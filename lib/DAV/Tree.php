@@ -187,21 +187,20 @@ class Tree {
      * Returns a list of childnodes for a given path.
      *
      * @param string $path
-     * @return array
+     * @return \Traversable
      */
     function getChildren($path) {
 
         $node = $this->getNodeForPath($path);
-        $children = $node->getChildren();
         $basePath = trim($path, '/');
         if ($basePath !== '') $basePath .= '/';
 
-        foreach ($children as $child) {
+        foreach ($node->getChildren() as $child) {
 
             $this->cache[$basePath . $child->getName()] = $child;
+            yield $child;
 
         }
-        return $children;
 
     }
 

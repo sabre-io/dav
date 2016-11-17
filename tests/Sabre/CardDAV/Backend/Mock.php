@@ -20,6 +20,12 @@ class Mock extends AbstractBackend {
                     'principaluri'      => 'principals/user1',
                     '{DAV:}displayname' => 'd-name',
                 ],
+                [
+                    'id'                => 'bar',
+                    'uri'               => 'book3',
+                    'principaluri'      => 'principals/user1',
+                    '{DAV:}displayname' => 'd-name',
+                ],
             ];
 
             $card2 = fopen('php://memory', 'r+');
@@ -29,6 +35,9 @@ class Mock extends AbstractBackend {
                 'foo' => [
                     'card1' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD",
                     'card2' => $card2,
+                ],
+                'bar' => [
+                    'card3' => "BEGIN:VCARD\nVERSION:3.0\nUID:12345\nFN:Test-Card\nEMAIL;TYPE=home:bar@example.org\nEND:VCARD",
                 ],
             ];
         }

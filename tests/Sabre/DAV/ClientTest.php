@@ -163,6 +163,20 @@ XML;
 
     }
 
+    /**
+     * @expectedException \Sabre\DAV\Exception\NotFound
+     */
+    function testPropFindNotFound() {
+
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $client->response = new Response(404, []);
+        $client->propfind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
+
+    }
+
     function testPropFindDepth1() {
 
         $client = new ClientMock([

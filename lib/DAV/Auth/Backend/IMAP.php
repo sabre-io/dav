@@ -14,33 +14,21 @@ namespace Sabre\DAV\Auth\Backend;
 class IMAP extends AbstractBasic {
 
     /**
-     * IMAP server in the form host[:port]
-     *
-     * @var string
-     */
-    protected $imap_host;
-
-    /**
-     * IMAP connection flags
+     * IMAP server in the form {host[:port][/flag1/flag2...]}
      * @see http://php.net/manual/en/function.imap-open.php
      *
      * @var string
      */
-    protected $imap_flags;
+    protected $mailbox;
 
     /**
      * Creates the backend object.
-     * imap_host is the IMAP server in the form host[:port]
-     * imap_flags specifies the IMAP connection flags
-     * @see http://php.net/manual/en/function.imap-open.php
      *
-     * @param string $imap_host
-     * @param string $imap_flags
+     * @param string $mailbox
      */
-    function __construct($imap_host, $imap_flags = '') {
+    function __construct($mailbox) {
 
-        $this->imap_host = $imap_host;
-        $this->imap_flags = $imap_flags;
+        $this->mailbox = $mailbox;
 
     }
 
@@ -53,25 +41,26 @@ class IMAP extends AbstractBasic {
      */
     protected function imapOpen($username, $password) {
 
-        $mailbox = "{" . $this->imap_host . $this->imap_flags . "/readonly}";
-
         $success = false;
 
         try {
-            $imap = imap_open($mailbox, $username, $password, 0, 1);
+            $imap = imap_open($this->mailbox, $username, $password, OP_HALFOPEN | OP_READONLY, 1);
             if ($imap)
                 $success = true;
         } catch (\ErrorException $e) {
             error_log($e->getMessage());
         }
 
-        foreach (imap_errors() as $error)
-            error_log($error);
+        $errors = imap_errors();
+        if ($errors)
+            foreach ($errors as $error)
+                error_log($error);
 
         if (isset($imap) && $imap)
             imap_close($imap);
 
         return $success;
+
     }
 
     /**

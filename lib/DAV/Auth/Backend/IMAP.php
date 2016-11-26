@@ -51,8 +51,10 @@ class IMAP extends AbstractBasic {
             error_log($e->getMessage());
         }
 
-        foreach (imap_errors() as $error)
-            error_log($error);
+        $errors = imap_errors();
+        if ($errors)
+            foreach ($errors as $error)
+                error_log($error);
 
         if (isset($imap) && $imap)
             imap_close($imap);

@@ -44,7 +44,7 @@ class IMAP extends AbstractBasic {
         $success = false;
 
         try {
-            $imap = imap_open($this->mailbox, $username, $password, OP_HALFOPEN|OP_READONLY, 1);
+            $imap = imap_open($this->mailbox, $username, $password, OP_HALFOPEN | OP_READONLY, 1);
             if ($imap)
                 $success = true;
         } catch (\ErrorException $e) {

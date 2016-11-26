@@ -6,18 +6,16 @@ class IMAPTest extends \PHPUnit_Framework_TestCase {
 
     function testGoodPassword() {
 
-        $imap_host = 'localhost:9993';
-        $imap_flags = '';
-        $imap = new IMAPMock($imap_host, $imap_flags);
+        $mailbox = '{localhost:9993}';
+        $imap = new IMAPMock($mailbox);
         $this->assertTrue($imap->validateUserPass('username', 'password'));
 
     }
 
     function testBadPassword() {
 
-        $imap_host = 'localhost:9993';
-        $imap_flags = '';
-        $imap = new IMAPMock($imap_host, $imap_flags);
+        $mailbox = '{localhost:9993}';
+        $imap = new IMAPMock($mailbox);
         $this->assertFalse($imap->validateUserPass('username', 'badpassword'));
 
     }

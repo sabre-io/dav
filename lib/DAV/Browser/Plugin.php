@@ -561,10 +561,20 @@ HTML;
         if (strpos($path, '/../') !== false || strrchr($path, '/') === '/..') {
             throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
         }
-        $realPath = realpath($path);
-        if ($realPath && strpos($realPath, realpath($assetDir)) === 0 && file_exists($path)) {
-            return $path;
+
+        $scriptFilename = realpath($_SERVER['SCRIPT_FILENAME']);
+        if (strtolower(substr($scriptFilename, -5)) == '.phar') {
+            $pharPrefix = 'phar://' . $scriptFilename;
+            if (strpos($assetDir, $pharPrefix) === 0)  {
+                return $path;
+            }
+        } else {
+            $realPath = realpath($path);
+            if ($realPath && strpos($realPath, realpath($assetDir)) === 0 && file_exists($path)) {
+                return $path;
+            }
         }
+
         throw new DAV\Exception\NotFound('Path does not exist, or escaping from the base path was detected');
     }
 

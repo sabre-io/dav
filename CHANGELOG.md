@@ -36,6 +36,8 @@ ChangeLog
 
 * #877: Fix for syncing large calendars when using the Sqlite PDO backend.
   (@theseer).
+* #889 Added support for filtering vCard properties in the addressbook-query
+  REPORT (@DeepDiver1975).
 
 
 3.2.0 (2016-06-27)

@@ -490,7 +490,8 @@ class Plugin extends DAV\ServerPlugin {
 
                 $props[200]['{' . self::NS_CARDDAV . '}address-data'] = $this->convertVCard(
                     $props[200]['{' . self::NS_CARDDAV . '}address-data'],
-                    $vcardType
+                    $vcardType,
+                    $report->addressDataProperties
                 );
 
             }
@@ -845,14 +846,26 @@ class Plugin extends DAV\ServerPlugin {
      *
      * @param string|resource $data
      * @param string $target
+     * @param array $propertiesFilter
      * @return string
      */
-    protected function convertVCard($data, $target) {
+    protected function convertVCard($data, $target, array $propertiesFilter = null) {
 
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }
         $input = VObject\Reader::read($data);
+        if (!empty($propertiesFilter)) {
+            $propertiesFilter = array_merge(['UID', 'VERSION', 'FN'], $propertiesFilter);
+            $keys = array_unique(array_map(function($child) {
+                return $child->name;
+            }, $input->children()));
+            $keys = array_diff($keys, $propertiesFilter);
+            foreach ($keys as $key) {
+                unset($input->$key);
+            }
+            $data = $input->serialize();
+        }
         $output = null;
         try {
 

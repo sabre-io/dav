@@ -15,6 +15,8 @@ ChangeLog
 * `Tree::getChildren()` now returns an Iterator instead of an array.
 * Added `$overrideName` to all `Sabre\DAV\FS` and `Sabre\DAV\FSExt` classes,
   so users can specify under what name these nodes show up in the tree.
+* #889 Added support for filtering vCard properties in the addressbook-query
+  REPORT (@DeepDiver1975).
 
 
 3.2.1 (????-??-??)

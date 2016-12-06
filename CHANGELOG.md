@@ -5,6 +5,9 @@ ChangeLog
 ------------------
 
 * Fixed: Creating a new calendar on some MySQL configurations caused an error.
+* #889 Added support for filtering vCard properties in the addressbook-query
+  REPORT (@DeepDiver1975).
+
 
 3.1.4 (2016-05-28)
 ------------------
@@ -114,6 +117,13 @@ ChangeLog
 * The zip release ships with [sabre/vobject 4.0.0-alpha1][vobj],
   [sabre/http 4.0.0][http], [sabre/event 2.0.2][evnt],
   [sabre/uri 1.0.1][uri] and [sabre/xml 1.1.0][xml].
+
+
+3.0.10 (2016-??-??)
+------------------
+
+* #889 Added support for filtering vCard properties in the addressbook-query
+  REPORT (@DeepDiver1975).
 
 
 3.0.9 (2016-04-06)

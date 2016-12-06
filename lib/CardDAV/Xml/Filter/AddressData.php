@@ -51,6 +51,11 @@ class AddressData implements XmlDeserializable {
             'version'     => $reader->getAttribute('version') ?: '3.0',
         ];
 
+        $elems = (array)$reader->parseInnerTree();
+        $result['addressDataProperties'] = array_map(function($element) {
+            return $element['attributes']['name'];
+        }, $elems);
+
         $reader->next();
         return $result;
 

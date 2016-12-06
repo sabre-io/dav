@@ -6,5 +6,4 @@ CREATE TABLE propertystorage (
     value string
 );
 
-
 CREATE UNIQUE INDEX path_property ON propertystorage (path, name);

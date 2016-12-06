@@ -17,6 +17,8 @@ ChangeLog
   so users can specify under what name these nodes show up in the tree.
 * #889 Added support for filtering vCard properties in the addressbook-query
   REPORT (@DeepDiver1975).
+* #918: Add a lot of sqlite indexes. This should speed up sqlite-based
+  installations quite a bit.
 
 
 3.2.1 (????-??-??)

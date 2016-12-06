@@ -4,8 +4,10 @@ CREATE TABLE addressbooks (
     displayname text,
     uri text NOT NULL,
     description text,
-    synctoken integer DEFAULT 1 NOT NULL
+    synctoken integer DEFAULT 1 NOT NULL,
+    UNIQUE(principaluri, uri)
 );
+
 
 CREATE TABLE cards (
     id integer primary key asc NOT NULL,
@@ -14,7 +16,8 @@ CREATE TABLE cards (
     uri text NOT NULL,
     lastmodified integer,
     etag text,
-    size integer
+    size integer,
+    UNIQUE(addressbookid, uri)
 );
 
 CREATE TABLE addressbookchanges (

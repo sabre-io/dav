@@ -246,7 +246,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             $this->httpRequest->setBaseUrl($this->getBaseUri());
             $this->invokeMethod($this->httpRequest, $this->httpResponse);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             try {
                 $this->emit('exception', [$e]);

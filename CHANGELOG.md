@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+3.0.10 (2016-??-??)
+------------------
+
+* #889 Added support for filtering vCard properties in the addressbook-query
+  REPORT (@DeepDiver1975).
+
+
 3.0.9 (2016-04-06)
 ------------------
 

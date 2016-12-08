@@ -13,6 +13,7 @@ services:
   - mysql
   - postgresql
 
+
 sudo: false
 
 before_script:
@@ -23,11 +24,14 @@ before_script:
   #  - composer self-update
   - composer update --prefer-dist $LOWEST_DEPS
 
-# addons:
-#    postgresql: "9.5"
+# Required for postgres 9.5
+dist: trusty
+
+addons:
+   postgresql: "9.5"
 
 script:
-  - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
+  - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix . --dry-run --diff
 
 cache:

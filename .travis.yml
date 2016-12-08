@@ -33,7 +33,7 @@ addons:
    postgresql: "9.5"
 
 script:
-  - ./bin/phpunit --configuration tests/phpunit.xml.dist $TEST_DEPS
+  - ./bin/phpunit --debug --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix . --dry-run --diff
 
 cache:

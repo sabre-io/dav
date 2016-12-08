@@ -12,6 +12,21 @@ $autoLoader->addPsr4('Sabre\\Xml\\', __DIR__ . '/../vendor/sabre/xml/tests/Sabre
 
 date_default_timezone_set('UTC');
 
+// List of variables that can be set by the environment
+$environmentVars = [
+    'SABRE_MYSQLUSER',
+    'SABRE_MYSQLPASS',
+    'SABRE_MYSQLDSN',
+    'SABRE_PGSQLDSN',
+];
+
+foreach($environmentVars as $var) {
+
+    if (isset($_ENV[$var])) {
+        define($var, $_ENV[$var]);
+    }
+}
+
 $config = [
     'SABRE_TEMPDIR'   => dirname(__FILE__) . '/temp/',
     'SABRE_HASSQLITE' => in_array('sqlite', PDO::getAvailableDrivers()),

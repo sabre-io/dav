@@ -7,6 +7,9 @@ php:
 
 
 env:
+  - SABRE_MYSQLUSER="travis"
+  - SABRE_MYSQLPASS=""
+  - SABRE_MYSQLPASS="mysql:host=127.0.0.1;dbname=travis"
   matrix:
     - LOWEST_DEPS="" TEST_DEPS=""
     - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/"

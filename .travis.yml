@@ -22,8 +22,8 @@ services:
 sudo: false
 
 before_script:
-  - mysql -e 'create database sabredav_test'
   - mysql -u root -h 127.0.0.1 sabredav_test -e 'SELECT VERSION();'
+  - mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
   - phpenv config-rm xdebug.ini; true

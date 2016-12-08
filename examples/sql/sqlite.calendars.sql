@@ -12,6 +12,7 @@ CREATE TABLE calendarobjects (
     uid text,
     UNIQUE(calendarid,uri)
 );
+CREATE INDEX calendarid_time ON calendarobjects (calendarid, firstoccurence);
 
 CREATE TABLE calendars (
     id integer primary key asc NOT NULL,

@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.5.0",
         "sabre/vobject": "dev-master",
-        "sabre/event" : "^4.0",
+        "sabre/event" : "^5.0",
         "sabre/xml"  : "^2.0.0",
         "sabre/http" : "dev-master",
         "sabre/uri" : "^2.0",

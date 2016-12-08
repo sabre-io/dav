@@ -15,6 +15,7 @@ services:
   - mysql
   - postgresql
 
+
 sudo: false
 
 before_script:
@@ -24,6 +25,9 @@ before_script:
   - phpenv config-rm xdebug.ini; true
   #  - composer self-update
   - composer update --prefer-dist $LOWEST_DEPS
+
+# Required for postgres 9.5
+dist: trusty
 
 addons:
    postgresql: "9.5"

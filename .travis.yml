@@ -8,7 +8,7 @@ php:
 
 env:
   global:
-    - SABRE_MYSQLUSER="travis"
+    - SABRE_MYSQLUSER="root"
     - SABRE_MYSQLPASS=""
     - SABRE_MYSQLDSN="mysql:host=127.0.0.1;dbname=sabredav_test"
   matrix:

@@ -19,11 +19,10 @@ $environmentVars = [
     'SABRE_MYSQLDSN',
     'SABRE_PGSQLDSN',
 ];
-
 foreach($environmentVars as $var) {
 
-    if (isset($_ENV[$var])) {
-        define($var, $_ENV[$var]);
+    if ($value = getenv($var)) {
+        define($var, $value);
     }
 }
 

@@ -65,7 +65,7 @@ class MyCollection extends Sabre\DAV\Collection {
 
         if (is_dir($path)) {
 
-            return new \MyCollection($name);
+            return new \MyCollection($path);
 
         } else {
 

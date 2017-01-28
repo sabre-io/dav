@@ -26,7 +26,6 @@ before_script:
 #- mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
-  - phpenv config-rm xdebug.ini; true
   #  - composer self-update
   - composer update --prefer-dist $LOWEST_DEPS
 

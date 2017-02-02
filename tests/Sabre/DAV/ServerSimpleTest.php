@@ -163,6 +163,16 @@ class ServerSimpleTest extends AbstractServer{
 
         $this->assertEquals('', $this->server->calculateUri('/root'));
 
+        $this->server->setBaseUri('/');
+
+        foreach ($uris as $uri) {
+
+            $this->assertEquals('root/somepath', $this->server->calculateUri($uri));
+
+        }
+
+        $this->assertEquals('', $this->server->calculateUri(''));
+
     }
 
     function testCalculateUriSpecialChars() {

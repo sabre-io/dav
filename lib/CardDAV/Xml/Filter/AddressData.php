@@ -56,7 +56,6 @@ class AddressData implements XmlDeserializable {
             return $element['attributes']['name'];
         }, $elems);
 
-        $reader->next();
         return $result;
 
     }

@@ -35,13 +35,26 @@ ChangeLog
   installations quite a bit.
 
 
-3.2.1 (????-??-??)
+3.2.2 (2017-02-14)
+------------------
+
+* #943: Fix CardDAV XML reporting bug, which was affecting several CardDAV
+  clients. Bug was introduced in 3.2.1.
+* The zip release ships with [sabre/vobject 4.1.2][vobj],
+  [sabre/http 4.2.2][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.2.0][uri] and [sabre/xml 1.5.0][xml].
+
+
+3.2.1 (2017-01-28)
 ------------------
 
 * #877: Fix for syncing large calendars when using the Sqlite PDO backend.
   (@theseer).
 * #889 Added support for filtering vCard properties in the addressbook-query
   REPORT (@DeepDiver1975).
+* The zip release ships with [sabre/vobject 4.1.2][vobj],
+  [sabre/http 4.2.2][http], [sabre/event 3.0.0][evnt],
+  [sabre/uri 1.2.0][uri] and [sabre/xml 1.5.0][xml].
 
 
 3.2.0 (2016-06-27)

@@ -202,10 +202,11 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         // PHP allows us to access protected properties from other objects, as
         // long as they are defined in a class that has a shared inheritence
         // with the current class.
-        rename($sourceNode->path, $this->path . '/' . $targetName);
+        if (!rename($sourceNode->path, $this->path . '/' . $targetName)) {
+            throw new DAV\Exception('Failed to move node ' . $sourceNode->path);
+        }
 
         return true;
-
     }
 
 }

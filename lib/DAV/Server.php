@@ -1487,8 +1487,10 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
 
                 if (($tokenValid && $etagValid) ^ $token['negate']) {
-                    // Both were valid, so we can go to the next condition.
-                    continue 2;
+		    // Litmus locks:20 check where we have valid lock with unvalid etag and "not" lock and unvalid etag
+		    if (!($token['token'] == "DAV:no-lock" && $token['negate'] && !$etagValid))
+		       // Both were valid, so we can go to the next condition.
+                       continue 2;
                 }
 
 

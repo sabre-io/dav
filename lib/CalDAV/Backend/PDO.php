@@ -163,6 +163,7 @@ class PDO extends AbstractBackend
         $fields[] = 'principaluri';
         $fields[] = 'transparent';
         $fields[] = 'access';
+        $fields[] = 'share_displayname';
 
         // Making fields a comma-delimited list
         $fields = implode(', ', $fields);
@@ -187,6 +188,7 @@ SQL
                 'id'                                                                 => [(int)$row['calendarid'], (int)$row['id']],
                 'uri'                                                                => $row['uri'],
                 'principaluri'                                                       => $row['principaluri'],
+                'share_displayname'                                                  => $row['share_displayname'],
                 '{' . CalDAV\Plugin::NS_CALENDARSERVER . '}getctag'                  => 'http://sabre.io/ns/sync/' . ($row['synctoken'] ? $row['synctoken'] : '0'),
                 '{http://sabredav.org/ns}sync-token'                                 => $row['synctoken'] ? $row['synctoken'] : '0',
                 '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet($components),

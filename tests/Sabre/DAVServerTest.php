@@ -29,6 +29,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $setupFiles = false;
     protected $setupSharing = false;
     protected $setupPropertyStorage = false;
+    protected $setupMockAll = false;
 
     /**
      * An array with calendars. Every calendar should have
@@ -266,6 +267,10 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     }
 
     function setUpBackends() {
+
+        if ($this->setupMockAll) {
+            $this->caldavBackend = new CalDAV\Backend\MockAll($this->caldavCalendars, $this->caldavCalendarObjects);
+        }
 
         if ($this->setupCalDAVSharing && is_null($this->caldavBackend)) {
             $this->caldavBackend = new CalDAV\Backend\MockSharing($this->caldavCalendars, $this->caldavCalendarObjects);

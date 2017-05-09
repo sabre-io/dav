@@ -114,8 +114,9 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport {
             }
             // Just making sure we're not affecting an existing copy.
             $sharee = clone $sharee;
-            $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_NORESPONSE;
-
+            if (!$sharee->inviteStatus) {
+                $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_NORESPONSE;
+            }
             if ($sharee->access === DAV\Sharing\Plugin::ACCESS_NOACCESS) {
                 // It's a removal
                 unset($this->shares[$calendarId][$existingKey]);

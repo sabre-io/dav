@@ -25,6 +25,7 @@ use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\ITip;
 use Sabre\VObject\ITip\Message;
 use Sabre\VObject\Reader;
+use Sabre\Uri;
 
 /**
  * CalDAV scheduling plugin.
@@ -351,11 +352,13 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        $calendarNode = $this->server->tree->getNodeForPath($calendarPath);
+        $usersWriteAccessAdresses = $this->getAddressesWriteAccess($calendarPath, $vCal);
+        if (!$usersWriteAccessAdresses) {
+            return;
+        }
 
-        $addresses = $this->getAddressesForPrincipal(
-            $calendarNode->getOwner()
-        );
+        $calendarNode = $this->server->tree->getNodeForPath($calendarPath);
+        $addresses = $this->getAddressesForPrincipal($calendarNode->getOwner());
 
         if (!$isNew) {
             $node = $this->server->tree->getNodeForPath($request->getPath());
@@ -364,7 +367,7 @@ class Plugin extends ServerPlugin {
             $oldObj = null;
         }
 
-        $this->processICalendarChange($oldObj, $vCal, $addresses, [], $modified);
+        $this->processICalendarChange($oldObj, $vCal, $addresses, $usersWriteAccessAdresses, [], $modified);
 
         if ($oldObj) {
             // Destroy circular references so PHP will GC the object.
@@ -419,12 +422,11 @@ class Plugin extends ServerPlugin {
             return;
         }
 
-        $addresses = $this->getAddressesForPrincipal(
-            $node->getOwner()
-        );
+        $usersWriteAccessAdresses = $this->getAddressesWriteAccess($path);
+        $addresses = $this->getAddressesForPrincipal($node->getOwner());
 
         $broker = new ITip\Broker();
-        $messages = $broker->parseEvent(null, $addresses, $node->get());
+        $messages = $broker->parseEvent(null, $addresses, $usersWriteAccessAdresses, $node->get());
 
         foreach ($messages as $message) {
             $this->deliver($message);
@@ -559,10 +561,12 @@ class Plugin extends ServerPlugin {
             // attendees of this attendees status. Therefore we're shooting off
             // another itipMessage.
             if ($iTipMessage->method === 'REPLY') {
+                $usersWriteAccessAdresses = $this->getAddressesWriteAccess($objectPath, $currentObject);
                 $this->processICalendarChange(
                     $oldICalendarData,
                     $newObject,
                     [$iTipMessage->recipient],
+                    $usersWriteAccessAdresses,
                     [$iTipMessage->sender]
                 );
             }
@@ -644,15 +648,16 @@ class Plugin extends ServerPlugin {
      * @param VCalendar|string $oldObject
      * @param VCalendar $newObject
      * @param array $addresses
+     * @param array $usersWriteAccessAdresses
      * @param array $ignore Any addresses to not send messages to.
      * @param bool $modified A marker to indicate that the original object
      *   modified by this process.
      * @return void
      */
-    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false) {
+    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $usersWriteAccessAdresses = null, array $ignore = [], &$modified = false) {
 
         $broker = new ITip\Broker();
-        $messages = $broker->parseEvent($newObject, $addresses, $oldObject);
+        $messages = $broker->parseEvent($newObject, $addresses, $usersWriteAccessAdresses, $oldObject);
 
         if ($messages) $modified = true;
 
@@ -1041,6 +1046,107 @@ class Plugin extends ServerPlugin {
         $scheduleReply = $request->getHeader('Schedule-Reply');
         return $scheduleReply !== 'F';
 
+    }
+
+    /**
+     * Returns the principalUri for all users that have READWRITE access on a SharedCalendar.
+     *
+     * @param string $path
+     * @return array
+     */
+    protected function getAddressesForSharees($path) {
+        $node = $this->server->tree->getNodeForPath($path);
+
+        if ($node instanceof \Sabre\CalDAV\CalendarObject) {
+            list($parentUri) = Uri\split($path);
+            $node = $this->server->tree->getNodeForPath('/'.$parentUri);
+        }
+
+        if ($node && $node instanceof \Sabre\CalDAV\SharedCalendar) {
+            $invites = $node->getInvites();
+            $invitesAddresses = [];
+
+            foreach ($invites as $invite) {
+                if($this->checkInviteRightWrite($invite)) {
+                    if($invite->href && !in_array($invite->href, $invitesAddresses)) {
+                        $invitesAddresses[] = $invite->href;
+                    }
+                }
+            }
+
+            return $invitesAddresses;
+        }
+
+        return [];
+    }
+
+    /**
+     * Returns true if the invite has a write access and has accepted the invite of a shared calendar.
+     *
+     * @param invite
+     * @return boolean
+     */
+    protected function checkInviteRightWrite($invite) {
+        return $invite->access === \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE && $invite->inviteStatus === \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED;
+    }
+
+    /**
+     * Returns all the users that have a Write access on the calendar, this includes the organizer of event.
+     *
+     * If you provide a path of a CalendarObject then the $calendarData is not necessary.
+     * If you provide a path of a CalendarHome then the $calendarData is necessary.
+     *
+     * @param string path
+     * @param VCalendar $calendarData
+     * @return array
+     **/
+    function getAddressesWriteAccess($path, $calendarData = null) {
+        $node = $this->server->tree->getNodeForPath($path);
+
+        if ($node instanceof \Sabre\CalDAV\CalendarObject && !$calendarData) {
+            $calendarData = Reader::read($node->get());
+
+        }
+
+        if ($node instanceof \Sabre\CalDAV\Calendar && !$calendarData) {
+            return;
+        }
+
+        $principalUriOrganizer = $this->getOrganizerPrincipal($calendarData->VEVENT->ORGANIZER->getNormalizedValue());
+        $usersWriteAccessAdresses[] = $calendarData->VEVENT->ORGANIZER->getNormalizedValue();
+        if ($principalUriOrganizer) {
+            $usersWriteAccessAdresses[] = $principalUriOrganizer;
+        }
+
+        $usersWriteAccessAdresses = array_merge($usersWriteAccessAdresses, $this->getAddressesForSharees($path));
+
+        $aclPlugin = $this->server->getPlugin('acl');
+        if (!$aclPlugin) {
+            $usersWriteAccessAdresses = array_merge($usersWriteAccessAdresses, $this->getAddressesForPrincipal($node->getOwner()));
+        }
+
+        return $usersWriteAccessAdresses;
+    }
+
+    /**
+     * Returns the principal address of an organizer.
+     *
+     * @param string organizer
+     * @return string
+     **/
+    function getOrganizerPrincipal($organizer) {
+
+        $aclPlugin = $this->server->getPlugin('acl');
+
+        // Local delivery is not available if the ACL plugin is not loaded.
+        if (!$aclPlugin) {
+            return;
+        }
+
+        $caldavNS = '{' . self::NS_CALDAV . '}';
+        $principalUri = $aclPlugin->getPrincipalByUri($organizer);
+
+        return $principalUri;
     }
 
     /**

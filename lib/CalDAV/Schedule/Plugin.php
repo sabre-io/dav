@@ -552,8 +552,7 @@ class Plugin extends ServerPlugin {
         // We may need to look a bit deeper into this later. Supporting ACL
         // here would be nice.
         if ($isNewNode) {
-            $calendar = $this->server->tree->getNodeForPath($calendarPath);
-            $calendar->createFile($newFileName, $newObject->serialize());
+            $this->server->createFile($calendarPath . $newFileName, $newObject->serialize());
         } else {
             // If the message was a reply, we may have to inform other
             // attendees of this attendees status. Therefore we're shooting off
@@ -566,7 +565,8 @@ class Plugin extends ServerPlugin {
                     [$iTipMessage->sender]
                 );
             }
-            $objectNode->put($newObject->serialize());
+
+            $this->server->updateFile($objectPath, $newObject->serialize());
         }
         $iTipMessage->scheduleStatus = '1.2;Message delivered locally';
 

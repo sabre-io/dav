@@ -15,11 +15,13 @@ class AddressBookMultiGetTest extends XmlTest {
         /* lines look a bit odd but this triggers an XML parsing bug */
         $xml = <<<XML
 <?xml version='1.0' encoding='UTF-8' ?>
-<CARD:addressbook-multiget xmlns="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
-  <prop>
-    <getcontenttype />
-    <getetag />
-    <CARD:address-data content-type="text/vcard" version="4.0" /></prop><href>/foo.vcf</href>
+<CARD:addressbook-multiget xmlns:d="DAV:" xmlns:CARD="urn:ietf:params:xml:ns:carddav">
+  <d:prop>
+    <d:getcontenttype />
+    <d:getetag />
+    <CARD:address-data content-type="text/vcard" version="4.0" />
+  </d:prop>
+  <d:href>/foo.vcf</d:href>
 </CARD:addressbook-multiget>
 XML;
 

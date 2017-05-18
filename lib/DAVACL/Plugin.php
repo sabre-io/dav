@@ -888,7 +888,9 @@ class Plugin extends DAV\ServerPlugin {
             case 'GET' :
             case 'HEAD' :
             case 'OPTIONS' :
-                // For these 3 we only need to know if the node is readable.
+            case 'REPORT' :
+            case 'PROPFIND' :
+                // For these 5 we only need to know if the node is readable.
                 $this->checkPrivileges($path, '{DAV:}read');
                 break;
 

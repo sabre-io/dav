@@ -217,6 +217,10 @@ class Client extends HTTP\Client {
 
             $prop->appendChild($element);
         }
+        
+        if (!$prop->hasChildNodes()) {
+            $prop = $dom->createElement('d:allprop');
+        }
 
         $dom->appendChild($root)->appendChild($prop);
         $body = $dom->saveXML();

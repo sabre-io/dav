@@ -148,10 +148,12 @@ class Response implements Element {
              * In those cases we MUST specify at least one DAV:propstat anyway, with
              * no properties.
              */
-            $writer->writeElement('{DAV:}propstat', [
-                '{DAV:}prop'   => [],
-                '{DAV:}status' => 'HTTP/1.1 418 ' . \Sabre\HTTP\Response::$statusCodes[418]
-            ]);
+            if ($status != 404) { 
+                $writer->writeElement('{DAV:}propstat', [
+                    '{DAV:}prop'   => [],
+                    '{DAV:}status' => 'HTTP/1.1 418 ' . \Sabre\HTTP\Response::$statusCodes[418]
+                ]);
+            }
 
         }
 

@@ -510,7 +510,6 @@ class Plugin extends DAV\ServerPlugin {
         $needsJson = $report->contentType === 'application/calendar+json';
 
         $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
-        $depth = $this->server->getHTTPDepth(0);
 
         // The default result is an empty array
         $result = [];
@@ -538,7 +537,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // The calendarobject was requested directly. In this case we handle
         // this locally.
-        if ($depth == 0 && $node instanceof ICalendarObject) {
+        if ($node instanceof ICalendarObject) {
 
             $requestedCalendarData = true;
             $requestedProperties = $report->properties;
@@ -619,7 +618,7 @@ class Plugin extends DAV\ServerPlugin {
 
         // If we're dealing with a calendar, the calendar itself is responsible
         // for the calendar-query.
-        if ($node instanceof ICalendarObjectContainer && $depth == 1) {
+        if ($node instanceof ICalendarObjectContainer) {
 
             $nodePaths = $node->calendarQuery($report->filters);
 

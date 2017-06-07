@@ -1,7 +1,8 @@
-<?php declare (strict_types=1);
+<?php
 
 namespace Sabre\CardDAV\Xml\Filter;
 
+use Sabre\CardDAV\Plugin;
 use Sabre\Xml\Reader;
 use Sabre\Xml\XmlDeserializable;
 
@@ -52,9 +53,27 @@ class AddressData implements XmlDeserializable {
         ];
 
         $elems = (array)$reader->parseInnerTree();
-        $result['addressDataProperties'] = array_map(function($element) {
-            return $element['attributes']['name'];
+        $allprop = false;
+
+        $result['addressDataProperties'] = array_map(function($element) use (&$allprop) {
+
+	    switch ($element['name']) {
+                case '{' . Plugin::NS_CARDDAV . '}allprop' :
+                    $allprop = true;
+                    return null;
+                default:
+                    if (array_key_exists('name', $element['attributes'])) {
+                        return $element['attributes']['name'];
+                    }
+                    return null;
+            }
         }, $elems);
+
+        // addressDataProperties act as a filter on the VCARD. If allprop is set we want
+        // everything back, so addressDataProperties should be null.
+        if ($allprop){
+            $result['addressDataProperties'] = null;
+        }
 
         return $result;
 

@@ -110,12 +110,14 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                 throw new BadRequest('The start= parameter must contain a unix timestamp');
             }
             $start = DateTime::createFromFormat('U', $queryParams['start']);
+            $componentType = 'VEVENT';
         }
         if (isset($queryParams['end'])) {
             if (!ctype_digit($queryParams['end'])) {
                 throw new BadRequest('The end= parameter must contain a unix timestamp');
             }
             $end = DateTime::createFromFormat('U', $queryParams['end']);
+            $componentType = 'VEVENT';
         }
         if (isset($queryParams['expand']) && !!$queryParams['expand']) {
             if (!$start || !$end) {

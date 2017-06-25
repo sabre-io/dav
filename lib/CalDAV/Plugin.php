@@ -687,7 +687,7 @@ class Plugin extends DAV\ServerPlugin {
         // times.
         $calendarProps = $this->server->getProperties($uri, [$tzProp]);
 
-        if (isset($calendarProps[$tzProp])) {
+        if (isset($calendarProps[$tzProp]) && !empty($calendarProps[$tzProp])) {
             $vtimezoneObj = VObject\Reader::read($calendarProps[$tzProp]);
             $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
             // Destroy circular references so PHP will garbage collect the object.

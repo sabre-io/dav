@@ -497,6 +497,21 @@ class Plugin extends DAV\ServerPlugin
                 // really unknown.
             }
         }
+		
+		//what if Lock-token is not in If header, but in Lock-Token header?
+		$lockToken = $request->getHeader('Lock-Token');
+
+		if($mustLocks && $lockToken) {
+			$lockToken = str_replace('<opaquelocktoken:', '', $lockToken);
+			$lockToken = str_replace('>', '', $lockToken);
+			foreach ($mustLocks as $jj => $mustLock) {
+				 if ($mustLock->token == $lockToken) {
+					// We have a match!
+					// Removing this one from mustlocks
+					unset($mustLocks[$jj]);
+				}
+			}
+		}
 
         // If there's any locks left in the 'mustLocks' array, it means that
         // the resource was locked and we must block it.

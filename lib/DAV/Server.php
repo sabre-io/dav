@@ -1376,7 +1376,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
                 if ($haveMatch) {
                     if ($etag) $response->setHeader('ETag', $etag);
-                    if ($request->getMethod() === 'GET') {
+                    if ($request->getMethod() === 'GET' || $request->getMethod() === 'HEAD') {
                         $response->setStatus(304);
                         return false;
                     } else {

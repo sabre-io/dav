@@ -1400,7 +1400,7 @@ class Plugin extends DAV\ServerPlugin {
             foreach ($requestedProperties as $propertyName => $childRequestedProperties) {
 
                 // We're only traversing if sub-properties were requested
-                if (count($childRequestedProperties) === 0) continue;
+                if (!is_array($childRequestedProperties) || count($childRequestedProperties) === 0) continue;
 
                 // We only have to do the expansion if the property was found
                 // and it contains an href element.

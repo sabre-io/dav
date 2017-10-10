@@ -160,4 +160,58 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     }
 
+    function testFilesThatAreSiblingsOfDirectoriesShouldBeReportedAsFiles() {
+
+        $xml = '<?xml version="1.0"?>
+<d:propfind xmlns:d="DAV:">
+  <d:prop>
+    <d:resourcetype />
+  </d:prop>
+</d:propfind>';
+
+        $this->sendRequest($xml);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->response->body);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d', 'urn:DAV');
+        $pathTests = [
+            '/d:multistatus',
+            '/d:multistatus/d:response',
+            '/d:multistatus/d:response/d:href',
+            '/d:multistatus/d:response/d:propstat',
+            '/d:multistatus/d:response/d:propstat/d:status',
+            '/d:multistatus/d:response/d:propstat/d:prop',
+            '/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype',
+        ];
+
+        $hrefPaths = [];
+
+        foreach ($pathTests as $test) {
+            $this->assertTrue(count($xml->xpath($test)) == true, 'We expected the ' . $test . ' element to appear in the response, we got: ' . $body);
+
+            if ($test === '/d:multistatus/d:response/d:href') {
+                foreach ($xml->xpath($test) as $thing) {
+                    /** @var \SimpleXMLElement $thing */
+                    $hrefPaths[] = strip_tags($thing->asXML());
+                }
+            } elseif ($test === '/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype') {
+                $count = 0;
+                foreach ($xml->xpath($test) as $thing) {
+                    /** @var \SimpleXMLElement $thing */
+                    if (substr($hrefPaths[$count], -4) !== '.txt') {
+                        $this->assertEquals('<d:resourcetype><d:collection/></d:resourcetype>', $thing->asXML(), 'Path ' . $hrefPaths[$count] . ' is not reported as a directory');
+                    } else {
+                        $this->assertEquals('<d:resourcetype/>', $thing->asXML(), 'Path ' . $hrefPaths[$count] . ' is not reported as a file');
+                    }
+
+                    $count++;
+                }
+            }
+        }
+
+        $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
+        $this->assertEquals(8, count($val), $body);
+        $this->assertEquals('HTTP/1.1 200 OK', (string)$val[0]);
+
+    }
+
 }

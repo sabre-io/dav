@@ -288,8 +288,7 @@ class CorePlugin extends ServerPlugin {
         $this->server->emit('afterUnbind', [$path]);
 
         $response->setStatus(204);
-        $response->setHeader('Content-Length', '0');
-
+        
         // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
@@ -514,7 +513,6 @@ class CorePlugin extends ServerPlugin {
                 return false;
             }
 
-            $response->setHeader('Content-Length', '0');
             if ($etag) $response->setHeader('ETag', $etag);
             $response->setStatus(204);
 
@@ -650,7 +648,10 @@ class CorePlugin extends ServerPlugin {
         $this->server->emit('afterBind', [$moveInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $response->setHeader('Content-Length', '0');
+        if (!$moveInfo['destinationExists']) {
+            $response->setHeader('Content-Length', '0');
+        }
+        
         $response->setStatus($moveInfo['destinationExists'] ? 204 : 201);
 
         // Sending back false will interrupt the event chain and tell the server
@@ -685,7 +686,10 @@ class CorePlugin extends ServerPlugin {
         $this->server->emit('afterBind', [$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201
-        $response->setHeader('Content-Length', '0');
+        if (!$moveInfo['destinationExists']) {
+            $response->setHeader('Content-Length', '0');
+        }
+        
         $response->setStatus($copyInfo['destinationExists'] ? 204 : 201);
 
         // Sending back false will interrupt the event chain and tell the server

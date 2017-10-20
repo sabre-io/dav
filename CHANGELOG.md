@@ -13,7 +13,8 @@ ChangeLog
 * #322: Imap authentication backend. (@c0d3z3r0).
 * #889: Support for selective property querying in CardDAV's addressbook-query.
  (@DeepDiver1975).
-
+* #982: Make sure that files that are siblings of directories, are reported
+  as files (@nickvergessen)
 
 3.3.0 (????-??-??)
 -----------------
@@ -33,7 +34,14 @@ ChangeLog
   REPORT (@DeepDiver1975).
 * #918: Add a lot of sqlite indexes. This should speed up sqlite-based
   installations quite a bit.
+* #982: Make sure that files that are siblings of directories, are reported
+  as files (@nickvergessen)
 
+3.2.3 (????-??-??)
+------------------
+
+* #982: Make sure that files that are siblings of directories, are reported
+  as files (@nickvergessen)
 
 3.2.2 (2017-02-14)
 ------------------

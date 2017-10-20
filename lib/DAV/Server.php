@@ -894,15 +894,16 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             $newDepth--;
         }
 
+        $propertyNames = $propFind->getRequestedProperties();
+        $propFindType = !empty($propertyNames) ? PropFind::NORMAL : PropFind::ALLPROPS;
+
         foreach ($this->tree->getChildren($path) as $childNode) {
-            $subPropFind = clone $propFind;
-            $subPropFind->setDepth($newDepth);
             if ($path !== '') {
                 $subPath = $path . '/' . $childNode->getName();
             } else {
                 $subPath = $childNode->getName();
             }
-            $subPropFind->setPath($subPath);
+            $subPropFind = new PropFind($subPath, $propertyNames, $newDepth, $propFindType);
 
             yield [
                 $subPropFind,

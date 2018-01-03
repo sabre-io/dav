@@ -298,7 +298,9 @@ class Tree {
      */
     protected function copyNode(INode $source, ICollection $destinationParent, $destinationName = null) {
 
-        if (!$destinationName) $destinationName = $source->getName();
+        if ((string)$destinationName === '') {
+            $destinationName = $source->getName();
+        }
 
         if ($source instanceof IFile) {
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -70,7 +70,7 @@ class StringUtil {
      * This method takes an input string, checks if it's not valid UTF-8 and
      * attempts to convert it to UTF-8 if it's not.
      *
-     * Note that currently this can only convert ISO-8559-1 to UTF-8 (latin-1),
+     * Note that currently this can only convert ISO-8859-1 to UTF-8 (latin-1),
      * anything else will likely fail.
      *
      * @param string $input

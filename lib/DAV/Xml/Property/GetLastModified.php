@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
@@ -75,7 +75,7 @@ class GetLastModified implements Element {
     function xmlSerialize(Writer $writer) {
 
         $writer->write(
-            HTTP\Util::toHTTPDate($this->time)
+            HTTP\toDate($this->time)
         );
 
     }

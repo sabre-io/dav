@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
@@ -66,8 +66,8 @@ END:VCALENDAR',
             new CalDAV\CalendarRoot($principalBackend, $this->caldavBackend),
         ];
 
-        $this->request = HTTP\Sapi::createFromServerArray([
-            'CONTENT_TYPE' => 'text/calendar',
+        $this->request = new HTTP\Request('GET', '/', [
+            'Content-Type' => 'text/calendar',
         ]);
         $this->response = new HTTP\ResponseMock();
 
@@ -558,54 +558,5 @@ ICS;
         }
 
     }
-
-    /*
-    function testNoPrivilege() {
-
-        $this->markTestIncomplete('Currently there\'s no "no privilege" situation');
-
-        $this->server->httpRequest = HTTP\Sapi::createFromServerArray(array(
-            'CONTENT_TYPE' => 'text/calendar',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI' => '/calendars/user1/outbox',
-        ));
-
-        $body = <<<ICS
-BEGIN:VCALENDAR
-METHOD:REQUEST
-BEGIN:VFREEBUSY
-ORGANIZER:mailto:user1.sabredav@sabredav.org
-ATTENDEE:mailto:user2.sabredav@sabredav.org
-DTSTART:20110101T080000Z
-DTEND:20110101T180000Z
-END:VFREEBUSY
-END:VCALENDAR
-ICS;
-
-        $this->server->httpRequest->setBody($body);
-
-        $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
-        );
-
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
-            'Content-Type' => 'application/xml',
-        ], $this->response->getHeaders());
-
-        $strings = [
-            '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
-            '<cal:request-status>3.7;No calendar-home-set property found</cal:request-status>',
-        ];
-
-        foreach($strings as $string) {
-            $this->assertTrue(
-                strpos($this->response->body, $string)!==false,
-                'The response body did not contain: ' . $string .'Full response: ' . $this->response->body
-            );
-        }
-
-
-    }*/
 
 }

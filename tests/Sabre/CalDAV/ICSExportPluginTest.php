@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV;
 
@@ -212,8 +212,8 @@ ICS
 
         $obj = VObject\Reader::read($response->getBody());
 
-        $this->assertEquals(0, count($obj->VTIMEZONE));
-        $this->assertEquals(0, count($obj->VEVENT));
+        $this->assertNull($obj->VTIMEZONE);
+        $this->assertNull($obj->VEVENT);
 
     }
 
@@ -237,7 +237,7 @@ ICS
 
         $obj = VObject\Reader::read($response->getBody());
 
-        $this->assertEquals(0, count($obj->VTIMEZONE));
+        $this->assertNull($obj->VTIMEZONE);
         $this->assertEquals(1, count($obj->VEVENT));
 
     }
@@ -292,7 +292,7 @@ ICS
         $obj = VObject\Reader::read($response->body);
         $this->assertEquals(1, count($obj->VTIMEZONE));
         $this->assertEquals(1, count($obj->VEVENT));
-        $this->assertEquals(0, count($obj->VTODO));
+        $this->assertNull($obj->VTODO);
 
     }
 
@@ -307,8 +307,8 @@ ICS
 
         $obj = VObject\Reader::read($response->body);
 
-        $this->assertEquals(0, count($obj->VTIMEZONE));
-        $this->assertEquals(0, count($obj->VEVENT));
+        $this->assertNull($obj->VTIMEZONE);
+        $this->assertNull($obj->VEVENT);
         $this->assertEquals(1, count($obj->VTODO));
 
     }

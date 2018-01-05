@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
@@ -168,7 +168,7 @@ class Plugin extends ServerPlugin {
 
         // Checking if this is a text/calendar content type
         $contentType = $request->getHeader('Content-Type');
-        if (strpos($contentType, 'text/calendar') !== 0) {
+        if (!$contentType || strpos($contentType, 'text/calendar') !== 0) {
             return;
         }
 
@@ -707,7 +707,7 @@ class Plugin extends ServerPlugin {
 
         // If we can't find this information, we'll stop processing
         if (!isset($properties[$CUAS])) {
-            return;
+            return [];
         }
 
         $addresses = $properties[$CUAS]->getHrefs();

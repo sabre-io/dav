@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Browser;
 
@@ -69,12 +69,12 @@ class HtmlOutputHelper {
     /**
      * Escape string for HTML output.
      *
-     * @param string $input
+     * @param scalar $input
      * @return string
      */
     function h($input) {
 
-        return htmlspecialchars($input, ENT_COMPAT, 'UTF-8');
+        return htmlspecialchars((string)$input, ENT_COMPAT, 'UTF-8');
 
     }
 

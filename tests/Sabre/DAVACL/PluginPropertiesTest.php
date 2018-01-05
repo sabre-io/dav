@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAVACL;
 
@@ -76,7 +76,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Xml\Property\Principal::UNAUTHENTICATED, $result[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
-        $fakeServer->emit('beforeMethod', [$fakeServer->httpRequest, $fakeServer->httpResponse]);
+        $fakeServer->emit('beforeMethod:PROPFIND', [$fakeServer->httpRequest, $fakeServer->httpResponse]);
 
         $result = $fakeServer->getPropertiesForPath('', $requestedProperties);
         $result = $result[0];
@@ -185,7 +185,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($authPlugin);
 
         // Force login
-        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $requestedProperties = [
             '{DAV:}acl',
@@ -224,7 +224,7 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $server->addPlugin($authPlugin);
 
         // Force login
-        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $requestedProperties = [
             '{DAV:}acl-restrictions',

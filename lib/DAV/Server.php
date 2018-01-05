@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -6,11 +6,11 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sabre\Event\EventEmitter;
+use Sabre\Event\EmitterInterface;
+use Sabre\Event\WildcardEmitterTrait;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
 use Sabre\Uri;
 
 /**
@@ -20,8 +20,9 @@ use Sabre\Uri;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Server extends EventEmitter implements LoggerAwareInterface {
+class Server implements LoggerAwareInterface, EmitterInterface {
 
+    use WildcardEmitterTrait;
     use LoggerAwareTrait;
 
     /**
@@ -245,7 +246,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             $this->httpRequest->setBaseUrl($this->getBaseUri());
             $this->invokeMethod($this->httpRequest, $this->httpResponse);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             try {
                 $this->emit('exception', [$e]);
@@ -260,7 +261,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
             $h = function($v) {
 
-                return htmlspecialchars($v, ENT_NOQUOTES, 'UTF-8');
+                return htmlspecialchars((string)$v, ENT_NOQUOTES, 'UTF-8');
 
             };
 
@@ -380,7 +381,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             // Note that REQUEST_URI is percent encoded, while PATH_INFO is
             // not, Therefore they are only comparable if we first decode
             // REQUEST_INFO as well.
-            $decodedUri = URLUtil::decodePath($uri);
+            $decodedUri = HTTP\decodePath($uri);
 
             // A simple sanity check:
             if (substr($decodedUri, strlen($decodedUri) - strlen($pathInfo)) === $pathInfo) {
@@ -467,7 +468,6 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         $method = $request->getMethod();
 
         if (!$this->emit('beforeMethod:' . $method, [$request, $response])) return;
-        if (!$this->emit('beforeMethod', [$request, $response])) return;
 
         if (self::$exposeVersion) {
             $response->setHeader('X-Sabre-Version', Version::VERSION);
@@ -481,19 +481,16 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         }
 
         if ($this->emit('method:' . $method, [$request, $response])) {
-            if ($this->emit('method', [$request, $response])) {
-                $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
-                if ($method === "GET") {
-                    $exMessage .= " Enable the Browser plugin to get a better result here.";
-                }
-
-                // Unsupported method
-                throw new Exception\NotImplemented($exMessage);
+            $exMessage = "There was no plugin in the system that was willing to handle this " . $method . " method.";
+            if ($method === "GET") {
+                $exMessage .= " Enable the Browser plugin to get a better result here.";
             }
+
+            // Unsupported method
+            throw new Exception\NotImplemented($exMessage);
         }
 
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
-        if (!$this->emit('afterMethod', [$request, $response])) return;
 
         if ($response->getStatus() === null) {
             throw new Exception('No subsystem set a valid HTTP status code. Something must have interrupted the request without providing further detail.');
@@ -568,7 +565,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      */
     function calculateUri($uri) {
 
-        if ($uri[0] != '/' && strpos($uri, '://')) {
+        if ($uri != '' && $uri[0] != '/' && strpos($uri, '://')) {
 
             $uri = parse_url($uri, PHP_URL_PATH);
 
@@ -579,7 +576,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
         if (strpos($uri, $baseUri) === 0) {
 
-            return trim(URLUtil::decodePath(substr($uri, strlen($baseUri))), '/');
+            return trim(HTTP\decodePath(substr($uri, strlen($baseUri))), '/');
 
         // A special case, if the baseUri was accessed without a trailing
         // slash, we'll accept it as well.
@@ -633,7 +630,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      * If the second offset is null, it should be treated as the offset of the last byte of the entity
      * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
      *
-     * @return array|null
+     * @return int[]|null
      */
     function getHTTPRange() {
 
@@ -647,8 +644,8 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         if ($matches[1] === '' && $matches[2] === '') return null;
 
         return [
-            $matches[1] !== '' ? $matches[1] : null,
-            $matches[2] !== '' ? $matches[2] : null,
+            $matches[1] !== '' ? (int)$matches[1] : null,
+            $matches[2] !== '' ? (int)$matches[2] : null,
         ];
 
     }
@@ -742,7 +739,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
         // We need to throw a bad request exception, if the header was invalid
         else throw new Exception\BadRequest('The HTTP Overwrite header should be either T or F');
 
-        list($destinationDir) = URLUtil::splitPath($destination);
+        list($destinationDir) = Uri\split($destination);
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
@@ -870,7 +867,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
             // GetLastModified gets special cased
             } elseif ($properties[$property] instanceof Xml\Property\GetLastModified) {
-                $headers[$header] = HTTP\Util::toHTTPDate($properties[$property]->getTime());
+                $headers[$header] = HTTP\toDate($properties[$property]->getTime());
             }
 
         }
@@ -1080,7 +1077,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      */
     function createFile($uri, $data, &$etag = null) {
 
-        list($dir, $name) = URLUtil::splitPath($uri);
+        list($dir, $name) = Uri\split($uri);
 
         if (!$this->emit('beforeBind', [$uri])) return false;
 
@@ -1161,7 +1158,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
      */
     function createCollection($uri, MkCol $mkCol) {
 
-        list($parentUri, $newName) = URLUtil::splitPath($uri);
+        list($parentUri, $newName) = Uri\split($uri);
 
         // Making sure the parent exists
         try {
@@ -1399,7 +1396,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
             // header
             // Note that this header only has to be checked if there was no If-None-Match header
             // as per the HTTP spec.
-            $date = HTTP\Util::parseHTTPDate($ifModifiedSince);
+            $date = HTTP\parseDate($ifModifiedSince);
 
             if ($date) {
                 if (is_null($node)) {
@@ -1410,7 +1407,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
                     $lastMod = new \DateTime('@' . $lastMod);
                     if ($lastMod <= $date) {
                         $response->setStatus(304);
-                        $response->setHeader('Last-Modified', HTTP\Util::toHTTPDate($lastMod));
+                        $response->setHeader('Last-Modified', HTTP\toDate($lastMod));
                         return false;
                     }
                 }
@@ -1421,7 +1418,7 @@ class Server extends EventEmitter implements LoggerAwareInterface {
 
             // The If-Unmodified-Since will allow allow the request if the
             // entity has not changed since the specified date.
-            $date = HTTP\Util::parseHTTPDate($ifUnmodifiedSince);
+            $date = HTTP\parseDate($ifUnmodifiedSince);
 
             // We must only check the date if it's valid
             if ($date) {

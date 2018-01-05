@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAVACL;
 
@@ -28,7 +28,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         );
         // Login
         $this->server->getPlugin('auth')->beforeMethod(
-            new \Sabre\HTTP\Request(),
+            new \Sabre\HTTP\Request('GET', '/'),
             new \Sabre\HTTP\Response()
         );
         $this->server->addPlugin($this->plugin);
@@ -43,7 +43,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -52,7 +52,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/foo');
 
-        $r = $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $r = $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
         $this->assertTrue($r);
 
     }
@@ -65,7 +65,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('HEAD');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -77,7 +77,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('OPTIONS');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -89,7 +89,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -101,7 +101,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('PROPPATCH');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -113,7 +113,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('COPY');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -125,7 +125,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('MOVE');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -137,7 +137,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('ACL');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 
@@ -149,7 +149,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
         $this->server->httpRequest->setMethod('LOCK');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->server->emit('beforeMethod', [$this->server->httpRequest, $this->server->httpResponse]);
+        $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
 
     }
 

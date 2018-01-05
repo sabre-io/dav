@@ -1,11 +1,11 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 use Sabre\DAV\Inode;
 use Sabre\DAV\PropFind;
-use Sabre\HTTP\URLUtil;
+use Sabre\Uri;
 
 /**
  * GuessContentType plugin
@@ -74,7 +74,7 @@ class GuessContentType extends DAV\ServerPlugin {
 
         $propFind->handle('{DAV:}getcontenttype', function() use ($propFind) {
 
-            list(, $fileName) = URLUtil::splitPath($propFind->getPath());
+            list(, $fileName) = Uri\split($propFind->getPath());
             return $this->getContentType($fileName);
 
         });

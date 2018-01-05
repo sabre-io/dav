@@ -1,10 +1,10 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\URLUtil;
+use Sabre\Uri;
 
 /**
  * Temporary File Filter Plugin
@@ -92,7 +92,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     function initialize(Server $server) {
 
         $this->server = $server;
-        $server->on('beforeMethod',    [$this, 'beforeMethod']);
+        $server->on('beforeMethod:*',   [$this, 'beforeMethod']);
         $server->on('beforeCreateFile', [$this, 'beforeCreateFile']);
 
     }
@@ -163,7 +163,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin {
     protected function isTempFile($path) {
 
         // We're only interested in the basename.
-        list(, $tempPath) = URLUtil::splitPath($path);
+        list(, $tempPath) = Uri\split($path);
 
         foreach ($this->temporaryFilePatterns as $tempFile) {
 

@@ -19,12 +19,6 @@ date_default_timezone_set('Canada/Eastern');
 $pdo = new PDO('sqlite:data/db.sqlite');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-//Mapping PHP errors to exceptions
-function exception_error_handler($errno, $errstr, $errfile, $errline) {
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-}
-set_error_handler("exception_error_handler");
-
 // Files we need
 require_once 'vendor/autoload.php';
 

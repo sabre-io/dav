@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Auth;
 
@@ -84,7 +84,7 @@ class Plugin extends ServerPlugin {
      */
     function initialize(Server $server) {
 
-        $server->on('beforeMethod', [$this, 'beforeMethod'], 10);
+        $server->on('beforeMethod:*', [$this, 'beforeMethod'], 10);
 
     }
 

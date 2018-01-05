@@ -1,12 +1,9 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
 use Sabre\HTTP;
-
-require_once 'Sabre/CalDAV/Backend/Mock.php';
-require_once 'Sabre/HTTP/ResponseMock.php';
 
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
@@ -83,9 +80,7 @@ ics;
 
         $this->server = new DAV\Server([$calendar]);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/calendar',
-        ]);
+        $request = new HTTP\Request('GET', '/calendar');
         $this->server->httpRequest = $request;
         $this->server->httpResponse = new HTTP\ResponseMock();
 
@@ -134,9 +129,7 @@ XML;
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI' => '/',
-        ]);
+        $request = new HTTP\Request('REPORT', '/');
         $this->server->httpRequest = $request;
 
         $reportXML = <<<XML
@@ -157,6 +150,7 @@ XML;
     function testFreeBusyReportNoACLPlugin() {
 
         $this->server = new DAV\Server();
+        $this->server->httpRequest = new HTTP\Request('REPORT', '/');
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 

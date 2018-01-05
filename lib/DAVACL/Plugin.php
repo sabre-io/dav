@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAVACL;
 
@@ -390,6 +390,9 @@ class Plugin extends DAV\ServerPlugin {
         }
         if ($currentPrincipal === $checkPrincipal) {
             return true;
+        }
+        if (is_null($currentPrincipal)) {
+            return false;
         }
         return in_array(
             $checkPrincipal,
@@ -813,7 +816,7 @@ class Plugin extends DAV\ServerPlugin {
 
         $this->server = $server;
         $server->on('propFind',            [$this, 'propFind'], 20);
-        $server->on('beforeMethod',        [$this, 'beforeMethod'], 20);
+        $server->on('beforeMethod:*',      [$this, 'beforeMethod'], 20);
         $server->on('beforeBind',          [$this, 'beforeBind'], 20);
         $server->on('beforeUnbind',        [$this, 'beforeUnbind'], 20);
         $server->on('propPatch',           [$this, 'propPatch']);
@@ -1400,7 +1403,7 @@ class Plugin extends DAV\ServerPlugin {
             foreach ($requestedProperties as $propertyName => $childRequestedProperties) {
 
                 // We're only traversing if sub-properties were requested
-                if (count($childRequestedProperties) === 0) continue;
+                if (!is_array($childRequestedProperties) || count($childRequestedProperties) === 0) continue;
 
                 // We only have to do the expansion if the property was found
                 // and it contains an href element.

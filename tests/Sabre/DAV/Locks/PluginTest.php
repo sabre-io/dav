@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV\Locks;
 
@@ -395,10 +395,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockRetainOwner() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ]);
+        $request = new HTTP\Request('LOCK', '/test.txt');
         $this->server->httpRequest = $request;
 
         $request->setBody('<?xml version="1.0"?>
@@ -423,12 +420,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockPutBadToken() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/test.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -446,13 +438,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF'        => '(<opaquelocktoken:token1>)',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('PUT', '/test.txt', [
+            'If' => '(<opaquelocktoken:token1>)',
+        ]);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -470,12 +458,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockDeleteParent() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -493,12 +476,7 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir',
-            'REQUEST_METHOD' => 'DELETE',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('DELETE', '/dir');
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -511,12 +489,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockDeleteSucceed() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -534,13 +507,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'DELETE',
-            'HTTP_IF'        => '(' . $this->response->getHeader('Lock-Token') . ')',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('DELETE', '/dir/child.txt', [
+            'If' => '(' . $this->response->getHeader('Lock-Token') . ')',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -554,12 +523,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockCopyLockSource() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -577,13 +541,10 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'COPY',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-        ];
+        $request = new HTTP\Request('COPY', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt'
+        ]);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -596,12 +557,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockCopyLockDestination() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child2.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child2.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -619,13 +575,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(201, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'COPY',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('COPY', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -639,12 +591,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockMoveLockSourceLocked() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -662,13 +609,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'MOVE',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('MOVE', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -682,12 +625,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockMoveLockSourceSucceed() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -705,14 +643,11 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'MOVE',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-            'HTTP_IF'          => '(' . $this->response->getHeader('Lock-Token') . ')',
-        ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('MOVE', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt',
+            'If'          => '(' . $this->response->getHeader('Lock-Token') . ')',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -725,12 +660,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockMoveLockDestination() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir/child2.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir/child2.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -748,13 +678,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(201, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'MOVE',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('MOVE', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -767,13 +693,9 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockMoveLockParent() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir',
-            'REQUEST_METHOD' => 'LOCK',
-            'HTTP_DEPTH'     => 'infinite',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/dir', [
+            'Depth' => 'infinite',
+        ]);
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -791,14 +713,10 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'      => '/dir/child.txt',
-            'REQUEST_METHOD'   => 'MOVE',
-            'HTTP_DESTINATION' => '/dir/child2.txt',
-            'HTTP_IF'          => '</dir> (' . $this->response->getHeader('Lock-Token') . ')',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('MOVE', '/dir/child.txt', [
+            'Destination' => '/dir/child2.txt',
+            'If'          => '</dir> (' . $this->response->getHeader('Lock-Token') . ')',
+        ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
 
@@ -812,12 +730,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testLockPutGoodToken() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'LOCK',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('LOCK', '/test.txt');
         $request->setBody('<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
@@ -835,13 +748,10 @@ class PluginTest extends DAV\AbstractServer {
 
         $this->assertEquals(200, $this->response->status);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF'        => '(' . $this->response->getHeader('Lock-Token') . ')',
-        ];
+        $request = new HTTP\Request('PUT', '/test.txt', [
+            'If' => '(' . $this->response->getHeader('Lock-Token') . ')',
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        ]);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -894,13 +804,9 @@ class PluginTest extends DAV\AbstractServer {
 
     function testPutWithIncorrectETag() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF'        => '(["etag1"])',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('PUT', '/test.txt', [
+            'If' => '(["etag1"])',
+        ]);
         $request->setBody('newbody');
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -923,14 +829,12 @@ class PluginTest extends DAV\AbstractServer {
             filesize($filename) .
             filemtime($filename)
         );
-        $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
-            'REQUEST_METHOD' => 'PUT',
-            'HTTP_IF'        => '(["' . $etag . '"])',
-        ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('PUT', '/test.txt', [
+            'If' => '(["' . $etag . '"])',
+        ]);
         $request->setBody('newbody');
+
         $this->server->httpRequest = $request;
         $this->server->exec();
         $this->assertEquals(204, $this->response->status, 'Incorrect status received. Full response body:' . $this->response->body);
@@ -939,12 +843,9 @@ class PluginTest extends DAV\AbstractServer {
 
     function testDeleteWithETagOnCollection() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/dir',
-            'REQUEST_METHOD' => 'DELETE',
-            'HTTP_IF'        => '(["etag1"])',
-        ];
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request = new HTTP\Request('DELETE', '/dir', [
+            'If' => '(["etag1"])',
+        ]);
 
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -954,8 +855,8 @@ class PluginTest extends DAV\AbstractServer {
 
     function testGetTimeoutHeader() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'HTTP_TIMEOUT' => 'second-100',
+        $request = new HTTP\Request('LOCK', '/foo/bar', [
+            'Timeout' => 'second-100',
         ]);
 
         $this->server->httpRequest = $request;
@@ -965,10 +866,9 @@ class PluginTest extends DAV\AbstractServer {
 
     function testGetTimeoutHeaderTwoItems() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'HTTP_TIMEOUT' => 'second-5, infinite',
+        $request = new HTTP\Request('LOCK', '/foo/bar', [
+            'Timeout' => 'second-5, infinite',
         ]);
-
         $this->server->httpRequest = $request;
         $this->assertEquals(5, $this->locksPlugin->getTimeoutHeader());
 
@@ -976,10 +876,9 @@ class PluginTest extends DAV\AbstractServer {
 
     function testGetTimeoutHeaderInfinite() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'HTTP_TIMEOUT' => 'infinite, second-5',
+        $request = new HTTP\Request('LOCK', '/foo/bar', [
+            'Timeout' => 'infinite, second-5',
         ]);
-
         $this->server->httpRequest = $request;
         $this->assertEquals(LockInfo::TIMEOUT_INFINITE, $this->locksPlugin->getTimeoutHeader());
 
@@ -990,9 +889,7 @@ class PluginTest extends DAV\AbstractServer {
      */
     function testGetTimeoutHeaderInvalid() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'HTTP_TIMEOUT' => 'yourmom',
-        ]);
+        $request = new HTTP\Request('GET', '/', ['Timeout' => 'yourmom']);
 
         $this->server->httpRequest = $request;
         $this->locksPlugin->getTimeoutHeader();

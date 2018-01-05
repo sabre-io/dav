@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -23,7 +23,7 @@ class TestPlugin extends ServerPlugin {
 
     function initialize(Server $server) {
 
-        $server->on('beforeMethod', [$this, 'beforeMethod']);
+        $server->on('beforeMethod:*', [$this, 'beforeMethod']);
 
     }
 

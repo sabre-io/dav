@@ -1,8 +1,9 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
 use Sabre\HTTP\Request;
+use Sabre\Uri;
 use Sabre\VObject;
 
 class ScheduleDeliverTest extends \Sabre\DAVServerTest {
@@ -269,8 +270,7 @@ END:VCALENDAR
 ICS;
 
 
-        $this->server->httpRequest->setMethod('MOVE');
-        $this->deliver($oldObject, $newObject);
+        $this->deliver($oldObject, $newObject, false, 'MOVE');
         $this->assertItemsInInbox('user2', 0);
 
     }
@@ -576,8 +576,9 @@ ICS;
 
     protected $calendarObjectUri;
 
-    function deliver($oldObject, &$newObject, $disableScheduling = false) {
+    function deliver($oldObject, &$newObject, $disableScheduling = false, $method = 'PUT') {
 
+        $this->server->httpRequest->setMethod($method);
         $this->server->httpRequest->setUrl($this->calendarObjectUri);
         if ($disableScheduling) {
             $this->server->httpRequest->setHeader('Schedule-Reply', 'F');
@@ -643,7 +644,7 @@ ICS;
      */
     function putPath($path, $data) {
 
-        list($parent, $base) = \Sabre\HTTP\UrlUtil::splitPath($path);
+        list($parent, $base) = Uri\split($path);
         $parentNode = $this->server->tree->getNodeForPath($parent);
 
         /*

@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CardDAV;
 
@@ -91,7 +91,7 @@ class PluginTest extends AbstractPluginTest {
 
     function testGetTransform() {
 
-        $request = new \Sabre\HTTP\Request('GET', '/addressbooks/user1/book1/card1', ['Accept: application/vcard+json']);
+        $request = new \Sabre\HTTP\Request('GET', '/addressbooks/user1/book1/card1', ['Accept' => 'application/vcard+json']);
         $response = new \Sabre\HTTP\ResponseMock();
         $this->server->invokeMethod($request, $response);
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -26,7 +26,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         parent::setUp();
         $this->server->createFile('files/test.txt', 'Test contents');
 
-        $this->lastModified = HTTP\Util::toHTTPDate(
+        $this->lastModified = HTTP\toDate(
             new DateTime('@' . $this->server->tree->getNodeForPath('files/test.txt')->getLastModified())
         );
 

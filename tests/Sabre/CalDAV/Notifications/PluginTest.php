@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CalDAV\Notifications;
 
@@ -57,7 +57,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
-        $authPlugin->beforeMethod(new HTTP\Request(), new HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;

@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types=1);
 
 namespace Sabre\CardDAV;
 
@@ -9,6 +9,7 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
+use Sabre\Uri;
 use Sabre\VObject;
 
 /**
@@ -218,7 +219,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function getAddressbookHomeForPrincipal($principal) {
 
-        list(, $principalId) = \Sabre\HTTP\URLUtil::splitPath($principal);
+        list(, $principalId) = Uri\split($principal);
         return self::ADDRESSBOOK_ROOT . '/' . $principalId;
 
     }
@@ -721,7 +722,7 @@ class Plugin extends DAV\ServerPlugin {
         // the content-type property. By default SabreDAV will send back
         // text/x-vcard; charset=utf-8, but for SOGO we must strip that last
         // part.
-        if (strpos($this->server->httpRequest->getHeader('User-Agent'), 'Thunderbird') === false) {
+        if (strpos((string)$this->server->httpRequest->getHeader('User-Agent'), 'Thunderbird') === false) {
             return;
         }
         $contentType = $propFind->get('{DAV:}getcontenttype');
@@ -804,7 +805,7 @@ class Plugin extends DAV\ServerPlugin {
      */
     protected function negotiateVCard($input, &$mimeType = null) {
 
-        $result = HTTP\Util::negotiate(
+        $result = HTTP\negotiateContentType(
             $input,
             [
                 // Most often used mime-type. Version 3

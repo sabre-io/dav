@@ -52,12 +52,15 @@ class AddressData implements XmlDeserializable {
         ];
 
         $elems = (array)$reader->parseInnerTree();
+        $elems = array_filter($elems, function($element) {
+            return $element['name'] === '{urn:ietf:params:xml:ns:carddav}prop' &&
+                isset($element['attributes']['name']);
+        });
         $result['addressDataProperties'] = array_map(function($element) {
             return $element['attributes']['name'];
         }, $elems);
 
         return $result;
-
     }
 
 }

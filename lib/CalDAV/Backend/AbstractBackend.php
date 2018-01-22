@@ -162,7 +162,7 @@ abstract class AbstractBackend implements BackendInterface {
      *
      * If the uid is not found, return null.
      *
-     * This method should only consider * objects that the principal owns, so
+     * This method should only consider objects that the principal owns, so
      * any calendars owned by other principals that also appear in this
      * collection should be ignored.
      *

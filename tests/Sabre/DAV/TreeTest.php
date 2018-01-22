@@ -24,6 +24,22 @@ class TreeTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    function testCopyFile() {
+
+        $tree = new TreeMock();
+        $tree->copy('hi/file', 'hi/newfile');
+
+        $this->assertArrayHasKey('newfile', $tree->getNodeForPath('hi')->newFiles);
+    }
+
+    function testCopyFile0() {
+
+        $tree = new TreeMock();
+        $tree->copy('hi/file', 'hi/0');
+
+        $this->assertArrayHasKey('0', $tree->getNodeForPath('hi')->newFiles);
+    }
+
     function testMove() {
 
         $tree = new TreeMock();

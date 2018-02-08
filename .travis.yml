@@ -9,8 +9,8 @@ env:
     - SABRE_MYSQLPASS=""
     - SABRE_MYSQLDSN="mysql:host=127.0.0.1;dbname=sabredav_test"
   matrix:
-    - LOWEST_DEPS="" TEST_DEPS=""
-    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/"
+    - LOWEST_DEPS="" TEST_DEPS="" WITH_COVERAGE="--coverage-clover=coverage.xml"
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/" $WITH_COVERAGE=""
 
 services:
   - mysql
@@ -33,7 +33,8 @@ addons:
    postgresql: "9.5"
 
 script:
-  - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $TEST_DEPS
+  - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS
+  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - ./bin/sabre-cs-fixer fix . --dry-run --diff
 
 after_success:

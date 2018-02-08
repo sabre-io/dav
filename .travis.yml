@@ -36,6 +36,9 @@ script:
   - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $TEST_DEPS
   - ./bin/sabre-cs-fixer fix . --dry-run --diff
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 cache:
   directories:
     - $HOME/.composer/cache

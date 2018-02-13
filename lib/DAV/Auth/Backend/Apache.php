@@ -6,12 +6,12 @@ use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
 /**
- * Apache authenticator
+ * Apache (or NGINX) authenticator
  *
  * This authentication backend assumes that authentication has been
- * configured in apache, rather than within SabreDAV.
+ * configured in apache (or NGINX), rather than within SabreDAV.
  *
- * Make sure apache is properly configured for this to work.
+ * Make sure apache (or NGINX) is properly configured for this to work.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
@@ -61,7 +61,10 @@ class Apache implements BackendInterface {
             $remoteUser = $request->getRawServerValue('REDIRECT_REMOTE_USER');
         }
         if (is_null($remoteUser)) {
-            return [false, 'No REMOTE_USER property was found in the PHP $_SERVER super-global. This likely means your server is not configured correctly'];
+            $remoteUser = $request->getRawServerValue('PHP_AUTH_USER');
+        }
+        if (is_null($remoteUser)) {
+            return [false, 'No REMOTE_USER, REDIRECT_REMOTE_USER, or PHP_AUTH_USER property was found in the PHP $_SERVER super-global. This likely means your server is not configured correctly'];
         }
 
         return [true, $this->principalPrefix . $remoteUser];

@@ -243,4 +243,25 @@ class ServerTest extends DAV\AbstractServer{
         );
 
     }
+
+    function testCopy() {
+
+        mkdir($this->tempDir . '/testcol');
+
+        $request = new HTTP\Request('COPY', '/test.txt', ['Destination' => '/testcol/test2.txt']);
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $this->assertEquals(201, $this->response->status);
+        $this->assertEquals('', $this->response->body);
+
+        $this->assertEquals([
+            'Content-Length'  => ['0'],
+            'X-Sabre-Version' => [DAV\Version::VERSION],
+        ], $this->response->getHeaders());
+
+        $this->assertTrue(is_file($this->tempDir . '/test.txt'));
+        $this->assertTrue(is_file($this->tempDir . '/testcol/test2.txt'));
+
+    }
 }

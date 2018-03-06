@@ -127,7 +127,10 @@ class Tree {
         list($destinationDir, $destinationName) = Uri\split($destinationPath);
 
         $destinationParent = $this->getNodeForPath($destinationDir);
-        $this->copyNode($sourceNode, $destinationParent, $destinationName);
+        // Check if the target can handle the copy itself. If not, we do it ourselves.
+        if (!$destinationParent instanceof ICopyTarget || !$destinationParent->copyInto($destinationName, $sourcePath, $sourceNode)) {
+            $this->copyNode($sourceNode, $destinationParent, $destinationName);
+        }
 
         $this->markDirty($destinationDir);
 

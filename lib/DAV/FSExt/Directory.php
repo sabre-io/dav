@@ -12,7 +12,7 @@ use Sabre\DAV\FS\Node;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTarget {
+class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTarget, DAV\ICopyTarget {
 
     /**
      * Creates a new file in the directory
@@ -203,6 +203,35 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
         // long as they are defined in a class that has a shared inheritance
         // with the current class.
         rename($sourceNode->path, $this->path . '/' . $targetName);
+
+        return true;
+
+    }
+
+    /**
+     * Copies a node into this collection.
+     *
+     * It is up to the implementors to:
+     *   1. Create the new resource.
+     *   2. Copy the data and any properties.
+     *
+     * If you return true from this function, the assumption
+     * is that the copy was successful.
+     * If you return false, sabre/dav will handle the copy itself.
+     *
+     * @param string $targetName New local file/collection name.
+     * @param string $sourcePath Full path to source node
+     * @param DAV\INode $sourceNode Source node itself
+     * @return bool
+     */
+    function copyInto($targetName, $sourcePath, DAV\INode $sourceNode) {
+
+        // We only support FSExt\File objects for now.
+        if (!$sourceNode instanceof File) {
+            return false;
+        }
+
+        copy($sourceNode->path, $this->path . '/' . $targetName);
 
         return true;
 

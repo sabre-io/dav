@@ -74,8 +74,6 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $request->setBody('');
 
-        $response = new HTTP\ResponseMock();
-
         // Server setup
         mkdir(SABRE_TEMPDIR . '/issue33');
         $dir = new FS\Directory(SABRE_TEMPDIR . '/issue33');
@@ -88,9 +86,8 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $server->setBaseUri('/webdav/');
 
         $server->httpRequest = $request;
-        $server->httpResponse = $response;
         $server->sapi = new HTTP\SapiMock();
-        $server->exec();
+        $server->start();
 
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/issue33/' . urldecode('%C3%A0fo%C3%B3')));
 

@@ -25,9 +25,9 @@ class PluginTest extends DAV\AbstractServer {
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(501, $this->response->status, 'We expected GET to not be implemented for Directories. Response body: ' . $this->response->body);
+        $this->assertEquals(501, $this->getResponse()->getStatusCode(), 'We expected GET to not be implemented for Directories. Response body: ' . $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -42,12 +42,12 @@ class PluginTest extends DAV\AbstractServer {
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->getResponse()->getStatusCode());
 
-        $xml = simplexml_load_string($this->response->body);
-        $this->assertInstanceOf('SimpleXMLElement', $xml, 'Response was not a valid xml document. The list of errors:' . print_r(libxml_get_errors(), true) . '. xml body: ' . $this->response->body . '. What type we got: ' . gettype($xml) . ' class, if object: ' . get_class($xml));
+        $xml = simplexml_load_string($this->getResponse()->getBody()->getContents());
+        $this->assertInstanceOf('SimpleXMLElement', $xml, 'Response was not a valid xml document. The list of errors:' . print_r(libxml_get_errors(), true) . '. xml body: ' . $this->getResponse()->getBody()->getContents() . '. What type we got: ' . gettype($xml) . ' class, if object: ' . get_class($xml));
 
         $xml->registerXPathNamespace('dm', 'http://purl.org/NET/webdav/mount');
         $url = $xml->xpath('//dm:url');

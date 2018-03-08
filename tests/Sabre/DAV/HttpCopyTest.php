@@ -38,7 +38,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/file5'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals('content1', $this->tree->getChild('file5')->get());
 
     }
@@ -49,7 +49,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/file1'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(403, $response->getStatus());
+        $this->assertEquals(403, $response->getStatusCode());
 
     }
 
@@ -59,7 +59,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('content1', $this->tree->getChild('file2')->get());
 
     }
@@ -71,7 +71,7 @@ class HttpCopyTest extends DAVServerTest {
             'Overwrite'   => 'T',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('content1', $this->tree->getChild('file2')->get());
 
     }
@@ -83,7 +83,7 @@ class HttpCopyTest extends DAVServerTest {
             'Overwrite'   => 'B',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(400, $response->getStatus());
+        $this->assertEquals(400, $response->getStatusCode());
 
     }
 
@@ -93,7 +93,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/notfound/file2',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(409, $response->getStatus());
+        $this->assertEquals(409, $response->getStatusCode());
 
     }
 
@@ -104,7 +104,7 @@ class HttpCopyTest extends DAVServerTest {
             'Overwrite'   => 'F',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(412, $response->getStatus());
+        $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals('content2', $this->tree->getChild('file2')->get());
 
     }
@@ -135,7 +135,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/coll2'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals('content3', $this->tree->getChild('coll2')->getChild('file3')->get());
 
     }
@@ -146,7 +146,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/coll1'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(403, $response->getStatus());
+        $this->assertEquals(403, $response->getStatusCode());
 
     }
 
@@ -156,7 +156,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('content3', $this->tree->getChild('file2')->getChild('file3')->get());
 
     }
@@ -168,7 +168,7 @@ class HttpCopyTest extends DAVServerTest {
             'Overwrite'   => 'T',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus());
+        $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('content3', $this->tree->getChild('file2')->getChild('file3')->get());
 
     }
@@ -180,7 +180,7 @@ class HttpCopyTest extends DAVServerTest {
             'Overwrite'   => 'F',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(412, $response->getStatus());
+        $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals('content2', $this->tree->getChild('file2')->get());
 
     }
@@ -191,7 +191,7 @@ class HttpCopyTest extends DAVServerTest {
             'Destination' => '/coll1/subcol',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(409, $response->getStatus());
+        $this->assertEquals(409, $response->getStatusCode());
 
     }
 

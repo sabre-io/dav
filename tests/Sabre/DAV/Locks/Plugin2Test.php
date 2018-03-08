@@ -43,7 +43,7 @@ class Plugin2Test extends \Sabre\DAVServerTest {
             $body
         );
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus(), $response->getBodyAsString());
+        $this->assertEquals(201, $response->getStatusCode(), $response->getBody()->getContents());
 
         $this->assertEquals(
             1,
@@ -54,11 +54,11 @@ class Plugin2Test extends \Sabre\DAVServerTest {
             'DELETE',
             '/file.txt',
             [
-                'If' => '(' . $response->getHeader('Lock-Token') . ')',
+                'If' => '(' . $response->getHeaderLine('Lock-Token') . ')',
             ]
         );
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus(), $response->getBodyAsString());
+        $this->assertEquals(204, $response->getStatusCode(), $response->getBody()->getContents());
 
         $this->assertEquals(
             0,

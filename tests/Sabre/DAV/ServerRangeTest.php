@@ -44,6 +44,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
 
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
+        $responseBody = $response->getBody()->read($response->getHeaderLine('Content-Length'));
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
@@ -55,8 +56,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             ],
             $response->getHeaders()
         );
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        $this->assertEquals(206, $response->getStatusCode());
+        $this->assertEquals('st c', $responseBody);
 
     }
 
@@ -79,8 +80,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st contents', $response->getBodyAsString());
+        $this->assertEquals(206, $response->getStatusCode());
+        $this->assertEquals('st contents', $response->getBody()->getContents());
 
     }
 
@@ -103,8 +104,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('contents', $response->getBodyAsString());
+        $this->assertEquals(206, $response->getStatusCode());
+        $this->assertEquals('contents', $response->getBody()->getContents());
 
     }
 
@@ -116,7 +117,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=100-200']);
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->getStatus());
+        $this->assertEquals(416, $response->getStatusCode());
 
     }
 
@@ -128,7 +129,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=8-4']);
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->getStatus());
+        $this->assertEquals(416, $response->getStatusCode());
 
     }
 
@@ -137,7 +138,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
 
-        $this->assertEquals(206, $response->getStatus(), $response);
+        $this->assertEquals(206, $response->getStatusCode(), $response);
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
@@ -149,7 +150,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals('st c', $response->getBodyAsString());
+        $this->assertEquals('st c', $response->getBody()->read($response->getHeaderLine('Content-Length')));
 
     }
 
@@ -175,8 +176,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        $this->assertEquals(206, $response->getStatusCode());
+        $this->assertEquals('st c', $response->getBody()->read($response->getHeaderLine('Content-Length')));
 
     }
 
@@ -201,8 +202,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('Test contents', $response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Test contents', $response->getBody()->getContents());
 
     }
 
@@ -228,8 +229,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        $this->assertEquals(206, $response->getStatusCode());
+        $this->assertEquals('st c', $response->getBody()->read($response->getHeaderLine('Content-Length')));
 
     }
 
@@ -254,8 +255,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
             $response->getHeaders()
         );
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('Test contents', $response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Test contents', $response->getBody()->getContents());
 
     }
 

@@ -93,10 +93,11 @@ BLA;
         $request->setBody($body);
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Full response body:' . $responseBody);
 
-        $multiStatus = $this->server->xml->parse($response->getBodyAsString());
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         // Checking the sync-token
         $this->assertEquals(
@@ -156,10 +157,10 @@ BLA;
         $request->setBody($body);
 
         $response = $this->request($request);
+        $responseBody =  $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Full response body:' . $responseBody);
 
-        $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
-
-        $multiStatus = $this->server->xml->parse($response->getBodyAsString());
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         // Checking the sync-token
         $this->assertEquals(
@@ -216,12 +217,10 @@ BLA;
         $request->setBody($body);
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Full response body:' . $responseBody);
 
-        $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
-
-        $multiStatus = $this->server->xml->parse(
-            $response->getBodyAsString()
-        );
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         // Checking the sync-token
         $this->assertEquals(
@@ -267,12 +266,11 @@ BLA;
         $request->setBody($body);
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Full response body:' . $responseBody);
 
-        $multiStatus = $this->server->xml->parse(
-            $response->getBodyAsString()
-        );
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         // Checking the sync-token
         $this->assertEquals(
@@ -326,7 +324,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
 
@@ -355,7 +353,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(415, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
 
@@ -385,7 +383,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
     function testSyncInvalidTokenNoPrefix() {
@@ -414,7 +412,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
 
@@ -442,7 +440,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(400, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(400, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
 
@@ -469,7 +467,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(400, $response->status, 'Full response body:' . $response->body);
+        $this->assertEquals(400, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
 
     }
 
@@ -481,13 +479,7 @@ BLA;
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (<http://sabre.io/ns/sync/1>)',
         ]);
-        $response = $this->request($request);
-
-        // If a 403 is thrown this works correctly. The file in questions
-        // doesn't allow itself to be deleted.
-        // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals(403, $response->status);
-
+        $this->request($request, 403);
     }
 
     function testIfConditionsNot() {
@@ -498,13 +490,7 @@ BLA;
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (Not <http://sabre.io/ns/sync/2>)',
         ]);
-        $response = $this->request($request);
-
-        // If a 403 is thrown this works correctly. The file in questions
-        // doesn't allow itself to be deleted.
-        // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals(403, $response->status);
-
+        $this->request($request, 403);
     }
 
     function testIfConditionsNoSyncToken() {
@@ -515,9 +501,6 @@ BLA;
             'REQUEST_URI'    => '/coll/file1.txt',
             'HTTP_IF'        => '</coll> (<opaquelocktoken:foo>)',
         ]);
-        $response = $this->request($request);
-
-        $this->assertEquals(412, $response->status);
-
+        $this->request($request, 412);
     }
 }

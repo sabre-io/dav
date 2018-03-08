@@ -11,6 +11,9 @@ use Sabre\HTTP;
 class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
 
     protected $plugin;
+    /**
+     * @var DAV\Server
+     */
     protected $server;
     protected $aclPlugin;
     protected $request;
@@ -69,11 +72,9 @@ END:VCALENDAR',
         $this->request = new HTTP\Request('GET', '/', [
             'Content-Type' => 'text/calendar',
         ]);
-        $this->response = new HTTP\ResponseMock();
 
         $this->server = new DAV\Server($tree);
         $this->server->httpRequest = $this->request;
-        $this->server->httpResponse = $this->response;
 
         $this->aclPlugin = new DAVACL\Plugin();
         $this->aclPlugin->allowUnauthenticatedAccess = false;
@@ -83,7 +84,7 @@ END:VCALENDAR',
         $authBackend->setPrincipal('principals/user1');
         $this->authPlugin = new DAV\Auth\Plugin($authBackend);
         // Forcing authentication to work.
-        $this->authPlugin->beforeMethod($this->request, $this->response);
+        $this->authPlugin->beforeMethod($this->request, $this->server->httpResponse);
         $this->server->addPlugin($this->authPlugin);
 
         // CalDAV plugin
@@ -289,13 +290,14 @@ ICS;
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
         $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
-
-        $this->assertEquals(200, $this->response->status);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-        ], $this->response->getHeaders());
+        ], $response->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -307,13 +309,13 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($responseBody, $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $responseBody
             );
         }
 
         $this->assertTrue(
-            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
+            strpos($responseBody, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
             'The response body did contain free busy info from a transparent calendar.'
         );
 
@@ -353,13 +355,15 @@ ICS;
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
         $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-        ], $this->response->getHeaders());
+        ], $response->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -368,8 +372,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($responseBody, $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $responseBody
             );
         }
 
@@ -408,13 +412,16 @@ ICS;
         });
 
         $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-        ], $this->response->getHeaders());
+        ], $response->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -423,8 +430,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($responseBody, $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $responseBody
             );
         }
 
@@ -463,13 +470,15 @@ ICS;
         });
 
         $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-        ], $this->response->getHeaders());
+        ], $response->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -478,8 +487,8 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($responseBody, $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' .$responseBody
             );
         }
 
@@ -534,13 +543,13 @@ ICS;
         });
 
         $this->assertFalse(
-            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+            $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
 
-        $this->assertEquals(200, $this->response->status);
+        $this->assertEquals(200, $this->server->httpResponse->getResponse()->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-        ], $this->response->getHeaders());
+        ], $this->server->httpResponse->getResponse()->getHeaders());
 
         $strings = [
             '<d:href>mailto:user2.sabredav@sabredav.org</d:href>',
@@ -550,10 +559,11 @@ ICS;
             'FREEBUSY;FBTYPE=BUSY-UNAVAILABLE:20110101T170000Z/20110101T180000Z',
         ];
 
+        $responseBody = $this->server->httpResponse->getResponse()->getBody()->getContents();
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                strpos($responseBody, $string) !== false,
+                'The response body did not contain: ' . $string . 'Full response: ' . $responseBody
             );
         }
 

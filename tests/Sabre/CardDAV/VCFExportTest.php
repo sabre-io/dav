@@ -57,7 +57,8 @@ class VCFExportTest extends \Sabre\DAVServerTest {
         ]);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), $responseBody);
 
         $expected = "BEGIN:VCARD
 FN:Person1
@@ -75,7 +76,7 @@ END:VCARD
         // We actually expected windows line endings
         $expected = str_replace("\n", "\r\n", $expected);
 
-        $this->assertEquals($expected, $response->body);
+        $this->assertEquals($expected, $responseBody);
 
     }
 
@@ -97,10 +98,10 @@ END:VCARD
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
+        $this->assertEquals('text/directory', $response->getHeaderLine('Content-Type'));
         $this->assertEquals(
             'attachment; filename="book1-' . date('Y-m-d') . '.vcf"',
-            $response->getHeader('Content-Disposition')
+            $response->getHeaderLine('Content-Disposition')
         );
 
     }
@@ -124,10 +125,10 @@ END:VCARD
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
+        $this->assertEquals('text/directory', $response->getHeaderLine('Content-Type'));
         $this->assertEquals(
             'attachment; filename="book-b_adchars-' . date('Y-m-d') . '.vcf"',
-            $response->getHeader('Content-Disposition')
+            $response->getHeaderLine('Content-Disposition')
         );
 
     }

@@ -45,7 +45,7 @@ XML;
         $request = new Request('MKCOL', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        $this->assertEquals(201, $response->getStatusCode());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
         $this->assertSubscription($subscriptions[0]);
 
@@ -89,7 +89,7 @@ XML;
         $request = new Request('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        $this->assertEquals(201, $response->getStatusCode());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
         $this->assertSubscription($subscriptions[0]);
 

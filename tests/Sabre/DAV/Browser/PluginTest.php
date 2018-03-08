@@ -23,19 +23,21 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('GET', '/dir');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
+        $body = $this->getResponse()->getBody()->getContents();
+
+        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
         );
 
-        $body = $this->response->getBodyAsString();
+
         $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
         $this->assertTrue(strpos($body, '<a href="/dir/child.txt">') !== false);
 
@@ -49,19 +51,20 @@ class PluginTest extends DAV\AbstractServer{
         $request = new HTTP\Request('GET', '/dir');
         $request->setHeader('If-None-Match', '"foo-bar"');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(200, $this->response->getStatus(), "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
+        $body = $this->getResponse()->getBody()->getContents();
+        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
         );
 
-        $body = $this->response->getBodyAsString();
+
         $this->assertTrue(strpos($body, '<title>dir') !== false, $body);
         $this->assertTrue(strpos($body, '<a href="/dir/child.txt">') !== false);
 
@@ -70,19 +73,19 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('GET', '/');
         $this->server->httpRequest = ($request);
-        $this->server->exec();
-
-        $this->assertEquals(200, $this->response->status, "Incorrect status received. Full response body: " . $this->response->getBodyAsString());
+        $this->server->start();
+        $body = $this->getResponse()->getBody()->getContents();
+        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
         );
 
-        $body = $this->response->getBodyAsString();
+
         $this->assertTrue(strpos($body, '<title>/') !== false, $body);
         $this->assertTrue(strpos($body, '<a href="/dir/">') !== false);
         $this->assertTrue(strpos($body, '<span class="btn disabled">') !== false);
@@ -103,9 +106,9 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('POST', '/', ['Content-Type' => 'text/xml']);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(501, $this->response->status);
+        $this->assertEquals(501, $this->getResponse()->getStatusCode());
 
     }
 
@@ -114,9 +117,9 @@ class PluginTest extends DAV\AbstractServer{
         $request = new HTTP\Request('POST', '/', ['Content-Type' => 'application/x-www-form-urlencoded']);
         $request->setPostData([]);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(501, $this->response->status);
+        $this->assertEquals(501, $this->getResponse()->getStatusCode());
 
     }
 
@@ -135,13 +138,13 @@ class PluginTest extends DAV\AbstractServer{
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setPostData($postVars);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(302, $this->response->status);
+        $this->assertEquals(302, $this->getResponse()->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Location'        => ['/'],
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
         $this->assertTrue(is_dir(SABRE_TEMPDIR . '/new_collection'));
 
@@ -151,16 +154,16 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=favicon.ico');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(200, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(200, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version'         => [DAV\Version::VERSION],
             'Content-Type'            => ['image/vnd.microsoft.icon'],
             'Content-Length'          => ['4286'],
             'Cache-Control'           => ['public, max-age=1209600'],
             'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
     }
 
@@ -168,9 +171,9 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=flavicon.ico');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(404, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -178,9 +181,9 @@ class PluginTest extends DAV\AbstractServer{
 
         $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=./../assets/favicon.ico');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: ' . $this->response->body);
+        $this->assertEquals(404, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
 
     }
 }

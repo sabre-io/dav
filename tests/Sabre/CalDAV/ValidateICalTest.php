@@ -2,6 +2,7 @@
 
 namespace Sabre\CalDAV;
 
+use Psr\Http\Message\ResponseInterface;
 use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
@@ -11,11 +12,11 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     /**
-     * @var Sabre\CalDAV\Backend\Mock
+     * @var CalDAV\Backend\Mock
      */
     protected $calBackend;
 
@@ -50,17 +51,14 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new HTTP\ResponseMock();
-        $this->server->httpResponse = $response;
-
     }
 
-    function request(HTTP\Request $request) {
+    function request(HTTP\Request $request): ResponseInterface {
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        return $this->server->httpResponse;
+        return $this->server->httpResponse->getResponse();
 
     }
 
@@ -73,7 +71,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status);
+        $this->assertEquals(415, $response->getStatusCode());
 
     }
 
@@ -101,7 +99,8 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
@@ -142,7 +141,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -169,7 +168,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version'  => [DAV\Version::VERSION],
             'Content-Length'   => ['0'],
@@ -217,7 +216,7 @@ ICS;
         $request->setBody($ics);
 
         $response = $this->request($request);
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -231,7 +230,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -245,7 +244,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -259,7 +258,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -273,7 +272,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -287,7 +286,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -301,7 +300,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status);
+        $this->assertEquals(415, $response->getStatusCode());
 
     }
 
@@ -327,7 +326,7 @@ ICS;
         $request->setBody($ics);
         $response = $this->request($request);
 
-        $this->assertEquals(204, $response->status);
+        $this->assertEquals(204, $response->getStatusCode());
 
         $expected = [
             'uri'          => 'blabla.ics',
@@ -350,7 +349,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -365,7 +364,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -399,8 +398,8 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
-        $this->assertNull($response->getHeader('ETag'));
+        $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
+        $this->assertEmpty($response->getHeader('ETag'));
 
     }
 }

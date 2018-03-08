@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
+use GuzzleHttp\Psr7\Response;
+use Sabre\DAV\Psr7ResponseWrapper;
 use Sabre\HTTP;
 
 class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
@@ -36,7 +38,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testCheckBadGetUserInfoResponse2() {
 
@@ -113,7 +115,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     function testRequireAuth() {
 
         $request = new HTTP\Request('GET', '/');
-        $response = new HTTP\Response();
+        $response = new Psr7ResponseWrapper(function() { return new Response(); });
 
         $backend = new AbstractDigestMock();
         $backend->setRealm('writing unittests on a saturday night');
@@ -121,7 +123,7 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertStringStartsWith(
             'Digest realm="writing unittests on a saturday night"',
-            $response->getHeader('WWW-Authenticate')
+            $response->getResponse()->getHeaderLine('WWW-Authenticate')
         );
 
     }

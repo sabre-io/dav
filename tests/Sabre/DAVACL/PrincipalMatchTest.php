@@ -37,7 +37,7 @@ XML;
 
         $this->assertXmlStringEqualsXmlString(
             $expected,
-            $response->getBodyAsString()
+            $response->getBody()->getContents()
         );
 
     }
@@ -75,7 +75,7 @@ XML;
 
         $this->assertXmlStringEqualsXmlString(
             $expected,
-            $response->getBodyAsString()
+            $response->getBody()->getContents()
         );
 
     }
@@ -115,7 +115,7 @@ XML;
 
         $this->assertXmlStringEqualsXmlString(
             $expected,
-            $response->getBodyAsString()
+            $response->getBody()->getContents()
         );
 
     }

@@ -2,6 +2,7 @@
 
 namespace Sabre\CardDAV;
 
+use Psr\Http\Message\ResponseInterface;
 use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
@@ -37,23 +38,20 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new HTTP\ResponseMock();
-        $this->server->httpResponse = $response;
-
     }
 
-    function request(HTTP\Request $request, $expectedStatus = null) {
+    function request(HTTP\Request $request, $expectedStatus = null): ResponseInterface {
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
         if ($expectedStatus) {
 
-            $realStatus = $this->server->httpResponse->getStatus();
+            $realStatus = $this->server->httpResponse->getResponse()->getStatusCode();
 
             $msg = '';
             if ($realStatus !== $expectedStatus) {
-                $msg = 'Response body: ' . $this->server->httpResponse->getBodyAsString();
+                $msg = 'Response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents();
             }
             $this->assertEquals(
                 $expectedStatus,
@@ -62,7 +60,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
             );
         }
 
-        return $this->server->httpResponse;
+        return $this->server->httpResponse->getResponse();
 
     }
 
@@ -75,7 +73,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status);
+        $this->assertEquals(415, $response->getStatusCode());
 
     }
 
@@ -99,12 +97,12 @@ VCF;
         $response = $this->request($request, 201);
 
         // The custom Ew header should not be set
-        $this->assertNull(
-            $response->getHeader('X-Sabre-Ew-Gross')
+        $this->assertEmpty(
+            $response->getHeaderLine('X-Sabre-Ew-Gross')
         );
         // Valid, non-auto-fixed responses should contain an ETag.
         $this->assertTrue(
-            $response->getHeader('ETag') !== null,
+            $response->getHeaderLine('ETag') !== null,
             'We did not receive an etag'
         );
 
@@ -148,13 +146,13 @@ VCF;
         $response = $this->request($request, 201);
 
         // Auto-fixed vcards should NOT return an etag
-        $this->assertNull(
+        $this->assertEmpty(
             $response->getHeader('ETag')
         );
 
         // We should have gotten an Ew header
-        $this->assertNotNull(
-            $response->getHeader('X-Sabre-Ew-Gross')
+        $this->assertNotEmpty(
+            $response->getHeaderLine('X-Sabre-Ew-Gross')
         );
 
         $expectedVCard = <<<VCF
@@ -246,7 +244,7 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
         $this->assertEquals("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n", $foo['carddata']);
@@ -263,7 +261,7 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: ' . $response->body);
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
@@ -275,7 +273,7 @@ VCF;
             '/addressbooks/admin/addressbook1/blabla.vcf'
         );
 
-        $response = $this->request($request, 415);
+        $this->request($request, 415);
 
     }
 
@@ -290,7 +288,7 @@ VCF;
         $body = "BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n";
         $request->setBody($body);
 
-        $response = $this->request($request, 204);
+        $this->request($request, 204);
 
         $expected = [
             'uri'      => 'blabla.vcf',

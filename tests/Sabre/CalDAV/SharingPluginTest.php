@@ -137,7 +137,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -151,7 +151,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -165,7 +165,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -261,7 +261,7 @@ RRR;
 
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -279,7 +279,7 @@ RRR;
 ';
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(400, $response->status, $response->body);
+        $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -298,7 +298,7 @@ RRR;
 ';
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
@@ -317,7 +317,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(202, $response->status, $response->body);
+        $this->assertEquals(202, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -337,7 +337,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->body);
+        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
@@ -390,7 +390,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->body);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 }

@@ -4,10 +4,9 @@
 namespace Sabre\DAV;
 
 
-use GuzzleHttp\Psr7\Stream;
-use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\Psr7\Response;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\HTTP\scalar;
+use function GuzzleHttp\Psr7\stream_for;
 
 class Psr7ResponseWrapper implements ResponseInterface
 {
@@ -16,10 +15,15 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     private $response;
 
+    /**
+     * @var \Closure
+     */
+    private $responseFactory;
 
-    public function __construct(\Psr\Http\Message\ResponseInterface $response)
+    public function __construct(\Closure $responseFactory)
     {
-        $this->response = $response;
+        $this->responseFactory = $responseFactory;
+        $this->reset();
     }
 
 
@@ -56,10 +60,15 @@ class Psr7ResponseWrapper implements ResponseInterface
      *
      * @return resource|string|callable
      */
+    private $getBodyCalled = false;
+
     function getBody()
     {
-//        return $this->response->getBody()->getContents();
-        throw new \Exception('not used');
+        if (!$this->getBodyCalled) {
+            $this->getBodyCalled = true;
+            return $this->response->getBody()->getContents();
+        }
+        throw new \Exception('getBody should only be used once.');
     }
 
     /**
@@ -270,4 +279,15 @@ class Psr7ResponseWrapper implements ResponseInterface
         return $this->response;
     }
 
+
+    public function reset()
+    {
+        $responseFactory = $this->responseFactory;
+        $response = $responseFactory();
+        if (!$response instanceof \Psr\Http\Message\ResponseInterface) {
+            throw new Exception('Response factory must return instance of PSR ResponseInterface');
+        }
+        $this->response = $response->withStatus(500);
+
+    }
 }

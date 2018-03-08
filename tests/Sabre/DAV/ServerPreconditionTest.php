@@ -167,11 +167,11 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
-        $server->httpResponse = new HTTP\ResponseMock();
-
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
-        $this->assertEquals(304, $server->httpResponse->getStatus());
-        $this->assertEquals(['ETag' => ['"abc123"']], $server->httpResponse->getHeaders());
+
+
+        $this->assertEquals(304, $server->httpResponse->getResponse()->getStatusCode());
+        $this->assertEquals(['ETag' => ['"abc123"']], $server->httpResponse->getResponse()->getHeaders());
 
     }
 
@@ -186,16 +186,16 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         HTTP\SapiMock::$sent = 0;
         $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
         $server->httpRequest = $httpRequest;
-        $server->httpResponse = new HTTP\ResponseMock();
-
-        $server->exec();
+        $server->start();
 
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
-        $this->assertEquals(304, $server->httpResponse->getStatus());
+        $response = $server->httpResponse->getResponse();
+
+        $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals([
             'ETag'            => ['"abc123"'],
             'X-Sabre-Version' => [Version::VERSION],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
         $this->assertEquals(1, HTTP\SapiMock::$sent);
 
     }
@@ -209,13 +209,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
         $httpRequest = new HTTP\Request('GET', '/foo', [
             'If-Modified-Since' => 'Sun, 06 Nov 1994 08:49:37 GMT',
         ]);
-        $server->httpResponse = new HTTP\ResponseMock();
         $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
 
-        $this->assertEquals(304, $server->httpResponse->status);
+        $response = $server->httpResponse->getResponse();
+        $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals([
             'Last-Modified' => ['Sat, 06 Apr 1985 23:30:00 GMT'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
     }
 

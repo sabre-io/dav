@@ -119,9 +119,9 @@ BLA
 
         $response = $this->request($request);
 
-        $body = $response->getBodyAsString();
+        $body = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->getStatus(), $body);
+        $this->assertEquals(207, $response->getStatusCode(), $body);
 
         $this->assertTrue(strpos($body, 'resourcetype') !== false, $body);
         $this->assertTrue(strpos($body, 'something') === false, $body);
@@ -152,9 +152,8 @@ BLA
         });
 
         $response = $this->request($request);
-
-        $this->assertEquals('', $response->getBodyAsString(), 'Expected empty body: ' . $response->body);
-        $this->assertEquals(204, $response->status);
+        $this->assertEmpty($response->getBody()->getContents());
+        $this->assertEquals(204, $response->getStatusCode());
 
     }
 
@@ -175,11 +174,11 @@ BLA
 
         $response = $this->request($request);
 
-        $body = $response->getBodyAsString();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status);
-        $this->assertTrue(strpos($body, 'something') !== false);
-        $this->assertTrue(strpos($body, '403 Forbidden') !== false, $body);
+        $this->assertEquals(207, $response->getStatusCode());
+        $this->assertTrue(strpos($responseBody, 'something') !== false);
+        $this->assertTrue(strpos($responseBody, '403 Forbidden') !== false, $responseBody);
 
     }
 }

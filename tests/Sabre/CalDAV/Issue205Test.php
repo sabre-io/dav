@@ -79,14 +79,15 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
-        $this->assertFalse(strpos($response->body, '<s:exception>Exception</s:exception>'), 'Exception occurred: ' . $response->body);
-        $this->assertFalse(strpos($response->body, 'Unknown or bad format'), 'DateTime unknown format Exception: ' . $response->body);
+        $body = $response->getBody()->getContents();
+        $this->assertFalse(strpos($body, '<s:exception>Exception</s:exception>'), 'Exception occurred: ' . $body);
+        $this->assertFalse(strpos($body, 'Unknown or bad format'), 'DateTime unknown format Exception: ' . $body);
 
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $body,
+            $start = strpos($body, 'BEGIN:VCALENDAR'),
+            strpos($body, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 

@@ -42,8 +42,8 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             204,
-            $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            $response->getStatusCode(),
+            "Incorrect status code. Response body:  " . $response->getBody()->getContents()
         );
 
         $this->assertEquals(
@@ -67,8 +67,8 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             204,
-            $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            $response->getStatusCode(),
+            "Incorrect status code. Response body:  " . $response->getBody()->getContents()
         );
 
         $this->assertEquals(
@@ -91,8 +91,8 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             404,
-            $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            $response->getStatusCode(),
+            "Incorrect status code. Response body:  " . $response->getBody()->getContents()
         );
 
     }
@@ -110,8 +110,8 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             204,
-            $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            $response->getStatusCode(),
+            "Incorrect status code. Response body:  " . $response->getBody()->getContents()
         );
 
     }
@@ -129,8 +129,8 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             412,
-            $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            $response->getStatusCode(),
+            "Incorrect status code. Response body:  " . $response->getBody()->getContents()
         );
 
     }

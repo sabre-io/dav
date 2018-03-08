@@ -94,10 +94,6 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         // This forces a login
         $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
-
-        $this->response = new HTTP\ResponseMock();
-        $this->server->httpResponse = $this->response;
-
     }
 
     function testSimple() {
@@ -116,9 +112,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $request = new HTTP\Request('MKBREAKFAST', '/');
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:' . $this->response->body);
+        $this->assertEquals(501, $this->server->httpResponse->getResponse()->getStatusCode(), 'Incorrect status returned. Full response body:' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -128,9 +124,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $request->setBody('<?xml version="1.0"?><s:somereport xmlns:s="http://www.rooftopsolutions.nl/NS/example" />');
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(415, $this->response->status);
+        $this->assertEquals(415, $this->server->httpResponse->getResponse()->getStatusCode());
 
     }
 
@@ -178,9 +174,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $request->setBody($body);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(403, $this->response->status);
+        $this->assertEquals(403, $this->server->httpResponse->getResponse()->getStatusCode());
 
     }
 
@@ -228,9 +224,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $request->setBody($body);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(409, $this->response->status);
+        $this->assertEquals(409, $this->server->httpResponse->getResponse()->getStatusCode());
 
     }
 
@@ -281,9 +277,9 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $request->setBody($body);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(405, $this->response->status);
+        $this->assertEquals(405, $this->server->httpResponse->getResponse()->getStatusCode());
 
     }
 
@@ -332,9 +328,9 @@ END:VCALENDAR';
 
         $request->setBody($body);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: ' . $this->response->body);
+        $this->assertEquals(201, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid response code received. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
         $this->assertEquals(3, count($calendars));
@@ -378,9 +374,9 @@ END:VCALENDAR';
 
         $request->setBody('');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: ' . $this->response->body);
+        $this->assertEquals(201, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid response code received. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
         $this->assertEquals(3, count($calendars));
@@ -422,9 +418,9 @@ END:VCALENDAR';
 
         $request->setBody($body);
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode());
 
     }
 
@@ -564,9 +560,9 @@ END:VCALENDAR';
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body');
+        $this->assertEquals(207, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid HTTP status received. Full response body');
 
         $expectedIcal = TestUtil::getTestCalendarData();
 
@@ -586,7 +582,7 @@ END:VCALENDAR';
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -611,9 +607,12 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->body);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+
+        $this->assertEquals(207, $response->getStatusCode(), 'Invalid HTTP status received. Full response body: ' . $responseBody);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -639,7 +638,8 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -669,9 +669,10 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
+        $responseBody = $this->server->httpResponse->getResponse()->getBody()->getContents();
 
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $this->server->httpResponse->getResponse()->getStatusCode(), 'Received an unexpected status. Full response body: ' . $responseBody);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -697,7 +698,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -731,9 +732,10 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
+        $responseBody = $this->server->httpResponse->getResponse()->getBody()->getContents();
 
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $this->server->httpResponse->getResponse()->getStatusCode(), 'Received an unexpected status. Full response body: ' . $responseBody);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -759,7 +761,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -791,9 +793,9 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode(), 'Received an unexpected status. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -821,9 +823,11 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Received an unexpected status. Full response body: ' . $responseBody);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -840,7 +844,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -862,9 +866,9 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode(), 'Received an unexpected status. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -894,9 +898,11 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Received an unexpected status. Full response body: ' . $responseBody);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -922,7 +928,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -949,9 +955,11 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Received an unexpected status. Full response body: ' . $responseBody);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -968,7 +976,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -1003,9 +1011,9 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid HTTP status received. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -1030,9 +1038,9 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid HTTP status received. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 
@@ -1057,9 +1065,9 @@ XML;
         $request->setBody($body);
 
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->body);
+        $this->assertEquals(400, $this->server->httpResponse->getResponse()->getStatusCode(), 'Invalid HTTP status received. Full response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents());
 
     }
 

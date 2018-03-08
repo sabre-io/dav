@@ -44,7 +44,7 @@ XML;
 
         $this->assertXmlStringEqualsXmlString(
             $expected,
-            $response->getBodyAsString()
+            $response->getBody()->getContents()
         );
 
     }

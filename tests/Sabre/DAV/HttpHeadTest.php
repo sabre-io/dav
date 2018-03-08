@@ -34,10 +34,11 @@ class HttpHeadTest extends DAVServerTest {
         $request = new HTTP\Request('HEAD', '//file1');
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals(200, $response->getStatusCode());
 
+        $headers = $response->getHeaders();
         // Removing Last-Modified because it keeps changing.
-        $response->removeHeader('Last-Modified');
+        unset($headers['Last-Modified']);
 
         $this->assertEquals(
             [
@@ -45,11 +46,11 @@ class HttpHeadTest extends DAVServerTest {
                 'Content-Type'    => ['application/octet-stream'],
                 'Content-Length'  => [3],
                 'ETag'            => ['"' . md5('foo') . '"'],
-            ],
-            $response->getHeaders()
+            ], $headers
+
         );
 
-        $this->assertEquals('', $response->getBodyAsString());
+        $this->assertEmpty($response->getBody()->getContents());
 
     }
 
@@ -63,7 +64,7 @@ class HttpHeadTest extends DAVServerTest {
         $request = new HTTP\Request('HEAD', '/dir');
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals(200, $response->getStatusCode());
 
     }
 
@@ -88,7 +89,7 @@ class HttpHeadTest extends DAVServerTest {
         $request = new HTTP\Request('HEAD', '/file1', ['Authorization' => 'Basic ' . base64_encode('user:pass')]);
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertEquals(1, $count, 'Auth was triggered twice :(');
 

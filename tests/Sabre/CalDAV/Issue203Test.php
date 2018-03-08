@@ -84,11 +84,13 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
+        $responseBody = $response->getBody()->getContents();
+
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $responseBody,
+            $start = strpos($responseBody, 'BEGIN:VCALENDAR'),
+            strpos($responseBody, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 

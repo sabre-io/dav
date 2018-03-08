@@ -59,8 +59,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         // This forces a login
         $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
-        $this->response = new HTTP\ResponseMock();
-        $this->server->httpResponse = $this->response;
+        $this->response = $this->server->httpResponse;
 
     }
 
@@ -126,18 +125,17 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $caldav = new Plugin();
 
         $server->httpRequest = new Request('GET', '/foo.xml');
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
-
         $server->addPlugin($caldav);
 
         $caldav->httpGet($server->httpRequest, $server->httpResponse);
 
-        $this->assertEquals(200, $httpResponse->status);
+        $response = $server->httpResponse->getResponse();
+
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
             'ETag'         => ['"1"'],
-        ], $httpResponse->getHeaders());
+        ], $response->getHeaders());
 
         $expected =
 '<?xml version="1.0" encoding="UTF-8"?>
@@ -146,7 +144,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 </cs:notification>
 ';
 
-        $this->assertXmlStringEqualsXmlString($expected, $httpResponse->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $response->getBody()->getContents());
 
     }
 
@@ -154,9 +152,6 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
         $server = new DAV\Server();
         $caldav = new Plugin();
-
-        $httpResponse = new HTTP\ResponseMock();
-        $server->httpResponse = $httpResponse;
 
         $server->addPlugin($caldav);
 

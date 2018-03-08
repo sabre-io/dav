@@ -41,11 +41,11 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
+        $response = $this->server->httpResponse;
 
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(403, $response->status);
+        $this->assertEquals(403, $response->getResponse()->getStatusCode());
 
     }
 
@@ -69,11 +69,11 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         $response = new HTTP\ResponseMock();
 
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
+        $response = $this->server->httpResponse;
 
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(200, $response->status);
+        $this->assertEquals(200, $response->getResponse()->getStatusCode());
 
     }
 }

@@ -30,19 +30,19 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $this->assertEquals([
             '/addressbooks/user1/book1/card1' => [
@@ -80,19 +80,18 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $this->assertEquals([
             '/addressbooks/user1/book1/card1' => [
@@ -125,19 +124,19 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
+        $this->server->start();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $this->assertEquals([], $result);
 
@@ -164,19 +163,18 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $this->assertEquals([
             '/addressbooks/user1/book1/card1' => [
@@ -207,19 +205,17 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
-
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $vobjVersion = \Sabre\VObject\Version::VERSION;
 
@@ -252,19 +248,18 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $vobjVersion = \Sabre\VObject\Version::VERSION;
 
@@ -297,14 +292,14 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
         );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->server->exec();
 
-        $this->assertEquals(415, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+
+        $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
     }
 
     function testAddressBookProperties() {
@@ -328,19 +323,17 @@ class AddressBookQueryTest extends AbstractPluginTest {
 </c:addressbook-query>'
         );
 
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
 
-        $this->server->exec();
-
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $response->body);
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code. Full response body:' . $responseBody);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($responseBody);
 
         $this->assertEquals([
             '/addressbooks/user1/book3/card3' => [

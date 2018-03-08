@@ -27,36 +27,29 @@ class MSWordTest extends \PHPUnit_Framework_TestCase {
         $locksPlugin = new Plugin($locksBackend);
         $server->addPlugin($locksPlugin);
 
-        $response1 = new HTTP\ResponseMock();
-
         $server->httpRequest = $this->getLockRequest();
-        $server->httpResponse = $response1;
         $server->sapi = new HTTP\SapiMock();
-        $server->exec();
+        $server->start();
 
-        $this->assertEquals(201, $server->httpResponse->getStatus(), 'Full response body:' . $response1->getBodyAsString());
-        $this->assertTrue(!!$server->httpResponse->getHeaders('Lock-Token'));
-        $lockToken = $server->httpResponse->getHeader('Lock-Token');
+        $response = $server->httpResponse->getResponse();
+        $this->assertEquals(201, $response->getStatusCode(), 'Full response body:' . $response->getBody()->getContents());
+        $this->assertNotEmpty($response->getHeaderLine('Lock-Token'));
+        $lockToken = $response->getHeaderLine('Lock-Token');
 
         //sleep(10);
-
-        $response2 = new HTTP\ResponseMock();
-
         $server->httpRequest = $this->getLockRequest2();
-        $server->httpResponse = $response2;
-        $server->exec();
+        $server->start();
 
-        $this->assertEquals(201, $server->httpResponse->status);
-        $this->assertTrue(!!$server->httpResponse->getHeaders('Lock-Token'));
+        $response = $server->httpResponse->getResponse();
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertNotEmpty($response->getHeaderLine('Lock-Token'));
 
         //sleep(10);
-
-        $response3 = new HTTP\ResponseMock();
         $server->httpRequest = $this->getPutRequest($lockToken);
-        $server->httpResponse = $response3;
-        $server->exec();
+        $server->start();
 
-        $this->assertEquals(204, $server->httpResponse->status);
+        $response = $server->httpResponse->getResponse();
+        $this->assertEquals(204, $response->getStatusCode());
 
     }
 

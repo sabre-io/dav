@@ -37,8 +37,8 @@ class JCalTransformTest extends \Sabre\DAVServerTest {
 
         $response = $this->request($request);
 
-        $body = $response->getBodyAsString();
-        $this->assertEquals(200, $response->getStatus(), "Incorrect status code: " . $body);
+        $body = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), "Incorrect status code: " . $body);
 
         $response = json_decode($body, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -77,12 +77,10 @@ XML;
         $request = new Request('REPORT', '/calendars/user1/foo', $headers, $xml);
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Full rsponse: ' . $responseBody);
 
-        $this->assertEquals(207, $response->getStatus(), 'Full rsponse: ' . $response->getBodyAsString());
-
-        $multiStatus = $this->server->xml->parse(
-            $response->getBodyAsString()
-        );
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         $responses = $multiStatus->getResponses();
         $this->assertEquals(1, count($responses));
@@ -91,7 +89,7 @@ XML;
 
         $jresponse = json_decode($response, true);
         if (json_last_error()) {
-            $this->fail('Json decoding error: ' . json_last_error_msg() . '. Full response: ' . $response);
+            $this->fail('Json decoding error: ' . json_last_error_msg() . '. Full response: ' . $responseBody);
         }
         $this->assertEquals(
             [
@@ -131,11 +129,10 @@ XML;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), "Invalid response code. Full body: " . $responseBody);
 
-        $multiStatus = $this->server->xml->parse(
-            $response->getBodyAsString()
-        );
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         $responses = $multiStatus->getResponses();
 
@@ -183,12 +180,11 @@ XML;
         $request = new Request('REPORT', '/calendars/user1/foo/bar.ics', $headers, $xml);
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $response->getBodyAsString());
+        $this->assertEquals(207, $response->getStatusCode(), "Invalid response code. Full body: " . $responseBody);
 
-        $multiStatus = $this->server->xml->parse(
-            $response->getBodyAsString()
-        );
+        $multiStatus = $this->server->xml->parse($responseBody);
 
         $responses = $multiStatus->getResponses();
 

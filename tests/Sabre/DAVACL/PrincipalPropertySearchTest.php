@@ -19,7 +19,6 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
-        $fakeServer->httpResponse = new HTTP\ResponseMock();
         $fakeServer->debugExceptions = true;
         $plugin = new MockPlugin();
         $plugin->allowAccessToNodesWithoutACL = true;
@@ -61,13 +60,14 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
 
-        $this->assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBodyAsString());
+        $response = $server->httpResponse->getResponse();
+        $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
     }
 
@@ -100,14 +100,16 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
+        $response = $server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $server->httpResponse->getStatus(), "Full body: " . $server->httpResponse->getBodyAsString());
+        $this->assertEquals(207, $response->getStatusCode(), "Full body: " . $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
     }
 
@@ -140,14 +142,16 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
 
-        $this->assertEquals(207, $server->httpResponse->status, $server->httpResponse->body);
+        $response = $server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
 
         $check = [
@@ -161,7 +165,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             '/d:multistatus/d:response/d:propstat/d:status'                  => 4,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($responseBody);
         $xml->registerXPathNamespace('d', 'DAV:');
         foreach ($check as $v1 => $v2) {
 
@@ -172,7 +176,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $responseBody);
 
         }
 
@@ -213,14 +217,16 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
+        $response = $server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
 
         $check = [
@@ -234,7 +240,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             '/d:multistatus/d:response/d:propstat/d:status'                  => 0,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($responseBody);
         $xml->registerXPathNamespace('d', 'DAV:');
         foreach ($check as $v1 => $v2) {
 
@@ -245,7 +251,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $responseBody);
 
         }
 
@@ -285,14 +291,16 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
+        $response = $server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
 
         $check = [
@@ -306,7 +314,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             '/d:multistatus/d:response/d:propstat/d:status'                  => 4,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($responseBody);
         $xml->registerXPathNamespace('d', 'DAV:');
         foreach ($check as $v1 => $v2) {
 
@@ -317,7 +325,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $responseBody);
 
         }
 
@@ -350,14 +358,17 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $server = $this->getServer();
         $server->httpRequest = $request;
 
-        $server->exec();
+        $server->start();
+        $response = $server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $server->httpResponse->status, $server->httpResponse->body);
+
+        $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
-        ], $server->httpResponse->getHeaders());
+        ], $response->getHeaders());
 
 
         $check = [
@@ -365,7 +376,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             '/d:multistatus/d:response' => 0,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($responseBody);
         $xml->registerXPathNamespace('d', 'DAV:');
         foreach ($check as $v1 => $v2) {
 
@@ -376,7 +387,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
             $count = 1;
             if (!is_int($v1)) $count = $v2;
 
-            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected ' . $count . ' appearances of ' . $xpath . ' . We found ' . count($result) . '. Full response body: ' . $responseBody);
 
         }
 

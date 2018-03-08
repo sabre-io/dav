@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+  phpunit:
+    image: phpunit/phpunit
+    tty: true
+    entrypoint: [
+      "/project/bin/phpunit",
+      "-c",
+      "/project/tests/phpunit.xml.dist"
+    ]
+    volumes:
+      - ./:/project

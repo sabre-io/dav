@@ -82,8 +82,6 @@ ics;
 
         $request = new HTTP\Request('GET', '/calendar');
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new HTTP\ResponseMock();
-
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
 
@@ -101,16 +99,18 @@ XML;
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
         $this->plugin->report($rootElem, $report, null);
 
-        $this->assertEquals(200, $this->server->httpResponse->status);
-        $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
-        $this->assertTrue(strpos($this->server->httpResponse->body, 'BEGIN:VFREEBUSY') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111005T120000Z/20111005T130000Z') !== false);
-        $this->assertTrue(strpos($this->server->httpResponse->body, '20111006T100000Z/20111006T110000Z') !== false);
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('text/calendar', $response->getHeaderLine('Content-Type'));
+        $this->assertTrue(strpos($responseBody, 'BEGIN:VFREEBUSY') !== false);
+        $this->assertTrue(strpos($responseBody, '20111005T120000Z/20111005T130000Z') !== false);
+        $this->assertTrue(strpos($responseBody, '20111006T100000Z/20111006T110000Z') !== false);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testFreeBusyReportNoTimeRange() {
 
@@ -125,7 +125,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testFreeBusyReportWrongNode() {
 
@@ -145,7 +145,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testFreeBusyReportNoACLPlugin() {
 

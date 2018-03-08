@@ -43,4 +43,5 @@
        <directory suffix=".php">../lib/</directory>
     </whitelist>
   </filter>
+    <php><ini name="memory_limit" value="768M"/></php>
 </phpunit>

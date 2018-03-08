@@ -92,12 +92,12 @@ END:VCALENDAR
 </C:calendar-query>');
 
         $response = $this->request($request);
-
+        $responseBody = $response->getBody()->getContents();
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $responseBody,
+            $start = strpos($responseBody, 'BEGIN:VCALENDAR'),
+            strpos($responseBody, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 
@@ -105,9 +105,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var $vevent VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var $child VObject\Property */
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T043000Z', $child->getValue());
@@ -139,13 +139,14 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus());
+        $this->assertEquals(207, $response->getStatusCode());
 
+        $responseBody = $response->getBody()->getContents();
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $responseBody,
+            $start = strpos($responseBody, 'BEGIN:VCALENDAR'),
+            strpos($responseBody, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 
@@ -174,15 +175,14 @@ END:VCALENDAR
             'Content-Type' => 'application/xml',
         ]);
 
-        $response = $this->request($request);
+        $response = $this->request($request, 200);
 
-        $this->assertEquals(200, $response->getStatus());
-
+        $responseBody = $response->getBody()->getContents();
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $responseBody,
+            $start = strpos($responseBody, 'BEGIN:VCALENDAR'),
+            strpos($responseBody, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 
@@ -190,9 +190,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var $vevent VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var $child VObject\Property */
                 if ($child->name == 'DTSTART') {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T043000Z', $child->getValue());

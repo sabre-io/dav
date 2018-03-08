@@ -65,9 +65,10 @@ ICS
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Response body:' . $response->getBodyAsString());
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status code received. Response body:' . $responseBody);
 
-        $result = $this->request(new Request('GET', '/calendars/user1/default/foo.ics'))->getBody();
+        $result = $this->request(new Request('GET', '/calendars/user1/default/foo.ics'))->getBody()->getContents();
         $resultVObj = VObject\Reader::read($result);
 
         $this->assertEquals(

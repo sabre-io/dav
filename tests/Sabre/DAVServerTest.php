@@ -2,6 +2,7 @@
 
 namespace Sabre;
 
+use Psr\Http\Message\ResponseInterface;
 use Sabre\HTTP\Request;
 use Sabre\HTTP\Response;
 use Sabre\HTTP\Sapi;
@@ -42,7 +43,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $carddavCards = [];
 
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     protected $tree = [];
@@ -188,25 +189,21 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      *
      * @param array|\Sabre\HTTP\Request $request
      * @param int $expectedStatus
-     * @return \Sabre\HTTP\Response
      */
-    function request($request, $expectedStatus = null) {
+    function request($request, $expectedStatus = null): ResponseInterface {
 
         if (is_array($request)) {
             $request = HTTP\Request::createFromServerArray($request);
         }
-        $response = new HTTP\ResponseMock();
-
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = $response;
-        $this->server->exec();
+        $this->server->start();
 
-        if ($expectedStatus) {
-            $responseBody = $expectedStatus !== $response->getStatus() ? $response->getBodyAsString() : '';
-            $this->assertEquals($expectedStatus, $response->getStatus(), 'Incorrect HTTP status received for request. Response body: ' . $responseBody);
+        $result = $this->server->httpResponse->getResponse();
+        if (isset($expectedStatus)) {
+            $this->assertEquals($expectedStatus, $result->getStatusCode(),
+                'Incorrect HTTP status received for request');
         }
-        return $this->server->httpResponse;
-
+        return $result;
     }
 
     /**
@@ -299,7 +296,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     function assertHttpStatus($expectedStatus, HTTP\Request $req) {
 
         $resp = $this->request($req);
-        $this->assertEquals((int)$expectedStatus, (int)$resp->status, 'Incorrect HTTP status received: ' . $resp->body);
+        $this->assertEquals((int)$expectedStatus, (int)$resp->getStatusCode(), 'Incorrect HTTP status received: ' . $resp->getBody()->getContents());
 
     }
 

@@ -43,7 +43,7 @@ class ServerEventsTest extends AbstractServer {
             'REQUEST_URI'    => '/test.txt',
         ]);
 
-        $this->server->exec();
+        $this->server->start();
 
     }
 
@@ -59,9 +59,12 @@ class ServerEventsTest extends AbstractServer {
         ]);
 
         $this->server->httpRequest = $req;
-        $this->server->exec();
+        $this->server->start();
+        $response = $this->server->httpResponse->getResponse();
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(500, $this->server->httpResponse->getStatus());
+
+        $this->assertEquals(500, $response->getStatusCode(), $responseBody);
 
     }
 
@@ -80,7 +83,7 @@ class ServerEventsTest extends AbstractServer {
             'REQUEST_URI'    => '/not/exisitng',
         ]);
         $this->server->httpRequest = $req;
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertInstanceOf('Sabre\\DAV\\Exception\\NotFound', $this->exception);
 

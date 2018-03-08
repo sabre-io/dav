@@ -55,17 +55,16 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
             '/not-found',
             []
         );
-        $response = new \Sabre\HTTP\Response();
 
         $server->httpRequest = $request;
-        $server->httpResponse = $response;
+        $response = $server->httpResponse;
         $server->sapi = new \Sabre\HTTP\SapiMock();
 
         // Executing the request.
-        $server->exec();
+        $server->start();
 
         // The request should have triggered a 404 status.
-        $this->assertEquals(404, $response->getStatus());
+        $this->assertEquals(404, $response->getResponse()->getStatusCode());
 
         // We should also see this in the PSR-3 log.
         $this->assertEquals(1, count($logger->logs));

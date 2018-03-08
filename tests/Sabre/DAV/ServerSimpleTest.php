@@ -31,7 +31,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $request = new HTTP\Request('OPTIONS', '/');
         $this->server->httpRequest = $request;
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'DAV'             => ['1, 3, extended-mkcol'],
@@ -40,10 +40,10 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [Version::VERSION],
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals(200, $this->getResponse()->getStatusCode());
+        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -52,7 +52,7 @@ class ServerSimpleTest extends AbstractServer{
         $request = new HTTP\Request('OPTIONS', '/unmapped');
         $this->server->httpRequest = $request;
 
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'DAV'             => ['1, 3, extended-mkcol'],
@@ -61,10 +61,10 @@ class ServerSimpleTest extends AbstractServer{
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [Version::VERSION],
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals(200, $this->getResponse()->getStatusCode());
+        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -77,14 +77,14 @@ class ServerSimpleTest extends AbstractServer{
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
-        $this->assertEquals(501, $this->response->status);
+        $this->assertEquals(501, $this->getResponse()->getStatusCode());
 
 
     }
@@ -101,7 +101,7 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->setBaseUri('/blabla/');
         $this->assertEquals('/blabla/', $this->server->getBaseUri());
         $this->server->httpRequest = ($request);
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
@@ -110,11 +110,11 @@ class ServerSimpleTest extends AbstractServer{
             'Last-Modified'   => [HTTP\toDate(new \DateTime('@' . filemtime($filename)))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
          );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
+        $this->assertEquals(200, $this->getResponse()->getStatusCode());
+        $this->assertEquals('Test contents', $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -369,13 +369,13 @@ class ServerSimpleTest extends AbstractServer{
         $httpRequest = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = $httpRequest;
         $this->server->on('beforeMethod:*', [$this, 'exceptionTrigger']);
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'Content-Type' => ['application/xml; charset=utf-8'],
-        ], $this->response->getHeaders());
+        ], $this->getResponse()->getHeaders());
 
-        $this->assertEquals(500, $this->response->status);
+        $this->assertEquals(500, $this->getResponse()->getStatusCode());
 
     }
 
@@ -395,16 +395,16 @@ class ServerSimpleTest extends AbstractServer{
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->httpRequest = ($request);
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
          );
 
-        $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(415, $this->getResponse()->getStatusCode(), 'We got an incorrect status back. Full response body follows: ' . $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -419,16 +419,16 @@ class ServerSimpleTest extends AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->on('report', [$this, 'reportHandler']);
-        $this->server->exec();
+        $this->server->start();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'testheader'      => ['testvalue'],
             ],
-            $this->response->getHeaders()
+            $this->getResponse()->getHeaders()
         );
 
-        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: ' . $this->response->body);
+        $this->assertEquals(418, $this->getResponse()->getStatusCode(), 'We got an incorrect status back. Full response body follows: ' . $this->getResponse()->getBody()->getContents());
 
     }
 
@@ -463,11 +463,16 @@ class ServerSimpleTest extends AbstractServer{
      * intercept these and set it to a default error message.
      */
     function testNoHTTPStatusSet() {
-
-        $this->server->on('method:GET', function() { return false; }, 1);
+        $called = false;
+        $this->server->on('method:GET', function() use (&$called) {
+            $called = true;
+            return false;
+        }, 1);
         $this->server->httpRequest = new HTTP\Request('GET', '/');
-        $this->server->exec();
-        $this->assertEquals(500, $this->response->getStatus());
+        $this->server->start();
+        $this->assertTrue($called);
+        $response = $this->server->httpResponse->getResponse();
+        $this->assertEquals(500, $response->getStatusCode(), print_r($response->getHeaders(), true));
 
     }
 

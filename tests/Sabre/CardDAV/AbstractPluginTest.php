@@ -13,7 +13,7 @@ abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
      */
     protected $plugin;
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     /**

@@ -80,25 +80,26 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
+        $responseBody = $response->getBody()->getContents();
         // Everts super awesome xml parser.
         $body = substr(
-            $response->body,
-            $start = strpos($response->body, 'BEGIN:VCALENDAR'),
-            strpos($response->body, 'END:VCALENDAR') - $start + 13
+            $responseBody,
+            $start = strpos($responseBody, 'BEGIN:VCALENDAR'),
+            strpos($responseBody, 'END:VCALENDAR') - $start + 13
         );
         $body = str_replace('&#13;', '', $body);
 
         try {
             $vObject = VObject\Reader::read($body);
         } catch (VObject\ParseException $e) {
-            $this->fail('Could not parse object. Error:' . $e->getMessage() . ' full object: ' . $response->getBodyAsString());
+            $this->fail('Could not parse object. Error:' . $e->getMessage() . ' full object: ' . $responseBody);
         }
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var $vevent VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var $child VObject\Property */
                 if ($child->name == 'DTSTART') {
                     // DTSTART has to be one of three valid values
                     $this->assertContains($child->getValue(), ['20120207T171500Z', '20120208T171500Z', '20120209T171500Z'], 'DTSTART is not a valid value: ' . $child->getValue());

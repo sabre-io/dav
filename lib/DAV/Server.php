@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -19,6 +20,7 @@ use Sabre\Uri;
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
+ * @property Psr7ResponseWrapper $httpResponse
  */
 class Server implements LoggerAwareInterface, EmitterInterface {
 
@@ -54,7 +56,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      *
      * @var HTTP\Response
      */
-    public $httpResponse;
+    private $httpResponse;
 
     /**
      * httpRequest
@@ -198,8 +200,9 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      * the nodes in the array as top-level children.
      *
      * @param Tree|INode|array|null $treeOrNode The tree object
+     * @param \Closure A response factory
      */
-    function __construct($treeOrNode = null) {
+    function __construct($treeOrNode = null, \Closure $responseFactory = null) {
 
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
@@ -219,10 +222,28 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
         $this->xml = new Xml\Service();
         $this->sapi = new HTTP\Sapi();
-        $this->httpResponse = new HTTP\Response();
+
+        if (!isset($responseFactory) && class_exists(Response::class)) {
+            $responseFactory = function () {
+                return new Response();
+            };
+        }
+
+        if (!isset($responseFactory)) {
+            throw new Exception('No response factory given and guzzle is not available');
+        }
+        $this->httpResponse = new Psr7ResponseWrapper($responseFactory);
         $this->httpRequest = $this->sapi->getRequest();
         $this->addPlugin(new CorePlugin());
 
+    }
+
+    public function __get($name)
+    {
+        if ($name === 'httpResponse') {
+            return $this->httpResponse;
+        }
+        throw new \Exception('Unknown property ' . $name);
     }
 
     /**
@@ -492,9 +513,6 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
 
-        if ($response->getStatus() === null) {
-            throw new Exception('No subsystem set a valid HTTP status code. Something must have interrupted the request without providing further detail.');
-        }
         if ($sendResponse) {
             $this->sapi->sendResponse($response);
             $this->emit('afterResponse', [$request, $response]);

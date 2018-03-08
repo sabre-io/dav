@@ -40,7 +40,7 @@ XML;
         $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatus(), (string)$response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
         $expected = [
             new Sharee([
@@ -84,7 +84,7 @@ XML;
         $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatus(), (string)$response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
         $expected = [];
 
@@ -118,7 +118,7 @@ XML;
         $request = new Request('PROPFIND', '/shareable', ['Content-Type' => 'application/xml'], $body);
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus());
+        $this->assertEquals(207, $response->getStatusCode());
 
         $expected = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
@@ -146,7 +146,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $response->getBodyAsString());
+        $this->assertXmlStringEqualsXmlString($expected, $response->getBody()->getContents());
 
     }
 

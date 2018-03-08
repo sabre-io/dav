@@ -90,10 +90,10 @@ END:VCALENDAR
 </C:calendar-query>');
 
         $response = $this->request($request);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertFalse(strpos($responseBody, '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: ' . $responseBody);
+        $this->assertFalse(strpos($responseBody, 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): ' . $responseBody);
 
-        $this->assertFalse(strpos($response->body, '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: ' . $response->body);
-        $this->assertFalse(strpos($response->body, 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): ' . $response->body);
-
-        $this->assertEquals(207, $response->status);
+        $this->assertEquals(207, $response->getStatusCode());
     }
 }

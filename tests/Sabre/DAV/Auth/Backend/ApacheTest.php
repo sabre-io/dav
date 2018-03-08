@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
+use GuzzleHttp\Psr7\Response;
+use Sabre\DAV\Psr7ResponseWrapper;
 use Sabre\HTTP;
 
 class ApacheTest extends \PHPUnit_Framework_TestCase {
@@ -62,13 +64,13 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
     function testRequireAuth() {
 
         $request = new HTTP\Request('GET', '/');
-        $response = new HTTP\Response();
+        $response = new Psr7ResponseWrapper(function() { return new Response(); });
 
         $backend = new Apache();
         $backend->challenge($request, $response);
 
-        $this->assertNull(
-            $response->getHeader('WWW-Authenticate')
+        $this->assertEmpty(
+            $response->getResponse()->getHeader('WWW-Authenticate')
         );
 
     }

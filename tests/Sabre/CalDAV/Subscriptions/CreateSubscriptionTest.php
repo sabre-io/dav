@@ -2,6 +2,7 @@
 
 namespace Sabre\CalDAV\Subscriptions;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\CalDAV;
 use Sabre\HTTP\Request;
 
@@ -42,7 +43,7 @@ XML;
         $headers = [
             'Content-Type' => 'application/xml',
         ];
-        $request = new Request('MKCOL', '/calendars/user1/subscription1', $headers, $body);
+        $request = new ServerRequest('MKCOL', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
         $this->assertEquals(201, $response->getStatusCode());
@@ -86,7 +87,7 @@ XML;
         $headers = [
             'Content-Type' => 'application/xml',
         ];
-        $request = new Request('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body);
+        $request = new ServerRequest('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
         $this->assertEquals(201, $response->getStatusCode());

@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\Locks;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP\Request;
 
 class Plugin2Test extends \Sabre\DAVServerTest {
@@ -36,7 +37,7 @@ class Plugin2Test extends \Sabre\DAVServerTest {
     <D:locktype><D:write/></D:locktype>
 </D:lockinfo>';
 
-        $request = new Request(
+        $request = new ServerRequest(
             'LOCK',
             '/file.txt',
             [],
@@ -50,7 +51,7 @@ class Plugin2Test extends \Sabre\DAVServerTest {
             count($this->locksBackend->getLocks('file.txt', true))
         );
 
-        $request = new Request(
+        $request = new ServerRequest(
             'DELETE',
             '/file.txt',
             [

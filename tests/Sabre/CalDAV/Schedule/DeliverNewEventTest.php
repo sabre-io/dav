@@ -2,7 +2,7 @@
 
 namespace Sabre\CalDAV\Schedule;
 
-use Sabre\HTTP\Request;
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\VObject;
 
 class DeliverNewEventTest extends \Sabre\DAVServerTest {
@@ -34,8 +34,7 @@ class DeliverNewEventTest extends \Sabre\DAVServerTest {
 
     function testDelivery() {
 
-        $request = new Request('PUT', '/calendars/user1/default/foo.ics');
-        $request->setBody(<<<ICS
+        $request = new ServerRequest('PUT', '/calendars/user1/default/foo.ics', [], <<<ICS
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Inc.//Mac OS X 10.9.1//EN
@@ -68,7 +67,7 @@ ICS
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status code received. Response body:' . $responseBody);
 
-        $result = $this->request(new Request('GET', '/calendars/user1/default/foo.ics'))->getBody()->getContents();
+        $result = $this->request(new ServerRequest('GET', '/calendars/user1/default/foo.ics'))->getBody()->getContents();
         $resultVObj = VObject\Reader::read($result);
 
         $this->assertEquals(

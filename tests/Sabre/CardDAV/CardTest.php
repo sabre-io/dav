@@ -5,11 +5,11 @@ namespace Sabre\CardDAV;
 class CardTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CardDAV\Card
+     * @var \Sabre\CardDAV\Card
      */
     protected $card;
     /**
-     * @var Sabre\CardDAV\MockBackend
+     * @var \Sabre\CardDAV\MockBackend
      */
     protected $backend;
 
@@ -191,7 +191,7 @@ class CardTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 require_once 'Sabre/DAV/AbstractServer.php';
@@ -36,12 +37,8 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
 
     private function sendRequest($body) {
 
-        $request = new HTTP\Request('PROPFIND', '/', ['Depth' => 'infinity']);
-        $request->setBody($body);
-
-        $this->server->httpRequest = $request;
-        $this->server->start();
-        return $this->server->httpResponse->getResponse();
+        $request = new ServerRequest('PROPFIND', '/', ['Depth' => 'infinity'], $body);
+        return $this->server->handle($request);
     }
 
     function testPropFindEmptyBody() {
@@ -82,10 +79,10 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendRequest($xml);
+        $response = $this->sendRequest($xml);
 
-        $body = $this->getResponse()->getBody()->getContents();
-        $this->assertEquals(207, $this->getResponse()->getStatusCode(), $body);
+        $body = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), $body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $body);
         $xml = simplexml_load_string($body);
@@ -119,9 +116,9 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendRequest($xml);
+        $response = $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->getResponse()->getBody()->getContents());
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $response->getBody()->getContents());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -139,8 +136,8 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendRequest($xml);
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->getResponse()->getBody()->getContents());
+        $response = $this->sendRequest($xml);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $response->getBody()->getContents());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
         $pathTests = [
@@ -170,8 +167,8 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendRequest($xml);
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $this->getResponse()->getBody()->getContents());
+        $response = $this->sendRequest($xml);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $response->getBody()->getContents());
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
         $pathTests = [

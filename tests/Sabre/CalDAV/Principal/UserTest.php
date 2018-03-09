@@ -25,7 +25,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testCreateFile() {
 
@@ -35,7 +35,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testCreateDirectory() {
 
@@ -61,7 +61,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound() {
 
@@ -71,7 +71,7 @@ class UserTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound2() {
 

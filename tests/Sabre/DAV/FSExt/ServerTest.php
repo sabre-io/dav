@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\FSExt;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -17,12 +18,13 @@ class ServerTest extends DAV\AbstractServer{
 
     function testGet() {
 
-        $request = new HTTP\Request('GET', '/test.txt');
+        $request = new ServerRequest('GET', '/test.txt');
         $filename = $this->tempDir . '/test.txt';
-        $this->server->httpRequest = $request;
-        $this->server->start();
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode(), 'Invalid status code received.');
+        $response = $this->server->handle($request);
+
+
+        $this->assertEquals(200, $response->getStatusCode(), 'Invalid status code received.');
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/octet-stream'],
@@ -30,20 +32,20 @@ class ServerTest extends DAV\AbstractServer{
             'Last-Modified'   => [HTTP\toDate(new \DateTime('@' . filemtime($filename)))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
-            $this->getResponse()->getHeaders()
+            $response->getHeaders()
          );
 
 
-        $this->assertEquals('Test contents', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals('Test contents', $response->getBody()->getContents());
 
     }
 
     function testHEAD() {
 
-        $request = new HTTP\Request('HEAD', '/test.txt');
+        $request = new ServerRequest('HEAD', '/test.txt');
         $filename = $this->tempDir . '/test.txt';
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
@@ -52,96 +54,93 @@ class ServerTest extends DAV\AbstractServer{
             'Last-Modified'   => [HTTP\toDate(new \DateTime('@' . filemtime($this->tempDir . '/test.txt')))],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
             ],
-            $this->getResponse()->getHeaders()
+            $response->getHeaders()
          );
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
 
     }
 
     function testPut() {
 
-        $request = new HTTP\Request('PUT', '/testput.txt');
+        $request = new ServerRequest('PUT', '/testput.txt', [], 'Testing new file');
         $filename = $this->tempDir . '/testput.txt';
-        $request->setBody('Testing new file');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
             'ETag'            => ['"' . sha1(fileinode($filename) . filesize($filename) . filemtime($filename)) . '"'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertEquals('Testing new file', file_get_contents($filename));
 
     }
 
     function testPutAlreadyExists() {
 
-        $request = new HTTP\Request('PUT', '/test.txt', ['If-None-Match' => '*']);
-        $request->setBody('Testing new file');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('PUT', '/test.txt', ['If-None-Match' => '*'], 'Testing new file');
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type'    => ['application/xml; charset=utf-8'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(412, $this->getResponse()->getStatusCode());
+        $this->assertEquals(412, $response->getStatusCode());
         $this->assertNotEquals('Testing new file', file_get_contents($this->tempDir . '/test.txt'));
 
     }
 
     function testMkcol() {
 
-        $request = new HTTP\Request('MKCOL', '/testcol');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('MKCOL', '/testcol');
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertTrue(is_dir($this->tempDir . '/testcol'));
 
     }
 
     function testPutUpdate() {
 
-        $request = new HTTP\Request('PUT', '/test.txt');
-        $request->setBody('Testing updated file');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('PUT', '/test.txt', [], 'Testing updated file');
+        $response = $this->server->handle($request);
 
-        $this->assertEquals('0', $this->getResponse()->getHeaderLine('Content-Length'));
 
-        $this->assertEquals(204, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals('0', $response->getHeaderLine('Content-Length'));
+
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertEquals('Testing updated file', file_get_contents($this->tempDir . '/test.txt'));
 
     }
 
     function testDelete() {
 
-        $request = new HTTP\Request('DELETE', '/test.txt');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('DELETE', '/test.txt');
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(204, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertFalse(file_exists($this->tempDir . '/test.txt'));
 
     }
@@ -151,25 +150,25 @@ class ServerTest extends DAV\AbstractServer{
         mkdir($this->tempDir . '/testcol');
         file_put_contents($this->tempDir . '/testcol/test.txt', 'Hi! I\'m a file with a short lifespan');
 
-        $request = new HTTP\Request('DELETE', '/testcol');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('DELETE', '/testcol');
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length'  => ['0'],
-        ], $this->getResponse()->getHeaders());
-        $this->assertEquals(204, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        ], $response->getHeaders());
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertFalse(file_exists($this->tempDir . '/testcol'));
 
     }
 
     function testOptions() {
 
-        $request = new HTTP\Request('OPTIONS', '/');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('OPTIONS', '/');
+        $response = $this->server->handle($request);
+
 
         $this->assertEquals([
             'DAV'             => ['1, 3, extended-mkcol'],
@@ -178,10 +177,10 @@ class ServerTest extends DAV\AbstractServer{
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [DAV\Version::VERSION],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
 
     }
 
@@ -189,17 +188,17 @@ class ServerTest extends DAV\AbstractServer{
 
         mkdir($this->tempDir . '/testcol');
 
-        $request = new HTTP\Request('MOVE', '/test.txt', ['Destination' => '/testcol/test2.txt']);
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('MOVE', '/test.txt', ['Destination' => '/testcol/test2.txt']);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
 
         $this->assertEquals([
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [DAV\Version::VERSION],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertTrue(
             is_file($this->tempDir . '/testcol/test2.txt')
@@ -226,17 +225,17 @@ class ServerTest extends DAV\AbstractServer{
         ]));
         $this->server->tree = $tree;
 
-        $request = new HTTP\Request('MOVE', '/tree1', ['Destination' => '/tree2/tree1']);
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('MOVE', '/tree1', ['Destination' => '/tree2/tree1']);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
 
         $this->assertEquals([
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [DAV\Version::VERSION],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertTrue(
             is_dir($this->tempDir . '/tree2/tree1')

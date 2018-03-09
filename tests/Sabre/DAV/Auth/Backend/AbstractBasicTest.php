@@ -3,6 +3,8 @@
 namespace Sabre\DAV\Auth\Backend;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
+use Sabre\DAV\Psr7RequestWrapper;
 use Sabre\DAV\Psr7ResponseWrapper;
 use Sabre\HTTP;
 
@@ -10,61 +12,62 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckNoHeaders() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
 
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
 
     function testCheckUnknownUser() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'PHP_AUTH_USER'  => 'username',
-            'PHP_AUTH_PW'    => 'wrongpassword',
-        ]);
+        $request = new ServerRequest(
+            'GET',
+            '/',
+            [
+                'Authorization' => 'Basic ' . base64_encode('username:wrongpassword')
+            ]
+        );
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
 
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
 
     function testCheckSuccess() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'PHP_AUTH_USER'  => 'username',
-            'PHP_AUTH_PW'    => 'password',
-        ]);
+        $request = new ServerRequest(
+            'GET',
+            '/',
+            [
+                'Authorization' => 'Basic ' . base64_encode('username:password')
+            ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
         $this->assertEquals(
             [true, 'principals/username'],
-            $backend->check($request, $response)
+            $backend->check(new Psr7RequestWrapper($request), $response)
         );
 
     }
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new Psr7ResponseWrapper(function() { return new Response(); });
 
         $backend = new AbstractBasicMock();
         $backend->setRealm('writing unittests on a saturday night');
-        $backend->challenge($request, $response);
+        $backend->challenge(new Psr7RequestWrapper($request), $response);
 
         $this->assertEquals(
             'Basic realm="writing unittests on a saturday night", charset="UTF-8"',

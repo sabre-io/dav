@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\Mount;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -17,37 +18,22 @@ class PluginTest extends DAV\AbstractServer {
     }
 
     function testPassThrough() {
+        $request = new ServerRequest('GET', '/');
+        $response = $this->server->handle($request);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'GET',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->start();
-
-        $this->assertEquals(501, $this->getResponse()->getStatusCode(), 'We expected GET to not be implemented for Directories. Response body: ' . $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(501, $response->getStatusCode(), 'We expected GET to not be implemented for Directories. Response body: ' . $response->getBody()->getContents());
 
     }
 
     function testMountResponse() {
+        $request = (new ServerRequest('GET', 'http://example.org/?mount', []))->withQueryParams(['mount' => '']);
+        $response = $this->server->handle($request);
+        $responseBody = $response->getBody()->getContents();
 
-        $serverVars = [
-            'REQUEST_URI'    => '/?mount',
-            'REQUEST_METHOD' => 'GET',
-            'QUERY_STRING'   => 'mount',
-            'HTTP_HOST'      => 'example.org',
-        ];
+        $this->assertEquals(200, $response->getStatusCode(), $responseBody);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->start();
-
-        $this->assertEquals(200, $this->getResponse()->getStatusCode());
-
-        $xml = simplexml_load_string($this->getResponse()->getBody()->getContents());
-        $this->assertInstanceOf('SimpleXMLElement', $xml, 'Response was not a valid xml document. The list of errors:' . print_r(libxml_get_errors(), true) . '. xml body: ' . $this->getResponse()->getBody()->getContents() . '. What type we got: ' . gettype($xml) . ' class, if object: ' . get_class($xml));
+        $xml = simplexml_load_string($responseBody);
+        $this->assertInstanceOf('SimpleXMLElement', $xml, 'Response was not a valid xml document. The list of errors:' . print_r(libxml_get_errors(), true) . '. xml body: ' . $response->getBody()->getContents() . '. What type we got: ' . gettype($xml) . ' class, if object: ' . get_class($xml));
 
         $xml->registerXPathNamespace('dm', 'http://purl.org/NET/webdav/mount');
         $url = $xml->xpath('//dm:url');

@@ -3,6 +3,8 @@
 namespace Sabre\DAV\Auth\Backend;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
+use Sabre\DAV\Psr7RequestWrapper;
 use Sabre\DAV\Psr7ResponseWrapper;
 use Sabre\HTTP;
 
@@ -10,12 +12,12 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckNoHeaders() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
@@ -23,16 +25,15 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     function testCheckBadGetUserInfoResponse() {
 
         $header = 'username=null, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'GET',
-            'REQUEST_URI'     => '/',
-            'PHP_AUTH_DIGEST' => $header,
+        $request = new ServerRequest('GET',
+            '/', [
+            'Auth-Digest' => $header,
         ]);
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
@@ -43,33 +44,29 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     function testCheckBadGetUserInfoResponse2() {
 
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'GET',
-            'REQUEST_URI'     => '/',
-            'PHP_AUTH_DIGEST' => $header,
+        $request = new ServerRequest('GET', '/', [
+            'Authorization' => 'Digest ' . $header,
         ]);
 
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $backend->check($request, $response);
+        $backend->check(new Psr7RequestWrapper($request), $response);
 
     }
 
     function testCheckUnknownUser() {
 
         $header = 'username=false, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'GET',
-            'REQUEST_URI'     => '/',
-            'PHP_AUTH_DIGEST' => $header,
+        $request = new ServerRequest('GET', '/', [
+            'Auth-Digest' => $header,
         ]);
 
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
@@ -77,17 +74,17 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
     function testCheckBadPassword() {
 
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'PUT',
-            'REQUEST_URI'     => '/',
-            'PHP_AUTH_DIGEST' => $header,
+        $request = new ServerRequest(
+            'PUT',
+            '/', [
+            'Auth-Digest' => $header,
         ]);
 
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
@@ -96,10 +93,8 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
 
         $digestHash = md5('HELLO:12345:1:1:auth:' . md5('GET:/'));
         $header = 'username=user, realm=myRealm, nonce=12345, uri=/, response=' . $digestHash . ', opaque=1, qop=auth, nc=1, cnonce=1';
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'  => 'GET',
-            'REQUEST_URI'     => '/',
-            'PHP_AUTH_DIGEST' => $header,
+        $request = new ServerRequest('GET', '/', [
+            'Authorization' => 'Digest ' . $header,
         ]);
 
         $response = new HTTP\Response();
@@ -107,19 +102,19 @@ class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
         $backend = new AbstractDigestMock();
         $this->assertEquals(
             [true, 'principals/user'],
-            $backend->check($request, $response)
+            $backend->check(new Psr7RequestWrapper($request), $response)
         );
 
     }
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new Psr7ResponseWrapper(function() { return new Response(); });
 
         $backend = new AbstractDigestMock();
         $backend->setRealm('writing unittests on a saturday night');
-        $backend->challenge($request, $response);
+        $backend->challenge(new Psr7RequestWrapper($request), $response);
 
         $this->assertStringStartsWith(
             'Digest realm="writing unittests on a saturday night"',

@@ -2,9 +2,9 @@
 
 namespace Sabre\DAV\Sharing;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV\Mock;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\HTTP\Request;
 
 class ShareResourceTest extends \Sabre\DAVServerTest {
 
@@ -37,7 +37,7 @@ class ShareResourceTest extends \Sabre\DAVServerTest {
  </D:sharee>
 </D:share-resource>
 XML;
-        $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $request = new ServerRequest('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
         $response = $this->request($request);
         $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
@@ -81,10 +81,9 @@ XML;
  </D:sharee>
 </D:share-resource>
 XML;
-        $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $request = new ServerRequest('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
-        $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
+        $this->request($request, 200);
 
         $expected = [];
 
@@ -115,11 +114,13 @@ XML;
   </D:prop>
 </D:propfind>
 XML;
-        $request = new Request('PROPFIND', '/shareable', ['Content-Type' => 'application/xml'], $body);
-        $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatusCode());
-
+        $request = new ServerRequest('PROPFIND', '/shareable', [
+            'Content-Type' => 'application/xml'
+        ], $body);
+        $response = $this->request($request, 207);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertNotEmpty($responseBody);
         $expected = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
@@ -146,7 +147,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $response->getBody()->getContents());
+        $this->assertXmlStringEqualsXmlString($expected, $responseBody);
 
     }
 
@@ -167,9 +168,9 @@ XML;
  </D:sharee>
 </D:share-resource>
 XML;
-        $request = new Request('POST', '/not-found', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $request = new ServerRequest('POST', '/not-found', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
-        $response = $this->request($request, 404);
+        $this->request($request, 404);
 
     }
 
@@ -190,9 +191,9 @@ XML;
  </D:sharee>
 </D:share-resource>
 XML;
-        $request = new Request('POST', '/', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $request = new ServerRequest('POST', '/', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
-        $response = $this->request($request, 403);
+        $this->request($request, 403);
 
     }
 
@@ -202,8 +203,8 @@ XML;
 <?xml version="1.0" encoding="utf-8" ?>
 <D:blablabla xmlns:D="DAV:" />
 XML;
-        $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
-        $response = $this->request($request, 400);
+        $request = new ServerRequest('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
+        $this->request($request, 400);
 
     }
 

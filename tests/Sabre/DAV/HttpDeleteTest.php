@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
@@ -36,7 +37,7 @@ class HttpDeleteTest extends DAVServerTest {
      */
     function testDelete() {
 
-        $request = new HTTP\Request('DELETE', '/file1');
+        $request = new ServerRequest('DELETE', '/file1');
 
         $response = $this->request($request);
 
@@ -61,7 +62,7 @@ class HttpDeleteTest extends DAVServerTest {
      */
     function testDeleteDirectory() {
 
-        $request = new HTTP\Request('DELETE', '/dir');
+        $request = new ServerRequest('DELETE', '/dir');
 
         $response = $this->request($request);
 
@@ -86,7 +87,7 @@ class HttpDeleteTest extends DAVServerTest {
      */
     function testDeleteNotFound() {
 
-        $request = new HTTP\Request('DELETE', '/file2');
+        $request = new ServerRequest('DELETE', '/file2');
         $response = $this->request($request);
 
         $this->assertEquals(
@@ -102,7 +103,7 @@ class HttpDeleteTest extends DAVServerTest {
      */
     function testDeletePreconditions() {
 
-        $request = new HTTP\Request('DELETE', '/file1', [
+        $request = new ServerRequest('DELETE', '/file1', [
             'If-Match' => '"' . md5('foo') . '"',
         ]);
 
@@ -121,7 +122,7 @@ class HttpDeleteTest extends DAVServerTest {
      */
     function testDeletePreconditionsFailed() {
 
-        $request = new HTTP\Request('DELETE', '/file1', [
+        $request = new ServerRequest('DELETE', '/file1', [
             'If-Match' => '"' . md5('bar') . '"',
         ]);
 

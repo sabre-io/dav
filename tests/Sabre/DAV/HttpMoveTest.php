@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
@@ -30,7 +31,7 @@ class HttpMoveTest extends DAVServerTest {
 
     function testMoveToSelf() {
 
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file1'
         ]);
         $response = $this->request($request);
@@ -41,7 +42,7 @@ class HttpMoveTest extends DAVServerTest {
 
     function testMove() {
 
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file3'
         ]);
         $response = $this->request($request);
@@ -53,7 +54,7 @@ class HttpMoveTest extends DAVServerTest {
 
     function testMoveToExisting() {
 
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
@@ -65,7 +66,7 @@ class HttpMoveTest extends DAVServerTest {
 
     function testMoveToExistingOverwriteT() {
 
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'T',
         ]);
@@ -78,7 +79,7 @@ class HttpMoveTest extends DAVServerTest {
 
     function testMoveToExistingOverwriteF() {
 
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'F',
         ]);
@@ -105,7 +106,7 @@ class HttpMoveTest extends DAVServerTest {
             }
 
         });
-        $request = new HTTP\Request('MOVE', '/file1', [
+        $request = new ServerRequest('MOVE', '/file1', [
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);

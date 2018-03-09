@@ -50,8 +50,8 @@ trait DbTestHelperTrait {
                 case 'pgsql' :
                     $pdo = new \PDO(SABRE_PGSQLDSN);
                     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
-                    preg_match('|([0-9\.]){5,}|', $version, $matches);
-                    $version = $matches[0];
+                    preg_match('|PostgreSQL (\d+\.\d+)|', $version, $matches);
+                    $version = $matches[1];
                     if (version_compare($version, '9.5.0', '<')) {
                         DbCache::$cache[$this->driver] = null;
                         $this->markTestSkipped('We require at least Postgres 9.5. This server is running ' . $version);
@@ -64,7 +64,7 @@ trait DbTestHelperTrait {
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         } catch (PDOException $e) {
-
+            throw $e;
             $this->markTestSkipped($this->driver . ' was not enabled or not correctly configured. Error message: ' . $e->getMessage());
 
         }

@@ -3,6 +3,7 @@
 namespace Sabre\CardDAV;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\DAV\Psr7ResponseWrapper;
 
@@ -93,11 +94,10 @@ class PluginTest extends AbstractPluginTest {
 
     function testGetTransform() {
 
-        $request = new \Sabre\HTTP\Request('GET', '/addressbooks/user1/book1/card1', ['Accept' => 'application/vcard+json']);
-        $response = new Psr7ResponseWrapper(function() { return new Response(); });
-        $this->server->invokeMethod($request, $response);
+        $request = new ServerRequest('GET', '/addressbooks/user1/book1/card1', ['Accept' => 'application/vcard+json']);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(200, $response->getResponse()->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
 
     }
 

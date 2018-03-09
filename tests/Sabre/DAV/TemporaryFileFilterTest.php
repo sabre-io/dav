@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-use Sabre\HTTP;
+use GuzzleHttp\Psr7\ServerRequest;
 
 class TemporaryFileFilterTest extends AbstractServer {
 
@@ -16,14 +16,11 @@ class TemporaryFileFilterTest extends AbstractServer {
 
     function testPutNormal() {
 
-        $request = new HTTP\Request('PUT', '/testput.txt', [], 'Testing new file');
-
-        $this->server->httpRequest = ($request);
-        $this->server->start();
-
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('0', $this->getResponse()->getHeaderLine('Content-Length'));
+        $request = new ServerRequest('PUT', '/testput.txt', [], 'Testing new file');
+        $response = $this->server->handle($request);
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
+        $this->assertEquals('0', $response->getHeaderLine('Content-Length'));
 
         $this->assertEquals('Testing new file', file_get_contents(SABRE_TEMPDIR . '/testput.txt'));
 
@@ -32,16 +29,14 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutTemp() {
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
+        $request = new ServerRequest('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $this->server->httpRequest = ($request);
-        $this->server->start();
-
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
+        $response = $this->server->handle($request);
+        $this->assertEquals('', $response->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
 
@@ -50,58 +45,55 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutTempIfNoneMatch() {
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('PUT', '/._testput.txt', ['If-None-Match' => '*'], 'Testing new file');
+        $request = new ServerRequest('PUT', '/._testput.txt', ['If-None-Match' => '*'], 'Testing new file');
 
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $response = $this->server->handle($request, 201);
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
+        $this->assertEquals('', $responseBody);
+
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
 
-
-        $this->server->start();
-
-        $this->assertEquals(412, $this->getResponse()->getStatusCode());
+        $response = $this->server->handle($request, 412);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
             'Content-Type' => ['application/xml; charset=utf-8'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
     }
 
     function testPutGet() {
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $request = new ServerRequest('PUT', '/._testput.txt', [], 'Testing new file');
+        $response = $this->server->handle($request);
 
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
+
+        $this->assertEquals('', $response->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $request = new HTTP\Request('GET', '/._testput.txt');
-
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('GET', '/._testput.txt');
 
 
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode());
+
+        $response = $this->server->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp'   => ['true'],
             'Content-Length' => [16],
             'Content-Type'   => ['application/octet-stream'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals('Testing new file', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals('Testing new file', $response->getBody()->getContents());
 
     }
 
@@ -113,8 +105,7 @@ class TemporaryFileFilterTest extends AbstractServer {
         $this->server->addPlugin($locksPlugin);
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('LOCK', '/._testput.txt');
-        $request->setBody('<?xml version="1.0"?>
+        $request = new ServerRequest('LOCK', '/._testput.txt', [], '<?xml version="1.0"?>
 <D:lockinfo xmlns:D="DAV:">
     <D:lockscope><D:exclusive/></D:lockscope>
     <D:locktype><D:write/></D:locktype>
@@ -123,13 +114,13 @@ class TemporaryFileFilterTest extends AbstractServer {
     </D:owner>
 </D:lockinfo>');
 
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
-        $this->assertEquals('application/xml; charset=utf-8', $this->getResponse()->getHeaderLine('Content-Type'));
-        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/', $this->getResponse()->getHeaderLine('Lock-Token')) === 1, 'We did not get a valid Locktoken back (' . $this->getResponse()->getHeaderLine('Lock-Token') . ')');
-        $this->assertEquals('true', $this->getResponse()->getHeaderLine('X-Sabre-Temp'));
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('application/xml; charset=utf-8', $response->getHeaderLine('Content-Type'));
+        $this->assertTrue(preg_match('/^<opaquelocktoken:(.*)>$/', $response->getHeaderLine('Lock-Token')) === 1, 'We did not get a valid Locktoken back (' . $response->getHeaderLine('Lock-Token') . ')');
+        $this->assertEquals('true', $response->getHeaderLine('X-Sabre-Temp'));
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testlock.txt'), '._testlock.txt should not exist in the regular file structure.');
 
@@ -138,54 +129,54 @@ class TemporaryFileFilterTest extends AbstractServer {
     function testPutDelete() {
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
+        $request = new ServerRequest('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $this->server->httpRequest = $request;
-        $this->server->start();
 
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
+        $response = $this->server->handle($request);
+
+        $this->assertEquals('', $response->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $request = new HTTP\Request('DELETE', '/._testput.txt');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('DELETE', '/._testput.txt');
 
-        $this->assertEquals(204, $this->getResponse()->getStatusCode(), "Incorrect status code received. Full body:\n" . $this->getResponse()->getBody()->getContents());
+        $response = $this->server->handle($request);
+
+        $this->assertEquals(204, $response->getStatusCode(), "Incorrect status code received. Full body:\n" . $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals('', $response->getBody()->getContents());
 
     }
 
     function testPutPropfind() {
 
         // mimicking an OS/X resource fork
-        $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
-        $this->assertEquals(201, $this->getResponse()->getStatusCode());
+
+        $response = $this->server->handle($request);
+        $this->assertEquals('', $response->getBody()->getContents());
+        $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $request = new HTTP\Request('PROPFIND', '/._testput.txt');
+        $request = new ServerRequest('PROPFIND', '/._testput.txt');
 
-        $this->server->httpRequest = ($request);
-        $this->server->start();
+        $response = $this->server->handle($request);
 
-        $responseBody = $this->getResponse()->getBody()->getContents();
-        $this->assertEquals(207, $this->getResponse()->getStatusCode(), 'Incorrect status code returned. Body: ' . $responseBody);
+
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code returned. Body: ' . $responseBody);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
             'Content-Type' => ['application/xml; charset=utf-8'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $responseBody);
         $xml = simplexml_load_string($body);

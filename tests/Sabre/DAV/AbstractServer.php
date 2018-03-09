@@ -14,15 +14,10 @@ abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
     protected $server;
     protected $tempDir = SABRE_TEMPDIR;
 
-    protected function getResponse(): ResponseInterface
-    {
-        return $this->server->httpResponse->getResponse();
-    }
-
     function setUp() {
 
         $this->server = new Server($this->getRootNode());
-        $this->server->sapi = new HTTP\SapiMock();
+
         $this->server->debugExceptions = true;
         $this->deleteTree(SABRE_TEMPDIR, false);
         file_put_contents(SABRE_TEMPDIR . '/test.txt', 'Test contents');

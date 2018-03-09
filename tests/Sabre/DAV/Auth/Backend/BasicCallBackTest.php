@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
+use GuzzleHttp\Psr7\ServerRequest;
+use Sabre\DAV\Psr7RequestWrapper;
 use Sabre\HTTP;
 
 class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
@@ -18,14 +20,14 @@ class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
 
         $backend = new BasicCallBack($callBack);
 
-        $request = new HTTP\Request('GET', '/', [
+        $request = new ServerRequest('GET', '/', [
             'Authorization' => 'Basic ' . base64_encode('foo:bar'),
         ]);
         $response = new HTTP\Response();
 
         $this->assertEquals(
             [true, 'principals/foo'],
-            $backend->check($request, $response)
+            $backend->check(new Psr7RequestWrapper($request), $response)
         );
 
         $this->assertEquals(['foo', 'bar'], $args);

@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 require_once 'Sabre/DAV/AbstractServer.php';
@@ -10,7 +11,7 @@ require_once 'Sabre/DAV/TestPlugin.php';
 class ServerPluginTest extends AbstractServer {
 
     /**
-     * @var Sabre\DAV\TestPlugin
+     * @var \Sabre\DAV\TestPlugin
      */
     protected $testPlugin;
 
@@ -43,14 +44,9 @@ class ServerPluginTest extends AbstractServer {
 
     function testOptions() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'OPTIONS',
-        ];
+        $request = new ServerRequest('OPTIONS', '/');
+        $response = $this->server->handle($request);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
-        $this->server->start();
 
         $this->assertEquals([
             'DAV'             => ['1, 3, extended-mkcol, drinking'],
@@ -59,10 +55,10 @@ class ServerPluginTest extends AbstractServer {
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [Version::VERSION],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode());
-        $this->assertEquals('', $this->getResponse()->getBody()->getContents());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', $response->getBody()->getContents());
         $this->assertEquals('OPTIONS', $this->testPlugin->beforeMethod);
 
 

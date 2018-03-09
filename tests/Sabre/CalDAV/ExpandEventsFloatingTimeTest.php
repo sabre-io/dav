@@ -2,7 +2,7 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\HTTP;
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\VObject;
 
 /**
@@ -69,12 +69,10 @@ END:VCALENDAR
 
     function testExpandCalendarQuery() {
 
-        $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
+        $request = new ServerRequest('REPORT', '/calendars/user1/calendar1', [
             'Depth'        => 1,
             'Content-Type' => 'application/xml',
-        ]);
-
-        $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
+        ],'<?xml version="1.0" encoding="utf-8" ?>
 <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
     <D:prop>
         <C:calendar-data>
@@ -121,12 +119,10 @@ END:VCALENDAR
 
     function testExpandMultiGet() {
 
-        $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
+        $request = new ServerRequest('REPORT', '/calendars/user1/calendar1', [
             'Depth'        => 1,
             'Content-Type' => 'application/xml',
-        ]);
-
-        $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
+        ],'<?xml version="1.0" encoding="utf-8" ?>
 <C:calendar-multiget xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
     <D:prop>
         <C:calendar-data>
@@ -170,9 +166,14 @@ END:VCALENDAR
 
     function testExpandExport() {
 
-        $request = new HTTP\Request('GET', '/calendars/user1/calendar1?export&start=1&end=2000000000&expand=1', [
+        $request = (new ServerRequest('GET', '/calendars/user1/calendar1?export&start=1&end=2000000000&expand=1', [
             'Depth'        => 1,
             'Content-Type' => 'application/xml',
+        ]))->withQueryParams([
+            'export' => '',
+            'start' => '1',
+            'end' => '2000000000',
+            'expand' => '1'
         ]);
 
         $response = $this->request($request, 200);

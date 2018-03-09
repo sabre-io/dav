@@ -4,25 +4,22 @@
 namespace Sabre\DAV;
 
 
-use Sabre\HTTP\ResponseInterface;
 use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\Psr7\StreamWrapper;
+use Psr\Http\Message\ServerRequestInterface;
+use function Sabre\HTTP\decodePath;
+use Sabre\HTTP\RequestInterface;
+use Sabre\HTTP\scalar;
+use function Sabre\Uri\normalize;
 
-class Psr7ResponseWrapper implements ResponseInterface
+class Psr7RequestWrapper implements RequestInterface
 {
-    /**
-     * @var \Psr\Http\Message\ResponseInterface
-     */
-    private $response;
+    public $request;
+    private $baseUrl = '/';
 
-    /**
-     * @var \Closure
-     */
-    private $responseFactory;
-
-    public function __construct(\Closure $responseFactory)
+    public function __construct(ServerRequestInterface $request)
     {
-        $this->responseFactory = $responseFactory;
-        $this->reset();
+        $this->request = $request;
     }
 
 
@@ -36,7 +33,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function getBodyAsStream()
     {
-        throw new \Exception('not used');
+        return StreamWrapper::getResource($this->request->getBody());
     }
 
     /**
@@ -49,7 +46,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function getBodyAsString(): string
     {
-        throw new \Exception('not used');
+        return $this->request->getBody()->getContents();
     }
 
     /**
@@ -59,15 +56,9 @@ class Psr7ResponseWrapper implements ResponseInterface
      *
      * @return resource|string|callable
      */
-    private $getBodyCalled = false;
-
     function getBody()
     {
-        if (!$this->getBodyCalled) {
-            $this->getBodyCalled = true;
-            return $this->response->getBody()->getContents();
-        }
-        throw new \Exception('getBody should only be used once.');
+        return StreamWrapper::getResource($this->request->getBody());
     }
 
     /**
@@ -78,11 +69,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function setBody($body)
     {
-        if (is_callable($body)) {
-            throw new \Exception('not used');
-        }
-        $this->response = $this->response->withBody(stream_for($body));
-
+        $this->request = $this->request->withBody(stream_for($body));
     }
 
     /**
@@ -120,7 +107,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function getHeader(string $name)
     {
-        return $this->response->getHeaderLine($name);
+        return count($this->request->getHeader($name)) === 0 ? null : $this->request->getHeaderLine($name);
     }
 
     /**
@@ -150,7 +137,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function setHeader(string $name, $value)
     {
-        $this->response = $this->response->withHeader($name, $value);
+        throw new \Exception('not used');
     }
 
     /**
@@ -165,9 +152,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function setHeaders(array $headers)
     {
-        foreach($headers as $name => $value) {
-            $this->response = $this->response->withHeader($name, $value);
-        }
+        throw new \Exception('not used');
     }
 
     /**
@@ -182,7 +167,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function addHeader(string $name, $value)
     {
-        $this->response = $this->response->withAddedHeader($name, $value);
+        throw new \Exception('not used');
     }
 
     /**
@@ -194,9 +179,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function addHeaders(array $headers)
     {
-        foreach($headers as $name => $value) {
-            $this->response = $this->response->withAddedHeader($name, $value);
-        }
+        throw new \Exception('not used');
     }
 
     /**
@@ -220,7 +203,7 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function setHttpVersion(string $version)
     {
-        $this->response = $this->response->withProtocolVersion($version);
+        throw new \Exception('not used');
     }
 
     /**
@@ -228,65 +211,169 @@ class Psr7ResponseWrapper implements ResponseInterface
      */
     function getHttpVersion(): string
     {
-        return $this->response->getProtocolVersion();
+        return $this->request->getProtocolVersion();
     }
 
     /**
-     * Returns the current HTTP status code.
+     * Returns the current HTTP method
      */
-    function getStatus(): int
+    function getMethod(): string
     {
-        return $this->response->getStatusCode();
+        return $this->request->getMethod();
     }
 
     /**
-     * Returns the human-readable status string.
+     * Sets the HTTP method
      *
-     * In the case of a 200, this may for example be 'OK'.
-     */
-    function getStatusText(): string
-    {
-        return $this->response->getReasonPhrase();
-    }
-
-    /**
-     * Sets the HTTP status code.
-     *
-     * This can be either the full HTTP status code with human readable string,
-     * for example: "403 I can't let you do that, Dave".
-     *
-     * Or just the code, in which case the appropriate default message will be
-     * added.
-     *
-     * @param string|int $status
-     * @throws \InvalidArgumentException
      * @return void
      */
-    function setStatus($status)
+    function setMethod(string $method)
     {
-        if (is_string($status)) {
-            $reason = substr($status, 3);
-            $status = substr($status, 0, 3);
-            $this->response = $this->response->withStatus($status, $reason);
-        } else {
-            $this->response = $this->response->withStatus($status);
-        }
+        $this->request = $this->request->withMethod($method);
     }
 
-    public function getResponse(): \Psr\Http\Message\ResponseInterface
+    /**
+     * Returns the request url.
+     */
+    function getUrl(): string
     {
-        return $this->response;
+        return $this->request->getRequestTarget();
     }
 
-
-    public function reset()
+    /**
+     * Sets the request url.
+     *
+     * @return void
+     */
+    function setUrl(string $url)
     {
-        $responseFactory = $this->responseFactory;
-        $response = $responseFactory();
-        if (!$response instanceof \Psr\Http\Message\ResponseInterface) {
-            throw new Exception('Response factory must return instance of PSR ResponseInterface');
-        }
-        $this->response = $response->withStatus(500);
+        throw new \Exception('not used');
+    }
 
+    /**
+     * Returns the absolute url.
+     */
+    function getAbsoluteUrl(): string
+    {
+        $uri = $this->request->getUri();
+        return "{$uri->getScheme()}://{$uri->getHost()}{$uri->getPath()}";
+    }
+
+    /**
+     * Sets the absolute url.
+     *
+     * @return void
+     */
+    function setAbsoluteUrl(string $url)
+    {
+        throw new \Exception('not used');
+    }
+
+    /**
+     * Returns the current base url.
+     */
+    function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * Sets a base url.
+     *
+     * This url is used for relative path calculations.
+     *
+     * The base url should default to /
+     *
+     * @return void
+     */
+    function setBaseUrl(string $url)
+    {
+        $this->baseUrl = $url;
+    }
+
+    /**
+     * Implementation borrowed from sabre/http
+     */
+    function getPath() : string {
+
+        // Removing duplicated slashes.
+        $uri = str_replace('//', '/', $this->getUrl());
+
+        $uri = normalize($uri);
+        $baseUri = normalize($this->getBaseUrl());
+
+        if (strpos($uri, $baseUri) === 0) {
+
+            // We're not interested in the query part (everything after the ?).
+            list($uri) = explode('?', $uri);
+            return trim(decodePath(substr($uri, strlen($baseUri))), '/');
+
+        }
+        // A special case, if the baseUri was accessed without a trailing
+        // slash, we'll accept it as well.
+        elseif ($uri . '/' === $baseUri) {
+
+            return '';
+
+        }
+
+        throw new \LogicException('Requested uri (' . $this->getUrl() . ') is out of base uri (' . $this->getBaseUrl() . ')');
+    }
+
+    /**
+     * Returns the list of query parameters.
+     *
+     * This is equivalent to PHP's $_GET superglobal.
+     */
+    function getQueryParameters(): array
+    {
+        return $this->request->getQueryParams();
+    }
+
+    /**
+     * Returns the POST data.
+     *
+     * This is equivalent to PHP's $_POST superglobal.
+     */
+    function getPostData(): array
+    {
+        return $this->request->getParsedBody();
+    }
+
+    /**
+     * Sets the post data.
+     *
+     * This is equivalent to PHP's $_POST superglobal.
+     *
+     * This would not have been needed, if POST data was accessible as
+     * php://input, but unfortunately we need to special case it.
+     *
+     * @return void
+     */
+    function setPostData(array $postData)
+    {
+        throw new \Exception('not used');
+    }
+
+    /**
+     * Returns an item from the _SERVER array.
+     *
+     * If the value does not exist in the array, null is returned.
+     *
+     * @return string|null
+     */
+    function getRawServerValue(string $valueName)
+    {
+        return $this->request->getServerParams()[$valueName] ?? null;
+    }
+
+    /**
+     * Sets the _SERVER array.
+     *
+     * @return void
+     */
+    function setRawServerData(array $data)
+    {
+        throw new \Exception('not used');
     }
 }

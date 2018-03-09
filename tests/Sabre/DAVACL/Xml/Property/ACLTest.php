@@ -188,7 +188,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testUnserializeNoPrincipal() {
 
@@ -277,7 +277,7 @@ class ACLTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testUnserializeDeny() {
 

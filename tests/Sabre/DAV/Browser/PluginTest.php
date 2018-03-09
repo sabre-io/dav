@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\Browser;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -21,20 +22,20 @@ class PluginTest extends DAV\AbstractServer{
 
     function testCollectionGet() {
 
-        $request = new HTTP\Request('GET', '/dir');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('GET', '/dir');
 
-        $body = $this->getResponse()->getBody()->getContents();
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
+        $response = $this->server->handle($request);
+        $body = $response->getBody()->getContents();
+
+        $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->getResponse()->getHeaders()
+            $response->getHeaders()
         );
 
 
@@ -48,20 +49,20 @@ class PluginTest extends DAV\AbstractServer{
      */
     function testCollectionGetIfNoneMatch() {
 
-        $request = new HTTP\Request('GET', '/dir');
-        $request->setHeader('If-None-Match', '"foo-bar"');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('GET', '/dir', [
+            'If-None-Match', '"foo-bar"'
+        ]);
 
-        $body = $this->getResponse()->getBody()->getContents();
-        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
+        $response = $this->server->handle($request);
+        $body = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->getResponse()->getHeaders()
+            $response->getHeaders()
         );
 
 
@@ -71,18 +72,18 @@ class PluginTest extends DAV\AbstractServer{
     }
     function testCollectionGetRoot() {
 
-        $request = new HTTP\Request('GET', '/');
-        $this->server->httpRequest = ($request);
-        $this->server->start();
-        $body = $this->getResponse()->getBody()->getContents();
-        $this->assertEquals(200, $this->getResponse()->getStatusCode(), "Incorrect status received. Full response body: " . $body);
+        $request = new ServerRequest('GET', '/');
+        $response = $this->server->handle($request);
+
+        $body = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
                 'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
-            $this->getResponse()->getHeaders()
+            $response->getHeaders()
         );
 
 
@@ -94,57 +95,51 @@ class PluginTest extends DAV\AbstractServer{
 
     function testGETPassthru() {
 
-        $request = new HTTP\Request('GET', '/random');
+        $request = new ServerRequest('GET', '/random');
         $response = new HTTP\Response();
         $this->assertNull(
-            $this->plugin->httpGet($request, $response)
+            $this->plugin->httpGet(new DAV\Psr7RequestWrapper($request), $response)
         );
 
     }
 
     function testPostOtherContentType() {
 
-        $request = new HTTP\Request('POST', '/', ['Content-Type' => 'text/xml']);
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = new ServerRequest('POST', '/', ['Content-Type' => 'text/xml']);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(501, $this->getResponse()->getStatusCode());
+
+        $this->assertEquals(501, $response->getStatusCode());
 
     }
 
     function testPostNoSabreAction() {
 
-        $request = new HTTP\Request('POST', '/', ['Content-Type' => 'application/x-www-form-urlencoded']);
-        $request->setPostData([]);
-        $this->server->httpRequest = $request;
-        $this->server->start();
-
-        $this->assertEquals(501, $this->getResponse()->getStatusCode());
+        $request = (new ServerRequest('POST', '/', ['Content-Type' => 'application/x-www-form-urlencoded']))
+            ->withParsedBody([]);
+        $response = $this->server->handle($request, 501);
+        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
     function testPostMkCol() {
 
-        $serverVars = [
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'POST',
-            'CONTENT_TYPE'   => 'application/x-www-form-urlencoded',
-        ];
         $postVars = [
             'sabreAction' => 'mkcol',
             'name'        => 'new_collection',
         ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setPostData($postVars);
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = (new ServerRequest('POST', '/', [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ]))->withParsedBody($postVars);
 
-        $this->assertEquals(302, $this->getResponse()->getStatusCode());
+        $response = $this->server->handle($request);
+
+        $this->assertEquals(302, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Location'        => ['/'],
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertTrue(is_dir(SABRE_TEMPDIR . '/new_collection'));
 
@@ -152,38 +147,51 @@ class PluginTest extends DAV\AbstractServer{
 
     function testGetAsset() {
 
-        $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=favicon.ico');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = (new ServerRequest('GET', '/?sabreAction=asset&assetName=favicon.ico'))
+            ->withQueryParams([
+                'sabreAction' => 'asset',
+                'assetName' => 'favicon.ico'
+            ]);
 
-        $this->assertEquals(200, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
+        $response = $this->server->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode(), 'Error: ' . $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version'         => [DAV\Version::VERSION],
             'Content-Type'            => ['image/vnd.microsoft.icon'],
             'Content-Length'          => ['4286'],
             'Cache-Control'           => ['public, max-age=1209600'],
             'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
-        ], $this->getResponse()->getHeaders());
+        ], $response->getHeaders());
 
     }
 
     function testGetAsset404() {
 
-        $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=flavicon.ico');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = (new ServerRequest('GET', '/?sabreAction=asset&assetName=flavicon.ico'))
+            ->withQueryParams([
+                'sabreAction' => 'asset',
+                'assetName' => 'flavicon.ico'
+            ]);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(404, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
+
+        $this->assertEquals(404, $response->getStatusCode(), 'Error: ' . $response->getBody()->getContents());
 
     }
 
     function testGetAssetEscapeBasePath() {
 
-        $request = new HTTP\Request('GET', '/?sabreAction=asset&assetName=./../assets/favicon.ico');
-        $this->server->httpRequest = $request;
-        $this->server->start();
+        $request = (new ServerRequest('GET', '/?sabreAction=asset&assetName=./../assets/favicon.ico'))
+            ->withQueryParams([
+                'sabreAction' => 'asset',
+                'assetName' => './../assets/favicon.ico'
+            ]);
 
-        $this->assertEquals(404, $this->getResponse()->getStatusCode(), 'Error: ' . $this->getResponse()->getBody()->getContents());
+        $response = $this->server->handle($request);
+
+
+        $this->assertEquals(404, $response->getStatusCode(), 'Error: ' . $response->getBody()->getContents());
 
     }
 }

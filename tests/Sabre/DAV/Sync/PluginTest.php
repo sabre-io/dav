@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\Sync;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -77,7 +78,7 @@ class PluginTest extends \Sabre\DAVServerTest {
         // Making a change
         $this->collection->addChange(['file1.txt'], [], []);
 
-        $request = new HTTP\Request('REPORT', '/coll/', ['Content-Type' => 'application/xml']);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -90,7 +91,7 @@ class PluginTest extends \Sabre\DAVServerTest {
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest('REPORT', '/coll/', ['Content-Type' => 'application/xml'], $body);
 
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();
@@ -137,13 +138,9 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
-
-        $body = <<<BLA
+        $request = new ServerRequest('REPORT', '/coll/',
+            ['Content-Type' => 'application/xml'],
+            <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
      <D:sync-token>http://sabre.io/ns/sync/1</D:sync-token>
@@ -152,9 +149,9 @@ BLA;
         <D:getcontentlength/>
       </D:prop>
 </D:sync-collection>
-BLA;
+BLA
+        );
 
-        $request->setBody($body);
 
         $response = $this->request($request);
         $responseBody =  $response->getBody()->getContents();
@@ -196,11 +193,7 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -214,7 +207,10 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest('REPORT', '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();
@@ -246,12 +242,7 @@ BLA;
         // Making another change
         $this->collection->addChange([], ['file2.txt'], ['file3.txt']);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-            'HTTP_DEPTH'     => "1",
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -263,7 +254,11 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest('REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml', 'Depth' => 1],
+            $body
+        );
 
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();
@@ -301,11 +296,7 @@ BLA;
 
     function testSyncNoSyncInfo() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -318,7 +309,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -330,12 +326,6 @@ BLA;
 
     function testSyncNoSyncCollection() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/normalcoll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
-
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sync-collection xmlns:D="DAV:">
@@ -347,7 +337,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/normalcoll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -360,11 +355,7 @@ BLA;
     function testSyncInvalidToken() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -377,7 +368,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -389,11 +385,7 @@ BLA;
     function testSyncInvalidTokenNoPrefix() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -406,7 +398,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -418,11 +415,7 @@ BLA;
 
     function testSyncNoSyncToken() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -434,7 +427,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -447,11 +445,7 @@ BLA;
     function testSyncNoProp() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'REPORT',
-            'REQUEST_URI'    => '/coll/',
-            'CONTENT_TYPE'   => 'application/xml',
-        ]);
+
 
         $body = <<<BLA
 <?xml version="1.0" encoding="utf-8" ?>
@@ -461,7 +455,12 @@ BLA;
 </D:sync-collection>
 BLA;
 
-        $request->setBody($body);
+        $request = new ServerRequest(
+            'REPORT',
+            '/coll/',
+            ['Content-Type' => 'application/xml'],
+            $body
+        );
 
         $response = $this->request($request);
 
@@ -474,21 +473,20 @@ BLA;
     function testIfConditions() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'DELETE',
-            'REQUEST_URI'    => '/coll/file1.txt',
-            'HTTP_IF'        => '</coll> (<http://sabre.io/ns/sync/1>)',
-        ]);
+        $request = new ServerRequest(
+            'DELETE',
+            '/coll/file1.txt',
+            ['If' => '</coll> (<http://sabre.io/ns/sync/1>)']);
         $this->request($request, 403);
     }
 
     function testIfConditionsNot() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'DELETE',
-            'REQUEST_URI'    => '/coll/file1.txt',
-            'HTTP_IF'        => '</coll> (Not <http://sabre.io/ns/sync/2>)',
+        $request = new ServerRequest(
+            'DELETE',
+            '/coll/file1.txt',
+            ['If'        => '</coll> (Not <http://sabre.io/ns/sync/2>)'
         ]);
         $this->request($request, 403);
     }
@@ -496,10 +494,10 @@ BLA;
     function testIfConditionsNoSyncToken() {
 
         $this->collection->addChange(['file1.txt'], [], []);
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'DELETE',
-            'REQUEST_URI'    => '/coll/file1.txt',
-            'HTTP_IF'        => '</coll> (<opaquelocktoken:foo>)',
+        $request = new ServerRequest(
+            'DELETE',
+            '/coll/file1.txt',
+            ['If'=> '</coll> (<opaquelocktoken:foo>)'
         ]);
         $this->request($request, 412);
     }

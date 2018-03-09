@@ -242,7 +242,6 @@ class Plugin extends DAV\ServerPlugin {
             // $this->server->emit('beforeWriteContent',array($uri));
 
         } catch (DAV\Exception\NotFound $e) {
-
             // It didn't, lets create it
             $this->server->createFile($uri, fopen('php://memory', 'r'));
             $newFile = true;

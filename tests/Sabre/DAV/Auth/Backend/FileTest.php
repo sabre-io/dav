@@ -18,7 +18,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testLoadFileBroken() {
 

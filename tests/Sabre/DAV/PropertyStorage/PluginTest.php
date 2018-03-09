@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV\PropertyStorage;
 
+use GuzzleHttp\Psr7\ServerRequest;
+
 class PluginTest extends \Sabre\DAVServerTest {
 
     protected $backend;
@@ -71,8 +73,8 @@ class PluginTest extends \Sabre\DAVServerTest {
         $this->server->tree->getNodeForPath('files')->createFile('source');
         $this->server->updateProperties('files/source', ['{DAV:}displayname' => 'hi']);
 
-        $request = new \Sabre\HTTP\Request('MOVE', '/files/source', ['Destination' => '/files/dest']);
-        $this->assertHTTPStatus(201, $request);
+        $request = new ServerRequest('MOVE', '/files/source', ['Destination' => '/files/dest']);
+        $this->request($request, 201);
 
         $result = $this->server->getProperties('/files/dest', ['{DAV:}displayname']);
 

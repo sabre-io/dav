@@ -2,12 +2,10 @@
 
 namespace Sabre\CalDAV;
 
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Psr7\ServerRequest;
+use Sabre\CalDAV\Backend\Mock;
 use Sabre\DAV;
 use Sabre\DAVACL;
-use Sabre\HTTP;
-
-require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
@@ -16,7 +14,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
      */
     protected $server;
     /**
-     * @var CalDAV\Backend\Mock
+     * @var Mock
      */
     protected $calBackend;
 
@@ -45,7 +43,6 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $this->server = new DAV\Server($tree);
-        $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
 
         $plugin = new Plugin();
@@ -53,23 +50,12 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function request(HTTP\Request $request): ResponseInterface {
-
-        $this->server->httpRequest = $request;
-        $this->server->start();
-
-        return $this->server->httpResponse->getResponse();
-
-    }
-
     function testCreateFile() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
+        
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics');
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode());
 
@@ -77,11 +63,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
 
     function testCreateFileValid() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics',
-            ['Prefer' => 'handling=strict']
-        );
+
 
         $ics = <<<ICS
 BEGIN:VCALENDAR
@@ -95,9 +77,14 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $request->setBody($ics);
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict'],
+            $ics
+        );
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $responseBody);
@@ -120,11 +107,7 @@ ICS;
 
     function testCreateFileNoVersion() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics',
-            ['Prefer' => 'handling=strict']
-        );
+
 
         $ics = <<<ICS
 BEGIN:VCALENDAR
@@ -137,9 +120,14 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $request->setBody($ics);
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict'],
+            $ics
+        );
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -147,12 +135,6 @@ ICS;
 
     function testCreateFileNoVersionFixed() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics',
-            ['Prefer' => 'handling=lenient']
-        );
-
         $ics = <<<ICS
 BEGIN:VCALENDAR
 PRODID:foo
@@ -164,9 +146,14 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $request->setBody($ics);
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=lenient'],
+            $ics
+        );
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
         $this->assertEquals([
@@ -201,34 +188,31 @@ ICS;
 
     function testCreateFileNoComponents() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics',
-            ['Prefer' => 'handling=strict']
-        );
+
         $ics = <<<ICS
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:foo
 END:VCALENDAR
 ICS;
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            ['Prefer' => 'handling=strict'],
+            $ics
+        );
 
-        $request->setBody($ics);
-
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
         $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
     }
 
     function testCreateFileNoUID() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics', [],
+            "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -236,13 +220,9 @@ ICS;
 
     function testCreateFileVCard() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCARD\r\nEND:VCARD\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics', [], "BEGIN:VCARD\r\nEND:VCARD\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -250,13 +230,11 @@ ICS;
 
     function testCreateFile2Components() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VJOURNAL\r\nUID:foo\r\nEND:VJOURNAL\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics', [],
+            "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VJOURNAL\r\nUID:foo\r\nEND:VJOURNAL\r\nEND:VCALENDAR\r\n"
+        );
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -264,13 +242,10 @@ ICS;
 
     function testCreateFile2UIDS() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:bar\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics', [],
+        "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nUID:bar\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(415, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -278,13 +253,10 @@ ICS;
 
     function testCreateFileWrongComponent() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VFREEBUSY\r\nUID:foo\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics', [],
+            "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VFREEBUSY\r\nUID:foo\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -293,24 +265,17 @@ ICS;
     function testUpdateFile() {
 
         $this->calBackend->createCalendarObject('calendar1', 'blabla.ics', 'foo');
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar1/blabla.ics',
-        ]);
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar1/blabla.ics');
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(415, $response->getStatusCode());
+        $this->assertEquals(415, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
     function testUpdateFileParsableBody() {
 
         $this->calBackend->createCalendarObject('calendar1', 'blabla.ics', 'foo');
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics'
-        );
         $ics = <<<ICS
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -322,9 +287,14 @@ DTSTART:20160706T140000Z
 END:VEVENT
 END:VCALENDAR
 ICS;
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            [],
+            $ics
+        );
 
-        $request->setBody($ics);
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(204, $response->getStatusCode());
 
@@ -341,13 +311,10 @@ ICS;
 
     function testCreateFileInvalidComponent() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar2/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar2/blabla.ics', [],
+            "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -356,13 +323,10 @@ ICS;
     function testUpdateFileInvalidComponent() {
 
         $this->calBackend->createCalendarObject('calendar2', 'blabla.ics', 'foo');
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/calendars/admin/calendar2/blabla.ics',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT', '/calendars/admin/calendar2/blabla.ics', [],
+            "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:foo\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
 
-        $response = $this->request($request);
+        $response = $this->server->handle($request);
 
         $this->assertEquals(403, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
 
@@ -377,10 +341,7 @@ ICS;
      */
     function testCreateFileModified() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/calendars/admin/calendar1/blabla.ics'
-        );
+
         $ics = <<<ICS
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -394,9 +355,13 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $request->setBody($ics);
-
-        $response = $this->request($request);
+        $request = new ServerRequest(
+            'PUT',
+            '/calendars/admin/calendar1/blabla.ics',
+            [],
+            $ics
+        );
+        $response = $this->server->handle($request);
 
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
         $this->assertEmpty($response->getHeader('ETag'));

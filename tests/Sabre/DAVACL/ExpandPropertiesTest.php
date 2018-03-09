@@ -2,6 +2,7 @@
 
 namespace Sabre\DAVACL;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -29,7 +30,6 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $fakeServer = new DAV\Server($tree);
-        $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->debugExceptions = true;
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
@@ -61,18 +61,17 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $serverVars = [
             'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/node1',
+            'Depth'     => '0',
+            '/node1',
         ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/node1', [
+            'Depth' => '0'
+        ], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
 
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code received. Full body: ' . $responseBody);
         $this->assertEquals([
@@ -123,21 +122,10 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
   </d:property>
 </d:expand-property>';
 
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/node1',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT','/node1',['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->start();
-
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), 'Incorrect response status received. Full response body: ' . $responseBody);
         $this->assertEquals([
@@ -192,19 +180,13 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $serverVars = [
             'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/node2',
+            'Depth'     => '0',
+            '/node2',
         ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
-
+        $request = new ServerRequest('REPORT', '/node2', ['Depth' => '0'], $xml);
         $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->start();
-
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals([
@@ -262,18 +244,14 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $serverVars = [
             'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/node2',
+            'Depth'     => '0',
+            '/node2',
         ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/node2', ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
 
         $this->assertEquals(207, $response->getStatusCode());

@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -9,15 +10,15 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfMatchNoNode() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/bar', ['If-Match' => '*']);
+        $httpRequest = new ServerRequest('GET', '/bar', ['If-Match' => '*']);
         $httpResponse = new HTTP\Response();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
@@ -27,22 +28,22 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '*']);
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-Match' => '*']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfMatchWrongEtag() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '1234']);
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-Match' => '1234']);
         $httpResponse = new HTTP\Response();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
@@ -52,9 +53,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '"abc123"']);
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-Match' => '"abc123"']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -67,9 +68,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '\\"abc123\\"']);
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-Match' => '\\"abc123\\"']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -79,9 +80,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '"hellothere", "abc123"']);
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-Match' => '"hellothere", "abc123"']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -91,22 +92,22 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/bar', ['If-None-Match' => '*']);
+        $httpRequest = new ServerRequest('GET', '/bar', ['If-None-Match' => '*']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfNoneMatchHasNode() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '*']);
+        $httpRequest = new ServerRequest('POST', '/foo', ['If-None-Match' => '*']);
         $httpResponse = new HTTP\Response();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
@@ -116,9 +117,9 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234"']);
+        $httpRequest = new ServerRequest('POST', '/foo', ['If-None-Match' => '"1234"']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -128,35 +129,35 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234", "5678"']);
+        $httpRequest = new ServerRequest('POST', '/foo', ['If-None-Match' => '"1234", "5678"']);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfNoneMatchCorrectEtag() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"abc123"']);
+        $httpRequest = new ServerRequest('POST', '/foo', ['If-None-Match' => '"abc123"']);
         $httpResponse = new HTTP\Response();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfNoneMatchCorrectEtagMultiple() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234, "abc123"']);
+        $httpRequest = new ServerRequest('POST', '/foo', ['If-None-Match' => '"1234, "abc123"']);
         $httpResponse = new HTTP\Response();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
@@ -166,8 +167,8 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
-        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-None-Match' => '"abc123"']);
+        $this->assertFalse($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $server->httpResponse));
 
 
         $this->assertEquals(304, $server->httpResponse->getResponse()->getStatusCode());
@@ -182,21 +183,17 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $server->sapi = new HTTP\SapiMock();
-        HTTP\SapiMock::$sent = 0;
-        $httpRequest = new HTTP\Request('GET', '/foo', ['If-None-Match' => '"abc123"']);
-        $server->httpRequest = $httpRequest;
-        $server->start();
+        $httpRequest = new ServerRequest('GET', '/foo', ['If-None-Match' => '"abc123"']);
+        $this->assertFalse($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $server->httpResponse));
 
-        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($httpRequest);
 
         $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals([
             'ETag'            => ['"abc123"'],
             'X-Sabre-Version' => [Version::VERSION],
         ], $response->getHeaders());
-        $this->assertEquals(1, HTTP\SapiMock::$sent);
+        $this->markTestIncomplete('Need new SAPI test.');
 
     }
 
@@ -206,10 +203,10 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Modified-Since' => 'Sun, 06 Nov 1994 08:49:37 GMT',
         ]);
-        $this->assertFalse($server->checkPreconditions($httpRequest, $server->httpResponse));
+        $this->assertFalse($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $server->httpResponse));
 
         $response = $server->httpResponse->getResponse();
         $this->assertEquals(304, $response->getStatusCode());
@@ -226,12 +223,12 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Modified-Since' => 'Tue, 06 Nov 1984 08:49:37 GMT',
         ]);
 
         $httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -241,13 +238,13 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Modified-Since' => 'Your mother',
         ]);
         $httpResponse = new HTTP\ResponseMock();
 
         // Invalid dates must be ignored, so this should return true
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -257,11 +254,11 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Unmodified-Since' => 'Sun, 06 Nov 1994 08:49:37 EST',
         ]);
         $httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
@@ -272,27 +269,27 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Unmodified-Since' => 'Sun, 06 Nov 1994 08:49:37 GMT',
         ]);
         $httpResponse = new HTTP\Response();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 
 
     /**
-     * @expectedException Sabre\DAV\Exception\PreconditionFailed
+     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
      */
     function testIfUnmodifiedSinceModified() {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Unmodified-Since' => 'Tue, 06 Nov 1984 08:49:37 GMT',
         ]);
         $httpResponse = new HTTP\ResponseMock();
-        $server->checkPreconditions($httpRequest, $httpResponse);
+        $server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse);
 
     }
 
@@ -302,11 +299,11 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
 
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'If-Unmodified-Since' => 'Sun, 06 Nov 1984 08:49:37 CET',
         ]);
         $httpResponse = new HTTP\ResponseMock();
-        $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
+        $this->assertTrue($server->checkPreconditions(new Psr7RequestWrapper($httpRequest), $httpResponse));
 
     }
 

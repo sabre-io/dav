@@ -2,6 +2,7 @@
 
 namespace Sabre\DAVACL;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -18,7 +19,6 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $dir->addChild($principals);
 
         $fakeServer = new DAV\Server($dir);
-        $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->debugExceptions = true;
         $plugin = new MockPlugin();
         $plugin->allowAccessToNodesWithoutACL = true;
@@ -48,21 +48,12 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
   </d:prop>
 </d:principal-property-search>';
 
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '1',
-            'REQUEST_URI'    => '/principals',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/principals', [
+            'Depth' => '1'
+        ], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->start();
-
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
@@ -88,20 +79,13 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
   </d:prop>
 </d:principal-property-search>';
 
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/principals',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPort', '/principals', ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
+        
 
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
 
         $this->assertEquals(207, $response->getStatusCode(), "Full body: " . $responseBody);
@@ -132,19 +116,18 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $serverVars = [
             'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/',
+            'Depth'     => '0',
+            '/',
         ];
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/', ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
+        
 
-        $server->start();
+        
 
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
@@ -204,21 +187,11 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
     <d:getcontentlength />
   </d:prop>
 </d:principal-property-search>';
-
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/' , ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
 
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
 
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
@@ -279,20 +252,10 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
   </d:prop>
 </d:principal-property-search>';
 
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/', ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
-
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
 
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
@@ -346,20 +309,13 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
   </d:prop>
 </d:principal-property-search>';
 
-        $serverVars = [
-            'REQUEST_METHOD' => 'REPORT',
-            'HTTP_DEPTH'     => '0',
-            'REQUEST_URI'    => '/',
-        ];
-
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/', ['Depth' => '0'], $xml);
 
         $server = $this->getServer();
-        $server->httpRequest = $request;
+        
 
-        $server->start();
-        $response = $server->httpResponse->getResponse();
+        
+        $response = $server->handle($request);
         $responseBody = $response->getBody()->getContents();
 
 

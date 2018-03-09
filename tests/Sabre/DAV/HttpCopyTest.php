@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
@@ -34,7 +35,7 @@ class HttpCopyTest extends DAVServerTest {
     
     function testCopyFile() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file5'
         ]);
         $response = $this->request($request);
@@ -45,7 +46,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyFileToSelf() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file1'
         ]);
         $response = $this->request($request);
@@ -55,7 +56,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyFileToExisting() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
@@ -66,7 +67,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyFileToExistingOverwriteT() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'T',
         ]);
@@ -78,7 +79,7 @@ class HttpCopyTest extends DAVServerTest {
    
     function testCopyFileToExistingOverwriteBadValue() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'B',
         ]);
@@ -89,7 +90,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyFileNonExistantParent() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/notfound/file2',
         ]);
         $response = $this->request($request);
@@ -99,7 +100,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyFileToExistingOverwriteF() {
 
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'F',
         ]);
@@ -118,7 +119,7 @@ class HttpCopyTest extends DAVServerTest {
             }
 
         });
-        $request = new HTTP\Request('COPY', '/file1', [
+        $request = new ServerRequest('COPY', '/file1', [
             'Destination' => '/file2',
             'Overwrite'   => 'T',
         ]);
@@ -131,7 +132,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyColl() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/coll2'
         ]);
         $response = $this->request($request);
@@ -142,7 +143,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyCollToSelf() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/coll1'
         ]);
         $response = $this->request($request);
@@ -152,7 +153,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyCollToExisting() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/file2'
         ]);
         $response = $this->request($request);
@@ -163,7 +164,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyCollToExistingOverwriteT() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/file2',
             'Overwrite'   => 'T',
         ]);
@@ -175,7 +176,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyCollToExistingOverwriteF() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/file2',
             'Overwrite'   => 'F',
         ]);
@@ -187,7 +188,7 @@ class HttpCopyTest extends DAVServerTest {
 
     function testCopyCollIntoSubtree() {
 
-        $request = new HTTP\Request('COPY', '/coll1', [
+        $request = new ServerRequest('COPY', '/coll1', [
             'Destination' => '/coll1/subcol',
         ]);
         $response = $this->request($request);

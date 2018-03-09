@@ -2,6 +2,7 @@
 
 namespace Sabre\DAVACL;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP\Request;
 
 class PrincipalMatchTest extends \Sabre\DAVServerTest {
@@ -18,9 +19,7 @@ class PrincipalMatchTest extends \Sabre\DAVServerTest {
 </principal-match>
 XML;
 
-        $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
-        $request->setBody($xml);
-
+        $request = new ServerRequest('REPORT', '/principals', ['Content-Type' => 'application/xml'], $xml);
         $response = $this->request($request, 207);
 
         $expected = <<<XML
@@ -54,9 +53,7 @@ XML;
 </principal-match>
 XML;
 
-        $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
-        $request->setBody($xml);
-
+        $request = new ServerRequest('REPORT', '/principals', ['Content-Type' => 'application/xml'], $xml);
         $response = $this->request($request, 207);
 
         $expected = <<<XML
@@ -94,9 +91,7 @@ XML;
 </principal-match>
 XML;
 
-        $request = new Request('REPORT', '/principals', ['Content-Type' => 'application/xml']);
-        $request->setBody($xml);
-
+        $request = new ServerRequest('REPORT', '/principals', ['Content-Type' => 'application/xml'], $xml);
         $response = $this->request($request, 207);
 
         $expected = <<<XML

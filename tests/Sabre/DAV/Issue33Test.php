@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 require_once 'Sabre/TestUtil.php';
@@ -22,14 +23,12 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $server = new Server($root);
         $server->setBaseUri('/webdav/');
 
-        $request = new HTTP\Request('GET', '/webdav/bar', [
+        $request = new ServerRequest('GET', '/webdav/bar', [
             'Destination' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
             'Overwrite'   => 'F',
         ]);
 
-        $server->httpRequest = $request;
-
-        $info = $server->getCopyAndMoveInfo($request);
+        $info = $server->getCopyAndMoveInfo(new Psr7RequestWrapper($request));
 
         $this->assertEquals('%C3%A0fo%C3%B3', urlencode($info['destination']));
         $this->assertFalse($info['destinationExists']);
@@ -67,12 +66,11 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
      */
     function testEverything() {
 
-        $request = new HTTP\Request('MOVE', '/webdav/bar', [
+        $request = new ServerRequest('MOVE', '/webdav/bar', [
             'Destination' => 'http://dev2.tribalos.com/webdav/%C3%A0fo%C3%B3',
             'Overwrite'   => 'F',
-        ]);
+        ], '');
 
-        $request->setBody('');
 
         // Server setup
         mkdir(SABRE_TEMPDIR . '/issue33');
@@ -85,9 +83,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $server = new Server($tree);
         $server->setBaseUri('/webdav/');
 
-        $server->httpRequest = $request;
-        $server->sapi = new HTTP\SapiMock();
-        $server->start();
+        $server->handle($request);
 
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/issue33/' . urldecode('%C3%A0fo%C3%B3')));
 

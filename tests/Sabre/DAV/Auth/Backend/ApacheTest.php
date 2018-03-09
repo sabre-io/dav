@@ -3,6 +3,8 @@
 namespace Sabre\DAV\Auth\Backend;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
+use Sabre\DAV\Psr7RequestWrapper;
 use Sabre\DAV\Psr7ResponseWrapper;
 use Sabre\HTTP;
 
@@ -17,61 +19,63 @@ class ApacheTest extends \PHPUnit_Framework_TestCase {
 
     function testNoHeader() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new HTTP\Response();
         $backend = new Apache();
 
         $this->assertFalse(
-            $backend->check($request, $response)[0]
+            $backend->check(new Psr7RequestWrapper($request), $response)[0]
         );
 
     }
 
     function testRemoteUser() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'REMOTE_USER'    => 'username',
+        $request = new ServerRequest('GET',
+            '/',
+            [],
+            null,
+            '1.1',
+            ['REMOTE_USER'    => 'username',
         ]);
-        $response = new HTTP\Response();
         $backend = new Apache();
 
         $this->assertEquals(
             [true, 'principals/username'],
-            $backend->check($request, $response)
+            $backend->check(new Psr7RequestWrapper($request), new Psr7ResponseWrapper(function() { return new Response(500); }))
         );
 
     }
 
     function testRedirectRemoteUser() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'       => 'GET',
-            'REQUEST_URI'          => '/',
-            'REDIRECT_REMOTE_USER' => 'username',
+        $request = new ServerRequest(
+            'GET',
+            '/',
+            [],
+            null,
+            '1.1',
+            ['REDIRECT_REMOTE_USER' => 'username',
         ]);
         $response = new HTTP\Response();
         $backend = new Apache();
 
         $this->assertEquals(
             [true, 'principals/username'],
-            $backend->check($request, $response)
+            $backend->check(new Psr7RequestWrapper($request), $response)
         );
 
     }
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new ServerRequest('GET', '/');
         $response = new Psr7ResponseWrapper(function() { return new Response(); });
 
         $backend = new Apache();
-        $backend->challenge($request, $response);
+        $backend->challenge(new Psr7RequestWrapper($request), $response);
 
-        $this->assertEmpty(
-            $response->getResponse()->getHeader('WWW-Authenticate')
-        );
+        $this->assertEmpty($response->getResponse()->getHeader('WWW-Authenticate'));
 
     }
 }

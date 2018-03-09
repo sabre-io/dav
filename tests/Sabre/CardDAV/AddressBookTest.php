@@ -9,7 +9,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     use \Sabre\DAV\DbTestHelperTrait;
 
     /**
-     * @var Sabre\CardDAV\AddressBook
+     * @var \Sabre\CardDAV\AddressBook
      */
     protected $ab;
     protected $backend;
@@ -44,7 +44,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
     function testGetChildNotFound() {
 
@@ -63,7 +63,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -90,7 +90,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 
@@ -140,7 +140,7 @@ class AddressBookTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

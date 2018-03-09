@@ -33,7 +33,7 @@ class PrincipalCollectionTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @depends testBasic
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testGetChildrenDisable() {
 

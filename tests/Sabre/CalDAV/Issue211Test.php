@@ -2,7 +2,7 @@
 
 namespace Sabre\CalDAV;
 
-use Sabre\HTTP;
+use GuzzleHttp\Psr7\ServerRequest;
 
 /**
  * This unittest is created to check for an endless loop in Sabre\CalDAV\CalendarQueryValidator
@@ -55,14 +55,13 @@ END:VCALENDAR
 
     function testIssue211() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'    => 'REPORT',
-            'HTTP_CONTENT_TYPE' => 'application/xml',
-            'REQUEST_URI'       => '/calendars/user1/calendar1',
-            'HTTP_DEPTH'        => '1',
-        ]);
+        $request = new ServerRequest(
+             'REPORT',
+            '/calendars/user1/calendar1', [
+            'Content-Type' => 'application/xml',
 
-        $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
+            'Depth'        => '1',
+        ],'<?xml version="1.0" encoding="utf-8" ?>
 <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
     <D:prop>
         <C:calendar-data/>

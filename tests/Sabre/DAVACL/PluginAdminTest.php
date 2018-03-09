@@ -2,6 +2,7 @@
 
 namespace Sabre\DAVACL;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -10,6 +11,9 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class PluginAdminTest extends \PHPUnit_Framework_TestCase {
 
+    /**
+     * @var DAV\Server
+     */
     public $server;
 
     function setUp() {
@@ -22,7 +26,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $this->server = new DAV\Server($tree);
-        $this->server->sapi = new HTTP\SapiMock();
+
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $this->server->addPlugin($plugin);
     }
@@ -32,20 +36,14 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'OPTIONS',
-            'HTTP_DEPTH'     => 1,
-            'REQUEST_URI'    => '/adminonly',
-        ]);
+        $request = new ServerRequest('OPTIONS', '/adminonly', ['Depth' => '1']);
 
-        $response = new HTTP\ResponseMock();
 
-        $this->server->httpRequest = $request;
-        $response = $this->server->httpResponse;
+        $response = $this->server->handle($request);
 
-        $this->server->start();
 
-        $this->assertEquals(403, $response->getResponse()->getStatusCode());
+
+        $this->assertEquals(403, $response->getStatusCode());
 
     }
 
@@ -60,20 +58,12 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
         ];
         $this->server->addPlugin($plugin);
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'OPTIONS',
-            'HTTP_DEPTH'     => 1,
-            'REQUEST_URI'    => '/adminonly',
-        ]);
+        $request = new ServerRequest('OPTIONS', '/adminonly', ['Depth'     => 1]);
 
-        $response = new HTTP\ResponseMock();
+        $response = $this->server->handle($request);
 
-        $this->server->httpRequest = $request;
-        $response = $this->server->httpResponse;
 
-        $this->server->start();
-
-        $this->assertEquals(200, $response->getResponse()->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
 
     }
 }

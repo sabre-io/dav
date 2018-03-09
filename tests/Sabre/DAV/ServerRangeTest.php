@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use DateTime;
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 /**
@@ -42,7 +43,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
 
     function testRange() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5']);
+        $request = new ServerRequest('GET', '/files/test.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
         $responseBody = $response->getBody()->read($response->getHeaderLine('Content-Length'));
 
@@ -66,7 +67,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testStartRange() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-']);
+        $request = new ServerRequest('GET', '/files/test.txt', ['Range' => 'bytes=2-']);
         $response = $this->request($request);
 
         $this->assertEquals([
@@ -90,7 +91,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testEndRange() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=-8']);
+        $request = new ServerRequest('GET', '/files/test.txt', ['Range' => 'bytes=-8']);
         $response = $this->request($request);
 
         $this->assertEquals([
@@ -114,7 +115,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testTooHighRange() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=100-200']);
+        $request = new ServerRequest('GET', '/files/test.txt', ['Range' => 'bytes=100-200']);
         $response = $this->request($request);
 
         $this->assertEquals(416, $response->getStatusCode());
@@ -126,7 +127,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testCrazyRange() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=8-4']);
+        $request = new ServerRequest('GET', '/files/test.txt', ['Range' => 'bytes=8-4']);
         $response = $this->request($request);
 
         $this->assertEquals(416, $response->getStatusCode());
@@ -135,7 +136,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
 
     function testNonSeekableStream() {
 
-        $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5']);
+        $request = new ServerRequest('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
 
         $this->assertEquals(206, $response->getStatusCode(), $response);
@@ -159,7 +160,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testIfRangeEtag() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', [
+        $request = new ServerRequest('GET', '/files/test.txt', [
             'Range'    => 'bytes=2-5',
             'If-Range' => '"' . md5('Test contents') . '"',
         ]);
@@ -186,7 +187,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testIfRangeEtagIncorrect() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', [
+        $request = new ServerRequest('GET', '/files/test.txt', [
             'Range'    => 'bytes=2-5',
             'If-Range' => '"foobar"',
         ]);
@@ -212,7 +213,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testIfRangeModificationDate() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', [
+        $request = new ServerRequest('GET', '/files/test.txt', [
             'Range'    => 'bytes=2-5',
             'If-Range' => 'tomorrow',
         ]);
@@ -239,7 +240,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
      */
     function testIfRangeModificationDateModified() {
 
-        $request = new HTTP\Request('GET', '/files/test.txt', [
+        $request = new ServerRequest('GET', '/files/test.txt', [
             'Range'    => 'bytes=2-5',
             'If-Range' => '-2 years',
         ]);

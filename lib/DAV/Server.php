@@ -3,6 +3,8 @@
 namespace Sabre\DAV;
 
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -22,7 +24,11 @@ use Sabre\Uri;
  * @license http://sabre.io/license/ Modified BSD License
  * @property Psr7ResponseWrapper $httpResponse
  */
-class Server implements LoggerAwareInterface, EmitterInterface {
+class Server implements
+    LoggerAwareInterface,
+    EmitterInterface,
+    RequestHandlerInterface
+{
 
     use WildcardEmitterTrait;
     use LoggerAwareTrait;
@@ -63,14 +69,14 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      *
      * @var HTTP\Request
      */
-    public $httpRequest;
+    private $httpRequest;
 
     /**
      * PHP HTTP Sapi
      *
      * @var HTTP\Sapi
      */
-    public $sapi;
+    private $sapi;
 
     /**
      * The list of plugins
@@ -243,6 +249,9 @@ class Server implements LoggerAwareInterface, EmitterInterface {
         if ($name === 'httpResponse') {
             return $this->httpResponse;
         }
+        if ($name === 'httpRequest') {
+            return $this->httpRequest;
+        }
         throw new \Exception('Unknown property ' . $name);
     }
 
@@ -266,7 +275,6 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             // Setting the base url
             $this->httpRequest->setBaseUrl($this->getBaseUri());
             $this->invokeMethod($this->httpRequest, $this->httpResponse);
-
         } catch (\Throwable $e) {
 
             try {
@@ -331,21 +339,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
             $this->httpResponse->setStatus($httpCode);
             $this->httpResponse->setHeaders($headers);
             $this->httpResponse->setBody($DOM->saveXML());
-            $this->sapi->sendResponse($this->httpResponse);
-
         }
-
-    }
-
-    /**
-     * Alias of start().
-     *
-     * @deprecated
-     * @return void
-     */
-    function exec() {
-
-        $this->start();
 
     }
 
@@ -372,7 +366,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      */
     function getBaseUri() {
 
-        if (is_null($this->baseUri)) $this->baseUri = $this->guessBaseUri();
+        if (is_null($this->baseUri)) $this->baseUri = $this->guessBaseUri($this->httpRequest);
         return $this->baseUri;
 
     }
@@ -385,10 +379,10 @@ class Server implements LoggerAwareInterface, EmitterInterface {
      *
      * @return string
      */
-    function guessBaseUri() {
+    public function guessBaseUri(HTTP\RequestInterface $request) {
 
-        $pathInfo = $this->httpRequest->getRawServerValue('PATH_INFO');
-        $uri = $this->httpRequest->getRawServerValue('REQUEST_URI');
+        $pathInfo = $request->getRawServerValue('PATH_INFO');
+        $uri = $request->getRawServerValue('REQUEST_URI');
 
         // If PATH_INFO is found, we can assume it's accurate.
         if (!empty($pathInfo)) {
@@ -497,7 +491,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
         $this->transactionType = strtolower($method);
 
         if (!$this->checkPreconditions($request, $response)) {
-            $this->sapi->sendResponse($response);
+            $this->sendResponse($response);
             return;
         }
 
@@ -514,7 +508,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
 
         if ($sendResponse) {
-            $this->sapi->sendResponse($response);
+            $this->sendResponse($response);
             $this->emit('afterResponse', [$request, $response]);
         }
 
@@ -1704,4 +1698,24 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
     }
 
+    /**
+     * Handle the request and return a response.
+     */
+    public function handle(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+    {
+
+        $this->httpRequest = new Psr7RequestWrapper($request);
+        $this->httpResponse->reset();
+        $this->start();
+        return $this->httpResponse->getResponse();
+    }
+
+    /**
+     * Temporary function; replaces ->sapi->sendResponse().
+     */
+    private function sendResponse(HTTP\ResponseInterface $response)
+    {
+        // Do something here.
+
+    }
 }

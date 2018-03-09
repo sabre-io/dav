@@ -2,6 +2,7 @@
 
 namespace Sabre\DAVACL;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP\Request;
 
 class AclPrincipalPropSetReportTest extends \Sabre\DAVServerTest {
@@ -21,8 +22,7 @@ class AclPrincipalPropSetReportTest extends \Sabre\DAVServerTest {
 </acl-principal-prop-set>
 XML;
 
-        $request = new Request('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 0]);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 0], $xml);
 
         $response = $this->request($request, 207);
 
@@ -59,8 +59,7 @@ XML;
 </acl-principal-prop-set>
 XML;
 
-        $request = new Request('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 1]);
-        $request->setBody($xml);
+        $request = new ServerRequest('REPORT', '/principals/user1', ['Content-Type' => 'application/xml', 'Depth' => 1], $xml);
 
         $this->request($request, 400);
 

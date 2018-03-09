@@ -2,10 +2,10 @@
 
 namespace Sabre;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Sabre\HTTP\Request;
 use Sabre\HTTP\Response;
-use Sabre\HTTP\Sapi;
 
 /**
  * This class may be used as a basis for other webdav-related unittests.
@@ -55,22 +55,22 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $propertyStorageBackend;
 
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var \Sabre\CalDAV\Plugin
      */
     protected $caldavPlugin;
 
     /**
-     * @var Sabre\CardDAV\Plugin
+     * @var \Sabre\CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var Sabre\DAVACL\Plugin
+     * @var \Sabre\DAVACL\Plugin
      */
     protected $aclPlugin;
 
     /**
-     * @var Sabre\CalDAV\SharingPlugin
+     * @var \Sabre\CalDAV\SharingPlugin
      */
     protected $caldavSharingPlugin;
 
@@ -82,12 +82,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $caldavSchedulePlugin;
 
     /**
-     * @var Sabre\DAV\Auth\Plugin
+     * @var \Sabre\DAV\Auth\Plugin
      */
     protected $authPlugin;
 
     /**
-     * @var Sabre\DAV\Locks\Plugin
+     * @var \Sabre\DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
@@ -99,7 +99,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
     protected $sharingPlugin;
 
     /*
-     * @var Sabre\DAV\PropertyStorage\Plugin
+     * @var \Sabre\DAV\PropertyStorage\Plugin
      */
     protected $propertyStoragePlugin;
 
@@ -121,7 +121,7 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         $this->setUpTree();
 
         $this->server = new DAV\Server($this->tree);
-        $this->server->sapi = new HTTP\SapiMock();
+
         $this->server->debugExceptions = true;
 
         if ($this->setupCalDAV) {
@@ -190,18 +190,18 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
      * @param array|\Sabre\HTTP\Request $request
      * @param int $expectedStatus
      */
-    function request($request, $expectedStatus = null): ResponseInterface {
+    function request(ServerRequest $request, $expectedStatus = null): ResponseInterface {
 
-        if (is_array($request)) {
-            $request = HTTP\Request::createFromServerArray($request);
-        }
-        $this->server->httpRequest = $request;
-        $this->server->start();
-
-        $result = $this->server->httpResponse->getResponse();
+        $result = $this->server->handle($request);
         if (isset($expectedStatus)) {
-            $this->assertEquals($expectedStatus, $result->getStatusCode(),
-                'Incorrect HTTP status received for request');
+            // We do this to make sure we don't read the body when the assertion succeeds.
+            // A better solution would be to have an object that reads the content from the body upon serialization.
+            if ($expectedStatus !== $result->getStatusCode()) {
+                $this->assertEquals($expectedStatus, $result->getStatusCode(),
+                    'Incorrect HTTP status received for request, body:' . $result->getBody()->getContents());
+            } else {
+                $this->assertEquals($expectedStatus, $result->getStatusCode());
+            }
         }
         return $result;
     }
@@ -291,13 +291,4 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         }
 
     }
-
-
-    function assertHttpStatus($expectedStatus, HTTP\Request $req) {
-
-        $resp = $this->request($req);
-        $this->assertEquals((int)$expectedStatus, (int)$resp->getStatusCode(), 'Incorrect HTTP status received: ' . $resp->getBody()->getContents());
-
-    }
-
 }

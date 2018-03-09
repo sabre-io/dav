@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\PartialUpdate;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV\FSExt\File;
 use Sabre\DAV\Server;
 use Sabre\HTTP;
@@ -56,14 +57,9 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
             $headers['Content-Length'] = (string)$contentLength;
         }
 
-        $request = new HTTP\Request('PATCH', '/foobar.txt', $headers, '----');
+        $request = new ServerRequest('PATCH', '/foobar.txt', $headers, '----');
 
-        $request->setBody('----');
-        $this->server->httpRequest = $request;
-        $this->server->sapi = new HTTP\SapiMock();
-        $this->server->start();
-
-        $response = $this->server->httpResponse->getResponse();
+        $response = $this->server->handle($request);
 
         $this->assertEquals($httpStatus, $response->getStatusCode(), 'Incorrect http status received: ' . $response->getBody()->getContents());
         if (!is_null($endResult)) {

@@ -47,7 +47,7 @@ XML;
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testDeserializeNoFilter() {
 

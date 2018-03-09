@@ -2,8 +2,8 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAVServerTest;
-use Sabre\HTTP;
 
 /**
  * Tests related to the GET request.
@@ -31,7 +31,7 @@ class HttpGetTest extends DAVServerTest {
 
     function testGet() {
 
-        $request = new HTTP\Request('GET', '/file1');
+        $request = new ServerRequest('GET', '/file1');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -56,8 +56,9 @@ class HttpGetTest extends DAVServerTest {
 
     function testGetHttp10() {
 
-        $request = new HTTP\Request('GET', '/file1');
-        $request->setHttpVersion('1.0');
+        $request = (new ServerRequest('GET', '/file1'))
+            ->withProtocolVersion('1.0');
+
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -84,7 +85,7 @@ class HttpGetTest extends DAVServerTest {
 
     function testGet404() {
 
-        $request = new HTTP\Request('GET', '/notfound');
+        $request = new ServerRequest('GET', '/notfound');
         $response = $this->request($request);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -93,7 +94,7 @@ class HttpGetTest extends DAVServerTest {
 
     function testGet404_aswell() {
 
-        $request = new HTTP\Request('GET', '/file1/subfile');
+        $request = new ServerRequest('GET', '/file1/subfile');
         $response = $this->request($request);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -105,10 +106,8 @@ class HttpGetTest extends DAVServerTest {
      */
     function testGetDoubleSlash() {
 
-        $request = new HTTP\Request('GET', '//file1');
-        $response = $this->request($request);
-
-        $this->assertEquals(200, $response->getStatusCode());
+        $request = new ServerRequest('GET', '//file1');
+        $response = $this->request($request, 200);
 
         // Removing Last-Modified because it keeps changing.
         $headers = $response->getHeaders();
@@ -130,7 +129,7 @@ class HttpGetTest extends DAVServerTest {
 
     function testGetCollection() {
 
-        $request = new HTTP\Request('GET', '/dir');
+        $request = new ServerRequest('GET', '/dir');
         $response = $this->request($request);
 
         $this->assertEquals(501, $response->getStatusCode());
@@ -139,7 +138,7 @@ class HttpGetTest extends DAVServerTest {
 
     function testGetStreaming() {
 
-        $request = new HTTP\Request('GET', '/streaming');
+        $request = new ServerRequest('GET', '/streaming');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());

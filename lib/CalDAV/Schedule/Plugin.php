@@ -3,6 +3,8 @@
 namespace Sabre\CalDAV\Schedule;
 
 use DateTimeZone;
+use function GuzzleHttp\Psr7\stream_for;
+use GuzzleHttp\Psr7\StreamWrapper;
 use Sabre\CalDAV\ICalendar;
 use Sabre\CalDAV\ICalendarObject;
 use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
@@ -737,7 +739,8 @@ class Plugin extends ServerPlugin {
 
         // Parsing the request body
         try {
-            $vObject = VObject\Reader::read($request->getBody());
+            $body = stream_get_contents($request->getBody());
+            $vObject = VObject\Reader::read(StreamWrapper::getResource(stream_for($body)));
         } catch (VObject\ParseException $e) {
             throw new BadRequest('The request body must be a valid iCalendar object. Parse error: ' . $e->getMessage());
         }

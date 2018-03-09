@@ -27,7 +27,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @depends testSimple
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
     function testNoHref() {
 
@@ -121,7 +121,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testUnserializeUnknown() {
 

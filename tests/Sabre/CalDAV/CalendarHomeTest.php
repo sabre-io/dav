@@ -8,7 +8,7 @@ use Sabre\DAV\MkCol;
 class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\CalendarHome
+     * @var \Sabre\CalDAV\CalendarHome
      */
     protected $usercalendars;
 
@@ -33,7 +33,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      * @depends testSimple
      */
     function testGetChildNotFound() {
@@ -144,7 +144,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      * @depends testSimple
      */
     function testCreateDirectory() {
@@ -170,7 +170,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\InvalidResourceType
+     * @expectedException \Sabre\DAV\Exception\InvalidResourceType
      * @depends testSimple
      */
     function testCreateExtendedCollectionBadResourceType() {
@@ -184,7 +184,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\InvalidResourceType
+     * @expectedException \Sabre\DAV\Exception\InvalidResourceType
      * @depends testSimple
      */
     function testCreateExtendedCollectionNotACalendar() {
@@ -204,7 +204,7 @@ class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
     function testShareReplyFail() {
 

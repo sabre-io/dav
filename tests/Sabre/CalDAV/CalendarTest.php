@@ -9,12 +9,12 @@ require_once 'Sabre/CalDAV/TestUtil.php';
 class CalendarTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\Backend\PDO
+     * @var \Sabre\CalDAV\Backend\PDO
      */
     protected $backend;
     protected $principalBackend;
     /**
-     * @var Sabre\CalDAV\Calendar
+     * @var \Sabre\CalDAV\Calendar
      */
     protected $calendar;
     /**
@@ -82,7 +82,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      * @depends testSimple
      */
     function testGetChildNotFound() {
@@ -117,7 +117,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -126,7 +126,7 @@ class CalendarTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 

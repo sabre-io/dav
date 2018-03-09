@@ -2,6 +2,7 @@
 
 namespace Sabre\CardDAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV\PropFind;
 use Sabre\HTTP;
 
@@ -31,9 +32,10 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
     }
     function testStrip() {
 
-        $this->server->httpRequest = new HTTP\Request('GET', '/', [
+        $request = new ServerRequest('GET', '/', [
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ]);
+        $this->server->handle($request);
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf', ['{DAV:}getcontenttype']);
         $this->assertEquals([
             '{DAV:}getcontenttype' => 'text/x-vcard'
@@ -42,10 +44,10 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
     }
     function testDontTouchOtherMimeTypes() {
 
-        $this->server->httpRequest = new HTTP\Request('GET', '/addressbooks/user1/book1/card1.vcf', [
+        $request = new ServerRequest('GET', '/addressbooks/user1/book1/card1.vcf', [
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ]);
-
+        $this->server->handle($request);
         $propFind = new PropFind('hello', ['{DAV:}getcontenttype']);
         $propFind->set('{DAV:}getcontenttype', 'text/plain');
         $this->carddavPlugin->propFindLate($propFind, new \Sabre\DAV\SimpleCollection('foo'));

@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
@@ -31,10 +32,8 @@ class HttpHeadTest extends DAVServerTest {
 
     function testHEAD() {
 
-        $request = new HTTP\Request('HEAD', '//file1');
-        $response = $this->request($request);
-
-        $this->assertEquals(200, $response->getStatusCode());
+        $request = new ServerRequest('HEAD', '/file1');
+        $response = $this->request($request, 200);
 
         $headers = $response->getHeaders();
         // Removing Last-Modified because it keeps changing.
@@ -46,8 +45,8 @@ class HttpHeadTest extends DAVServerTest {
                 'Content-Type'    => ['application/octet-stream'],
                 'Content-Length'  => [3],
                 'ETag'            => ['"' . md5('foo') . '"'],
-            ], $headers
-
+            ], $headers,
+            print_r($headers, true)
         );
 
         $this->assertEmpty($response->getBody()->getContents());
@@ -61,7 +60,7 @@ class HttpHeadTest extends DAVServerTest {
      */
     function testHEADCollection() {
 
-        $request = new HTTP\Request('HEAD', '/dir');
+        $request = new ServerRequest('HEAD', '/dir');
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -86,7 +85,7 @@ class HttpHeadTest extends DAVServerTest {
                 $authBackend
             )
         );
-        $request = new HTTP\Request('HEAD', '/file1', ['Authorization' => 'Basic ' . base64_encode('user:pass')]);
+        $request = new ServerRequest('HEAD', '/file1', ['Authorization' => 'Basic ' . base64_encode('user:pass')]);
         $response = $this->request($request);
 
         $this->assertEquals(200, $response->getStatusCode());

@@ -2,6 +2,7 @@
 
 namespace Sabre\CalDAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP\Request;
 use Sabre\VObject;
 
@@ -33,7 +34,7 @@ class JCalTransformTest extends \Sabre\DAVServerTest {
         $headers = [
             'Accept' => 'application/calendar+json',
         ];
-        $request = new Request('GET', '/calendars/user1/foo/bar.ics', $headers);
+        $request = new ServerRequest('GET', '/calendars/user1/foo/bar.ics', $headers);
 
         $response = $this->request($request);
 
@@ -74,7 +75,7 @@ class JCalTransformTest extends \Sabre\DAVServerTest {
 XML;
 
         $headers = [];
-        $request = new Request('REPORT', '/calendars/user1/foo', $headers, $xml);
+        $request = new ServerRequest('REPORT', '/calendars/user1/foo', $headers, $xml);
 
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();
@@ -125,7 +126,7 @@ XML;
         $headers = [
             'Depth' => '1',
         ];
-        $request = new Request('REPORT', '/calendars/user1/foo', $headers, $xml);
+        $request = new ServerRequest('REPORT', '/calendars/user1/foo', $headers, $xml);
 
         $response = $this->request($request);
 
@@ -177,7 +178,7 @@ XML;
         $headers = [
             'Depth' => '0',
         ];
-        $request = new Request('REPORT', '/calendars/user1/foo/bar.ics', $headers, $xml);
+        $request = new ServerRequest('REPORT', '/calendars/user1/foo/bar.ics', $headers, $xml);
 
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();

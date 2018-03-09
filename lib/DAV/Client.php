@@ -370,7 +370,7 @@ class Client extends HTTP\Client {
 
         $url = $this->getAbsoluteUrl($url);
 
-        $response = $this->send(new HTTP\Request($method, $url, $headers, $body));
+        $response = $this->send(new ServerRequest($method, $url, $headers, $body));
         return [
             'body'       => $response->getBodyAsString(),
             'statusCode' => (int)$response->getStatus(),

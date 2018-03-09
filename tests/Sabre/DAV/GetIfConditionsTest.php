@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -11,17 +12,17 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testNoConditions() {
 
-        $request = new HTTP\Request('GET', '/foo');
+        $request = new ServerRequest('GET', '/foo');
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
         $this->assertEquals([], $conditions);
 
     }
 
     function testLockToken() {
 
-        $request = new HTTP\Request('GET', '/path/', ['If' => '(<opaquelocktoken:token1>)']);
-        $conditions = $this->server->getIfConditions($request);
+        $request = new ServerRequest('GET', '/path/', ['If' => '(<opaquelocktoken:token1>)']);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -45,11 +46,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testNotLockToken() {
 
-        $request = new HTTP\Request('GET', '/bla', [
+        $request = new ServerRequest('GET', '/bla', [
             'If' => '(Not <opaquelocktoken:token1>)',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -72,10 +73,10 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testLockTokenUrl() {
 
-        $request = new HTTP\Request('GET', '/bla', [
+        $request = new ServerRequest('GET', '/bla', [
             'If' => '<http://www.example.com/> (<opaquelocktoken:token1>)',
         ]);
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -98,11 +99,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2LockTokens() {
 
-        $request = new HTTP\Request('GET', '/bla', [
+        $request = new ServerRequest('GET', '/bla', [
             'If' => '(<opaquelocktoken:token1>) (Not <opaquelocktoken:token2>)',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -130,11 +131,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2UriLockTokens() {
 
-        $request = new HTTP\Request('GET', '/bla', [
+        $request = new ServerRequest('GET', '/bla', [
             'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) <http://www.example.org/node2> (Not <opaquelocktoken:token2>)',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -167,11 +168,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2UriMultiLockTokens() {
 
-        $request = new HTTP\Request('GET', '/bla', [
+        $request = new ServerRequest('GET', '/bla', [
             'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1>) (<opaquelocktoken:token2>) <http://www.example.org/node2> (Not <opaquelocktoken:token3>)',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -209,11 +210,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testEtag() {
 
-        $request = new HTTP\Request('GET', '/foo', [
+        $request = new ServerRequest('GET', '/foo', [
             'If' => '(["etag1"])',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -235,11 +236,11 @@ class GetIfConditionsTest extends AbstractServer {
 
     function test2Etags() {
 
-        $request = new HTTP\Request('GET', '/foo', [
+        $request = new ServerRequest('GET', '/foo', [
             'If' => '<http://www.example.org/> (["etag1"]) (["etag2"])',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 
@@ -266,13 +267,13 @@ class GetIfConditionsTest extends AbstractServer {
 
     function testComplexIf() {
 
-        $request = new HTTP\Request('GET', '/foo', [
+        $request = new ServerRequest('GET', '/foo', [
             'If' => '<http://www.example.org/node1> (<opaquelocktoken:token1> ["etag1"]) ' .
                     '(Not <opaquelocktoken:token2>) (["etag2"]) <http://www.example.org/node2> ' .
                     '(<opaquelocktoken:token3>) (Not <opaquelocktoken:token4>) (["etag3"])',
         ]);
 
-        $conditions = $this->server->getIfConditions($request);
+        $conditions = $this->server->getIfConditions(new Psr7RequestWrapper($request));
 
         $compare = [
 

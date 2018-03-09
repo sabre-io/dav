@@ -2,6 +2,8 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
+
 class PSR3Test extends \PHPUnit_Framework_TestCase {
 
     function testIsLoggerAware() {
@@ -50,21 +52,16 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
         $server->setLogger($logger);
 
         // Creating a fake environment to execute http requests in.
-        $request = new \Sabre\HTTP\Request(
+        $request = new ServerRequest(
             'GET',
             '/not-found',
             []
         );
 
-        $server->httpRequest = $request;
-        $response = $server->httpResponse;
-        $server->sapi = new \Sabre\HTTP\SapiMock();
-
-        // Executing the request.
-        $server->start();
+        $response = $server->handle($request);
 
         // The request should have triggered a 404 status.
-        $this->assertEquals(404, $response->getResponse()->getStatusCode());
+        $this->assertEquals(404, $response->getStatusCode());
 
         // We should also see this in the PSR-3 log.
         $this->assertEquals(1, count($logger->logs));

@@ -2,6 +2,7 @@
 
 namespace Sabre\CardDAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Sabre\DAV;
 use Sabre\DAVACL;
@@ -11,6 +12,7 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
+    /** @var DAV\Server */
     protected $server;
     protected $cardBackend;
 
@@ -32,7 +34,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $this->server = new DAV\Server($tree);
-        $this->server->sapi = new HTTP\SapiMock();
+
         $this->server->debugExceptions = true;
 
         $plugin = new Plugin();
@@ -40,18 +42,16 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    function request(HTTP\Request $request, $expectedStatus = null): ResponseInterface {
-
-        $this->server->httpRequest = $request;
-        $this->server->start();
-
+    function request(ServerRequest $request, $expectedStatus = null): ResponseInterface
+    {
+        $result = $this->server->handle($request);
         if ($expectedStatus) {
 
-            $realStatus = $this->server->httpResponse->getResponse()->getStatusCode();
+            $realStatus = $result->getStatusCode();
 
             $msg = '';
             if ($realStatus !== $expectedStatus) {
-                $msg = 'Response body: ' . $this->server->httpResponse->getResponse()->getBody()->getContents();
+                $msg = 'Response body: ' .$result->getBody()->getContents();
             }
             $this->assertEquals(
                 $expectedStatus,
@@ -59,30 +59,24 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
                 $msg
             );
         }
-
-        return $this->server->httpResponse->getResponse();
+        return $result;
 
     }
 
     function testCreateFile() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ]);
+        $request = new ServerRequest('PUT', '/addressbooks/admin/addressbook1/blabla.vcf');
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->getStatusCode());
+
+        $this->assertEquals(415, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
     function testCreateFileValid() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf'
-        );
+
 
         $vcard = <<<VCF
 BEGIN:VCARD
@@ -92,7 +86,12 @@ FN:Firstname LastName
 N:LastName;FirstName;;;
 END:VCARD
 VCF;
-        $request->setBody($vcard);
+        $request = new ServerRequest(
+            'PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            $vcard
+        );
 
         $response = $this->request($request, 201);
 
@@ -126,10 +125,7 @@ VCF;
      */
     function testCreateVCardAutoFix() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf'
-        );
+
 
         // The error in this vcard is that there's not enough semi-colons in N
         $vcard = <<<VCF
@@ -141,7 +137,12 @@ N:LastName;FirstName;;
 END:VCARD
 VCF;
 
-        $request->setBody($vcard);
+        $request = new ServerRequest(
+            'PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            $vcard
+        );
 
         $response = $this->request($request, 201);
 
@@ -187,13 +188,7 @@ VCF;
      */
     function testCreateVCardStrictFail() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf',
-            [
-                'Prefer' => 'handling=strict',
-            ]
-        );
+
 
         // The error in this vcard is that there's not enough semi-colons in N
         $vcard = <<<VCF
@@ -204,18 +199,21 @@ FN:Firstname LastName
 N:LastName;FirstName;;
 END:VCARD
 VCF;
-
-        $request->setBody($vcard);
+        $request = new ServerRequest(
+            'PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [
+                'Prefer' => 'handling=strict',
+            ],
+            $vcard
+        );
         $this->request($request, 415);
 
     }
 
     function testCreateFileNoUID() {
 
-        $request = new HTTP\Request(
-            'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf'
-        );
+
         $vcard = <<<VCF
 BEGIN:VCARD
 VERSION:4.0
@@ -223,7 +221,13 @@ FN:Firstname LastName
 N:LastName;FirstName;;;
 END:VCARD
 VCF;
-        $request->setBody($vcard);
+
+        $request = new ServerRequest(
+            'PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            $vcard
+        );
 
         $response = $this->request($request, 201);
 
@@ -236,11 +240,11 @@ VCF;
 
     function testCreateFileJson() {
 
-        $request = new HTTP\Request(
+        $request = new ServerRequest(
             'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf'
-        );
-        $request->setBody('[ "vcard" , [ [ "VERSION", {}, "text", "4.0"], [ "UID" , {}, "text", "foo" ], [ "FN", {}, "text", "FirstName LastName"] ] ]');
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            '[ "vcard" , [ [ "VERSION", {}, "text", "4.0"], [ "UID" , {}, "text", "foo" ], [ "FN", {}, "text", "FirstName LastName"] ] ]');
 
         $response = $this->request($request);
 
@@ -253,11 +257,11 @@ VCF;
 
     function testCreateFileVCalendar() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PUT',
-            'REQUEST_URI'    => '/addressbooks/admin/addressbook1/blabla.vcf',
-        ]);
-        $request->setBody("BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n");
+        $request = new ServerRequest('PUT',
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n"
+        );
 
         $response = $this->request($request);
 
@@ -268,7 +272,7 @@ VCF;
     function testUpdateFile() {
 
         $this->cardBackend->createCard('addressbook1', 'blabla.vcf', 'foo');
-        $request = new HTTP\Request(
+        $request = new ServerRequest(
             'PUT',
             '/addressbooks/admin/addressbook1/blabla.vcf'
         );
@@ -280,13 +284,14 @@ VCF;
     function testUpdateFileParsableBody() {
 
         $this->cardBackend->createCard('addressbook1', 'blabla.vcf', 'foo');
-        $request = new HTTP\Request(
+        $body = "BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n";
+        $request = new ServerRequest(
             'PUT',
-            '/addressbooks/admin/addressbook1/blabla.vcf'
+            '/addressbooks/admin/addressbook1/blabla.vcf',
+            [],
+            $body
         );
 
-        $body = "BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n";
-        $request->setBody($body);
 
         $this->request($request, 204);
 

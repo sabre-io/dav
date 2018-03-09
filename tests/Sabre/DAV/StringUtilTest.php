@@ -72,7 +72,7 @@ class StringUtilTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testBadCollation() {
 
@@ -82,7 +82,7 @@ class StringUtilTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testBadMatchType() {
 

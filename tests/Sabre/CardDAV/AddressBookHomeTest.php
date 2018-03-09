@@ -7,7 +7,7 @@ use Sabre\DAV\MkCol;
 class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CardDAV\AddressBookHome
+     * @var \Sabre\CardDAV\AddressBookHome
      */
     protected $s;
     protected $backend;
@@ -29,7 +29,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testSetName() {
 
@@ -38,7 +38,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testDelete() {
 
@@ -53,7 +53,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateFile() {
 
@@ -62,7 +62,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     function testCreateDirectory() {
 
@@ -79,7 +79,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
     function testGetChild404() {
 
@@ -114,7 +114,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\InvalidResourceType
+     * @expectedException \Sabre\DAV\Exception\InvalidResourceType
      */
     function testCreateExtendedCollectionInvalid() {
 
@@ -141,7 +141,7 @@ class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetACL() {
 

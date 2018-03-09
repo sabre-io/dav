@@ -2,6 +2,7 @@
 
 namespace Sabre\CardDAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 class VCFExportTest extends \Sabre\DAVServerTest {
@@ -50,12 +51,10 @@ class VCFExportTest extends \Sabre\DAVServerTest {
 
     function testExport() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_URI'    => '/addressbooks/user1/book1?export',
-            'QUERY_STRING'   => 'export',
-            'REQUEST_METHOD' => 'GET',
-        ]);
-
+        $request = (new ServerRequest('GET', '/addressbooks/user1/book1?export'))
+            ->withQueryParams([
+                'export' => ''
+            ]);
         $response = $this->request($request);
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
@@ -92,10 +91,10 @@ END:VCARD
 
     function testContentDisposition() {
 
-        $request = new HTTP\Request(
+        $request = (new ServerRequest(
             'GET',
             '/addressbooks/user1/book1?export'
-        );
+        ))->withQueryParams(['export' => '']);
 
         $response = $this->request($request, 200);
         $this->assertEquals('text/directory', $response->getHeaderLine('Content-Type'));
@@ -119,10 +118,10 @@ END:VCARD
             "BEGIN:VCARD\r\nFN:Person1\r\nEND:VCARD\r\n"
         );
 
-        $request = new HTTP\Request(
+        $request = (new ServerRequest(
             'GET',
             '/addressbooks/user1/book-b_ad"(ch)ars?export'
-        );
+        ))->withQueryParams(['export' => '']);
 
         $response = $this->request($request, 200);
         $this->assertEquals('text/directory', $response->getHeaderLine('Content-Type'));

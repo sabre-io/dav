@@ -2,9 +2,10 @@
 
 namespace Sabre\CalDAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\HTTP;
+use Sabre\HTTP\Response;
 
 class SharingPluginTest extends \Sabre\DAVServerTest {
 
@@ -71,8 +72,9 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testBeforeGetShareableCalendar() {
 
+        $request = new ServerRequest('GET', '/');
         // Forcing the server to authenticate:
-        $this->authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
+        $this->authPlugin->beforeMethod(new DAV\Psr7RequestWrapper($request), new Response());
         $props = $this->server->getProperties('calendars/user1/cal1', [
             '{' . Plugin::NS_CALENDARSERVER . '}invite',
             '{' . Plugin::NS_CALENDARSERVER . '}allowed-sharing-modes',
@@ -130,10 +132,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUnknownMethodNoPOST() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'PATCH',
-            'REQUEST_URI'    => '/',
-        ]);
+        $request = new ServerRequest('PATCH','/');
 
         $response = $this->request($request);
 
@@ -143,11 +142,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUnknownMethodNoXML() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/',
-            'CONTENT_TYPE'   => 'text/plain',
-        ]);
+        $request = new ServerRequest('POST','/',['Content-Type'   => 'text/plain']);
 
         $response = $this->request($request);
 
@@ -157,11 +152,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testUnknownMethodNoNode() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/foo',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+        $request = new ServerRequest('POST', '/foo', ['Content-Type'   => 'text/xml']);
 
         $response = $this->request($request);
 
@@ -171,7 +162,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
 
     function testShareRequest() {
 
-        $request = new HTTP\Request('POST', '/calendars/user1/cal1', ['Content-Type' => 'text/xml']);
+
 
         $xml = <<<RRR
 <?xml version="1.0"?>
@@ -186,9 +177,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
     </cs:remove>
 </cs:share>
 RRR;
-
-        $request->setBody($xml);
-
+        $request = new ServerRequest('POST', '/calendars/user1/cal1', ['Content-Type' => 'text/xml'], $xml);
         $response = $this->request($request, 200);
 
         $this->assertEquals(
@@ -219,11 +208,6 @@ RRR;
 
     function testShareRequestNoShareableCalendar() {
 
-        $request = new HTTP\Request(
-            'POST',
-            '/calendars/user1/cal2',
-            ['Content-Type' => 'text/xml']
-        );
 
         $xml = '<?xml version="1.0"?>
 <cs:share xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -238,19 +222,20 @@ RRR;
 </cs:share>
 ';
 
-        $request->setBody($xml);
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1/cal2',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
 
-        $response = $this->request($request, 403);
+        $this->request($request, 403);
 
     }
 
     function testInviteReply() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
+
 
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
@@ -259,25 +244,26 @@ RRR;
 </cs:invite-reply>
 ';
 
-        $request->setBody($xml);
+        $request = new ServerRequest('POST', '/calendars/user1', [
+            'Content-Type' => 'text/xml',
+
+        ], $xml);
+
         $response = $this->request($request);
         $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
 
     }
 
     function testInviteBadXML() {
-
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
-
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
 </cs:invite-reply>
 ';
-        $request->setBody($xml);
+
+        $request = new ServerRequest('POST', '/calendars/user1', [
+            'Content-Type'   => 'text/xml',
+        ], $xml);
+
         $response = $this->request($request);
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
 
@@ -285,37 +271,33 @@ RRR;
 
     function testInviteWrongUrl() {
 
-        $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_URI'    => '/calendars/user1/cal1',
-            'CONTENT_TYPE'   => 'text/xml',
-        ]);
-
         $xml = '<?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:">
     <cs:hosturl><d:href>/principals/owner</d:href></cs:hosturl>
 </cs:invite-reply>
 ';
-        $request->setBody($xml);
-        $response = $this->request($request);
-        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1/cal1',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
+
+        $response = $this->request($request, 501);
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
-        $this->assertEquals($xml, $request->getBody(true));
-
+        $this->assertEquals($xml, $this->server->httpRequest->getBodyAsString());
     }
 
     function testPublish() {
 
-        $request = new HTTP\Request('POST', '/calendars/user1/cal1', ['Content-Type' => 'text/xml']);
+
 
         $xml = '<?xml version="1.0"?>
 <cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
-
-        $request->setBody($xml);
-
+        $request = new ServerRequest('POST', '/calendars/user1/cal1', ['Content-Type' => 'text/xml'], $xml);
         $response = $this->request($request);
         $this->assertEquals(202, $response->getStatusCode(), $response->getBody()->getContents());
 
@@ -324,73 +306,61 @@ RRR;
 
     function testUnpublish() {
 
-        $request = new HTTP\Request(
-            'POST',
-            '/calendars/user1/cal1',
-            ['Content-Type' => 'text/xml']
-        );
+
 
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
-
-        $request->setBody($xml);
-
-        $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatusCode(), $response->getBody()->getContents());
-
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1/cal1',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
+        $this->request($request, 200);
     }
 
     function testPublishWrongUrl() {
-
-        $request = new HTTP\Request(
-            'POST',
-            '/calendars/user1',
-            ['Content-Type' => 'text/xml']
-        );
-
         $xml = '<?xml version="1.0"?>
 <cs:publish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
-        $request->setBody($xml);
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
         $this->request($request, 501);
 
     }
 
     function testUnpublishWrongUrl() {
-
-        $request = new HTTP\Request(
-            'POST',
-            '/calendars/user1',
-            ['Content-Type' => 'text/xml']
-        );
         $xml = '<?xml version="1.0"?>
 <cs:unpublish-calendar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />
 ';
 
-        $request->setBody($xml);
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
 
         $this->request($request, 501);
 
     }
 
     function testUnknownXmlDoc() {
-
-
-        $request = new HTTP\Request(
-            'POST',
-            '/calendars/user1/cal2',
-            ['Content-Type' => 'text/xml']
-        );
-
         $xml = '<?xml version="1.0"?>
 <cs:foo-bar xmlns:cs="' . Plugin::NS_CALENDARSERVER . '" xmlns:d="DAV:" />';
+        $request = new ServerRequest(
+            'POST',
+            '/calendars/user1/cal2',
+            ['Content-Type' => 'text/xml'],
+            $xml
+        );
 
-        $request->setBody($xml);
-
-        $response = $this->request($request);
-        $this->assertEquals(501, $response->getStatusCode(), $response->getBody()->getContents());
-
+        $this->request($request, 501);
     }
 }

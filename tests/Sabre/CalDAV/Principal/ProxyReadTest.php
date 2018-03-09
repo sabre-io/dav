@@ -40,7 +40,7 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testDelete() {
 
@@ -50,7 +50,7 @@ class ProxyReadTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetName() {
 

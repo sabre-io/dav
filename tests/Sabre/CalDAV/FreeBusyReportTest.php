@@ -3,7 +3,7 @@
 namespace Sabre\CalDAV;
 
 use Sabre\DAV;
-use Sabre\HTTP;
+use GuzzleHttp\Psr7\ServerRequest;
 
 class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
 
@@ -80,10 +80,12 @@ ics;
 
         $this->server = new DAV\Server([$calendar]);
 
-        $request = new HTTP\Request('GET', '/calendar');
-        $this->server->httpRequest = $request;
+        $request = new ServerRequest('GET', '/calendar');
+
+
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
+        $this->server->handle($request);
 
     }
 
@@ -129,8 +131,10 @@ XML;
      */
     function testFreeBusyReportWrongNode() {
 
-        $request = new HTTP\Request('REPORT', '/');
-        $this->server->httpRequest = $request;
+        $request = new ServerRequest('REPORT', '/');
+
+        $this->server->handle($request);
+
 
         $reportXML = <<<XML
 <?xml version="1.0"?>
@@ -149,10 +153,9 @@ XML;
      */
     function testFreeBusyReportNoACLPlugin() {
 
-        $this->server = new DAV\Server();
-        $this->server->httpRequest = new HTTP\Request('REPORT', '/');
-        $this->plugin = new Plugin();
-        $this->server->addPlugin($this->plugin);
+        $server = new DAV\Server();
+        $plugin = new Plugin();
+        $server->addPlugin($plugin);
 
         $reportXML = <<<XML
 <?xml version="1.0"?>
@@ -161,8 +164,8 @@ XML;
 </c:free-busy-query>
 XML;
 
-        $report = $this->server->xml->parse($reportXML, null, $rootElem);
-        $this->plugin->report($rootElem, $report, null);
+        $report = $server->xml->parse($reportXML, null, $rootElem);
+        $plugin->report($rootElem, $report, null);
 
     }
 }

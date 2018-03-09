@@ -252,7 +252,7 @@ XML;
 
     /**
      * @depends testPropPatch
-     * @expectedException Sabre\HTTP\ClientException
+     * @expectedException \Sabre\HTTP\ClientException
      */
     function testPropPatchMultiStatusError() {
 

@@ -7,11 +7,11 @@ use Sabre\CalDAV\Backend;
 class SchedulingObjectTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var Sabre\CalDAV\Backend_PDO
+     * @var \Sabre\CalDAV\Backend_PDO
      */
     protected $backend;
     /**
-     * @var Sabre\CalDAV\Calendar
+     * @var \Sabre\CalDAV\Calendar
      */
     protected $calendar;
     protected $principalBackend;

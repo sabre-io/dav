@@ -5,7 +5,7 @@ namespace Sabre\DAV;
 class BasicNodeTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testPut() {
 
@@ -15,7 +15,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testGet() {
 
@@ -47,7 +47,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testDelete() {
 
@@ -57,7 +57,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testSetName() {
 
@@ -99,7 +99,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
     function testGetChild404() {
 
@@ -109,7 +109,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testCreateFile() {
 
@@ -119,7 +119,7 @@ class BasicNodeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
     function testCreateDirectory() {
 

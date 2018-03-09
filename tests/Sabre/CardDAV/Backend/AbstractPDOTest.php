@@ -149,7 +149,7 @@ abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
     function testCreateAddressBookUnsupportedProp() {
 

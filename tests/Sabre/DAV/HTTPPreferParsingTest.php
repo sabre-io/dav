@@ -2,19 +2,19 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\HTTP;
 
 class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
 
     function assertParseResult($input, $expected) {
 
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'Prefer' => $input,
         ]);
 
         $server = new Server();
-        $server->httpRequest = $httpRequest;
-
+        $server->handle($httpRequest);
         $this->assertEquals(
             $expected,
             $server->getHTTPPrefer()
@@ -80,12 +80,12 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
 
     function testBrief() {
 
-        $httpRequest = new HTTP\Request('GET', '/foo', [
+        $httpRequest = new ServerRequest('GET', '/foo', [
             'Brief' => 't',
         ]);
 
         $server = new Server();
-        $server->httpRequest = $httpRequest;
+        $server->handle($httpRequest);
 
         $this->assertEquals([
             'respond-async' => false,
@@ -103,10 +103,9 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
      */
     function testpropfindMinimal() {
 
-        $request = new HTTP\Request('PROPFIND', '/', [
+        $request = new ServerRequest('PROPFIND', '/', [
             'Prefer' => 'return-minimal',
-        ]);
-        $request->setBody(<<<BLA
+        ], <<<BLA
 <?xml version="1.0"?>
 <d:propfind xmlns:d="DAV:">
     <d:prop>
@@ -130,8 +129,7 @@ BLA
 
     function testproppatchMinimal() {
 
-        $request = new HTTP\Request('PROPPATCH', '/', ['Prefer' => 'return-minimal']);
-        $request->setBody(<<<BLA
+        $request = new ServerRequest('PROPPATCH', '/', ['Prefer' => 'return-minimal'], <<<BLA
 <?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:">
     <d:set>
@@ -159,8 +157,7 @@ BLA
 
     function testproppatchMinimalError() {
 
-        $request = new HTTP\Request('PROPPATCH', '/', ['Prefer' => 'return-minimal']);
-        $request->setBody(<<<BLA
+        $request = new ServerRequest('PROPPATCH', '/', ['Prefer' => 'return-minimal'], <<<BLA
 <?xml version="1.0"?>
 <d:propertyupdate xmlns:d="DAV:">
     <d:set>

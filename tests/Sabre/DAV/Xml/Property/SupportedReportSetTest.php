@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV\Property;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -11,18 +12,10 @@ require_once 'Sabre/DAV/AbstractServer.php';
 class SupportedReportSetTest extends DAV\AbstractServer {
 
     function sendPROPFIND($body) {
+        $request = new ServerRequest('PROPFIND', '/', ['Depth' => '0'], $body);
 
-        $serverVars = [
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'PROPFIND',
-            'HTTP_DEPTH'     => '0',
-        ];
+        return $this->server->handle($request);
 
-        $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody($body);
-
-        $this->server->httpRequest = ($request);
-        $this->server->start();
 
     }
 
@@ -37,10 +30,10 @@ class SupportedReportSetTest extends DAV\AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendPROPFIND($xml);
+        $response = $this->sendPROPFIND($xml);
 
-        $responseBody = $this->getResponse()->getBody()->getContents();
-        $this->assertEquals(207, $this->getResponse()->getStatusCode(), 'We expected a multi-status response. Full response body: ' . $responseBody);
+        $responseBody = $response->getBody()->getContents();
+        $this->assertEquals(207, $response->getStatusCode(), 'We expected a multi-status response. Full response body: ' . $responseBody);
 
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $responseBody);
@@ -80,10 +73,10 @@ class SupportedReportSetTest extends DAV\AbstractServer {
   </d:prop>
 </d:propfind>';
 
-        $this->sendPROPFIND($xml);
-        $responseBody = $this->getResponse()->getBody()->getContents();
+        $response = $this->sendPROPFIND($xml);
+        $responseBody = $response->getBody()->getContents();
 
-        $this->assertEquals(207, $this->getResponse()->getStatusCode(), 'We expected a multi-status response. Full response body: ' . $responseBody);
+        $this->assertEquals(207, $response->getStatusCode(), 'We expected a multi-status response. Full response body: ' . $responseBody);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", "xmlns\\1=\"urn:DAV\"", $responseBody);
         $xml = simplexml_load_string($body);

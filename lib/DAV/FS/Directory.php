@@ -73,7 +73,11 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
 
         $path = $this->path . '/' . $name;
 
-        if (!file_exists($path)) throw new DAV\Exception\NotFound('File with name ' . $path . ' could not be located');
+        if (!$this->childExists($name)) {
+
+            throw new DAV\Exception\NotFound('File with name ' . $path . ' could not be located');
+
+        }
 
         if (is_dir($path)) {
 
@@ -118,7 +122,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     function childExists($name) {
 
         $path = $this->path . '/' . $name;
-        return file_exists($path);
+        return file_exists($path) || is_link($path);
 
     }
 

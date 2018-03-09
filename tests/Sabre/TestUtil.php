@@ -22,7 +22,7 @@ class TestUtil {
 
             if ($node == '.' || $node == '..') continue;
             $myPath = $path . '/' . $node;
-            if (is_file($myPath)) {
+            if (is_file($myPath) || is_link($myPath)) {
                 unlink($myPath);
             } else {
                 self::deleteTree($myPath);

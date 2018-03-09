@@ -96,7 +96,14 @@ abstract class Node implements INode {
      */
     function getLastModified() {
 
-        return filemtime($this->path);
+        $time = @filemtime($this->path);
+        if ($time === false) {
+
+            // broken symlink?
+            $time = lstat($this->path)['mtime'];
+
+        }
+        return $time;
 
     }
 

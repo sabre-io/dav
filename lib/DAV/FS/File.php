@@ -55,7 +55,15 @@ class File extends Node implements DAV\IFile {
      */
     function getSize() {
 
-        return filesize($this->path);
+        $size = @filesize($this->path);
+        if ($size === false && lstat($this->path) !== false) {
+
+            // report broken symlink as zero, size of symlink
+            // itself is most likely not helpful
+            $size = 0;
+
+        }
+        return $size;
 
     }
 
@@ -71,10 +79,18 @@ class File extends Node implements DAV\IFile {
      */
     function getETag() {
 
+        $inode = @fileinode($this->path);
+        if ($inode === false) {
+
+            // broken symlink?
+            $inode = lstat($this->path)['ino'];
+
+        }
+
         return '"' . sha1(
-            fileinode($this->path) .
-            filesize($this->path) .
-            filemtime($this->path)
+            $inode .
+            $this->getSize() .
+            $this->getLastModified()
         ) . '"';
 
     }

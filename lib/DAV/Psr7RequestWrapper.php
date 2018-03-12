@@ -6,6 +6,7 @@ namespace Sabre\DAV;
 
 use function GuzzleHttp\Psr7\stream_for;
 use GuzzleHttp\Psr7\StreamWrapper;
+use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\ServerRequestInterface;
 use function Sabre\HTTP\decodePath;
 use Sabre\HTTP\RequestInterface;
@@ -237,7 +238,12 @@ class Psr7RequestWrapper implements RequestInterface
      */
     function getUrl(): string
     {
-        return $this->request->getRequestTarget();
+        $uri = $this->request->getUri();
+        if ($uri instanceof  Uri) {
+            return $uri->__toString();
+        } else {
+            return Uri::composeComponents($uri->getScheme(), $uri->getAuthority(), $uri->getPath(), $uri->getQuery(), $uri->getFragment());
+        }
     }
 
     /**

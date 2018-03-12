@@ -239,11 +239,12 @@ class Psr7RequestWrapper implements RequestInterface
     function getUrl(): string
     {
         $uri = $this->request->getUri();
-        if ($uri instanceof  Uri) {
-            return $uri->__toString();
-        } else {
-            return Uri::composeComponents($uri->getScheme(), $uri->getAuthority(), $uri->getPath(), $uri->getQuery(), $uri->getFragment());
+        $query = $uri->getQuery();
+        if (empty($query)) {
+            return $uri->getPath();
         }
+
+        return $uri->getPath() . '?' . $query;
     }
 
     /**
@@ -304,6 +305,7 @@ class Psr7RequestWrapper implements RequestInterface
 
         // Removing duplicated slashes.
         $uri = str_replace('//', '/', $this->getUrl());
+
 
         $uri = normalize($uri);
         $baseUri = normalize($this->getBaseUrl());

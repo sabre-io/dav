@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Uri;
 use Sabre\DAVServerTest;
 
 /**
@@ -106,8 +107,11 @@ class HttpGetTest extends DAVServerTest {
      */
     function testGetDoubleSlash() {
 
-        $request = new ServerRequest('GET', '//file1');
+        $request = new ServerRequest('GET', 'http://localhost//file1');
+        $this->assertNotEmpty($request->getUri()->getPath());
+
         $response = $this->request($request, 200);
+
 
         // Removing Last-Modified because it keeps changing.
         $headers = $response->getHeaders();

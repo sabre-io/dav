@@ -247,17 +247,16 @@ class ServerTest extends DAV\AbstractServer{
 
         mkdir($this->tempDir . '/testcol');
 
-        $request = new HTTP\Request('COPY', '/test.txt', ['Destination' => '/testcol/test2.txt']);
-        $this->server->httpRequest = ($request);
-        $this->server->exec();
+        $request = new ServerRequest('COPY', '/test.txt', ['Destination' => '/testcol/test2.txt']);
+        $response = $this->server->handle($request);
 
-        $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(0, $response->getBody()->getSize());
 
         $this->assertEquals([
             'Content-Length'  => ['0'],
             'X-Sabre-Version' => [DAV\Version::VERSION],
-        ], $this->response->getHeaders());
+        ], $response->getHeaders());
 
         $this->assertTrue(is_file($this->tempDir . '/test.txt'));
         $this->assertTrue(is_file($this->tempDir . '/testcol/test2.txt'));

@@ -25,7 +25,7 @@ before_script:
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
   - composer update --prefer-dist $LOWEST_DEPS
-
+  - cat -n tests/Sabre/DAV/FSExt/ServerTest.php
 # Required for postgres 9.5
 dist: trusty
 

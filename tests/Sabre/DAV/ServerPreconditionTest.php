@@ -193,8 +193,6 @@ class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
             'ETag'            => ['"abc123"'],
             'X-Sabre-Version' => [Version::VERSION],
         ], $response->getHeaders());
-        $this->markTestIncomplete('Need new SAPI test.');
-
     }
 
     /**

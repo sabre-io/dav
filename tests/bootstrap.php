@@ -4,6 +4,9 @@ set_include_path(__DIR__ . '/../lib/' . PATH_SEPARATOR . __DIR__ . PATH_SEPARATO
 
 $autoLoader = include __DIR__ . '/../vendor/autoload.php';
 
+class PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {
+
+}
 // SabreDAV tests auto loading
 $autoLoader->add('Sabre\\', __DIR__);
 // VObject tests auto loading

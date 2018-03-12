@@ -194,4 +194,20 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(404, $response->getStatusCode(), 'Error: ' . $response->getBody()->getContents());
 
     }
+
+    public function testGetPlugins()
+    {
+        $request = (new ServerRequest('GET', '/'))
+            ->withQueryParams([
+                'sabreAction' => 'plugins'
+            ]);
+        $response = $this->server->handle($request);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('text/html; charset=utf-8', $response->getHeaderLine('Content-Type'));
+        $responseBody = $response->getBody()->getContents();
+        /** @var  $plugin DAV\ServerPlugin */
+        foreach($this->server->getPlugins() as $plugin) {
+            $this->assertContains('<th>' . $plugin->getPluginName() . '</th>', $responseBody);
+        }
+    }
 }

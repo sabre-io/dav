@@ -2,7 +2,9 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-abstract class AbstractPDOTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+abstract class AbstractPDOTest extends TestCase {
 
     use \Sabre\DAV\DbTestHelperTrait;
 

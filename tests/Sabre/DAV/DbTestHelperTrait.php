@@ -52,7 +52,7 @@ trait DbTestHelperTrait {
                     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
                     preg_match('|PostgreSQL (\d+\.\d+)|', $version, $matches);
                     $version = $matches[1];
-                    if (version_compare($version, '9.5', '<=')) {
+                    if (version_compare($version, '9.5', '<')) {
                         DbCache::$cache[$this->driver] = null;
                         $this->markTestSkipped('We require at least Postgres 9.5. This server is running ' . $version);
                     }

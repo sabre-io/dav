@@ -222,7 +222,7 @@ class ServerSimpleTest extends AbstractServer{
         ]);
         $server = new Server();
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
 
@@ -237,7 +237,7 @@ class ServerSimpleTest extends AbstractServer{
         ]);
 
         $server = new Server();
-        $this->assertEquals('/index.php/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
 

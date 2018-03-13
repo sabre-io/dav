@@ -376,17 +376,17 @@ class Server implements
      * Only the PATH_INFO variable is considered.
      *
      * If this variable is not set, the root (/) is assumed.
-     *
+     * @param ServerRequestInterface $request
      * @return string
      */
-    public function guessBaseUri(HTTP\RequestInterface $request) {
+    public function guessBaseUri(ServerRequestInterface $request) {
+        $params = $request->getServerParams();
 
-        $pathInfo = $request->getRawServerValue('PATH_INFO');
-        $uri = $request->getRawServerValue('REQUEST_URI');
 
         // If PATH_INFO is found, we can assume it's accurate.
-        if (!empty($pathInfo)) {
-
+        if (!empty($params['PATH_INFO'])) {
+            $pathInfo = $params['PATH_INFO'];
+            $uri = $params['REQUEST_URI'];
             // We need to make sure we ignore the QUERY_STRING part
             if ($pos = strpos($uri, '?'))
                 $uri = substr($uri, 0, $pos);

@@ -2,7 +2,6 @@
 
 namespace Sabre;
 
-use PHPUnit\Framework\TestCase;
 use Sabre\HTTP\Request;
 use Sabre\HTTP\Response;
 use Sabre\HTTP\Sapi;
@@ -17,7 +16,7 @@ use Sabre\HTTP\Sapi;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class DAVServerTest extends TestCase {
+abstract class DAVServerTest extends \PHPUnit\Framework\TestCase {
 
     protected $setupCalDAV = false;
     protected $setupCardDAV = false;

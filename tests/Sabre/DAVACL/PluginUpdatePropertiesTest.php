@@ -11,7 +11,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new DAV\SimpleCollection('foo'),
         ];
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin(new Plugin());
 
@@ -32,7 +32,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($plugin);
@@ -55,7 +55,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($plugin);
@@ -81,7 +81,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($plugin);
@@ -97,7 +97,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new DAV\SimpleCollection('foo'),
         ];
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($plugin);

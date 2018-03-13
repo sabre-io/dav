@@ -41,7 +41,7 @@ class HttpHeadTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Type'    => ['application/octet-stream'],
                 'Content-Length'  => [3],
                 'ETag'            => ['"' . md5('foo') . '"'],

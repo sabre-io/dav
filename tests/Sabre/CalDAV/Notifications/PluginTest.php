@@ -36,7 +36,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $root->addChild($calendars);
         $root->addChild($principals);
 
-        $this->server = new DAV\Server($root);
+        $this->server = new DAV\Server($root, null, null, function(){});
 
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');
@@ -121,7 +121,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
             new SystemStatus('foo', '"1"')
         );
 
-        $server = new DAV\Server([$notification]);
+        $server = new DAV\Server([$notification], null, null, function(){});
         $caldav = new Plugin();
         $server->addPlugin($caldav);
         $request = new ServerRequest('GET', '/foo.xml');
@@ -149,7 +149,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function testGETPassthrough() {
 
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $caldav = new Plugin();
 
         $server->addPlugin($caldav);

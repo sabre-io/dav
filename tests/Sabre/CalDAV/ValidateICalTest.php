@@ -42,7 +42,7 @@ class ValidateICalTest extends \PHPUnit_Framework_TestCase {
             new CalendarRoot($principalBackend, $this->calBackend),
         ];
 
-        $this->server = new DAV\Server($tree);
+        $this->server = new DAV\Server($tree, null, null, function(){});
         $this->server->debugExceptions = true;
 
         $plugin = new Plugin();
@@ -89,7 +89,7 @@ ICS;
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Length'  => ['0'],
             'ETag'            => ['"' . md5($ics) . '"'],
         ], $response->getHeaders());
@@ -157,7 +157,6 @@ ICS;
 
         $this->assertEquals(201, $response->getStatusCode(), 'Incorrect status returned! Full response body: ' . $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version'  => [DAV\Version::VERSION],
             'Content-Length'   => ['0'],
             'X-Sabre-Ew-Gross' => ['iCalendar validation warning: VERSION MUST appear exactly once in a VCALENDAR component'],
         ], $response->getHeaders());

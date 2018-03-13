@@ -82,8 +82,10 @@ ICS
             'export' => ''
         ]);
 
+        $old = DAV\Server::$exposeVersion;
+        DAV\Server::$exposeVersion = true;
         $response = $this->request($request, 200);
-
+        DAV\Server::$exposeVersion = $old;
         $this->assertEquals('text/calendar', $response->getHeaderLine('Content-Type'));
 
         $obj = VObject\Reader::read($response->getBody()->getContents());
@@ -105,9 +107,7 @@ ICS
             'GET',
             '/calendars/admin/UUID-123467?export'
         ))->withQueryParams(['export' => '1']);
-        DAV\Server::$exposeVersion = false;
         $response = $this->request($request);
-        DAV\Server::$exposeVersion = true;
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('text/calendar', $response->getHeaderLine('Content-Type'));
@@ -172,7 +172,11 @@ ICS
             'export' => ''
         ]);
 
+        $old = DAV\Server::$exposeVersion;
+        DAV\Server::$exposeVersion = true;
         $response = $this->request($request, 200);
+        DAV\Server::$exposeVersion = $old;
+
         $this->assertEquals('text/calendar', $response->getHeaderLine('Content-Type'));
 
         $obj = VObject\Reader::read($response->getBody()->getContents());
@@ -181,6 +185,7 @@ ICS
         $this->assertEquals(1, count($obj->VERSION));
         $this->assertEquals(1, count($obj->CALSCALE));
         $this->assertEquals(1, count($obj->PRODID));
+
         $this->assertTrue(strpos((string)$obj->PRODID, DAV\Version::VERSION) !== false);
         $this->assertEquals(1, count($obj->VTIMEZONE));
         $this->assertEquals(1, count($obj->VEVENT));

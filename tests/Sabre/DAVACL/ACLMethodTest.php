@@ -14,7 +14,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
     function testCallback() {
 
         $acl = new Plugin();
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
@@ -32,7 +32,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new DAV\SimpleCollection('test'),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -51,7 +51,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', []),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
 
         $body = '<?xml version="1.0"?>
@@ -75,7 +75,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', []),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -104,7 +104,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             ]),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -130,7 +130,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', []),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -156,7 +156,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', []),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
         $server->on('getSupportedPrivilegeSet', function($node, &$supportedPrivilegeSet) {
             $supportedPrivilegeSet['{DAV:}foo'] = ['abstract' => true];
         });
@@ -193,7 +193,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', $oldACL),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -227,7 +227,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', $oldACL),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -261,7 +261,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('test', $oldACL),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">
@@ -300,7 +300,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
             ]),
         ];
         $acl = new Plugin();
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function() {});
 
         $body = '<?xml version="1.0"?>
 <d:acl xmlns:d="DAV:">

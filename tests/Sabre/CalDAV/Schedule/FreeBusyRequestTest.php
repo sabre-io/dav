@@ -76,7 +76,7 @@ END:VCALENDAR',
             'Content-Type' => 'text/calendar',
         ]);
 
-        $this->server = new DAV\Server($tree);
+        $this->server = new DAV\Server($tree, null, null, function(){});
 
         $this->aclPlugin = new DAVACL\Plugin();
         $this->aclPlugin->allowUnauthenticatedAccess = false;
@@ -306,7 +306,7 @@ ICS;
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-            'X-Sabre-Version' => [DAV\Version::VERSION]
+
         ], $response->getHeaders());
 
         $strings = [
@@ -380,7 +380,7 @@ ICS;
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-            'X-Sabre-Version' => [DAV\Version::VERSION]
+
         ], $response->getHeaders());
 
         $strings = [
@@ -446,7 +446,7 @@ ICS;
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-            'X-Sabre-Version' => [DAV\Version::VERSION]
+
         ], $response->getHeaders());
 
         $strings = [
@@ -511,7 +511,7 @@ ICS;
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-            'X-Sabre-Version' => [DAV\Version::VERSION]
+
         ], $response->getHeaders());
 
         $strings = [
@@ -591,7 +591,6 @@ ICS;
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
             'Content-Type' => ['application/xml'],
-            'X-Sabre-Version' => [\Sabre\DAV\Version::VERSION],
         ], $response->getHeaders());
 
         $strings = [

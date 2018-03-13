@@ -33,7 +33,7 @@ abstract class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
 
         $this->plugin = new Plugin();
         $this->plugin->directories = ['directory'];
-        $this->server = new DAV\Server($tree);
+        $this->server = new DAV\Server($tree, null, null, function(){});
 
         $this->server->addPlugin($this->plugin);
         $this->server->debugExceptions = true;

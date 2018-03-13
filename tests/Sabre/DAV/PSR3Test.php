@@ -8,7 +8,7 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
 
     function testIsLoggerAware() {
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertInstanceOf(
             'Psr\Log\LoggerAwareInterface',
             $server
@@ -18,7 +18,7 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
 
     function testGetNullLoggerByDefault() {
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertInstanceOf(
             'Psr\Log\NullLogger',
             $server->getLogger()
@@ -28,7 +28,7 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
 
     function testSetLogger() {
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $logger = new MockLogger();
 
         $server->setLogger($logger);
@@ -46,7 +46,7 @@ class PSR3Test extends \PHPUnit_Framework_TestCase {
      */
     function testLogException() {
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $logger = new MockLogger();
 
         $server->setLogger($logger);

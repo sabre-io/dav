@@ -20,7 +20,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
         $bar = new SimpleCollection('bar');
         $root = new SimpleCollection('webdav', [$bar]);
 
-        $server = new Server($root);
+        $server = new Server($root, null, null, function() {});
         $server->setBaseUri('/webdav/');
 
         $request = new ServerRequest('GET', '/webdav/bar', [
@@ -80,7 +80,7 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $tree = new Tree($dir);
 
-        $server = new Server($tree);
+        $server = new Server($tree, null, null, function(){});
         $server->setBaseUri('/webdav/');
         $response = $server->handle($request);
         $this->assertEquals(201, $response->getStatusCode(), $response->getBody()->getContents());

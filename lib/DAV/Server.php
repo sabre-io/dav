@@ -4,6 +4,7 @@ namespace Sabre\DAV;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use function Http\Response\send;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -71,13 +72,6 @@ class Server implements
      * @var Psr7RequestWrapper
      */
     private $httpRequest;
-
-    /**
-     * PHP HTTP Sapi
-     *
-     * @var HTTP\Sapi
-     */
-    private $sapi;
 
     /**
      * The list of plugins
@@ -194,6 +188,10 @@ class Server implements
     static $exposeVersion = true;
 
     /**
+     * @var callable Callable that sends a PSR7 response object.
+     */
+    private $responseSender;
+    /**
      * Sets up the server
      *
      * If a Sabre\DAV\Tree object is passed as an argument, it will
@@ -208,8 +206,14 @@ class Server implements
      *
      * @param Tree|INode|array|null $treeOrNode The tree object
      * @param \Closure A response factory
+     * @param ServerRequestInterface Example request; needed for some getters during tests. [TEMPORARY]
      */
-    function __construct($treeOrNode = null, \Closure $responseFactory = null) {
+    public function __construct(
+        $treeOrNode = null,
+        \Closure $responseFactory = null,
+        ServerRequestInterface $request = null,
+        callable $responseSender = null
+    ) {
 
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
@@ -228,7 +232,6 @@ class Server implements
         }
 
         $this->xml = new Xml\Service();
-        $this->sapi = new HTTP\Sapi();
 
         if (!isset($responseFactory) && class_exists(Response::class)) {
             $responseFactory = function () {
@@ -239,8 +242,24 @@ class Server implements
         if (!isset($responseFactory)) {
             throw new Exception('No response factory given and guzzle is not available');
         }
+
+        if (!isset($request) && class_exists(ServerRequest::class)) {
+            $request = new ServerRequest('GET', '');
+        }
+
+        if (!isset($responseFactory)) {
+            throw new Exception('No request was given and guzzle is not available');
+        }
+
+        if (!isset($responseSender)) {
+            $responseSender = function(\Psr\Http\Message\ResponseInterface $response) {
+                send($response);
+            };
+        }
+
         $this->httpResponse = new Psr7ResponseWrapper($responseFactory);
-        $this->httpRequest = new Psr7RequestWrapper(new ServerRequest('GET', ''));
+        $this->httpRequest = new Psr7RequestWrapper($request);
+        $this->responseSender = $responseSender;
         $this->addPlugin(new CorePlugin());
     }
 
@@ -259,8 +278,9 @@ class Server implements
      * Starts the DAV Server
      *
      * @return void
+     * @deprecated
      */
-    function start() {
+    public function start() {
 
         try {
 
@@ -276,71 +296,13 @@ class Server implements
             $this->httpRequest->setBaseUrl($this->getBaseUri());
             $this->invokeMethod($this->httpRequest, $this->httpResponse);
         } catch (\Throwable $e) {
-
             try {
                 $this->emit('exception', [$e]);
             } catch (\Exception $ignore) {
             }
-            $DOM = new \DOMDocument('1.0', 'utf-8');
-            $DOM->formatOutput = true;
-
-            $error = $DOM->createElementNS('DAV:', 'd:error');
-            $error->setAttribute('xmlns:s', self::NS_SABREDAV);
-            $DOM->appendChild($error);
-
-            $h = function($v) {
-
-                return htmlspecialchars((string)$v, ENT_NOQUOTES, 'UTF-8');
-
-            };
-
-            if (self::$exposeVersion) {
-                $error->appendChild($DOM->createElement('s:sabredav-version', $h(Version::VERSION)));
-            }
-
-            $error->appendChild($DOM->createElement('s:exception', $h(get_class($e))));
-            $error->appendChild($DOM->createElement('s:message', $h($e->getMessage())));
-            if ($this->debugExceptions) {
-                $error->appendChild($DOM->createElement('s:file', $h($e->getFile())));
-                $error->appendChild($DOM->createElement('s:line', $h($e->getLine())));
-                $error->appendChild($DOM->createElement('s:code', $h($e->getCode())));
-                $error->appendChild($DOM->createElement('s:stacktrace', $h($e->getTraceAsString())));
-            }
-
-            if ($this->debugExceptions) {
-                $previous = $e;
-                while ($previous = $previous->getPrevious()) {
-                    $xPrevious = $DOM->createElement('s:previous-exception');
-                    $xPrevious->appendChild($DOM->createElement('s:exception', $h(get_class($previous))));
-                    $xPrevious->appendChild($DOM->createElement('s:message', $h($previous->getMessage())));
-                    $xPrevious->appendChild($DOM->createElement('s:file', $h($previous->getFile())));
-                    $xPrevious->appendChild($DOM->createElement('s:line', $h($previous->getLine())));
-                    $xPrevious->appendChild($DOM->createElement('s:code', $h($previous->getCode())));
-                    $xPrevious->appendChild($DOM->createElement('s:stacktrace', $h($previous->getTraceAsString())));
-                    $error->appendChild($xPrevious);
-                }
-            }
-
-
-            if ($e instanceof Exception) {
-
-                $httpCode = $e->getHTTPCode();
-                $e->serialize($this, $error);
-                $headers = $e->getHTTPHeaders($this);
-
-            } else {
-
-                $httpCode = 500;
-                $headers = [];
-
-            }
-            $headers['Content-Type'] = 'application/xml; charset=utf-8';
-
-            $this->httpResponse->setStatus($httpCode);
-            $this->httpResponse->setHeaders($headers);
-            $this->httpResponse->setBody($DOM->saveXML());
+            $this->renderError($e);
         }
-
+        $this->sendResponse($this->httpResponse->getResponse());
     }
 
     /**
@@ -481,20 +443,16 @@ class Server implements
      * @param bool $sendResponse Whether to send the HTTP response to the DAV client.
      * @return void
      */
-    function invokeMethod(RequestInterface $request, ResponseInterface $response, $sendResponse = true) {
+    function invokeMethod(RequestInterface $request, Psr7ResponseWrapper $response, $sendResponse = true) {
 
         $method = $request->getMethod();
 
         if (!$this->emit('beforeMethod:' . $method, [$request, $response])) return;
 
-        if (self::$exposeVersion) {
-            $response->setHeader('X-Sabre-Version', Version::VERSION);
-        }
-
         $this->transactionType = strtolower($method);
 
         if (!$this->checkPreconditions($request, $response)) {
-            $this->sendResponse($response);
+            $this->sendResponse($response->getResponse());
             return;
         }
 
@@ -511,7 +469,7 @@ class Server implements
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
 
         if ($sendResponse) {
-            $this->sendResponse($response);
+            $this->sendResponse($response->getResponse());
             $this->emit('afterResponse', [$request, $response]);
         }
 
@@ -1707,16 +1665,93 @@ class Server implements
     {
         $this->httpRequest = new Psr7RequestWrapper($request);
         $this->httpResponse->reset();
-        $this->start();
+        $this->httpResponse->setHttpVersion($request->getProtocolVersion());
+        try {
+            // Setting the base url
+            $this->httpRequest->setBaseUrl($this->getBaseUri());
+            $this->invokeMethod($this->httpRequest, $this->httpResponse);
+        } catch (\Throwable $e) {
+            try {
+                $this->emit('exception', [$e]);
+            } catch (\Exception $ignore) {
+            }
+            $this->renderError($e);
+        }
         return $this->httpResponse->getResponse();
     }
 
     /**
      * Temporary function; replaces ->sapi->sendResponse().
      */
-    private function sendResponse(HTTP\ResponseInterface $response)
+    private function sendResponse(\Psr\Http\Message\ResponseInterface $response)
     {
-        // Do something here.
+        return call_user_func($this->responseSender, $response);
+    }
 
+    protected function renderError(\Throwable $e)
+    {
+        $DOM = new \DOMDocument('1.0', 'utf-8');
+        $DOM->formatOutput = true;
+
+        $error = $DOM->createElementNS('DAV:', 'd:error');
+        $error->setAttribute('xmlns:s', self::NS_SABREDAV);
+        $DOM->appendChild($error);
+
+        $h = function($v) {
+
+            return htmlspecialchars((string)$v, ENT_NOQUOTES, 'UTF-8');
+
+        };
+
+        if (self::$exposeVersion) {
+            $error->appendChild($DOM->createElement('s:sabredav-version', $h(Version::VERSION)));
+        }
+
+        $error->appendChild($DOM->createElement('s:exception', $h(get_class($e))));
+        $error->appendChild($DOM->createElement('s:message', $h($e->getMessage())));
+        if ($this->debugExceptions) {
+            $error->appendChild($DOM->createElement('s:file', $h($e->getFile())));
+            $error->appendChild($DOM->createElement('s:line', $h($e->getLine())));
+            $error->appendChild($DOM->createElement('s:code', $h($e->getCode())));
+            $error->appendChild($DOM->createElement('s:stacktrace', $h($e->getTraceAsString())));
+        }
+
+        if ($this->debugExceptions) {
+            $previous = $e;
+            while ($previous = $previous->getPrevious()) {
+                $xPrevious = $DOM->createElement('s:previous-exception');
+                $xPrevious->appendChild($DOM->createElement('s:exception', $h(get_class($previous))));
+                $xPrevious->appendChild($DOM->createElement('s:message', $h($previous->getMessage())));
+                $xPrevious->appendChild($DOM->createElement('s:file', $h($previous->getFile())));
+                $xPrevious->appendChild($DOM->createElement('s:line', $h($previous->getLine())));
+                $xPrevious->appendChild($DOM->createElement('s:code', $h($previous->getCode())));
+                $xPrevious->appendChild($DOM->createElement('s:stacktrace', $h($previous->getTraceAsString())));
+                $error->appendChild($xPrevious);
+            }
+        }
+
+
+        if ($e instanceof Exception) {
+
+            $httpCode = $e->getHTTPCode();
+            $e->serialize($this, $error);
+            $headers = $e->getHTTPHeaders($this);
+
+        } else {
+
+            $httpCode = 500;
+            $headers = [];
+
+        }
+        $headers['Content-Type'] = 'application/xml; charset=utf-8';
+        // Some headers are expected to be retained.
+        if (!empty($this->httpResponse->getResponse()->getHeader('X-Sabre-Temp'))) {
+            $headers['X-Sabre-Temp'] = $this->httpResponse->getResponse()->getHeader('X-Sabre-Temp');
+        }
+
+        $this->httpResponse->reset();
+        $this->httpResponse->setStatus($httpCode);
+        $this->httpResponse->setHeaders($headers);
+        $this->httpResponse->setBody($DOM->saveXML());
     }
 }

@@ -22,7 +22,7 @@ class SpecificationTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new File(SABRE_TEMPDIR . '/foobar.txt')
         ];
-        $server = new Server($tree);
+        $server = new Server($tree, null, null, function(){});
         $server->debugExceptions = true;
         $server->addPlugin(new Plugin());
 

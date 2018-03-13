@@ -20,7 +20,7 @@ class LockedTest extends \PHPUnit_Framework_TestCase {
         $lockInfo->uri = '/foo';
         $locked = new Locked($lockInfo);
 
-        $locked->serialize(new DAV\Server(), $root);
+        $locked->serialize(new DAV\Server(null, null, null, function() {}), $root);
 
         $output = $dom->saveXML();
 
@@ -49,7 +49,7 @@ class LockedTest extends \PHPUnit_Framework_TestCase {
         $lockInfo->uri = '/foo&bar';
         $locked = new Locked($lockInfo);
 
-        $locked->serialize(new DAV\Server(), $root);
+        $locked->serialize(new DAV\Server(null, null, null, function(){}), $root);
 
         $output = $dom->saveXML();
 

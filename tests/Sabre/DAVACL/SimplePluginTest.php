@@ -118,7 +118,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $server->addPlugin($plugin);
         $this->assertEquals($expected, $plugin->getFlatPrivilegeSet(''));
 
@@ -128,7 +128,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $acl = new Plugin();
         $acl->allowUnauthenticatedAccess = false;
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $server->addPlugin($acl);
 
         $this->assertEquals([], $acl->getCurrentUserPrincipals());
@@ -147,7 +147,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $acl = new Plugin();
         $acl->allowUnauthenticatedAccess = false;
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $server->addPlugin($acl);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
@@ -175,7 +175,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         $acl = new Plugin();
         $acl->allowUnauthenticatedAccess = false;
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $server->addPlugin($acl);
 
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
@@ -216,7 +216,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
             new MockACLNode('foo', $acl),
         ];
 
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $aclPlugin = new Plugin();
         $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
@@ -252,7 +252,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         ];
 
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $aclPlugin = new Plugin();
         $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);
@@ -305,7 +305,7 @@ class SimplePluginTest extends \PHPUnit_Framework_TestCase {
 
         ];
 
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $aclPlugin = new Plugin();
         $aclPlugin->allowUnauthenticatedAccess = false;
         $server->addPlugin($aclPlugin);

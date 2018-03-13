@@ -21,7 +21,7 @@ class AllowAccessTest extends \PHPUnit_Framework_TestCase {
             ]),
         ];
 
-        $this->server = new DAV\Server($nodes);
+        $this->server = new DAV\Server($nodes, null, null, function(){});
         $this->server->addPlugin(
             new DAV\Auth\Plugin(
                 new DAV\Auth\Backend\Mock()

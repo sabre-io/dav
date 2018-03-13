@@ -22,7 +22,7 @@ class MSWordTest extends \PHPUnit_Framework_TestCase {
         mkdir(SABRE_TEMPDIR . '/mstest');
         $tree = new DAV\FS\Directory(SABRE_TEMPDIR . '/mstest');
 
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $server->debugExceptions = true;
         $locksBackend = new Backend\File(SABRE_TEMPDIR . '/locksdb');
         $locksPlugin = new Plugin($locksBackend);

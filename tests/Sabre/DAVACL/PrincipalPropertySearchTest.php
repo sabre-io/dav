@@ -4,6 +4,7 @@ namespace Sabre\DAVACL;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
+use Sabre\DAV\Server;
 use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
@@ -18,7 +19,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new DAV\Server($dir);
+        $fakeServer = new Server($dir, null, null, function() {});
         $fakeServer->debugExceptions = true;
         $plugin = new MockPlugin();
         $plugin->allowAccessToNodesWithoutACL = true;
@@ -56,7 +57,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $response = $server->handle($request);
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -90,7 +91,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $response->getStatusCode(), "Full body: " . $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
         ], $response->getHeaders());
@@ -131,7 +132,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
         ], $response->getHeaders());
@@ -196,7 +197,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
         ], $response->getHeaders());
@@ -260,7 +261,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
         ], $response->getHeaders());
@@ -321,7 +322,7 @@ class PrincipalPropertySearchTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Vary'            => ['Brief,Prefer'],
         ], $response->getHeaders());

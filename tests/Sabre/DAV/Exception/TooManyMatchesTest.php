@@ -4,6 +4,7 @@ namespace Sabre\DAV\Exception;
 
 use DOMDocument;
 use Sabre\DAV;
+use Sabre\DAV\Server;
 
 class TooManyMatchesTest extends \PHPUnit_Framework_TestCase {
 
@@ -18,7 +19,7 @@ class TooManyMatchesTest extends \PHPUnit_Framework_TestCase {
 
         $locked = new TooManyMatches();
 
-        $locked->serialize(new DAV\Server(), $root);
+        $locked->serialize(new Server(null, null, null, function(){}), $root);
 
         $output = $dom->saveXML();
 

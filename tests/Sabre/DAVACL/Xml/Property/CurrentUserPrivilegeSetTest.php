@@ -16,7 +16,7 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
             '{DAV:}write',
         ];
         $prop = new CurrentUserPrivilegeSet($privileges);
-        $xml = (new DAV\Server())->xml->write('{DAV:}root', $prop);
+        $xml = (new DAV\Server(null, null, null, function(){}))->xml->write('{DAV:}root', $prop);
 
         $expected = <<<XML
 <d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">

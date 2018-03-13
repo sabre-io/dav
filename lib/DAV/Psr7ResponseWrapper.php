@@ -282,11 +282,13 @@ class Psr7ResponseWrapper implements ResponseInterface
     public function reset()
     {
         $responseFactory = $this->responseFactory;
-        $response = $responseFactory();
-        if (!$response instanceof \Psr\Http\Message\ResponseInterface) {
-            throw new Exception('Response factory must return instance of PSR ResponseInterface');
+        /** @var \Psr\Http\Message\ResponseInterface $response */
+        $response = $responseFactory()->withStatus(500);
+
+        if (Server::$exposeVersion) {
+            $response = $response->withAddedHeader('X-Sabre-Version', Version::VERSION);
         }
-        $this->response = $response->withStatus(500);
+        $this->response = $response;
 
     }
 }

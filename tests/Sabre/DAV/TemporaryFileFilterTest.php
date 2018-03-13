@@ -47,7 +47,8 @@ class TemporaryFileFilterTest extends AbstractServer {
         // mimicking an OS/X resource fork
         $request = new ServerRequest('PUT', '/._testput.txt', ['If-None-Match' => '*'], 'Testing new file');
 
-        $response = $this->server->handle($request, 201);
+        $response = $this->server->handle($request);
+        $this->assertEquals(201, $response->getStatusCode());
         $responseBody = $response->getBody()->getContents();
 
         $this->assertEquals('', $responseBody);
@@ -58,7 +59,8 @@ class TemporaryFileFilterTest extends AbstractServer {
 
         $this->assertFalse(file_exists(SABRE_TEMPDIR . '/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
 
-        $response = $this->server->handle($request, 412);
+        $response = $this->server->handle($request);
+        $this->assertEquals(412, $response->getStatusCode());
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
             'Content-Type' => ['application/xml; charset=utf-8'],

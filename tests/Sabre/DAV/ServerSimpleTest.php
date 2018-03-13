@@ -13,7 +13,7 @@ class ServerSimpleTest extends AbstractServer{
             new SimpleCollection('hello')
         ];
 
-        $server = new Server($nodes);
+        $server = new Server($nodes, null, null, function() {});
         $this->assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
 
     }
@@ -23,9 +23,7 @@ class ServerSimpleTest extends AbstractServer{
      * @expectedException \Sabre\DAV\Exception
      */
     function testConstructInvalidArg() {
-
-        $server = new Server(1);
-
+        $server = new Server(1, null,  null, function() {});
     }
 
     function testOptions() {
@@ -40,7 +38,7 @@ class ServerSimpleTest extends AbstractServer{
             'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
-            'X-Sabre-Version' => [Version::VERSION],
+
         ], $response->getHeaders());
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -61,7 +59,7 @@ class ServerSimpleTest extends AbstractServer{
             'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, MKCOL'],
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
-            'X-Sabre-Version' => [Version::VERSION],
+
         ], $response->getHeaders());
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -74,7 +72,7 @@ class ServerSimpleTest extends AbstractServer{
         $response = $this->server->handle(new ServerRequest('BLABLA', '/'));
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -95,7 +93,7 @@ class ServerSimpleTest extends AbstractServer{
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'Last-Modified'   => [HTTP\toDate(new \DateTime('@' . filemtime($filename)))],
@@ -220,7 +218,7 @@ class ServerSimpleTest extends AbstractServer{
             'PATH_INFO'      => '/root',
             'REQUEST_URI' => '/index.php/root'
         ]);
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
 
         $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
@@ -236,7 +234,7 @@ class ServerSimpleTest extends AbstractServer{
             'REQUEST_URI' => '/index.php/dir/path2/path%20with%20spaces',
         ]);
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
@@ -254,7 +252,7 @@ class ServerSimpleTest extends AbstractServer{
         ];
 
         $httpRequest = new ServerRequest($serverVars);
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $server->httpRequest = $httpRequest;
 
         $this->assertEquals('/some%20directory+mixed/index.php/', $server->guessBaseUri());
@@ -267,7 +265,7 @@ class ServerSimpleTest extends AbstractServer{
             'REQUEST_URI' => '/index.php/root/'
         ]);
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
@@ -275,7 +273,7 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriNoPathInfo() {
 
         $httpRequest = new ServerRequest('GET', '/index.php/root');
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertEquals('/', $server->guessBaseUri($httpRequest));
 
     }
@@ -283,7 +281,7 @@ class ServerSimpleTest extends AbstractServer{
     function testGuessBaseUriNoPathInfo2() {
 
         $httpRequest = new ServerRequest('GET', '/a/b/c/test.php');
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $this->assertEquals('/', $server->guessBaseUri($httpRequest));
 
     }
@@ -297,7 +295,7 @@ class ServerSimpleTest extends AbstractServer{
             'REQUEST_URI' => '/index.php/root?query_string=blabla',
             'PATH_INFO'      => '/root',
         ]);
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
 
         $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
@@ -312,7 +310,7 @@ class ServerSimpleTest extends AbstractServer{
             'PATH_INFO'      => '/root',
             'REQUEST_URI' => '/index.php/root/heyyy',
         ]);
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $server->guessBaseUri($httpRequest);
 
     }
@@ -339,7 +337,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $response = $this->server->handle($request);
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             ],
             $response->getHeaders()
@@ -363,7 +361,7 @@ class ServerSimpleTest extends AbstractServer{
         $response = $this->server->handle($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'testheader'      => ['testvalue'],
             ],
             $response->getHeaders()

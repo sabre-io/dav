@@ -54,7 +54,7 @@ class ServerPluginTest extends AbstractServer {
             'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, BEER, WINE'],
             'Accept-Ranges'   => ['bytes'],
             'Content-Length'  => ['0'],
-            'X-Sabre-Version' => [Version::VERSION],
+
         ], $response->getHeaders());
 
         $this->assertEquals(200, $response->getStatusCode());

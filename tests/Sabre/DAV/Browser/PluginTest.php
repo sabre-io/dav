@@ -31,7 +31,6 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
-                'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
@@ -58,7 +57,6 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
-                'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
@@ -79,7 +77,6 @@ class PluginTest extends DAV\AbstractServer{
         $this->assertEquals(200, $response->getStatusCode(), "Incorrect status received. Full response body: " . $body);
         $this->assertEquals(
             [
-                'X-Sabre-Version'         => [DAV\Version::VERSION],
                 'Content-Type'            => ['text/html; charset=utf-8'],
                 'Content-Security-Policy' => ["default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';"]
             ],
@@ -137,7 +134,7 @@ class PluginTest extends DAV\AbstractServer{
 
         $this->assertEquals(302, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Location'        => ['/'],
         ], $response->getHeaders());
 
@@ -157,7 +154,6 @@ class PluginTest extends DAV\AbstractServer{
 
         $this->assertEquals(200, $response->getStatusCode(), 'Error: ' . $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version'         => [DAV\Version::VERSION],
             'Content-Type'            => ['image/vnd.microsoft.icon'],
             'Content-Length'          => ['4286'],
             'Cache-Control'           => ['public, max-age=1209600'],

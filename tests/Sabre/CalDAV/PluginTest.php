@@ -6,13 +6,14 @@ use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Psr7\ServerRequest;
 use Sabre\DAV;
+use Sabre\DAV\Server;
 use Sabre\DAVACL;
 use Sabre\HTTP\Response;
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     /**
-     * @var DAV\Server
+     * @var Server
      */
     protected $server;
     /**
@@ -74,7 +75,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase {
         $root->addChild($calendars);
         $root->addChild($principals);
 
-        $this->server = new DAV\Server($root);
+        $this->server = new Server($root, null, null, function(){});
 
         $this->server->debugExceptions = true;
         $this->server->setBaseUri('/');

@@ -29,7 +29,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
             ]),
         ];
 
-        $fakeServer = new DAV\Server($tree);
+        $fakeServer = new DAV\Server($tree, null, null, function(){});
         $fakeServer->debugExceptions = true;
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
@@ -75,7 +75,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status code received. Full body: ' . $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -129,7 +129,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode(), 'Incorrect response status received. Full response body: ' . $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -190,7 +190,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -256,7 +256,7 @@ class ExpandPropertiesTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 

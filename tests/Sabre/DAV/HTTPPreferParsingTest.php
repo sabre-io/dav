@@ -13,7 +13,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
             'Prefer' => $input,
         ]);
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $server->handle($httpRequest);
         $this->assertEquals(
             $expected,
@@ -84,7 +84,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest {
             'Brief' => 't',
         ]);
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $server->handle($httpRequest);
 
         $this->assertEquals([

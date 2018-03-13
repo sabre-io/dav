@@ -51,7 +51,6 @@ ICS;
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=REPLY',
-                    'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
                 ],
             ]
         ];
@@ -123,7 +122,6 @@ ICS;
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
-                    'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
                 ],
             ]
         ];
@@ -165,7 +163,6 @@ ICS;
                     'Reply-To: Sender <sender@example.org>',
                     'From: system@example.org',
                     'Content-Type: text/calendar; charset=UTF-8; method=CANCEL',
-                    'X-Sabre-Version: ' . \Sabre\DAV\Version::VERSION,
                 ],
             ]
         ];
@@ -179,7 +176,7 @@ ICS;
 
         $plugin = new IMip\MockPlugin('system@example.org');
 
-        $server = new Server();
+        $server = new Server(null, null, null, function(){});
         $server->addPlugin($plugin);
         $server->emit('schedule', [$message]);
 

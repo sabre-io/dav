@@ -54,7 +54,7 @@ class PluginTest extends DAV\AbstractServer {
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
 
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             ],
             $response->getHeaders());
@@ -228,7 +228,7 @@ class PluginTest extends DAV\AbstractServer {
         
 
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             ],
             $response->getHeaders()
@@ -248,7 +248,7 @@ class PluginTest extends DAV\AbstractServer {
         
 
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             ],
             $response->getHeaders()
@@ -316,7 +316,7 @@ class PluginTest extends DAV\AbstractServer {
         $responseBody = $response->getBody()->getContents();
         $this->assertEquals(204, $response->getStatusCode(), 'Got an incorrect status code. Full response body: ' . $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Length'  => ['0'],
             ],
             $response->getHeaders()
@@ -348,7 +348,7 @@ class PluginTest extends DAV\AbstractServer {
         
         $this->assertEquals(204, $response->getStatusCode(), 'Got an incorrect status code. Full response body: ' . $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Length'  => ['0'],
             ],
             $response->getHeaders()

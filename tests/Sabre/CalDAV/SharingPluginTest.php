@@ -57,7 +57,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest {
      */
     function testSetupWithoutCoreSharingPlugin() {
 
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $server->addPlugin(
             new SharingPlugin()
         );

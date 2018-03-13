@@ -49,7 +49,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer {
         $this->assertEquals(207, $response->getStatusCode(), 'Incorrect status received. Full response body: ' . $responseBody);
 
         $this->assertEquals([
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Type'    => ['application/xml; charset=utf-8'],
                 'DAV'             => ['1, 3, extended-mkcol, 2'],
                 'Vary'            => ['Brief,Prefer'],

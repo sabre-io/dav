@@ -12,7 +12,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Length'  => ['0'],
         ], $response->getHeaders());
 
@@ -31,7 +31,7 @@ class ServerMKCOLTest extends AbstractServer {
         $response = $this->server->handle($request);
         
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -49,7 +49,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -67,7 +67,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -91,7 +91,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -116,7 +116,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -140,7 +140,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Length'  => ['0'],
         ], $response->getHeaders());
 
@@ -166,7 +166,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Length'  => ['0'],
         ], $response->getHeaders());
 
@@ -185,7 +185,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -203,7 +203,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -222,7 +222,7 @@ class ServerMKCOLTest extends AbstractServer {
 
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
             'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
         ], $response->getHeaders());
@@ -257,7 +257,7 @@ class ServerMKCOLTest extends AbstractServer {
         $this->assertEquals(207, $response->getStatusCode(), 'Wrong statuscode received. Full response body: ' . $responseBody);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 

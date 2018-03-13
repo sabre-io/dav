@@ -10,7 +10,7 @@ class NoAbstractTest extends \PHPUnit_Framework_TestCase {
 
         $ex = new NoAbstract('message');
 
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $dom = new \DOMDocument('1.0', 'utf-8');
         $root = $dom->createElementNS('DAV:', 'd:root');
         $dom->appendChild($root);

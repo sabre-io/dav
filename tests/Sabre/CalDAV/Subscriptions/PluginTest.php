@@ -3,12 +3,13 @@
 namespace Sabre\CalDAV\Subscriptions;
 
 use Sabre\DAV\PropFind;
+use Sabre\DAV\Server;
 
 class PluginTest extends \PHPUnit_Framework_TestCase {
 
     function testInit() {
 
-        $server = new \Sabre\DAV\Server();
+        $server = new Server(null, null, null, function(){});
         $plugin = new Plugin();
 
         $server->addPlugin($plugin);

@@ -53,3 +53,6 @@ foreach ($config as $key => $value) {
 
 if (!file_exists(SABRE_TEMPDIR)) mkdir(SABRE_TEMPDIR);
 if (file_exists('.sabredav')) unlink('.sabredav');
+
+
+\Sabre\DAV\Server::$exposeVersion = false;

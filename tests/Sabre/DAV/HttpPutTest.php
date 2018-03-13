@@ -46,7 +46,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('hello') . '"']
             ],
@@ -75,7 +75,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('bar') . '"']
             ],
@@ -109,7 +109,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('hello') . '"']
             ],
@@ -143,7 +143,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('hello') . '"'],
             ],
@@ -196,7 +196,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('hello') . '"']
             ],
@@ -291,7 +291,7 @@ class HttpPutTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
                 'ETag'            => ['"' . md5('hello') . '"'],
             ],
@@ -342,7 +342,7 @@ class HttpPutTest extends DAVServerTest {
         );
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
         ], $response->getHeaders());
 
     }

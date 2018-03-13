@@ -12,7 +12,7 @@ class IDirectoryTest extends \PHPUnit_Framework_TestCase {
             new DirectoryMock('directory')
         ];
 
-        $server = new DAV\Server($tree);
+        $server = new DAV\Server($tree, null, null, function(){});
         $plugin = new Plugin();
         $server->addPlugin($plugin);
 

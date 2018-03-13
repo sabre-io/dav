@@ -20,7 +20,7 @@ class BlockAccessTest extends \PHPUnit_Framework_TestCase {
             new DAV\SimpleCollection('testdir'),
         ];
 
-        $this->server = new DAV\Server($nodes);
+        $this->server = new DAV\Server($nodes, null, null, function(){});
         $this->plugin = new Plugin();
         $this->plugin->setDefaultAcl([]);
         $this->server->addPlugin(

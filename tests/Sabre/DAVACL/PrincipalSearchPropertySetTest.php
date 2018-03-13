@@ -18,7 +18,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
         $principals = new PrincipalCollection($backend);
         $dir->addChild($principals);
 
-        $fakeServer = new DAV\Server($dir);
+        $fakeServer = new DAV\Server($dir, null, null, function() {});;
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $this->assertTrue($plugin instanceof Plugin);
@@ -42,7 +42,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -60,7 +60,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody()->getContents());
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 
@@ -85,7 +85,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $response->getStatusCode(), $responseBody);
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
+
             'Content-Type'    => ['application/xml; charset=utf-8'],
         ], $response->getHeaders());
 

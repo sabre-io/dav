@@ -78,7 +78,7 @@ ics;
             '{' . Plugin::NS_CALDAV . '}calendar-timezone' => "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nEND:VTIMEZONE\r\nEND:VCALENDAR",
         ]);
 
-        $this->server = new DAV\Server([$calendar]);
+        $this->server = new DAV\Server([$calendar], null, null, function(){});
 
         $request = new ServerRequest('GET', '/calendar');
 
@@ -153,7 +153,7 @@ XML;
      */
     function testFreeBusyReportNoACLPlugin() {
 
-        $server = new DAV\Server();
+        $server = new DAV\Server(null, null, null, function(){});
         $plugin = new Plugin();
         $server->addPlugin($plugin);
 

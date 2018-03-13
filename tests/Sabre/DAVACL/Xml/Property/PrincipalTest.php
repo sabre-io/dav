@@ -42,7 +42,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
 
         $prin = new Principal(Principal::UNAUTHENTICATED);
 
-        $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin);
+        $xml = (new DAV\Server(null, null, null, function(){}))->xml->write('{DAV:}principal', $prin);
 
         $this->assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
@@ -58,7 +58,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     function testSerializeAuthenticated() {
 
         $prin = new Principal(Principal::AUTHENTICATED);
-        $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin);
+        $xml = (new DAV\Server(null, null, null, function(){}))->xml->write('{DAV:}principal', $prin);
 
         $this->assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
@@ -74,7 +74,7 @@ class PrincipalTest extends \PHPUnit_Framework_TestCase {
     function testSerializeHref() {
 
         $prin = new Principal(Principal::HREF, 'principals/admin');
-        $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin, '/');
+        $xml = (new DAV\Server(null, null, null, function(){}))->xml->write('{DAV:}principal', $prin, '/');
 
         $this->assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">

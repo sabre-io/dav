@@ -48,7 +48,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $responseBody = $response->getBody()->read($response->getHeaderLine('Content-Length'));
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [4],
             'Content-Range'   => ['bytes 2-5/13'],
@@ -71,7 +71,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [11],
             'Content-Range'   => ['bytes 2-12/13'],
@@ -95,7 +95,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [8],
             'Content-Range'   => ['bytes 5-12/13'],
@@ -141,7 +141,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
 
         $this->assertEquals(206, $response->getStatusCode());
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [4],
             'Content-Range'   => ['bytes 2-5/12'],
@@ -167,7 +167,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [4],
             'Content-Range'   => ['bytes 2-5/13'],
@@ -194,7 +194,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'ETag'            => ['"' . md5('Test contents') . '"'],
@@ -220,7 +220,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [4],
             'Content-Range'   => ['bytes 2-5/13'],
@@ -247,7 +247,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest {
         $response = $this->request($request);
 
         $this->assertEquals([
-            'X-Sabre-Version' => [Version::VERSION],
+
             'Content-Type'    => ['application/octet-stream'],
             'Content-Length'  => [13],
             'ETag'            => ['"' . md5('Test contents') . '"'],

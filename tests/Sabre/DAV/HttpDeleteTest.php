@@ -49,7 +49,7 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
             ],
             $response->getHeaders()
@@ -74,7 +74,7 @@ class HttpDeleteTest extends DAVServerTest {
 
         $this->assertEquals(
             [
-                'X-Sabre-Version' => [Version::VERSION],
+
                 'Content-Length'  => ['0'],
             ],
             $response->getHeaders()

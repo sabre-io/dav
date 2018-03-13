@@ -120,7 +120,12 @@ abstract class DAVServerTest extends \PHPUnit_Framework_TestCase {
         $this->setUpBackends();
         $this->setUpTree();
 
-        $this->server = new DAV\Server($this->tree);
+        $this->server = new DAV\Server(
+            $this->tree,
+            function() { return new \GuzzleHttp\Psr7\Response(); },
+            new ServerRequest('GET', ''),
+            function(ResponseInterface $response) { }
+        );
 
         $this->server->debugExceptions = true;
 

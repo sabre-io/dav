@@ -25,7 +25,7 @@ class PluginAdminTest extends \PHPUnit_Framework_TestCase {
             new PrincipalCollection($principalBackend),
         ];
 
-        $this->server = new DAV\Server($tree);
+        $this->server = new DAV\Server($tree, null, null, function(){});
 
         $plugin = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $this->server->addPlugin($plugin);

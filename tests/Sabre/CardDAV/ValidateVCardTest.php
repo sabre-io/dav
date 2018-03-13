@@ -33,7 +33,7 @@ class ValidateVCardTest extends \PHPUnit_Framework_TestCase {
             new AddressBookRoot($principalBackend, $this->cardBackend),
         ];
 
-        $this->server = new DAV\Server($tree);
+        $this->server = new DAV\Server($tree, null, null, function(){});
 
         $this->server->debugExceptions = true;
 

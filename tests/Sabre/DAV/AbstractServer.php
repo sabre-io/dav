@@ -2,6 +2,7 @@
 
 namespace Sabre\DAV;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Sabre\HTTP;
 
@@ -16,7 +17,12 @@ abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
 
     function setUp() {
 
-        $this->server = new Server($this->getRootNode());
+        $this->server = new Server(
+            $this->getRootNode(),
+            function() { return new \GuzzleHttp\Psr7\Response(); },
+            new ServerRequest('GET', ''),
+            function(ResponseInterface $response) { }
+        );
 
         $this->server->debugExceptions = true;
         $this->deleteTree(SABRE_TEMPDIR, false);

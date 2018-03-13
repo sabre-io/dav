@@ -9,7 +9,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new SimpleCollection('foo'),
         ];
-        $server = new Server($tree);
+        $server = new Server($tree,null, null, function(){});
 
         $result = $server->updateProperties('foo', [
             '{DAV:}foo' => 'bar'
@@ -27,7 +27,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new SimpleCollection('foo'),
         ];
-        $server = new Server($tree);
+        $server = new Server($tree, null, null, function(){});
 
         $server->on('propPatch', function($path, PropPatch $propPatch) {
             $propPatch->handleRemaining(function() { return true; });
@@ -50,7 +50,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new SimpleCollection('foo'),
         ];
-        $server = new Server($tree);
+        $server = new Server($tree, null, null, function(){});
         $server->on('propPatch', function($path, PropPatch $propPatch) {
             $propPatch->setResultCode('{DAV:}foo', 404);
             $propPatch->handleRemaining(function() { return true; });
@@ -74,7 +74,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit_Framework_TestCase {
         $tree = [
             new SimpleCollection('foo'),
         ];
-        $server = new Server($tree);
+        $server = new Server($tree, null, null, function(){});
         $server->on('propPatch', function($path, PropPatch $propPatch) {
 
             $propPatch->handle(['{DAV:}foo', '{DAV:}foo2'], function() {

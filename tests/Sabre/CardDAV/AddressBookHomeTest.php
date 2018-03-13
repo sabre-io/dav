@@ -4,7 +4,7 @@ namespace Sabre\CardDAV;
 
 use Sabre\DAV\MkCol;
 
-class AddressBookHomeTest extends \PHPUnit_Framework_TestCase {
+class AddressBookHomeTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\CardDAV\AddressBookHome

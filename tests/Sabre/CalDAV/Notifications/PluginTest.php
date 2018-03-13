@@ -9,7 +9,7 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\HTTP\Request;
 
-class PluginTest extends \PHPUnit_Framework_TestCase {
+class PluginTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\DAV\Server

@@ -7,7 +7,7 @@ use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 use Sabre\Xml\Reader;
 
-class CurrentUserPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
+class CurrentUserPrivilegeSetTest extends \PHPUnit\Framework\TestCase {
 
     function testSerialize() {
 

@@ -7,7 +7,7 @@ use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class PrincipalSearchPropertySetTest extends \PHPUnit_Framework_TestCase {
+class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase {
 
     function getServer() {
 

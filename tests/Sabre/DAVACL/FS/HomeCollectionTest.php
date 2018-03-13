@@ -4,7 +4,7 @@ namespace Sabre\DAVACL\FS;
 
 use Sabre\DAVACL\PrincipalBackend\Mock as PrincipalBackend;
 
-class HomeCollectionTest extends \PHPUnit_Framework_TestCase {
+class HomeCollectionTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * System under test

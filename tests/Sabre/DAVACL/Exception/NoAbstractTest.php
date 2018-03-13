@@ -4,7 +4,7 @@ namespace Sabre\DAVACL\Exception;
 
 use Sabre\DAV;
 
-class NoAbstractTest extends \PHPUnit_Framework_TestCase {
+class NoAbstractTest extends \PHPUnit\Framework\TestCase {
 
     function testSerialize() {
 

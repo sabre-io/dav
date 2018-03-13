@@ -4,7 +4,7 @@ namespace Sabre\DAV;
 
 require_once 'Sabre/TestUtil.php';
 
-class ObjectTreeTest extends \PHPUnit_Framework_TestCase {
+class ObjectTreeTest extends \PHPUnit\Framework\TestCase {
 
     protected $tree;
 

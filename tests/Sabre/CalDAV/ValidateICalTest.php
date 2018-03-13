@@ -8,7 +8,7 @@ use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class ValidateICalTest extends \PHPUnit_Framework_TestCase {
+class ValidateICalTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\DAV\Server

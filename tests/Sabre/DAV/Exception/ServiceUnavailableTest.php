@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\Exception;
 
-class ServiceUnavailableTest extends \PHPUnit_Framework_TestCase {
+class ServiceUnavailableTest extends \PHPUnit\Framework\TestCase {
 
     function testGetHTTPCode() {
 

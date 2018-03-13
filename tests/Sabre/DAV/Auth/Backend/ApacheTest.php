@@ -4,7 +4,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class ApacheTest extends \PHPUnit_Framework_TestCase {
+class ApacheTest extends \PHPUnit\Framework\TestCase {
 
     function testConstruct() {
 

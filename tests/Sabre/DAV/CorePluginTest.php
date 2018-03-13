@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class CorePluginTest extends \PHPUnit_Framework_TestCase {
+class CorePluginTest extends \PHPUnit\Framework\TestCase {
 
     function testGetInfo() {
 

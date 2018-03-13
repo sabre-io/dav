@@ -6,7 +6,7 @@ use Sabre\DAV;
 use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 
-class ACLTest extends \PHPUnit_Framework_TestCase {
+class ACLTest extends \PHPUnit\Framework\TestCase {
 
     function testConstruct() {
 

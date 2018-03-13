@@ -5,7 +5,7 @@ namespace Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\MkCol;
 
-class CalendarHomeTest extends \PHPUnit_Framework_TestCase {
+class CalendarHomeTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\CalDAV\CalendarHome

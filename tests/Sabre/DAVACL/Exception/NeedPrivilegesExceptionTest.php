@@ -4,7 +4,7 @@ namespace Sabre\DAVACL\Exception;
 
 use Sabre\DAV;
 
-class NeedPrivilegesExceptionTest extends \PHPUnit_Framework_TestCase {
+class NeedPrivilegesExceptionTest extends \PHPUnit\Framework\TestCase {
 
     function testSerialize() {
 

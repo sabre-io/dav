@@ -4,7 +4,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-abstract class AbstractServer extends \PHPUnit_Framework_TestCase {
+abstract class AbstractServer extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\HTTP\ResponseMock

@@ -5,7 +5,7 @@ namespace Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class FreeBusyReportTest extends \PHPUnit_Framework_TestCase {
+class FreeBusyReportTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Plugin

@@ -6,7 +6,7 @@ use Sabre\DAV;
 use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 
-class SupportedPrivilegeSetTest extends \PHPUnit_Framework_TestCase {
+class SupportedPrivilegeSetTest extends \PHPUnit\Framework\TestCase {
 
     function testSimple() {
 

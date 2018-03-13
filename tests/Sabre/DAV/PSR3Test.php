@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class PSR3Test extends \PHPUnit_Framework_TestCase {
+class PSR3Test extends \PHPUnit\Framework\TestCase {
 
     function testIsLoggerAware() {
 

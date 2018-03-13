@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\FSExt;
 
-class DirectoryTest extends \PHPUnit_Framework_TestCase {
+class DirectoryTest extends \PHPUnit\Framework\TestCase {
 
     function create() {
 

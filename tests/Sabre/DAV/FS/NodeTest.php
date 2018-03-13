@@ -7,7 +7,7 @@ namespace Sabre\DAV\FS;
  * test it, as it doesn't override it and we can construct it as it's
  * non-abstract.
  */
-class NodeTest extends \PHPUnit_Framework_TestCase {
+class NodeTest extends \PHPUnit\Framework\TestCase {
 
     function testConstruct() {
 

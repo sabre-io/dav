@@ -7,7 +7,7 @@ use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\HTTP;
 use Sabre\Xml\Reader;
 
-class PrincipalTest extends \PHPUnit_Framework_TestCase {
+class PrincipalTest extends \PHPUnit\Framework\TestCase {
 
     function testSimple() {
 

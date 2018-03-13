@@ -4,7 +4,7 @@ namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 
-class BlockAccessTest extends \PHPUnit_Framework_TestCase {
+class BlockAccessTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var DAV\Server

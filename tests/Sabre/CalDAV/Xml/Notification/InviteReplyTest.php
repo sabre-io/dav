@@ -5,7 +5,7 @@ namespace Sabre\CalDAV\Xml\Notification;
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
-class InviteReplyTest extends \PHPUnit_Framework_TestCase {
+class InviteReplyTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @param array $notification

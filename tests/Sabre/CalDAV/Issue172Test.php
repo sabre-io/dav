@@ -4,7 +4,7 @@ namespace Sabre\CalDAV;
 
 use Sabre\VObject;
 
-class Issue172Test extends \PHPUnit_Framework_TestCase {
+class Issue172Test extends \PHPUnit\Framework\TestCase {
 
     // DateTimeZone() native name: America/Los_Angeles (GMT-8 in January)
     function testBuiltInTimezoneName() {

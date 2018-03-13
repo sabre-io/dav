@@ -4,7 +4,7 @@ namespace Sabre\DAVACL\Exception;
 
 use Sabre\DAV;
 
-class NotRecognizedPrincipalTest extends \PHPUnit_Framework_TestCase {
+class NotRecognizedPrincipalTest extends \PHPUnit\Framework\TestCase {
 
     function testSerialize() {
 

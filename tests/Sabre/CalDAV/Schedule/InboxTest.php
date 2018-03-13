@@ -5,7 +5,7 @@ namespace Sabre\CalDAV\Schedule;
 use Sabre\CalDAV;
 use Sabre\DAV;
 
-class InboxTest extends \PHPUnit_Framework_TestCase {
+class InboxTest extends \PHPUnit\Framework\TestCase {
 
     function testSetup() {
 

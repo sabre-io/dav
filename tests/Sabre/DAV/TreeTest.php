@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class TreeTest extends \PHPUnit_Framework_TestCase {
+class TreeTest extends \PHPUnit\Framework\TestCase {
 
     function testNodeExists() {
 

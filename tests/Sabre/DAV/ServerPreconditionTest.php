@@ -6,7 +6,7 @@ use Sabre\HTTP;
 
 require_once 'Sabre/HTTP/ResponseMock.php';
 
-class ServerPreconditionsTest extends \PHPUnit_Framework_TestCase {
+class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @expectedException Sabre\DAV\Exception\PreconditionFailed

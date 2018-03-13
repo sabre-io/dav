@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class PropPatchTest extends \PHPUnit_Framework_TestCase {
+class PropPatchTest extends \PHPUnit\Framework\TestCase {
 
     protected $propPatch;
 

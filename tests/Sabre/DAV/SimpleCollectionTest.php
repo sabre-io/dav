@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class SimpleCollectionTest extends \PHPUnit_Framework_TestCase {
+class SimpleCollectionTest extends \PHPUnit\Framework\TestCase {
 
     function testConstructNode() {
 

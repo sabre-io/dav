@@ -5,7 +5,7 @@ namespace Sabre\CalDAV\Backend;
 use
     Sabre\DAV\PropPatch;
 
-class AbstractTest extends \PHPUnit_Framework_TestCase {
+class AbstractTest extends \PHPUnit\Framework\TestCase {
 
     function testUpdateCalendar() {
 

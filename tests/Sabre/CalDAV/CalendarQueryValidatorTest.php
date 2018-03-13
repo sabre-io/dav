@@ -4,7 +4,7 @@ namespace Sabre\CalDAV;
 
 use Sabre\VObject;
 
-class CalendarQueryValidatorTest extends \PHPUnit_Framework_TestCase {
+class CalendarQueryValidatorTest extends \PHPUnit\Framework\TestCase {
 
     function testTopLevelFail() {
 

@@ -59,12 +59,5 @@
     ],
     "config" : {
         "bin-dir" : "./bin"
-    },
-    "scripts": {
-        "test": "./bin/phpunit --verbose --configuration tests/phpunit.xml.dist tests/Sabre",
-        "test-deps": "./bin/phpunit --verbose --configuration tests/phpunit.xml.dist",
-        "test-with-cc": "./bin/phpunit --verbose --configuration tests/phpunit.xml.dist --coverage-clover=coverage.xml"
-
-
     }
 }

@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.0.0",
         "sabre/vobject": "^4.1.2",
         "sabre/event" : "^5.0",
         "sabre/xml"  : "^2.0.0",

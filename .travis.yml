@@ -3,27 +3,16 @@ php:
   - 7.0
   - 7.1
   - 7.2
-  - nightly
+
 env:
   global:
     - SABRE_MYSQLUSER="root"
     - SABRE_MYSQLPASS=""
     - SABRE_MYSQLDSN="mysql:host=127.0.0.1;dbname=sabredav_test"
   matrix:
-    - COMPOSER_ARGS="--prefer-dist --prefer-lowest" TEST_COMMAND="composer test-with-cc" PHPUNIT_ARGS="tests/Sabre/"
-    - COMPOSER_ARGS="--prefer-dist " PHPUNIT_ARGS=""
-matrix:
-  fast_finish: true
-  allow_failures:
-    - env: COMPOSER_ARGS="--prefer-dist " PHPUNIT_ARGS=""
-    - php: nightly
-    - php: 7.2
-      env: COVERAGE="--coverage-clover=coverage.xml"
-  include:
-    - php: 7.2
-      env: PHPUNIT_ARGS="--coverage-clover=coverage.xml"
+    - LOWEST_DEPS="" TEST_DEPS="" WITH_COVERAGE="--coverage-clover=coverage.xml"
+    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/" $WITH_COVERAGE=""
 
-c
 services:
   - mysql
   - postgresql
@@ -33,10 +22,10 @@ sudo: false
 
 before_script:
 #  - mysql -u root -h 127.0.0.1 sabredav_test -e 'SELECT VERSION();'
-  - mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
+#- mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
-  - composer update $COMPOSER_ARGS
+  - composer update --prefer-dist $LOWEST_DEPS
 
 # Required for postgres 9.5
 dist: trusty
@@ -45,7 +34,7 @@ addons:
    postgresql: "9.5"
 
 script:
-  - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $PHPUNIT_ARGS $COVERAGE
+  - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS
   - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
   - ./bin/sabre-cs-fixer fix . --dry-run --diff
 

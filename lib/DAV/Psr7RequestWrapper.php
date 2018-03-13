@@ -138,7 +138,7 @@ class Psr7RequestWrapper implements RequestInterface
      */
     function setHeader(string $name, $value)
     {
-        throw new \Exception('not used');
+        $this->request = $this->request->withHeader($name, $value);
     }
 
     /**
@@ -254,7 +254,7 @@ class Psr7RequestWrapper implements RequestInterface
      */
     function setUrl(string $url)
     {
-        throw new \Exception('not used');
+        $this->request = $this->request->withUri(new Uri($url));
     }
 
     /**

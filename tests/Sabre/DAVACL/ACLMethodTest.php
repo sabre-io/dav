@@ -40,7 +40,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('GET', '/', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -61,7 +61,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
 
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $this->assertFalse($acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse));
 
     }
@@ -87,7 +87,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -116,7 +116,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -142,7 +142,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -171,7 +171,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -205,7 +205,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -239,7 +239,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }
@@ -273,7 +273,7 @@ class ACLMethodTest extends \PHPUnit_Framework_TestCase {
         $request = new ServerRequest('ACL', '/test', [], $body);
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
-
+        $server->handle($request);
         $acl->httpACL(new DAV\Psr7RequestWrapper($request), $server->httpResponse);
 
     }

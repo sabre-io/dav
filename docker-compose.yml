@@ -26,10 +26,11 @@ services:
       SABRE_PGSQLDSN: pgsql:host=pgsql;dbname=test;user=root;password=secret
     image: phpunit/phpunit
     tty: true
+    working_dir: /project
     entrypoint: [
-      "/project/bin/phpunit",
+      "bin/phpunit",
       "-c",
-      "/project/tests/phpunit.xml.dist"
+      "tests/phpunit.xml.dist"
     ]
     volumes:
       - ./:/project

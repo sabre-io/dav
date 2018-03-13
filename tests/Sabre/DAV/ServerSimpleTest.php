@@ -268,7 +268,7 @@ class ServerSimpleTest extends AbstractServer{
         ]);
 
         $server = new Server();
-        $this->assertEquals('/index.php/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
 
@@ -276,7 +276,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $httpRequest = new ServerRequest('GET', '/index.php/root');
         $server = new Server();
-        $this->assertEquals('/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/', $server->guessBaseUri($httpRequest));
 
     }
 
@@ -284,7 +284,7 @@ class ServerSimpleTest extends AbstractServer{
 
         $httpRequest = new ServerRequest('GET', '/a/b/c/test.php');
         $server = new Server();
-        $this->assertEquals('/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/', $server->guessBaseUri($httpRequest));
 
     }
 
@@ -299,7 +299,7 @@ class ServerSimpleTest extends AbstractServer{
         ]);
         $server = new Server();
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri(new Psr7RequestWrapper($httpRequest)));
+        $this->assertEquals('/index.php/', $server->guessBaseUri($httpRequest));
 
     }
 
@@ -313,7 +313,7 @@ class ServerSimpleTest extends AbstractServer{
             'REQUEST_URI' => '/index.php/root/heyyy',
         ]);
         $server = new Server();
-        $server->guessBaseUri(new Psr7RequestWrapper($httpRequest));
+        $server->guessBaseUri($httpRequest);
 
     }
 

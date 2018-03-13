@@ -77,7 +77,8 @@ class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(Xml\Property\Principal::UNAUTHENTICATED, $result[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
-        $fakeServer->emit('beforeMethod:PROPFIND', [$fakeServer->httpRequest, $fakeServer->httpResponse]);
+        $request = new DAV\Psr7RequestWrapper(new ServerRequest('GET', '/'));
+        $fakeServer->emit('beforeMethod:PROPFIND', [$request, $fakeServer->httpResponse]);
 
         $result = $fakeServer->getPropertiesForPath('', $requestedProperties);
         $result = $result[0];

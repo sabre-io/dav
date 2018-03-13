@@ -82,8 +82,8 @@ class Issue33Test extends \PHPUnit_Framework_TestCase {
 
         $server = new Server($tree);
         $server->setBaseUri('/webdav/');
-
-        $server->handle($request);
+        $response = $server->handle($request);
+        $this->assertEquals(201, $response->getStatusCode(), $response->getBody()->getContents());
 
         $this->assertTrue(file_exists(SABRE_TEMPDIR . '/issue33/' . urldecode('%C3%A0fo%C3%B3')));
 

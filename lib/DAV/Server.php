@@ -3,6 +3,7 @@
 namespace Sabre\DAV;
 
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -55,7 +56,7 @@ class Server implements
      *
      * @var string
      */
-    protected $baseUri = null;
+    protected $baseUri = '/';
 
     /**
      * httpResponse
@@ -67,7 +68,7 @@ class Server implements
     /**
      * httpRequest
      *
-     * @var HTTP\Request
+     * @var Psr7RequestWrapper
      */
     private $httpRequest;
 
@@ -239,9 +240,8 @@ class Server implements
             throw new Exception('No response factory given and guzzle is not available');
         }
         $this->httpResponse = new Psr7ResponseWrapper($responseFactory);
-        $this->httpRequest = $this->sapi->getRequest();
+        $this->httpRequest = new Psr7RequestWrapper(new ServerRequest('GET', ''));
         $this->addPlugin(new CorePlugin());
-
     }
 
     public function __get($name)
@@ -365,10 +365,13 @@ class Server implements
      * @return string
      */
     function getBaseUri() {
-
-        if (is_null($this->baseUri)) $this->baseUri = $this->guessBaseUri($this->httpRequest);
+        if (!isset($this->baseUri) && isset($this->httpRequest)) {
+            if (!$this->httpRequest instanceof Psr7RequestWrapper) {
+                throw new Exception('Wrong type of httprequest.');
+            }
+            $this->baseUri = $this->guessBaseUri($this->httpRequest->request);
+        }
         return $this->baseUri;
-
     }
 
     /**
@@ -559,7 +562,7 @@ class Server implements
      */
     function getRequestUri() {
 
-        return $this->calculateUri($this->httpRequest->getUrl());
+        return $this->calculateUri($this->httpRequest ? $this->httpRequest->getUrl() : '/');
 
     }
 
@@ -578,7 +581,6 @@ class Server implements
     function calculateUri($uri) {
 
         if ($uri != '' && $uri[0] != '/' && strpos($uri, '://')) {
-
             $uri = parse_url($uri, PHP_URL_PATH);
 
         }
@@ -1703,7 +1705,6 @@ class Server implements
      */
     public function handle(ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
-
         $this->httpRequest = new Psr7RequestWrapper($request);
         $this->httpResponse->reset();
         $this->start();

@@ -121,8 +121,6 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals('0', $this->response->getHeader('Content-Length'));
-
         $this->assertEquals(204, $this->response->status);
         $this->assertEquals('', $this->response->body);
         $this->assertEquals('Testing updated file', file_get_contents($this->tempDir . '/test.txt'));
@@ -136,8 +134,7 @@ class ServerTest extends DAV\AbstractServer{
         $this->server->exec();
 
         $this->assertEquals([
-            'X-Sabre-Version' => [DAV\Version::VERSION],
-            'Content-Length'  => ['0'],
+            'X-Sabre-Version' => [DAV\Version::VERSION]
         ], $this->response->getHeaders());
 
         $this->assertEquals(204, $this->response->status);

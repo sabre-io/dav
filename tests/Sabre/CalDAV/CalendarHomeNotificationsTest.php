@@ -2,7 +2,7 @@
 
 namespace Sabre\CalDAV;
 
-class CalendarHomeNotificationsTest extends \PHPUnit_Framework_TestCase {
+class CalendarHomeNotificationsTest extends \PHPUnit\Framework\TestCase {
 
     function testGetChildrenNoSupport() {
 

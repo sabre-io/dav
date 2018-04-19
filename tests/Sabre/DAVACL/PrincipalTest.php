@@ -5,7 +5,7 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PrincipalTest extends \PHPUnit_Framework_TestCase {
+class PrincipalTest extends \PHPUnit\Framework\TestCase {
 
     function testConstruct() {
 

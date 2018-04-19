@@ -5,7 +5,7 @@ namespace Sabre\DAV\Exception;
 use DOMDocument;
 use Sabre\DAV;
 
-class LockedTest extends \PHPUnit_Framework_TestCase {
+class LockedTest extends \PHPUnit\Framework\TestCase {
 
     function testSerialize() {
 

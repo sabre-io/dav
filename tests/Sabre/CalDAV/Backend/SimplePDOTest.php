@@ -6,7 +6,7 @@ use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\PropPatch;
 
-class SimplePDOTest extends \PHPUnit_Framework_TestCase {
+class SimplePDOTest extends \PHPUnit\Framework\TestCase {
 
     protected $pdo;
 

@@ -4,7 +4,7 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use Sabre\DAV\PropFind;
 
-class PluginTest extends \PHPUnit_Framework_TestCase {
+class PluginTest extends \PHPUnit\Framework\TestCase {
 
     function testInit() {
 

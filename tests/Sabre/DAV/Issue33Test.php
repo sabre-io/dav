@@ -6,7 +6,7 @@ use Sabre\HTTP;
 
 require_once 'Sabre/TestUtil.php';
 
-class Issue33Test extends \PHPUnit_Framework_TestCase {
+class Issue33Test extends \PHPUnit\Framework\TestCase {
 
     function setUp() {
 

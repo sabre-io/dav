@@ -4,7 +4,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class AbstractDigestTest extends \PHPUnit_Framework_TestCase {
+class AbstractDigestTest extends \PHPUnit\Framework\TestCase {
 
     function testCheckNoHeaders() {
 

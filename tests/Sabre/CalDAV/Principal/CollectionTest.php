@@ -4,7 +4,7 @@ namespace Sabre\CalDAV\Principal;
 
 use Sabre\DAVACL;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase {
+class CollectionTest extends \PHPUnit\Framework\TestCase {
 
     function testGetChildForPrincipal() {
 

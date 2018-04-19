@@ -2,7 +2,7 @@
 
 namespace Sabre\DAVACL\FS;
 
-class FileTest extends \PHPUnit_Framework_TestCase {
+class FileTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * System under test

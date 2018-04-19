@@ -5,7 +5,7 @@ namespace Sabre\DAV\Auth;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginTest extends \PHPUnit_Framework_TestCase {
+class PluginTest extends \PHPUnit\Framework\TestCase {
 
     function testInit() {
 

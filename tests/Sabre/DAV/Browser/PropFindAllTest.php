@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\Browser;
 
-class PropFindAllTest extends \PHPUnit_Framework_TestCase {
+class PropFindAllTest extends \PHPUnit\Framework\TestCase {
 
     function testHandleSimple() {
 

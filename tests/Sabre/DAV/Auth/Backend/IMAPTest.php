@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV\Auth\Backend;
 
-class IMAPTest extends \PHPUnit_Framework_TestCase {
+class IMAPTest extends \PHPUnit\Framework\TestCase {
 
     function testGoodPassword() {
 

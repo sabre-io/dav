@@ -4,7 +4,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class BasicCallBackTest extends \PHPUnit_Framework_TestCase {
+class BasicCallBackTest extends \PHPUnit\Framework\TestCase {
 
     function testCallBack() {
 

@@ -5,7 +5,7 @@ namespace Sabre\DAV\Xml;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 
-abstract class XmlTest extends \PHPUnit_Framework_TestCase {
+abstract class XmlTest extends \PHPUnit\Framework\TestCase {
 
     protected $elementMap = [];
     protected $namespaceMap = ['DAV:' => 'd'];

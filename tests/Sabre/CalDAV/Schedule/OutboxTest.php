@@ -5,7 +5,7 @@ namespace Sabre\CalDAV\Schedule;
 use Sabre\CalDAV;
 use Sabre\DAV;
 
-class OutboxTest extends \PHPUnit_Framework_TestCase {
+class OutboxTest extends \PHPUnit\Framework\TestCase {
 
     function testSetup() {
 

@@ -8,7 +8,7 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-class FreeBusyRequestTest extends \PHPUnit_Framework_TestCase {
+class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase {
 
     protected $plugin;
     protected $server;

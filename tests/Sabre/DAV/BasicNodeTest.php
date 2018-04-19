@@ -2,7 +2,7 @@
 
 namespace Sabre\DAV;
 
-class BasicNodeTest extends \PHPUnit_Framework_TestCase {
+class BasicNodeTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @expectedException Sabre\DAV\Exception\Forbidden

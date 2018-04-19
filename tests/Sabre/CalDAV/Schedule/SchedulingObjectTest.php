@@ -4,7 +4,7 @@ namespace Sabre\CalDAV\Schedule;
 
 use Sabre\CalDAV\Backend;
 
-class SchedulingObjectTest extends \PHPUnit_Framework_TestCase {
+class SchedulingObjectTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Sabre\CalDAV\Backend_PDO

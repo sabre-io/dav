@@ -8,7 +8,7 @@ use Sabre\HTTP;
 require_once 'Sabre/DAVACL/MockPrincipal.php';
 require_once 'Sabre/DAVACL/MockACLNode.php';
 
-class SimplePluginTest extends \PHPUnit_Framework_TestCase {
+class SimplePluginTest extends \PHPUnit\Framework\TestCase {
 
     function testValues() {
 

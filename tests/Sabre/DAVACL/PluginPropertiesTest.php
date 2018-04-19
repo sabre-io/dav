@@ -5,7 +5,7 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginPropertiesTest extends \PHPUnit_Framework_TestCase {
+class PluginPropertiesTest extends \PHPUnit\Framework\TestCase {
 
     function testPrincipalCollectionSet() {
 

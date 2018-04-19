@@ -5,7 +5,7 @@ namespace Sabre\DAVACL\Xml\Property;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class AclRestrictionsTest extends \PHPUnit_Framework_TestCase {
+class AclRestrictionsTest extends \PHPUnit\Framework\TestCase {
 
     function testConstruct() {
 

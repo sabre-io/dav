@@ -82,14 +82,18 @@ class CorePlugin extends ServerPlugin {
 
         if (!$node instanceof IFile) return;
 
-        $body = $node->get();
+        if ($request->getHeader('X-Sabre-Original-Method') === 'HEAD') {
+            $body = '';
+        } else {
+            $body = $node->get();
 
-        // Converting string into stream, if needed.
-        if (is_string($body)) {
-            $stream = fopen('php://temp', 'r+');
-            fwrite($stream, $body);
-            rewind($stream);
-            $body = $stream;
+            // Converting string into stream, if needed.
+            if (is_string($body)) {
+                $stream = fopen('php://temp', 'r+');
+                fwrite($stream, $body);
+                rewind($stream);
+                $body = $stream;
+            }
         }
 
         /*
@@ -245,13 +249,13 @@ class CorePlugin extends ServerPlugin {
     function httpHead(RequestInterface $request, ResponseInterface $response) {
 
         // This is implemented by changing the HEAD request to a GET request,
-        // and dropping the response body.
+        // and telling the request handler that is doesn't need to set the body.
         $subRequest = clone $request;
         $subRequest->setMethod('GET');
+        $subRequest->setHeader('X-Sabre-Original-Method', 'HEAD');
 
         try {
             $this->server->invokeMethod($subRequest, $response, false);
-            $response->setBody('');
         } catch (Exception\NotImplemented $e) {
             // Some clients may do HEAD requests on collections, however, GET
             // requests and HEAD requests _may_ not be defined on a collection,

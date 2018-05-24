@@ -62,20 +62,18 @@ class Tree
             return $this->rootNode;
         }
 
-        // Attempting to fetch its parent
-        list($parentName, $baseName) = Uri\split($path);
+        $parts = explode('/', $path);
+        $node = $this->rootNode;
 
-        // If there was no parent, we must simply ask it from the root node.
-        if ('' === $parentName) {
-            $node = $this->rootNode->getChild($baseName);
-        } else {
-            // Otherwise, we recursively grab the parent and ask him/her.
-            $parent = $this->getNodeForPath($parentName);
-
-            if (!($parent instanceof ICollection)) {
+        while (count($parts)) {
+            if (!($node instanceof ICollection)) {
                 throw new Exception\NotFound('Could not find node at path: '.$path);
             }
-            $node = $parent->getChild($baseName);
+
+            $part = array_shift($parts);
+            if ('' !== $part) {
+                $node = $node->getChild($part);
+            }
         }
 
         $this->cache[$path] = $node;

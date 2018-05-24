@@ -97,6 +97,13 @@ class TreeTest extends \PHPUnit\Framework\TestCase {
 
     }
 
+    function testGetSubTreeNode() {
+
+        $tree = new TreeMock();
+        $this->assertTrue($tree->nodeExists('subtree/sub/1'));
+
+    }
+
 }
 
 class TreeMock extends Tree {
@@ -119,7 +126,12 @@ class TreeMock extends Tree {
                     new TreeFileTester('1'),
                     new TreeFileTester('2'),
                     new TreeFileTester('3'),
-                ])
+                ]),
+                new Tree(new TreeDirectoryTester('subtree', [
+                    new TreeDirectoryTester('sub', [
+                        new TreeFileTester('1')
+                    ]),
+                ]))
             ])
         );
 

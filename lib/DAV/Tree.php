@@ -67,8 +67,13 @@ class Tree implements ICollection {
             if (!($node instanceof ICollection))
                 throw new Exception\NotFound('Could not find node at path: ' . $path);
 
-            $part = array_shift($parts);
-            if ($part !== '') $node = $node->getChild($part);
+            if ($node instanceof self) {
+                $node = $node->getNodeForPath(implode('/', $parts));
+                break;
+            } else {
+                $part = array_shift($parts);
+                if ($part !== '') $node = $node->getChild($part);
+            }
         }
 
         $this->cache[$path] = $node;

@@ -70,6 +70,14 @@ class Tree implements INodeByPath
                 throw new Exception\NotFound('Could not find node at path: '.$path);
             }
 
+            if ($node instanceof INodeByPath) {
+                $targetNode = $node->getNodeForPath(implode('/', $parts));
+                if ($targetNode instanceof Node) {
+                    $node = $targetNode;
+                    break;
+                }
+            }
+
             $part = array_shift($parts);
             if ('' !== $part) {
                 $node = $node->getChild($part);

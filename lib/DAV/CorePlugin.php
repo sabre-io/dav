@@ -249,7 +249,7 @@ class CorePlugin extends ServerPlugin {
     function httpHead(RequestInterface $request, ResponseInterface $response) {
 
         // This is implemented by changing the HEAD request to a GET request,
-        // and telling the request handler that is doesn't need to set the body.
+        // and telling the request handler that is doesn't need to create the body.
         $subRequest = clone $request;
         $subRequest->setMethod('GET');
         $subRequest->setHeader('X-Sabre-Original-Method', 'HEAD');

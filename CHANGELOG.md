@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-4.0.0-alpha1 (????-??-??)
+4.0.0-alpha1 (2017-06-05)
 -------------------------
 
 * Now requires PHP 7.
@@ -16,8 +16,9 @@ ChangeLog
 * #982: Make sure that files that are siblings of directories, are reported
   as files (@nickvergessen)
 
-3.3.0 (????-??-??)
------------------
+
+3.3.0-alpha1 (2018-06-04)
+-------------------------
 
 * SimpleCollection can now take arrays and strings as argument for super
   simple tree creation.
@@ -36,6 +37,8 @@ ChangeLog
   installations quite a bit.
 * #982: Make sure that files that are siblings of directories, are reported
   as files (@nickvergessen)
+* #1058: Don't open file resource on HEAD request (@icewind1991)
+* #1031: Fix copyNode for case of file named 0 (@phil-davis)
 
 3.2.3 (????-??-??)
 ------------------

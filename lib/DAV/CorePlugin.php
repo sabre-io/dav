@@ -682,6 +682,7 @@ class CorePlugin extends ServerPlugin {
         }
 
         $this->server->tree->copy($path, $copyInfo['destination']);
+		$this->server->emit('afterCopy', [$path, $copyInfo['destination']]);
         $this->server->emit('afterBind', [$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201

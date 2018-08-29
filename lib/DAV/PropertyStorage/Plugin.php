@@ -69,6 +69,7 @@ class Plugin extends ServerPlugin {
         $server->on('propFind',    [$this, 'propFind'], 130);
         $server->on('propPatch',   [$this, 'propPatch'], 300);
         $server->on('afterMove',   [$this, 'afterMove']);
+		$server->on('afterCopy',   [$this, 'afterCopy']);
         $server->on('afterUnbind', [$this, 'afterUnbind']);
 
     }
@@ -147,6 +148,27 @@ class Plugin extends ServerPlugin {
         $this->backend->move($source, $destination);
 
     }
+
+	/**
+	 * Called after a node is copied.
+	 *
+	 * This allows the backend to copy all the associated properties.
+	 *
+	 * @param string $source
+	 * @param string $destination
+	 * @return void
+	 */
+	function afterCopy($source, $destination) {
+
+		$pathFilter = $this->pathFilter;
+		if ($pathFilter && !$pathFilter($source)) return;
+		// If the destination is filtered, afterUnbind will handle cleaning up
+		// the properties.
+		if ($pathFilter && !$pathFilter($destination)) return;
+
+		$this->backend->copy($source, $destination);
+
+	}
 
     /**
      * Returns a plugin name.

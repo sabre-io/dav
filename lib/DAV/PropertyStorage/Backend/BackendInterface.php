@@ -77,7 +77,7 @@ interface BackendInterface {
      */
     function move($source, $destination);
 
-	/**
+    /**
 	 * This method is called after a successful COPY
 	 *
 	 * This should be used to migrate all properties from one path to another.
@@ -88,6 +88,5 @@ interface BackendInterface {
 	 * @param string $destination
 	 * @return void
 	 */
-	function copy($source, $destination);
-
+    function copy($source, $destination);
 }

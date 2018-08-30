@@ -243,7 +243,7 @@ SQL;
 
     }
 
-	/**
+    /**
 	 * This method is called after a successful COPY
 	 *
 	 * This should be used to migrate all properties from one path to another.
@@ -254,7 +254,7 @@ SQL;
 	 * @param string $destination
 	 * @return void
 	 */
-	function copy($source, $destination) {
-		// TODO: Implement copy() method.
-	}
+    function copy($source, $destination) {
+    	// TODO: Implement copy() method.
+    }
 }

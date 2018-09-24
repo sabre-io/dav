@@ -1,8 +1,11 @@
 language: php
+sudo: required
+dist: xenial
 php:
   - 7.0
   - 7.1
   - 7.2
+  - 7.3snapshot
 
 env:
   global:
@@ -18,8 +21,6 @@ services:
   - postgresql
 
 
-sudo: false
-
 before_script:
 #  - mysql -u root -h 127.0.0.1 sabredav_test -e 'SELECT VERSION();'
 #- mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
@@ -27,11 +28,11 @@ before_script:
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
   - composer update --prefer-dist $LOWEST_DEPS
 
-# Required for postgres 9.5
-dist: trusty
-
 addons:
-   postgresql: "9.5"
+  apt:
+    packages:
+      - libzip4
+  postgresql: "9.5"
 
 script:
   - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS

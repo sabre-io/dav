@@ -76,6 +76,9 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
+     * @throws BadRequest
+     * @throws DAV\Exception\NotFound
+     * @throws VObject\InvalidDataException
      * @return bool
      */
     function httpGet(RequestInterface $request, ResponseInterface $response) {
@@ -166,6 +169,8 @@ class ICSExportPlugin extends DAV\ServerPlugin {
      * @param string $format
      * @param array $properties
      * @param ResponseInterface $response
+     * @throws DAV\Exception\NotFound
+     * @throws VObject\InvalidDataException
      */
     protected function generateResponse($path, $start, $end, $expand, $componentType, $format, $properties, ResponseInterface $response) {
 
@@ -318,7 +323,9 @@ class ICSExportPlugin extends DAV\ServerPlugin {
                     // VTIMEZONE is special, because we need to filter out the duplicates
                     case 'VTIMEZONE' :
                         // Naively just checking tzid.
-                        if (in_array((string)$child->TZID, $collectedTimezones)) continue;
+                        if (in_array((string)$child->TZID, $collectedTimezones)) {
+                            break;
+                        }
 
                         $timezones[] = clone $child;
                         $collectedTimezones[] = $child->TZID;

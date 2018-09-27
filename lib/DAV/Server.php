@@ -492,9 +492,6 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
         if (!$this->emit('afterMethod:' . $method, [$request, $response])) return;
 
-        if ($response->getStatus() === null) {
-            throw new Exception('No subsystem set a valid HTTP status code. Something must have interrupted the request without providing further detail.');
-        }
         if ($sendResponse) {
             $this->sapi->sendResponse($response);
             $this->emit('afterResponse', [$request, $response]);

@@ -1336,7 +1336,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
                 }
                 if (!$haveMatch) {
                     if ($etag) $response->setHeader('ETag', $etag);
-                     throw new Exception\PreconditionFailed('An If-Match header was specified, but none of the specified the ETags matched.', 'If-Match');
+                     throw new Exception\PreconditionFailed('An If-Match header was specified, but none of the specified ETags matched.', 'If-Match');
                 }
             }
         }

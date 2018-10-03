@@ -25,6 +25,7 @@ matrix:
 services:
   - mysql
   - postgresql
+  - mongodb
 
 install:
   - if [ $RUN_PHPSTAN == "TRUE"  ]; then wget https://github.com/phpstan/phpstan/releases/download/0.10.3/phpstan.phar; fi
@@ -34,7 +35,9 @@ before_script:
 #- mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
+  - pecl install -f mongodb
   - composer update --prefer-dist $LOWEST_DEPS
+  - composer require mongodb/mongodb
 
 addons:
   postgresql: "9.5"

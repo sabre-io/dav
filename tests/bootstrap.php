@@ -36,6 +36,8 @@ $config = [
     'SABRE_MYSQLUSER' => 'sabredav',
     'SABRE_MYSQLPASS' => '',
     'SABRE_PGSQLDSN' => 'pgsql:host=localhost;dbname=sabredav_test;user=sabredav;password=sabredav',
+    'SABRE_MONGO_SABREURI' => 'mongodb://localhost:27017/',
+    'SABRE_MONGO_SABREDB' => 'sabredav_test',
 ];
 
 if (file_exists(__DIR__.'/config.user.php')) {

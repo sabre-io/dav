@@ -40,7 +40,8 @@
     "suggest" : {
         "ext-curl" : "*",
         "ext-pdo" : "*",
-        "ext-imap": "*"
+        "ext-imap": "*",
+        "mongodb/mongodb": "*"
     },
     "autoload": {
         "psr-4" : {

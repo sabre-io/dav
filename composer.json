@@ -18,7 +18,7 @@
         "sabre/vobject": "^4.2.0-alpha1",
         "sabre/event" : "^5.0",
         "sabre/xml"  : "^2.0.0",
-        "sabre/http" : "dev-master",
+        "sabre/http" : "^5.0",
         "sabre/uri" : "^2.0",
         "ext-dom": "*",
         "ext-pcre": "*",

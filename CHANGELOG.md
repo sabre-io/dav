@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+4.0.0-alpha3 (2018-10-05)
+-------------------------
+* Fixes for PHP 7.3
+* Depend on sabre/http 5.0
+
 4.0.0-alpha2 (2018-09-27)
 -------------------------
 * Now supports PHP 7.3

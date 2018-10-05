@@ -325,7 +325,7 @@ class CorePlugin extends ServerPlugin {
             try {
                 $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
             } catch (ParseException $e) {
-                throw new BadRequest($e->getMessage(), null, $e);
+                throw new BadRequest($e->getMessage(), 0, $e);
             }
         } else {
             $propFindXml = new Xml\Request\PropFind();
@@ -382,7 +382,7 @@ class CorePlugin extends ServerPlugin {
         try {
             $propPatch = $this->server->xml->expect('{DAV:}propertyupdate', $request->getBody());
         } catch (ParseException $e) {
-            throw new BadRequest($e->getMessage(), null, $e);
+            throw new BadRequest($e->getMessage(), 0, $e);
         }
         $newProperties = $propPatch->properties;
 

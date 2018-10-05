@@ -39,7 +39,8 @@
     },
     "suggest" : {
         "ext-curl" : "*",
-        "ext-pdo" : "*"
+        "ext-pdo" : "*",
+        "ext-imap": "*"
     },
     "autoload": {
         "psr-4" : {

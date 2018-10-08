@@ -36,8 +36,6 @@ addons:
 
 script:
   - ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS
-  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
-  - ./bin/sabre-cs-fixer fix . --dry-run --diff
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

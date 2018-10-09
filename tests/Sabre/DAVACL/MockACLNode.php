@@ -1,55 +1,49 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 
-class MockACLNode extends DAV\Node implements IACL {
-
+class MockACLNode extends DAV\Node implements IACL
+{
     public $name;
     public $acl;
 
-    function __construct($name, array $acl = []) {
-
+    public function __construct($name, array $acl = [])
+    {
         $this->name = $name;
         $this->acl = $acl;
-
     }
 
-    function getName() {
-
+    public function getName()
+    {
         return $this->name;
-
     }
 
-    function getOwner() {
-
+    public function getOwner()
+    {
         return null;
-
     }
 
-    function getGroup() {
-
+    public function getGroup()
+    {
         return null;
-
     }
 
-    function getACL() {
-
+    public function getACL()
+    {
         return $this->acl;
-
     }
 
-    function setACL(array $acl) {
-
+    public function setACL(array $acl)
+    {
         $this->acl = $acl;
-
     }
 
-    function getSupportedPrivilegeSet() {
-
+    public function getSupportedPrivilegeSet()
+    {
         return null;
-
     }
-
 }

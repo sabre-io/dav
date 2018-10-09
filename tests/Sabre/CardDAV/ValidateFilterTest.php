@@ -1,31 +1,32 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
 require_once 'Sabre/CardDAV/AbstractPluginTest.php';
 
-class ValidateFilterTest extends AbstractPluginTest {
-
+class ValidateFilterTest extends AbstractPluginTest
+{
     /**
-     * @param string $input
-     * @param array $filters
-     * @param string $test
-     * @param bool $result
+     * @param string      $input
+     * @param array       $filters
+     * @param string      $test
+     * @param bool        $result
      * @param string|null $message
      * @dataProvider data
      */
-    function testFilter($input, $filters, $test, $result, $message = null) {
-
+    public function testFilter($input, $filters, $test, $result, $message = null)
+    {
         if ($result) {
             $this->assertTrue($this->plugin->validateFilters($input, $filters, $test), $message);
         } else {
             $this->assertFalse($this->plugin->validateFilters($input, $filters, $test), $message);
         }
-
     }
 
-    function data() {
-
+    public function data()
+    {
         $body1 = <<<HELLO
 BEGIN:VCARD
 VERSION:3.0
@@ -70,14 +71,14 @@ HELLO;
         // Check if TEL[TYPE] is defined
         $filter5 =
             [
-                'name'           => 'tel',
+                'name' => 'tel',
                 'is-not-defined' => false,
-                'test'           => 'anyof',
-                'param-filters'  => [
+                'test' => 'anyof',
+                'param-filters' => [
                     [
-                        'name'           => 'type',
+                        'name' => 'type',
                         'is-not-defined' => false,
-                        'text-match'     => null
+                        'text-match' => null,
                     ],
                 ],
                 'text-matches' => [],
@@ -107,16 +108,16 @@ HELLO;
         // Check if URL contains 'google'
         $filter11 =
             [
-                'name'           => 'url',
+                'name' => 'url',
                 'is-not-defined' => false,
-                'test'           => 'anyof',
-                'param-filters'  => [],
-                'text-matches'   => [
+                'test' => 'anyof',
+                'param-filters' => [],
+                'text-matches' => [
                     [
-                        'match-type'       => 'contains',
-                        'value'            => 'google',
+                        'match-type' => 'contains',
+                        'value' => 'google',
                         'negate-condition' => false,
-                        'collation'        => 'i;octet',
+                        'collation' => 'i;octet',
                     ],
                 ],
             ];
@@ -137,22 +138,21 @@ HELLO;
         // Param filter with text
         $filter15 = $filter5;
         $filter15['param-filters'][0]['text-match'] = [
-            'match-type'       => 'contains',
-            'value'            => 'WORK',
-            'collation'        => 'i;octet',
+            'match-type' => 'contains',
+            'value' => 'WORK',
+            'collation' => 'i;octet',
             'negate-condition' => false,
         ];
         $filter16 = $filter15;
         $filter16['param-filters'][0]['text-match']['negate-condition'] = true;
 
-
         // Param filter + text filter
         $filter17 = $filter5;
         $filter17['test'] = 'anyof';
         $filter17['text-matches'][] = [
-            'match-type'       => 'contains',
-            'value'            => '444',
-            'collation'        => 'i;octet',
+            'match-type' => 'contains',
+            'value' => '444',
+            'collation' => 'i;octet',
             'negate-condition' => false,
         ];
 
@@ -162,20 +162,19 @@ HELLO;
         $filter18['test'] = 'allof';
 
         return [
-
             // Basic filters
-            [$body1, [$filter1], 'anyof',true],
-            [$body1, [$filter2], 'anyof',false],
-            [$body1, [$filter3], 'anyof',false],
-            [$body1, [$filter4], 'anyof',true],
+            [$body1, [$filter1], 'anyof', true],
+            [$body1, [$filter2], 'anyof', false],
+            [$body1, [$filter3], 'anyof', false],
+            [$body1, [$filter4], 'anyof', true],
 
             // Combinations
-            [$body1, [$filter1, $filter2], 'anyof',true],
-            [$body1, [$filter1, $filter2], 'allof',false],
-            [$body1, [$filter1, $filter4], 'anyof',true],
-            [$body1, [$filter1, $filter4], 'allof',true],
-            [$body1, [$filter2, $filter3], 'anyof',false],
-            [$body1, [$filter2, $filter3], 'allof',false],
+            [$body1, [$filter1, $filter2], 'anyof', true],
+            [$body1, [$filter1, $filter2], 'allof', false],
+            [$body1, [$filter1, $filter4], 'anyof', true],
+            [$body1, [$filter1, $filter4], 'allof', true],
+            [$body1, [$filter2, $filter3], 'anyof', false],
+            [$body1, [$filter2, $filter3], 'allof', false],
 
             // Basic parameters
             [$body1, [$filter5], 'anyof', true, 'TEL;TYPE is defined, so this should return true'],
@@ -203,7 +202,5 @@ HELLO;
             [$body1, [$filter18], 'anyof', false],
             [$body1, [$filter18], 'anyof', false],
         ];
-
     }
-
 }

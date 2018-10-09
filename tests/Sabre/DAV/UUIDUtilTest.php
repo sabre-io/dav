@@ -1,11 +1,13 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-class UUIDUtilTest extends \PHPUnit\Framework\TestCase {
-
-    function testValidateUUID() {
-
+class UUIDUtilTest extends \PHPUnit\Framework\TestCase
+{
+    public function testValidateUUID()
+    {
         $this->assertTrue(
             UUIDUtil::validateUUID('11111111-2222-3333-4444-555555555555')
         );
@@ -18,8 +20,5 @@ class UUIDUtilTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse(
             UUIDUtil::validateUUID('fffffffg-2222-3333-4444-555555555555')
         );
-
-
     }
-
 }

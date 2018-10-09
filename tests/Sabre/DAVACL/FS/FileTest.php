@@ -1,11 +1,13 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\FS;
 
-class FileTest extends \PHPUnit\Framework\TestCase {
-
+class FileTest extends \PHPUnit\Framework\TestCase
+{
     /**
-     * System under test
+     * System under test.
      *
      * @var File
      */
@@ -16,58 +18,51 @@ class FileTest extends \PHPUnit\Framework\TestCase {
         [
             'privilege' => '{DAV:}read',
             'principal' => '{DAV:}authenticated',
-        ]
+        ],
     ];
 
     protected $owner = 'principals/evert';
 
-    function setUp() {
-
+    public function setUp()
+    {
         $this->sut = new File($this->path, $this->acl, $this->owner);
-
     }
 
-    function testGetOwner() {
-
+    public function testGetOwner()
+    {
         $this->assertEquals(
             $this->owner,
             $this->sut->getOwner()
         );
-
     }
 
-    function testGetGroup() {
-
+    public function testGetGroup()
+    {
         $this->assertNull(
             $this->sut->getGroup()
         );
-
     }
 
-    function testGetACL() {
-
+    public function testGetACL()
+    {
         $this->assertEquals(
             $this->acl,
             $this->sut->getACL()
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testSetAcl() {
-
+    public function testSetAcl()
+    {
         $this->sut->setACL([]);
-
     }
 
-    function testGetSupportedPrivilegeSet() {
-
+    public function testGetSupportedPrivilegeSet()
+    {
         $this->assertNull(
             $this->sut->getSupportedPrivilegeSet()
         );
-
     }
-
 }

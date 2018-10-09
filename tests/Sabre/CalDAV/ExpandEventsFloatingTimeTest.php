@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
@@ -9,18 +11,18 @@ use Sabre\VObject;
  * This unittest is created to check if expand() works correctly with
  * floating times (using calendar-timezone information).
  */
-class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest {
-
+class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest
+{
     protected $setupCalDAV = true;
 
     protected $setupCalDAVICSExport = true;
 
     protected $caldavCalendars = [
         [
-            'id'                                               => 1,
-            'name'                                             => 'Calendar',
-            'principaluri'                                     => 'principals/user1',
-            'uri'                                              => 'calendar1',
+            'id' => 1,
+            'name' => 'Calendar',
+            'principaluri' => 'principals/user1',
+            'uri' => 'calendar1',
             '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => 'BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -42,7 +44,7 @@ TZOFFSETTO:+0100
 END:STANDARD
 END:VTIMEZONE
 END:VCALENDAR',
-        ]
+        ],
     ];
 
     protected $caldavCalendarObjects = [
@@ -67,10 +69,10 @@ END:VCALENDAR
         ],
     ];
 
-    function testExpandCalendarQuery() {
-
+    public function testExpandCalendarQuery()
+    {
         $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
-            'Depth'        => 1,
+            'Depth' => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -108,10 +110,10 @@ END:VCALENDAR
             /** @var $vevent Sabre\VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-                if ($child->name == 'DTSTART') {
+                if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T043000Z', $child->getValue());
-                } elseif ($child->name == 'DTEND') {
+                } elseif ('DTEND' == $child->name) {
                     // DTEND should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T063000Z', $child->getValue());
                 }
@@ -119,10 +121,10 @@ END:VCALENDAR
         }
     }
 
-    function testExpandMultiGet() {
-
+    public function testExpandMultiGet()
+    {
         $request = new HTTP\Request('REPORT', '/calendars/user1/calendar1', [
-            'Depth'        => 1,
+            'Depth' => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -156,10 +158,10 @@ END:VCALENDAR
             /** @var $vevent Sabre\VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-                if ($child->name == 'DTSTART') {
+                if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals($child->getValue(), '20141108T043000Z');
-                } elseif ($child->name == 'DTEND') {
+                } elseif ('DTEND' == $child->name) {
                     // DTEND should be the UTC equivalent of given floating time
                     $this->assertEquals($child->getValue(), '20141108T063000Z');
                 }
@@ -167,10 +169,10 @@ END:VCALENDAR
         }
     }
 
-    function testExpandExport() {
-
+    public function testExpandExport()
+    {
         $request = new HTTP\Request('GET', '/calendars/user1/calendar1?export&start=1&end=2000000000&expand=1', [
-            'Depth'        => 1,
+            'Depth' => 1,
             'Content-Type' => 'application/xml',
         ]);
 
@@ -193,15 +195,14 @@ END:VCALENDAR
             /** @var $vevent Sabre\VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-                if ($child->name == 'DTSTART') {
+                if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T043000Z', $child->getValue());
-                } elseif ($child->name == 'DTEND') {
+                } elseif ('DTEND' == $child->name) {
                     // DTEND should be the UTC equivalent of given floating time
                     $this->assertEquals('20141108T063000Z', $child->getValue());
                 }
             }
         }
     }
-
 }

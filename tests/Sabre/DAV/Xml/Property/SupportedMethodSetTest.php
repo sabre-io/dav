@@ -1,23 +1,24 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Xml\XmlTest;
 
-class SupportedMethodSetTest extends XmlTest {
-
-    function testSimple() {
-
+class SupportedMethodSetTest extends XmlTest
+{
+    public function testSimple()
+    {
         $cus = new SupportedMethodSet(['GET', 'PUT']);
         $this->assertEquals(['GET', 'PUT'], $cus->getValue());
 
         $this->assertTrue($cus->has('GET'));
         $this->assertFalse($cus->has('HEAD'));
-
     }
 
-    function testSerialize() {
-
+    public function testSerialize()
+    {
         $cus = new SupportedMethodSet(['GET', 'PUT']);
         $xml = $this->write(['{DAV:}foo' => $cus]);
 
@@ -28,18 +29,15 @@ class SupportedMethodSetTest extends XmlTest {
 </d:foo>';
 
         $this->assertXmlStringEqualsXmlString($expected, $xml);
-
     }
 
-    function testSerializeHtml() {
-
+    public function testSerializeHtml()
+    {
         $cus = new SupportedMethodSet(['GET', 'PUT']);
         $result = $cus->toHtml(
             new \Sabre\DAV\Browser\HtmlOutputHelper('/', [])
         );
 
         $this->assertEquals('GET, PUT', $result);
-
     }
-
 }

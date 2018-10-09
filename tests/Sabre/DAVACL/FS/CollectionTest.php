@@ -1,44 +1,41 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\FS;
 
-class CollectionTest extends FileTest {
-
-    function setUp() {
-
+class CollectionTest extends FileTest
+{
+    public function setUp()
+    {
         $this->path = SABRE_TEMPDIR;
         $this->sut = new Collection($this->path, $this->acl, $this->owner);
-
     }
 
-    function tearDown() {
-
+    public function tearDown()
+    {
         \Sabre\TestUtil::clearTempDir();
-
     }
 
-    function testGetChildFile() {
-
-        file_put_contents(SABRE_TEMPDIR . '/file.txt', 'hello');
+    public function testGetChildFile()
+    {
+        file_put_contents(SABRE_TEMPDIR.'/file.txt', 'hello');
         $child = $this->sut->getChild('file.txt');
         $this->assertInstanceOf('Sabre\\DAVACL\\FS\\File', $child);
 
         $this->assertEquals('file.txt', $child->getName());
         $this->assertEquals($this->acl, $child->getACL());
         $this->assertEquals($this->owner, $child->getOwner());
-
     }
 
-    function testGetChildDirectory() {
-
-        mkdir(SABRE_TEMPDIR . '/dir');
+    public function testGetChildDirectory()
+    {
+        mkdir(SABRE_TEMPDIR.'/dir');
         $child = $this->sut->getChild('dir');
         $this->assertInstanceOf('Sabre\\DAVACL\\FS\\Collection', $child);
 
         $this->assertEquals('dir', $child->getName());
         $this->assertEquals($this->acl, $child->getACL());
         $this->assertEquals($this->owner, $child->getOwner());
-
     }
-
 }

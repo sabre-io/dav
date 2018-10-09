@@ -1,19 +1,19 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-class SimpleFileTest extends \PHPUnit\Framework\TestCase {
-
-    function testAll() {
-
+class SimpleFileTest extends \PHPUnit\Framework\TestCase
+{
+    public function testAll()
+    {
         $file = new SimpleFile('filename.txt', 'contents', 'text/plain');
 
         $this->assertEquals('filename.txt', $file->getName());
         $this->assertEquals('contents', $file->get());
         $this->assertEquals(8, $file->getSize());
-        $this->assertEquals('"' . sha1('contents') . '"', $file->getETag());
+        $this->assertEquals('"'.sha1('contents').'"', $file->getETag());
         $this->assertEquals('text/plain', $file->getContentType());
-
     }
-
 }

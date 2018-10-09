@@ -1,17 +1,19 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
 use Sabre\DAV\PropFind;
 use Sabre\HTTP;
 
-class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
-
+class SogoStripContentTypeTest extends \Sabre\DAVServerTest
+{
     protected $setupCardDAV = true;
     protected $carddavAddressBooks = [
         [
-            'id'           => 1,
-            'uri'          => 'book1',
+            'id' => 1,
+            'uri' => 'book1',
             'principaluri' => 'principals/user1',
         ],
     ];
@@ -21,27 +23,27 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
         ],
     ];
 
-    function testDontStrip() {
-
+    public function testDontStrip()
+    {
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf', ['{DAV:}getcontenttype']);
         $this->assertEquals([
-            '{DAV:}getcontenttype' => 'text/vcard; charset=utf-8'
+            '{DAV:}getcontenttype' => 'text/vcard; charset=utf-8',
         ], $result);
-
     }
-    function testStrip() {
 
+    public function testStrip()
+    {
         $this->server->httpRequest = new HTTP\Request('GET', '/', [
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ]);
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf', ['{DAV:}getcontenttype']);
         $this->assertEquals([
-            '{DAV:}getcontenttype' => 'text/x-vcard'
+            '{DAV:}getcontenttype' => 'text/x-vcard',
         ], $result);
-
     }
-    function testDontTouchOtherMimeTypes() {
 
+    public function testDontTouchOtherMimeTypes()
+    {
         $this->server->httpRequest = new HTTP\Request('GET', '/addressbooks/user1/book1/card1.vcf', [
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ]);
@@ -50,7 +52,5 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest {
         $propFind->set('{DAV:}getcontenttype', 'text/plain');
         $this->carddavPlugin->propFindLate($propFind, new \Sabre\DAV\SimpleCollection('foo'));
         $this->assertEquals('text/plain', $propFind->get('{DAV:}getcontenttype'));
-
     }
-
 }

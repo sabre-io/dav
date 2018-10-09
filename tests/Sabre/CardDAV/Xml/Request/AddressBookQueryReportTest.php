@@ -1,17 +1,19 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CardDAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
 
-class AddressBookQueryReportTest extends XmlTest {
-
+class AddressBookQueryReportTest extends XmlTest
+{
     protected $elementMap = [
         '{urn:ietf:params:xml:ns:carddav}addressbook-query' => 'Sabre\\CardDAV\\Xml\\Request\AddressBookQueryReport',
     ];
 
-    function testDeserialize() {
-
+    public function testDeserialize()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -32,23 +34,22 @@ XML;
         $addressBookQueryReport->test = 'anyof';
         $addressBookQueryReport->filters = [
             [
-                'name'           => 'uid',
-                'test'           => 'anyof',
+                'name' => 'uid',
+                'test' => 'anyof',
                 'is-not-defined' => false,
-                'param-filters'  => [],
-                'text-matches'   => [],
-            ]
+                'param-filters' => [],
+                'text-matches' => [],
+            ],
         ];
 
         $this->assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
-
     }
 
-    function testDeserializeAllOf() {
-
+    public function testDeserializeAllOf()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -69,26 +70,25 @@ XML;
         $addressBookQueryReport->test = 'allof';
         $addressBookQueryReport->filters = [
             [
-                'name'           => 'uid',
-                'test'           => 'anyof',
+                'name' => 'uid',
+                'test' => 'anyof',
                 'is-not-defined' => false,
-                'param-filters'  => [],
-                'text-matches'   => [],
-            ]
+                'param-filters' => [],
+                'text-matches' => [],
+            ],
         ];
 
         $this->assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeBadTest() {
-
+    public function testDeserializeBadTest()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -102,14 +102,13 @@ XML;
 XML;
 
         $this->parse($xml);
-
     }
 
     /**
      * We should error on this, but KDE does this, so we chose to support it.
      */
-    function testDeserializeNoFilter() {
-
+    public function testDeserializeNoFilter()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -131,11 +130,10 @@ XML;
             $addressBookQueryReport,
             $result['value']
         );
-
     }
 
-    function testDeserializeComplex() {
-
+    public function testDeserializeComplex()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -173,54 +171,54 @@ XML;
         $addressBookQueryReport->test = 'anyof';
         $addressBookQueryReport->filters = [
             [
-                'name'           => 'uid',
-                'test'           => 'anyof',
+                'name' => 'uid',
+                'test' => 'anyof',
                 'is-not-defined' => true,
-                'param-filters'  => [],
-                'text-matches'   => [],
+                'param-filters' => [],
+                'text-matches' => [],
             ],
             [
-                'name'           => 'x-foo',
-                'test'           => 'allof',
+                'name' => 'x-foo',
+                'test' => 'allof',
                 'is-not-defined' => false,
-                'param-filters'  => [
+                'param-filters' => [
                     [
-                        'name'           => 'x-param1',
+                        'name' => 'x-param1',
                         'is-not-defined' => false,
-                        'text-match'     => null,
+                        'text-match' => null,
                     ],
                     [
-                        'name'           => 'x-param2',
+                        'name' => 'x-param2',
                         'is-not-defined' => true,
-                        'text-match'     => null,
+                        'text-match' => null,
                     ],
                     [
-                        'name'           => 'x-param3',
+                        'name' => 'x-param3',
                         'is-not-defined' => false,
-                        'text-match'     => [
+                        'text-match' => [
                             'negate-condition' => false,
-                            'value'            => 'Hello!',
-                            'match-type'       => 'contains',
-                            'collation'        => 'i;unicode-casemap',
+                            'value' => 'Hello!',
+                            'match-type' => 'contains',
+                            'collation' => 'i;unicode-casemap',
                         ],
                     ],
                 ],
                 'text-matches' => [],
             ],
             [
-                'name'           => 'x-prop2',
-                'test'           => 'anyof',
+                'name' => 'x-prop2',
+                'test' => 'anyof',
                 'is-not-defined' => false,
-                'param-filters'  => [],
-                'text-matches'   => [
+                'param-filters' => [],
+                'text-matches' => [
                     [
                         'negate-condition' => true,
-                        'value'            => 'No',
-                        'match-type'       => 'starts-with',
-                        'collation'        => 'i;unicode-casemap',
+                        'value' => 'No',
+                        'match-type' => 'starts-with',
+                        'collation' => 'i;unicode-casemap',
                     ],
                 ],
-            ]
+            ],
         ];
 
         $addressBookQueryReport->version = '4.0';
@@ -231,14 +229,13 @@ XML;
             $addressBookQueryReport,
             $result['value']
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeBadMatchType() {
-
+    public function testDeserializeBadMatchType()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -255,14 +252,13 @@ XML;
 </c:addressbook-query>
 XML;
         $this->parse($xml);
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeBadMatchType2() {
-
+    public function testDeserializeBadMatchType2()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -277,14 +273,13 @@ XML;
 </c:addressbook-query>
 XML;
         $this->parse($xml);
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeDoubleFilter() {
-
+    public function testDeserializeDoubleFilter()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -298,11 +293,10 @@ XML;
 </c:addressbook-query>
 XML;
         $this->parse($xml);
-
     }
 
-    function testDeserializeAddressbookElements() {
-
+    public function testDeserializeAddressbookElements()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -324,7 +318,7 @@ XML;
         $addressBookQueryReport = new AddressBookQueryReport();
         $addressBookQueryReport->properties = [
             '{DAV:}getetag',
-            '{urn:ietf:params:xml:ns:carddav}address-data'
+            '{urn:ietf:params:xml:ns:carddav}address-data',
         ];
         $addressBookQueryReport->filters = [];
         $addressBookQueryReport->test = 'anyof';
@@ -343,8 +337,5 @@ XML;
             $addressBookQueryReport,
             $result['value']
         );
-
     }
-
-
 }

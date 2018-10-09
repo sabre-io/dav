@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
@@ -8,8 +10,8 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase {
-
+class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase
+{
     protected $plugin;
     protected $server;
     protected $aclPlugin;
@@ -17,26 +19,26 @@ class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase {
     protected $authPlugin;
     protected $caldavBackend;
 
-    function setUp() {
-
-        $caldavNS = '{' . CalDAV\Plugin::NS_CALDAV . '}';
+    public function setUp()
+    {
+        $caldavNS = '{'.CalDAV\Plugin::NS_CALDAV.'}';
         $calendars = [
             [
-                'principaluri'                  => 'principals/user2',
-                'id'                            => 1,
-                'uri'                           => 'calendar1',
-                $caldavNS . 'calendar-timezone' => "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nEND:VTIMEZONE\r\nEND:VCALENDAR",
+                'principaluri' => 'principals/user2',
+                'id' => 1,
+                'uri' => 'calendar1',
+                $caldavNS.'calendar-timezone' => "BEGIN:VCALENDAR\r\nBEGIN:VTIMEZONE\r\nTZID:Europe/Berlin\r\nEND:VTIMEZONE\r\nEND:VCALENDAR",
             ],
             [
-                'principaluri'                         => 'principals/user2',
-                'id'                                   => 2,
-                'uri'                                  => 'calendar2',
-                $caldavNS . 'schedule-calendar-transp' => new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
+                'principaluri' => 'principals/user2',
+                'id' => 2,
+                'uri' => 'calendar2',
+                $caldavNS.'schedule-calendar-transp' => new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
             ],
         ];
         $calendarobjects = [
             1 => ['1.ics' => [
-                'uri'          => '1.ics',
+                'uri' => '1.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT
 DTSTART:20110101T130000
@@ -46,7 +48,7 @@ END:VCALENDAR',
                 'calendarid' => 1,
             ]],
             2 => ['2.ics' => [
-                'uri'          => '2.ics',
+                'uri' => '2.ics',
                 'calendardata' => 'BEGIN:VCALENDAR
 BEGIN:VEVENT
 DTSTART:20110101T080000
@@ -54,8 +56,7 @@ DURATION:PT1H
 END:VEVENT
 END:VCALENDAR',
                 'calendarid' => 2,
-            ]]
-
+            ]],
         ];
 
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
@@ -93,11 +94,10 @@ END:VCALENDAR',
         // Scheduling plugin
         $this->plugin = new Plugin();
         $this->server->addPlugin($this->plugin);
-
     }
 
-    function testWrongContentType() {
-
+    public function testWrongContentType()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -107,11 +107,10 @@ END:VCALENDAR',
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
-
     }
 
-    function testNotFound() {
-
+    public function testNotFound()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/blabla',
@@ -121,11 +120,10 @@ END:VCALENDAR',
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
-
     }
 
-    function testNotOutbox() {
-
+    public function testNotOutbox()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/inbox',
@@ -135,14 +133,13 @@ END:VCALENDAR',
         $this->assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testNoItipMethod() {
-
+    public function testNoItipMethod()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -158,14 +155,13 @@ ICS;
 
         $this->server->httpRequest->setBody($body);
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
-    function testNoVFreeBusy() {
-
+    public function testNoVFreeBusy()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -182,20 +178,18 @@ ICS;
 
         $this->server->httpRequest->setBody($body);
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testIncorrectOrganizer() {
-
+    public function testIncorrectOrganizer()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
             ['Content-Type' => 'text/calendar']
         );
-
 
         $body = <<<ICS
 BEGIN:VCALENDAR
@@ -208,14 +202,13 @@ ICS;
 
         $this->server->httpRequest->setBody($body);
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testNoAttendees() {
-
+    public function testNoAttendees()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -233,14 +226,13 @@ ICS;
 
         $this->server->httpRequest->setBody($body);
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testNoDTStart() {
-
+    public function testNoDTStart()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -259,11 +251,10 @@ ICS;
 
         $this->server->httpRequest->setBody($body);
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
-
     }
 
-    function testSucceed() {
-
+    public function testSucceed()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -307,24 +298,23 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                false !== strpos($this->response->body, $string),
+                'The response body did not contain: '.$string.'Full response: '.$this->response->body
             );
         }
 
         $this->assertTrue(
-            strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z') == false,
+            false == strpos($this->response->body, 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z'),
             'The response body did contain free busy info from a transparent calendar.'
         );
-
     }
 
     /**
      * Testing if the freebusy request still works, even if there are no
      * calendars in the target users' account.
      */
-    function testSucceedNoCalendars() {
-
+    public function testSucceedNoCalendars()
+    {
         // Deleting calendars
         $this->caldavBackend->deleteCalendar(1);
         $this->caldavBackend->deleteCalendar(2);
@@ -368,15 +358,14 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                false !== strpos($this->response->body, $string),
+                'The response body did not contain: '.$string.'Full response: '.$this->response->body
             );
         }
-
     }
 
-    function testNoCalendarHomeFound() {
-
+    public function testNoCalendarHomeFound()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -401,10 +390,8 @@ ICS;
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
         // Removing the calendar home
-        $this->server->on('propFind', function(DAV\PropFind $propFind) {
-
-            $propFind->set('{' . Plugin::NS_CALDAV . '}calendar-home-set', null, 403);
-
+        $this->server->on('propFind', function (DAV\PropFind $propFind) {
+            $propFind->set('{'.Plugin::NS_CALDAV.'}calendar-home-set', null, 403);
         });
 
         $this->assertFalse(
@@ -423,15 +410,14 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                false !== strpos($this->response->body, $string),
+                'The response body did not contain: '.$string.'Full response: '.$this->response->body
             );
         }
-
     }
 
-    function testNoInboxFound() {
-
+    public function testNoInboxFound()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -456,10 +442,8 @@ ICS;
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
         // Removing the inbox
-        $this->server->on('propFind', function(DAV\PropFind $propFind) {
-
-            $propFind->set('{' . Plugin::NS_CALDAV . '}schedule-inbox-URL', null, 403);
-
+        $this->server->on('propFind', function (DAV\PropFind $propFind) {
+            $propFind->set('{'.Plugin::NS_CALDAV.'}schedule-inbox-URL', null, 403);
         });
 
         $this->assertFalse(
@@ -478,15 +462,14 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                false !== strpos($this->response->body, $string),
+                'The response body did not contain: '.$string.'Full response: '.$this->response->body
             );
         }
-
     }
 
-    function testSucceedUseVAVAILABILITY() {
-
+    public function testSucceedUseVAVAILABILITY()
+    {
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -511,10 +494,8 @@ ICS;
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
         // Adding VAVAILABILITY manually
-        $this->server->on('propFind', function(DAV\PropFind $propFind) {
-
-            $propFind->handle('{' . Plugin::NS_CALDAV . '}calendar-availability', function() {
-
+        $this->server->on('propFind', function (DAV\PropFind $propFind) {
+            $propFind->handle('{'.Plugin::NS_CALDAV.'}calendar-availability', function () {
                 $avail = <<<ICS
 BEGIN:VCALENDAR
 BEGIN:VAVAILABILITY
@@ -527,10 +508,9 @@ END:AVAILABLE
 END:VAVAILABILITY
 END:VCALENDAR
 ICS;
+
                 return $avail;
-
             });
-
         });
 
         $this->assertFalse(
@@ -552,11 +532,9 @@ ICS;
 
         foreach ($strings as $string) {
             $this->assertTrue(
-                strpos($this->response->body, $string) !== false,
-                'The response body did not contain: ' . $string . 'Full response: ' . $this->response->body
+                false !== strpos($this->response->body, $string),
+                'The response body did not contain: '.$string.'Full response: '.$this->response->body
             );
         }
-
     }
-
 }

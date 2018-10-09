@@ -1,13 +1,16 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
 use Sabre\VObject;
 
-class Issue172Test extends \PHPUnit\Framework\TestCase {
-
+class Issue172Test extends \PHPUnit\Framework\TestCase
+{
     // DateTimeZone() native name: America/Los_Angeles (GMT-8 in January)
-    function testBuiltInTimezoneName() {
+    public function testBuiltInTimezoneName()
+    {
         $input = <<<HI
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -19,16 +22,16 @@ END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
         $filters = [
-            'name'         => 'VCALENDAR',
+            'name' => 'VCALENDAR',
             'comp-filters' => [
                 [
-                    'name'           => 'VEVENT',
-                    'comp-filters'   => [],
-                    'prop-filters'   => [],
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
                     'is-not-defined' => false,
-                    'time-range'     => [
+                    'time-range' => [
                         'start' => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
-                        'end'   => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
+                        'end' => new \DateTime('2012-01-18 21:00:00 GMT-08:00'),
                     ],
                 ],
             ],
@@ -39,7 +42,8 @@ HI;
     }
 
     // Pacific Standard Time, translates to America/Los_Angeles (GMT-8 in January)
-    function testOutlookTimezoneName() {
+    public function testOutlookTimezoneName()
+    {
         $input = <<<HI
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -66,16 +70,16 @@ END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
         $filters = [
-            'name'         => 'VCALENDAR',
+            'name' => 'VCALENDAR',
             'comp-filters' => [
                 [
-                    'name'           => 'VEVENT',
-                    'comp-filters'   => [],
-                    'prop-filters'   => [],
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
                     'is-not-defined' => false,
-                    'time-range'     => [
+                    'time-range' => [
                         'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                        'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'end' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                     ],
                 ],
             ],
@@ -86,7 +90,8 @@ HI;
     }
 
     // X-LIC-LOCATION, translates to America/Los_Angeles (GMT-8 in January)
-    function testLibICalLocationName() {
+    public function testLibICalLocationName()
+    {
         $input = <<<HI
 BEGIN:VCALENDAR
 VERSION:2.0
@@ -114,16 +119,16 @@ END:VCALENDAR
 HI;
         $validator = new CalendarQueryValidator();
         $filters = [
-            'name'         => 'VCALENDAR',
+            'name' => 'VCALENDAR',
             'comp-filters' => [
                 [
-                    'name'           => 'VEVENT',
-                    'comp-filters'   => [],
-                    'prop-filters'   => [],
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
                     'is-not-defined' => false,
-                    'time-range'     => [
+                    'time-range' => [
                         'start' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
-                        'end'   => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
+                        'end' => new \DateTime('2012-01-13 10:30:00 GMT-08:00'),
                     ],
                 ],
             ],

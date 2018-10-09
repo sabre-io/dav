@@ -1,24 +1,23 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
 require_once 'Sabre/TestUtil.php';
 
-class FileTest extends AbstractTest {
-
-    function getBackend() {
-
+class FileTest extends AbstractTest
+{
+    public function getBackend()
+    {
         \Sabre\TestUtil::clearTempDir();
-        $backend = new File(SABRE_TEMPDIR . '/lockdb');
+        $backend = new File(SABRE_TEMPDIR.'/lockdb');
+
         return $backend;
-
     }
 
-
-    function tearDown() {
-
+    public function tearDown()
+    {
         \Sabre\TestUtil::clearTempDir();
-
     }
-
 }

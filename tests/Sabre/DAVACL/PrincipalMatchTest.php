@@ -1,16 +1,18 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL;
 
 use Sabre\HTTP\Request;
 
-class PrincipalMatchTest extends \Sabre\DAVServerTest {
-
+class PrincipalMatchTest extends \Sabre\DAVServerTest
+{
     public $setupACL = true;
     public $autoLogin = 'user1';
 
-    function testPrincipalMatch() {
-
+    public function testPrincipalMatch()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <principal-match xmlns="DAV:">
@@ -39,11 +41,10 @@ XML;
             $expected,
             $response->getBodyAsString()
         );
-
     }
 
-    function testPrincipalMatchProp() {
-
+    public function testPrincipalMatchProp()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <principal-match xmlns="DAV:">
@@ -77,11 +78,10 @@ XML;
             $expected,
             $response->getBodyAsString()
         );
-
     }
 
-    function testPrincipalMatchPrincipalProperty() {
-
+    public function testPrincipalMatchPrincipalProperty()
+    {
         $xml = <<<XML
 <?xml version="1.0"?>
 <principal-match xmlns="DAV:">
@@ -117,7 +117,5 @@ XML;
             $expected,
             $response->getBodyAsString()
         );
-
     }
-
 }

@@ -27,7 +27,7 @@ date_default_timezone_set('UTC');
 // $baseUri = '/';
 
 /**
- * Database
+ * Database.
  *
  * Feel free to switch this to MySQL, it will definitely be better for higher
  * concurrency.
@@ -50,7 +50,7 @@ $carddavBackend = new \Sabre\CardDAV\Backend\PDO($pdo);
 $caldavBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
 
 /**
- * The directory tree
+ * The directory tree.
  *
  * Basically this is an array which contains the 'top-level' directories in the
  * WebDAV server.
@@ -66,7 +66,9 @@ $nodes = [
 
 // The object tree needs in turn to be passed to the server class
 $server = new \Sabre\DAV\Server($nodes);
-if (isset($baseUri)) $server->setBaseUri($baseUri);
+if (isset($baseUri)) {
+    $server->setBaseUri($baseUri);
+}
 
 // Plugins
 $server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend));

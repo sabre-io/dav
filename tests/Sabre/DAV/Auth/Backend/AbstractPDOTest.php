@@ -1,36 +1,35 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
-abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase {
-
+abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
+{
     use \Sabre\DAV\DbTestHelperTrait;
 
-    function setUp() {
-
+    public function setUp()
+    {
         $this->dropTables('users');
         $this->createSchema('users');
 
         $this->getPDO()->query(
             "INSERT INTO users (username,digesta1) VALUES ('user','hash')"
-
         );
-
     }
 
-    function testConstruct() {
-
+    public function testConstruct()
+    {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
         $this->assertTrue($backend instanceof PDO);
-
     }
 
     /**
      * @depends testConstruct
      */
-    function testUserInfo() {
-
+    public function testUserInfo()
+    {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
 
@@ -39,7 +38,5 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase {
         $expected = 'hash';
 
         $this->assertEquals($expected, $backend->getDigestHash('realm', 'user'));
-
     }
-
 }

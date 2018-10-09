@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
@@ -6,23 +8,23 @@ use Sabre\HTTP;
 use Sabre\VObject;
 
 /**
- * This unittests is created to find out why recurring events have wrong DTSTART value
+ * This unittests is created to find out why recurring events have wrong DTSTART value.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ExpandEventsDTSTARTandDTENDbyDayTest extends \Sabre\DAVServerTest {
-
+class ExpandEventsDTSTARTandDTENDbyDayTest extends \Sabre\DAVServerTest
+{
     protected $setupCalDAV = true;
 
     protected $caldavCalendars = [
         [
-            'id'           => 1,
-            'name'         => 'Calendar',
+            'id' => 1,
+            'name' => 'Calendar',
             'principaluri' => 'principals/user1',
-            'uri'          => 'calendar1',
-        ]
+            'uri' => 'calendar1',
+        ],
     ];
 
     protected $caldavCalendarObjects = [
@@ -43,13 +45,13 @@ END:VCALENDAR
         ],
     ];
 
-    function testExpandRecurringByDayEvent() {
-
+    public function testExpandRecurringByDayEvent()
+    {
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'    => 'REPORT',
+            'REQUEST_METHOD' => 'REPORT',
             'HTTP_CONTENT_TYPE' => 'application/xml',
-            'REQUEST_URI'       => '/calendars/user1/calendar1',
-            'HTTP_DEPTH'        => '1',
+            'REQUEST_URI' => '/calendars/user1/calendar1',
+            'HTTP_DEPTH' => '1',
         ]);
 
         $request->setBody('<?xml version="1.0" encoding="utf-8" ?>
@@ -88,15 +90,14 @@ END:VCALENDAR
             /** @var $vevent Sabre\VObject\Component\VEvent */
             foreach ($vevent->children() as $child) {
                 /** @var $child Sabre\VObject\Property */
-                if ($child->name == 'DTSTART') {
+                if ('DTSTART' == $child->name) {
                     // DTSTART has to be one of two valid values
-                    $this->assertContains($child->getValue(), ['20120214T171500Z', '20120216T171500Z'], 'DTSTART is not a valid value: ' . $child->getValue());
-                } elseif ($child->name == 'DTEND') {
+                    $this->assertContains($child->getValue(), ['20120214T171500Z', '20120216T171500Z'], 'DTSTART is not a valid value: '.$child->getValue());
+                } elseif ('DTEND' == $child->name) {
                     // DTEND has to be one of two valid values
-                    $this->assertContains($child->getValue(), ['20120214T181500Z', '20120216T181500Z'], 'DTEND is not a valid value: ' . $child->getValue());
+                    $this->assertContains($child->getValue(), ['20120214T181500Z', '20120216T181500Z'], 'DTEND is not a valid value: '.$child->getValue());
                 }
             }
         }
     }
-
 }

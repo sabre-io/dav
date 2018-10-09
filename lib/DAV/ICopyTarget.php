@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -13,8 +15,8 @@ namespace Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-interface ICopyTarget extends ICollection {
-
+interface ICopyTarget extends ICollection
+{
     /**
      * Copies a node into this collection.
      *
@@ -26,11 +28,11 @@ interface ICopyTarget extends ICollection {
      * is that the copy was successful.
      * If you return false, sabre/dav will handle the copy itself.
      *
-     * @param string $targetName New local file/collection name.
+     * @param string $targetName new local file/collection name
      * @param string $sourcePath Full path to source node
-     * @param INode $sourceNode Source node itself
+     * @param INode  $sourceNode Source node itself
+     *
      * @return bool
      */
-    function copyInto($targetName, $sourcePath, INode $sourceNode);
-
+    public function copyInto($targetName, $sourcePath, INode $sourceNode);
 }

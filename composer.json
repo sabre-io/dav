@@ -17,7 +17,7 @@
         "php": ">=7.0.0",
         "sabre/vobject": "^4.2.0-alpha1",
         "sabre/event" : "^5.0",
-        "sabre/xml"  : "^2.0.0",
+        "sabre/xml"  : "^2.0.1",
         "sabre/http" : "^5.0",
         "sabre/uri" : "^2.0",
         "ext-dom": "*",

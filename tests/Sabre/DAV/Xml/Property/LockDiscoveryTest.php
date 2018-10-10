@@ -1,14 +1,16 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Locks\LockInfo;
 use Sabre\DAV\Xml\XmlTest;
 
-class LockDiscoveryTest extends XmlTest {
-
-    function testSerialize() {
-
+class LockDiscoveryTest extends XmlTest
+{
+    public function testSerialize()
+    {
         $lock = new LockInfo();
         $lock->owner = 'hello';
         $lock->token = 'blabla';
@@ -42,11 +44,10 @@ class LockDiscoveryTest extends XmlTest {
 </d:activelock>
 </d:root>
 ', $xml);
-
     }
-    
-    function testSerializeShared() {
 
+    public function testSerializeShared()
+    {
         $lock = new LockInfo();
         $lock->owner = 'hello';
         $lock->token = 'blabla';
@@ -80,7 +81,5 @@ class LockDiscoveryTest extends XmlTest {
 </d:activelock>
 </d:root>
 ', $xml);
-
     }
-
 }

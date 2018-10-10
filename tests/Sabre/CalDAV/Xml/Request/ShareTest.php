@@ -1,18 +1,20 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Request;
 
 use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\DAV\Xml\XmlTest;
 
-class ShareTest extends XmlTest {
-
+class ShareTest extends XmlTest
+{
     protected $elementMap = [
         '{http://calendarserver.org/ns/}share' => 'Sabre\\CalDAV\\Xml\\Request\\Share',
     ];
 
-    function testDeserialize() {
-
+    public function testDeserialize()
+    {
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
    <CS:share xmlns:D="DAV:"
@@ -32,15 +34,15 @@ XML;
         $result = $this->parse($xml);
         $share = new Share([
             new Sharee([
-                'href'       => 'mailto:eric@example.com',
-                'access'     => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                'href' => 'mailto:eric@example.com',
+                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
                 'properties' => [
                     '{DAV:}displayname' => 'Eric York',
                 ],
                 'comment' => 'Shared workspace',
             ]),
             new Sharee([
-                'href'   => 'mailto:foo@bar',
+                'href' => 'mailto:foo@bar',
                 'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
             ]),
         ]);
@@ -49,11 +51,10 @@ XML;
             $share,
             $result['value']
         );
-
     }
 
-    function testDeserializeMinimal() {
-
+    public function testDeserializeMinimal()
+    {
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
    <CS:share xmlns:D="DAV:"
@@ -68,7 +69,7 @@ XML;
         $result = $this->parse($xml);
         $share = new Share([
             new Sharee([
-                'href'   => 'mailto:eric@example.com',
+                'href' => 'mailto:eric@example.com',
                 'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
             ]),
         ]);
@@ -77,7 +78,5 @@ XML;
             $share,
             $result['value']
         );
-
     }
-
 }

@@ -11,10 +11,11 @@ namespace Sabre\DAV\Auth\Backend;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class IMAP extends AbstractBasic {
-
+class IMAP extends AbstractBasic
+{
     /**
-     * IMAP server in the form {host[:port][/flag1/flag2...]}
+     * IMAP server in the form {host[:port][/flag1/flag2...]}.
+     *
      * @see http://php.net/manual/en/function.imap-open.php
      *
      * @var string
@@ -26,54 +27,56 @@ class IMAP extends AbstractBasic {
      *
      * @param string $mailbox
      */
-    function __construct($mailbox) {
-
+    public function __construct($mailbox)
+    {
         $this->mailbox = $mailbox;
-
     }
 
     /**
-     * Connects to an IMAP server and tries to authenticate
+     * Connects to an IMAP server and tries to authenticate.
      *
      * @param string $username
      * @param string $password
+     *
      * @return bool
      */
-    protected function imapOpen($username, $password) {
-
+    protected function imapOpen($username, $password)
+    {
         $success = false;
 
         try {
             $imap = imap_open($this->mailbox, $username, $password, OP_HALFOPEN | OP_READONLY, 1);
-            if ($imap)
+            if ($imap) {
                 $success = true;
+            }
         } catch (\ErrorException $e) {
             error_log($e->getMessage());
         }
 
         $errors = imap_errors();
-        if ($errors)
-            foreach ($errors as $error)
+        if ($errors) {
+            foreach ($errors as $error) {
                 error_log($error);
+            }
+        }
 
-        if (isset($imap) && $imap)
+        if (isset($imap) && $imap) {
             imap_close($imap);
+        }
 
         return $success;
-
     }
 
     /**
-     * Validates a username and password by trying to authenticate against IMAP
+     * Validates a username and password by trying to authenticate against IMAP.
      *
      * @param string $username
      * @param string $password
+     *
      * @return bool
      */
-    protected function validateUserPass($username, $password) {
-
+    protected function validateUserPass($username, $password)
+    {
         return $this->imapOpen($username, $password);
-
     }
-
 }

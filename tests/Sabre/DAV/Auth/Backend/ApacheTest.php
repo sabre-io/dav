@@ -1,20 +1,21 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class ApacheTest extends \PHPUnit\Framework\TestCase {
-
-    function testConstruct() {
-
+class ApacheTest extends \PHPUnit\Framework\TestCase
+{
+    public function testConstruct()
+    {
         $backend = new Apache();
         $this->assertInstanceOf('Sabre\DAV\Auth\Backend\Apache', $backend);
-
     }
 
-    function testNoHeader() {
-
+    public function testNoHeader()
+    {
         $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
         $backend = new Apache();
@@ -22,15 +23,14 @@ class ApacheTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse(
             $backend->check($request, $response)[0]
         );
-
     }
 
-    function testRemoteUser() {
-
+    public function testRemoteUser()
+    {
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'REMOTE_USER'    => 'username',
+            'REQUEST_URI' => '/',
+            'REMOTE_USER' => 'username',
         ]);
         $response = new HTTP\Response();
         $backend = new Apache();
@@ -39,14 +39,13 @@ class ApacheTest extends \PHPUnit\Framework\TestCase {
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
-
     }
 
-    function testRedirectRemoteUser() {
-
+    public function testRedirectRemoteUser()
+    {
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD'       => 'GET',
-            'REQUEST_URI'          => '/',
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/',
             'REDIRECT_REMOTE_USER' => 'username',
         ]);
         $response = new HTTP\Response();
@@ -56,11 +55,10 @@ class ApacheTest extends \PHPUnit\Framework\TestCase {
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
-
     }
 
-    function testRequireAuth() {
-
+    public function testRequireAuth()
+    {
         $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
@@ -70,6 +68,5 @@ class ApacheTest extends \PHPUnit\Framework\TestCase {
         $this->assertNull(
             $response->getHeader('WWW-Authenticate')
         );
-
     }
 }

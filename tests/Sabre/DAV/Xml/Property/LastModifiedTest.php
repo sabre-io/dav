@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
@@ -6,10 +8,10 @@ use DateTime;
 use DateTimeZone;
 use Sabre\DAV\Xml\XmlTest;
 
-class LastModifiedTest extends XmlTest {
-
-    function testSerializeDateTime() {
-
+class LastModifiedTest extends XmlTest
+{
+    public function testSerializeDateTime()
+    {
         $dt = new DateTime('2015-03-24 11:47:00', new DateTimeZone('America/Vancouver'));
         $val = ['{DAV:}getlastmodified' => new GetLastModified($dt)];
 
@@ -20,11 +22,10 @@ class LastModifiedTest extends XmlTest {
 XML;
 
         $this->assertXmlStringEqualsXmlString($expected, $result);
-
     }
 
-    function testSerializeTimeStamp() {
-
+    public function testSerializeTimeStamp()
+    {
         $dt = new DateTime('2015-03-24 11:47:00', new DateTimeZone('America/Vancouver'));
         $dt = $dt->getTimeStamp();
         $val = ['{DAV:}getlastmodified' => new GetLastModified($dt)];
@@ -36,11 +37,10 @@ XML;
 XML;
 
         $this->assertXmlStringEqualsXmlString($expected, $result);
-
     }
 
-    function testDeserialize() {
-
+    public function testDeserialize()
+    {
         $input = <<<XML
 <?xml version="1.0"?>
 <d:getlastmodified xmlns:d="DAV:">Tue, 24 Mar 2015 18:47:00 GMT</d:getlastmodified>
@@ -53,7 +53,5 @@ XML;
             new DateTime('2015-03-24 18:47:00', new DateTimeZone('UTC')),
             $result['value']->getTime()
         );
-
     }
-
 }

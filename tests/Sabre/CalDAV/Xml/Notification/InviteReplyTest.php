@@ -1,25 +1,27 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
-class InviteReplyTest extends \PHPUnit\Framework\TestCase {
-
+class InviteReplyTest extends \PHPUnit\Framework\TestCase
+{
     /**
-     * @param array $notification
+     * @param array  $notification
      * @param string $expected
      * @dataProvider dataProvider
      */
-    function testSerializers($notification, $expected) {
-
+    public function testSerializers($notification, $expected)
+    {
         $notification = new InviteReply($notification);
 
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
 
-        $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>';
+        $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>';
 
         $writer = new Writer();
         $writer->namespaceMap = [
@@ -37,7 +39,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase {
         $writer->contextUri = '/';
         $writer->namespaceMap = [
             'http://calendarserver.org/ns/' => 'cs',
-            'DAV:'                          => 'd',
+            'DAV:' => 'd',
         ];
         $writer->openMemory();
         $writer->startDocument('1.0', 'UTF-8');
@@ -46,23 +48,22 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase {
         $writer->endElement();
 
         $this->assertXmlStringEqualsXmlString($expected, $writer->outputMemory());
-
-
     }
 
-    function dataProvider() {
-
+    public function dataProvider()
+    {
         $dtStamp = new \DateTime('2012-01-01 00:00:00 GMT');
+
         return [
             [
                 [
-                    'id'        => 'foo',
-                    'dtStamp'   => $dtStamp,
-                    'etag'      => '"1"',
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
                     'inReplyTo' => 'bar',
-                    'href'      => 'mailto:foo@example.org',
-                    'type'      => DAV\Sharing\Plugin::INVITE_ACCEPTED,
-                    'hostUrl'   => 'calendar'
+                    'href' => 'mailto:foo@example.org',
+                    'type' => DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'hostUrl' => 'calendar',
                 ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -83,14 +84,14 @@ FOO
             ],
             [
                 [
-                    'id'        => 'foo',
-                    'dtStamp'   => $dtStamp,
-                    'etag'      => '"1"',
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
                     'inReplyTo' => 'bar',
-                    'href'      => 'mailto:foo@example.org',
-                    'type'      => DAV\Sharing\Plugin::INVITE_DECLINED,
-                    'hostUrl'   => 'calendar',
-                    'summary'   => 'Summary!'
+                    'href' => 'mailto:foo@example.org',
+                    'type' => DAV\Sharing\Plugin::INVITE_DECLINED,
+                    'hostUrl' => 'calendar',
+                    'summary' => 'Summary!',
                 ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -110,37 +111,32 @@ FOO
 
 FOO
             ],
-
         ];
-
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
-    function testMissingArg() {
-
+    public function testMissingArg()
+    {
         new InviteReply([]);
-
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
-    function testUnknownArg() {
-
+    public function testUnknownArg()
+    {
         new InviteReply([
             'foo-i-will-break' => true,
 
-            'id'        => 1,
-            'etag'      => '"bla"',
-            'href'      => 'abc',
-            'dtStamp'   => 'def',
+            'id' => 1,
+            'etag' => '"bla"',
+            'href' => 'abc',
+            'dtStamp' => 'def',
             'inReplyTo' => 'qrs',
-            'type'      => 'ghi',
-            'hostUrl'   => 'jkl',
+            'type' => 'ghi',
+            'hostUrl' => 'jkl',
         ]);
-
     }
-
 }

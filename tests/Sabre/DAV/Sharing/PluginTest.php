@@ -1,36 +1,36 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Sharing;
 
 use Sabre\DAV\Mock;
 use Sabre\DAV\Xml\Property;
 
-class PluginTest extends \Sabre\DAVServerTest {
-
+class PluginTest extends \Sabre\DAVServerTest
+{
     protected $setupSharing = true;
     protected $setupACL = true;
     protected $autoLogin = 'admin';
 
-    function setUpTree() {
-
+    public function setUpTree()
+    {
         $this->tree[] = new Mock\SharedNode(
             'shareable',
             Plugin::ACCESS_READWRITE
         );
-
     }
 
-    function testFeatures() {
-
+    public function testFeatures()
+    {
         $this->assertEquals(
             ['resource-sharing'],
             $this->sharingPlugin->getFeatures()
         );
-
     }
 
-    function testProperties() {
-
+    public function testProperties()
+    {
         $result = $this->server->getPropertiesForPath(
             'shareable',
             ['{DAV:}share-access']
@@ -39,30 +39,28 @@ class PluginTest extends \Sabre\DAVServerTest {
         $expected = [
             [
                 200 => [
-                    '{DAV:}share-access' => new Property\ShareAccess(Plugin::ACCESS_READWRITE)
+                    '{DAV:}share-access' => new Property\ShareAccess(Plugin::ACCESS_READWRITE),
                 ],
-                404    => [],
+                404 => [],
                 'href' => 'shareable',
-            ]
+            ],
         ];
 
         $this->assertEquals(
             $expected,
             $result
         );
-
     }
 
-    function testGetPluginInfo() {
-
+    public function testGetPluginInfo()
+    {
         $result = $this->sharingPlugin->getPluginInfo();
         $this->assertInternalType('array', $result);
         $this->assertEquals('sharing', $result['name']);
-
     }
 
-    function testHtmlActionsPanel() {
-
+    public function testHtmlActionsPanel()
+    {
         $node = new \Sabre\DAV\Mock\Collection('foo');
         $html = '';
 
@@ -85,49 +83,46 @@ class PluginTest extends \Sabre\DAVServerTest {
             'Share this resource',
             $html
         );
-
     }
 
-    function testBrowserPostActionUnknownAction() {
-
+    public function testBrowserPostActionUnknownAction()
+    {
         $this->assertNull($this->sharingPlugin->browserPostAction(
             'shareable',
             'foo',
             []
         ));
-
     }
 
-    function testBrowserPostActionSuccess() {
-
+    public function testBrowserPostActionSuccess()
+    {
         $this->assertFalse($this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
             [
                 'access' => 'read',
-                'href'   => 'mailto:foo@example.org',
+                'href' => 'mailto:foo@example.org',
             ]
         ));
 
         $expected = [
             new \Sabre\DAV\Xml\Element\Sharee([
-                'href'         => 'mailto:foo@example.org',
-                'access'       => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+                'href' => 'mailto:foo@example.org',
+                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
                 'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
-            ])
+            ]),
         ];
         $this->assertEquals(
             $expected,
             $this->tree[0]->getInvites()
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testBrowserPostActionNoHref() {
-
+    public function testBrowserPostActionNoHref()
+    {
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
@@ -135,14 +130,13 @@ class PluginTest extends \Sabre\DAVServerTest {
                 'access' => 'read',
             ]
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testBrowserPostActionNoAccess() {
-
+    public function testBrowserPostActionNoAccess()
+    {
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
@@ -150,41 +144,36 @@ class PluginTest extends \Sabre\DAVServerTest {
                 'href' => 'mailto:foo@example.org',
             ]
         );
-
     }
-
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testBrowserPostActionBadAccess() {
-
+    public function testBrowserPostActionBadAccess()
+    {
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
             [
-                'href'   => 'mailto:foo@example.org',
+                'href' => 'mailto:foo@example.org',
                 'access' => 'bleed',
             ]
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testBrowserPostActionAccessDenied() {
-
+    public function testBrowserPostActionAccessDenied()
+    {
         $this->aclPlugin->setDefaultAcl([]);
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
             [
                 'access' => 'read',
-                'href'   => 'mailto:foo@example.org',
+                'href' => 'mailto:foo@example.org',
             ]
         );
-
     }
-
 }

@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
@@ -13,6 +15,6 @@ namespace Sabre\DAV\Locks\Backend;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class AbstractBackend implements BackendInterface {
-
+abstract class AbstractBackend implements BackendInterface
+{
 }

@@ -1,9 +1,11 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Mock;
 
 /**
- * Mock Streaming File File
+ * Mock Streaming File File.
  *
  * Works similar to the mock file, but this one works with streams and has no
  * content-length or etags.
@@ -12,12 +14,12 @@ namespace Sabre\DAV\Mock;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class StreamingFile extends File {
-
+class StreamingFile extends File
+{
     protected $size;
 
     /**
-     * Updates the data
+     * Updates the data.
      *
      * The data argument is a readable stream resource.
      *
@@ -34,10 +36,11 @@ class StreamingFile extends File {
      * return an ETag, and just return null.
      *
      * @param resource $data
+     *
      * @return string|null
      */
-    function put($data) {
-
+    public function put($data)
+    {
         if (is_string($data)) {
             $stream = fopen('php://memory', 'r+');
             fwrite($stream, $data);
@@ -45,58 +48,49 @@ class StreamingFile extends File {
             $data = $stream;
         }
         $this->contents = $data;
-
     }
 
     /**
-     * Returns the data
+     * Returns the data.
      *
      * This method may either return a string or a readable stream resource
      *
      * @return mixed
      */
-    function get() {
-
+    public function get()
+    {
         return $this->contents;
-
     }
 
     /**
-     * Returns the ETag for a file
+     * Returns the ETag for a file.
      *
      * An ETag is a unique identifier representing the current version of the file. If the file changes, the ETag MUST change.
      *
      * Return null if the ETag can not effectively be determined
-     *
-     * @return void
      */
-    function getETag() {
-
+    public function getETag()
+    {
         return null;
-
     }
 
     /**
-     * Returns the size of the node, in bytes
+     * Returns the size of the node, in bytes.
      *
      * @return int
      */
-    function getSize() {
-
+    public function getSize()
+    {
         return $this->size;
-
     }
 
     /**
      * Allows testing scripts to set the resource's file size.
      *
      * @param int $size
-     * @return void
      */
-    function setSize($size) {
-
+    public function setSize($size)
+    {
         $this->size = $size;
-
     }
-
 }

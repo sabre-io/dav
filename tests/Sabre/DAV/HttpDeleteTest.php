@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
@@ -12,30 +14,27 @@ use Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class HttpDeleteTest extends DAVServerTest {
-
+class HttpDeleteTest extends DAVServerTest
+{
     /**
      * Sets up the DAV tree.
-     *
-     * @return void
      */
-    function setUpTree() {
-
+    public function setUpTree()
+    {
         $this->tree = new Mock\Collection('root', [
             'file1' => 'foo',
-            'dir'   => [
-                'subfile'  => 'bar',
+            'dir' => [
+                'subfile' => 'bar',
                 'subfile2' => 'baz',
             ],
         ]);
-
     }
 
     /**
-     * A successful DELETE
+     * A successful DELETE.
      */
-    function testDelete() {
-
+    public function testDelete()
+    {
         $request = new HTTP\Request('DELETE', '/file1');
 
         $response = $this->request($request);
@@ -43,24 +42,23 @@ class HttpDeleteTest extends DAVServerTest {
         $this->assertEquals(
             204,
             $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            'Incorrect status code. Response body:  '.$response->getBodyAsString()
         );
 
         $this->assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
-                'Content-Length'  => ['0'],
+                'Content-Length' => ['0'],
             ],
             $response->getHeaders()
         );
-
     }
 
     /**
-     * Deleting a Directory
+     * Deleting a Directory.
      */
-    function testDeleteDirectory() {
-
+    public function testDeleteDirectory()
+    {
         $request = new HTTP\Request('DELETE', '/dir');
 
         $response = $this->request($request);
@@ -68,42 +66,40 @@ class HttpDeleteTest extends DAVServerTest {
         $this->assertEquals(
             204,
             $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            'Incorrect status code. Response body:  '.$response->getBodyAsString()
         );
 
         $this->assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
-                'Content-Length'  => ['0'],
+                'Content-Length' => ['0'],
             ],
             $response->getHeaders()
         );
-
     }
 
     /**
-     * DELETE on a node that does not exist
+     * DELETE on a node that does not exist.
      */
-    function testDeleteNotFound() {
-
+    public function testDeleteNotFound()
+    {
         $request = new HTTP\Request('DELETE', '/file2');
         $response = $this->request($request);
 
         $this->assertEquals(
             404,
             $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            'Incorrect status code. Response body:  '.$response->getBodyAsString()
         );
-
     }
 
     /**
-     * DELETE with preconditions
+     * DELETE with preconditions.
      */
-    function testDeletePreconditions() {
-
+    public function testDeletePreconditions()
+    {
         $request = new HTTP\Request('DELETE', '/file1', [
-            'If-Match' => '"' . md5('foo') . '"',
+            'If-Match' => '"'.md5('foo').'"',
         ]);
 
         $response = $this->request($request);
@@ -111,18 +107,17 @@ class HttpDeleteTest extends DAVServerTest {
         $this->assertEquals(
             204,
             $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            'Incorrect status code. Response body:  '.$response->getBodyAsString()
         );
-
     }
 
     /**
-     * DELETE with incorrect preconditions
+     * DELETE with incorrect preconditions.
      */
-    function testDeletePreconditionsFailed() {
-
+    public function testDeletePreconditionsFailed()
+    {
         $request = new HTTP\Request('DELETE', '/file1', [
-            'If-Match' => '"' . md5('bar') . '"',
+            'If-Match' => '"'.md5('bar').'"',
         ]);
 
         $response = $this->request($request);
@@ -130,8 +125,7 @@ class HttpDeleteTest extends DAVServerTest {
         $this->assertEquals(
             412,
             $response->getStatus(),
-            "Incorrect status code. Response body:  " . $response->getBodyAsString()
+            'Incorrect status code. Response body:  '.$response->getBodyAsString()
         );
-
     }
 }

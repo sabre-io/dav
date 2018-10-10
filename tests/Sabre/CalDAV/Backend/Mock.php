@@ -1,17 +1,19 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
 
-class Mock extends AbstractBackend {
-
+class Mock extends AbstractBackend
+{
     protected $calendarData;
     protected $calendars;
 
-    function __construct(array $calendars = [], array $calendarData = []) {
-
+    public function __construct(array $calendars = [], array $calendarData = [])
+    {
         foreach ($calendars as &$calendar) {
             if (!isset($calendar['id'])) {
                 $calendar['id'] = DAV\UUIDUtil::getUUID();
@@ -20,7 +22,6 @@ class Mock extends AbstractBackend {
 
         $this->calendars = $calendars;
         $this->calendarData = $calendarData;
-
     }
 
     /**
@@ -38,10 +39,11 @@ class Mock extends AbstractBackend {
      * common one is '{DAV:}displayname'.
      *
      * @param string $principalUri
+     *
      * @return array
      */
-    function getCalendarsForUser($principalUri) {
-
+    public function getCalendarsForUser($principalUri)
+    {
         $r = [];
         foreach ($this->calendars as $row) {
             if ($row['principaluri'] == $principalUri) {
@@ -50,7 +52,6 @@ class Mock extends AbstractBackend {
         }
 
         return $r;
-
     }
 
     /**
@@ -64,21 +65,21 @@ class Mock extends AbstractBackend {
      *
      * @param string $principalUri
      * @param string $calendarUri
-     * @param array $properties
+     * @param array  $properties
+     *
      * @return string|int
      */
-    function createCalendar($principalUri, $calendarUri, array $properties) {
-
+    public function createCalendar($principalUri, $calendarUri, array $properties)
+    {
         $id = DAV\UUIDUtil::getUUID();
         $this->calendars[] = array_merge([
-            'id'                                                                 => $id,
-            'principaluri'                                                       => $principalUri,
-            'uri'                                                                => $calendarUri,
-            '{' . CalDAV\Plugin::NS_CALDAV . '}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT', 'VTODO']),
+            'id' => $id,
+            'principaluri' => $principalUri,
+            'uri' => $calendarUri,
+            '{'.CalDAV\Plugin::NS_CALDAV.'}supported-calendar-component-set' => new CalDAV\Xml\Property\SupportedCalendarComponentSet(['VEVENT', 'VTODO']),
         ], $properties);
 
         return $id;
-
     }
 
     /**
@@ -93,16 +94,13 @@ class Mock extends AbstractBackend {
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param mixed $calendarId
+     * @param mixed                $calendarId
      * @param \Sabre\DAV\PropPatch $propPatch
-     * @return void
      */
-    function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch) {
-
-        $propPatch->handleRemaining(function($props) use ($calendarId) {
-
+    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch)
+    {
+        $propPatch->handleRemaining(function ($props) use ($calendarId) {
             foreach ($this->calendars as $k => $calendar) {
-
                 if ($calendar['id'] === $calendarId) {
                     foreach ($props as $propName => $propValue) {
                         if (is_null($propValue)) {
@@ -111,30 +109,25 @@ class Mock extends AbstractBackend {
                             $this->calendars[$k][$propName] = $propValue;
                         }
                     }
+
                     return true;
-
                 }
-
             }
-
         });
-
     }
 
     /**
-     * Delete a calendar and all it's objects
+     * Delete a calendar and all it's objects.
      *
      * @param string $calendarId
-     * @return void
      */
-    function deleteCalendar($calendarId) {
-
+    public function deleteCalendar($calendarId)
+    {
         foreach ($this->calendars as $k => $calendar) {
             if ($calendar['id'] === $calendarId) {
                 unset($this->calendars[$k]);
             }
         }
-
     }
 
     /**
@@ -157,12 +150,14 @@ class Mock extends AbstractBackend {
      * calendardata.
      *
      * @param string $calendarId
+     *
      * @return array
      */
-    function getCalendarObjects($calendarId) {
-
-        if (!isset($this->calendarData[$calendarId]))
+    public function getCalendarObjects($calendarId)
+    {
+        if (!isset($this->calendarData[$calendarId])) {
             return [];
+        }
 
         $objects = $this->calendarData[$calendarId];
 
@@ -171,8 +166,8 @@ class Mock extends AbstractBackend {
             $object['uri'] = $uri;
             $object['lastmodified'] = null;
         }
-        return $objects;
 
+        return $objects;
     }
 
     /**
@@ -187,12 +182,13 @@ class Mock extends AbstractBackend {
      *
      * This method must return null if the object did not exist.
      *
-     * @param mixed $calendarId
+     * @param mixed  $calendarId
      * @param string $objectUri
+     *
      * @return array|null
      */
-    function getCalendarObject($calendarId, $objectUri) {
-
+    public function getCalendarObject($calendarId, $objectUri)
+    {
         if (!isset($this->calendarData[$calendarId][$objectUri])) {
             return null;
         }
@@ -200,8 +196,8 @@ class Mock extends AbstractBackend {
         $object['calendarid'] = $calendarId;
         $object['uri'] = $objectUri;
         $object['lastmodified'] = null;
-        return $object;
 
+        return $object;
     }
 
     /**
@@ -210,17 +206,16 @@ class Mock extends AbstractBackend {
      * @param string $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
      */
-    function createCalendarObject($calendarId, $objectUri, $calendarData) {
-
+    public function createCalendarObject($calendarId, $objectUri, $calendarData)
+    {
         $this->calendarData[$calendarId][$objectUri] = [
             'calendardata' => $calendarData,
-            'calendarid'   => $calendarId,
-            'uri'          => $objectUri,
+            'calendarid' => $calendarId,
+            'uri' => $objectUri,
         ];
-        return '"' . md5($calendarData) . '"';
 
+        return '"'.md5($calendarData).'"';
     }
 
     /**
@@ -229,17 +224,16 @@ class Mock extends AbstractBackend {
      * @param string $calendarId
      * @param string $objectUri
      * @param string $calendarData
-     * @return void
      */
-    function updateCalendarObject($calendarId, $objectUri, $calendarData) {
-
+    public function updateCalendarObject($calendarId, $objectUri, $calendarData)
+    {
         $this->calendarData[$calendarId][$objectUri] = [
             'calendardata' => $calendarData,
-            'calendarid'   => $calendarId,
-            'uri'          => $objectUri,
+            'calendarid' => $calendarId,
+            'uri' => $objectUri,
         ];
-        return '"' . md5($calendarData) . '"';
 
+        return '"'.md5($calendarData).'"';
     }
 
     /**
@@ -247,12 +241,9 @@ class Mock extends AbstractBackend {
      *
      * @param string $calendarId
      * @param string $objectUri
-     * @return void
      */
-    function deleteCalendarObject($calendarId, $objectUri) {
-
+    public function deleteCalendarObject($calendarId, $objectUri)
+    {
         unset($this->calendarData[$calendarId][$objectUri]);
-
     }
-
 }

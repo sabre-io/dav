@@ -1,56 +1,56 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Notification;
 
-use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
-class InviteTest extends DAV\Xml\XmlTest {
-
+class InviteTest extends DAV\Xml\XmlTest
+{
     /**
-     * @param array $notification
+     * @param array  $notification
      * @param string $expected
      * @dataProvider dataProvider
      */
-    function testSerializers($notification, $expected) {
-
+    public function testSerializers($notification, $expected)
+    {
         $notification = new Invite($notification);
 
         $this->assertEquals('foo', $notification->getId());
         $this->assertEquals('"1"', $notification->getETag());
 
-        $simpleExpected = '<cs:invite-notification xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" />' . "\n";
+        $simpleExpected = '<cs:invite-notification xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" />'."\n";
         $this->namespaceMap['http://calendarserver.org/ns/'] = 'cs';
 
         $xml = $this->write($notification);
 
         $this->assertXmlStringEqualsXmlString($simpleExpected, $xml);
-        
+
         $this->namespaceMap['urn:ietf:params:xml:ns:caldav'] = 'cal';
         $xml = $this->writeFull($notification);
 
         $this->assertXmlStringEqualsXmlString($expected, $xml);
-
-
     }
 
-    function dataProvider() {
-
+    public function dataProvider()
+    {
         $dtStamp = new \DateTime('2012-01-01 00:00:00', new \DateTimeZone('GMT'));
+
         return [
             [
                 [
-                    'id'         => 'foo',
-                    'dtStamp'    => $dtStamp,
-                    'etag'       => '"1"',
-                    'href'       => 'mailto:foo@example.org',
-                    'type'       => DAV\Sharing\Plugin::INVITE_ACCEPTED,
-                    'readOnly'   => true,
-                    'hostUrl'    => 'calendar',
-                    'organizer'  => 'principal/user1',
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'readOnly' => true,
+                    'hostUrl' => 'calendar',
+                    'organizer' => 'principal/user1',
                     'commonName' => 'John Doe',
-                    'summary'    => 'Awesome stuff!'
+                    'summary' => 'Awesome stuff!',
                 ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -79,16 +79,16 @@ FOO
             ],
             [
                 [
-                    'id'        => 'foo',
-                    'dtStamp'   => $dtStamp,
-                    'etag'      => '"1"',
-                    'href'      => 'mailto:foo@example.org',
-                    'type'      => DAV\Sharing\Plugin::INVITE_NORESPONSE,
-                    'readOnly'  => true,
-                    'hostUrl'   => 'calendar',
+                    'id' => 'foo',
+                    'dtStamp' => $dtStamp,
+                    'etag' => '"1"',
+                    'href' => 'mailto:foo@example.org',
+                    'type' => DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                    'readOnly' => true,
+                    'hostUrl' => 'calendar',
                     'organizer' => 'principal/user1',
                     'firstName' => 'Foo',
-                    'lastName'  => 'Bar',
+                    'lastName' => 'Bar',
                 ],
 <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
@@ -116,42 +116,38 @@ FOO
 
 FOO
             ],
-
         ];
-
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
-    function testMissingArg() {
-
+    public function testMissingArg()
+    {
         new Invite([]);
-
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
-    function testUnknownArg() {
-
+    public function testUnknownArg()
+    {
         new Invite([
             'foo-i-will-break' => true,
 
-            'id'        => 1,
-            'etag'      => '"bla"',
-            'href'      => 'abc',
-            'dtStamp'   => 'def',
-            'type'      => 'ghi',
-            'readOnly'  => true,
-            'hostUrl'   => 'jkl',
+            'id' => 1,
+            'etag' => '"bla"',
+            'href' => 'abc',
+            'dtStamp' => 'def',
+            'type' => 'ghi',
+            'readOnly' => true,
+            'hostUrl' => 'jkl',
             'organizer' => 'mno',
         ]);
-
     }
 
-    function writeFull($input) {
-
+    public function writeFull($input)
+    {
         $writer = new Writer();
         $writer->contextUri = '/';
         $writer->namespaceMap = $this->namespaceMap;
@@ -159,7 +155,7 @@ FOO
         $writer->startElement('{http://calendarserver.org/ns/}root');
         $input->xmlSerializeFull($writer);
         $writer->endElement();
-        return $writer->outputMemory();
 
+        return $writer->outputMemory();
     }
 }

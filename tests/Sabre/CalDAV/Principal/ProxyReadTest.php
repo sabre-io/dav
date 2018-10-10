@@ -1,102 +1,95 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Principal;
 
 use Sabre\DAVACL;
 
-class ProxyReadTest extends \PHPUnit\Framework\TestCase {
-
+class ProxyReadTest extends \PHPUnit\Framework\TestCase
+{
     protected $backend;
 
-    function getInstance() {
-
+    public function getInstance()
+    {
         $backend = new DAVACL\PrincipalBackend\Mock();
         $principal = new ProxyRead($backend, [
             'uri' => 'principal/user',
         ]);
         $this->backend = $backend;
+
         return $principal;
+    }
 
-   }
-
-    function testGetName() {
-
+    public function testGetName()
+    {
         $i = $this->getInstance();
         $this->assertEquals('calendar-proxy-read', $i->getName());
-
     }
-    function testGetDisplayName() {
 
+    public function testGetDisplayName()
+    {
         $i = $this->getInstance();
         $this->assertEquals('calendar-proxy-read', $i->getDisplayName());
-
     }
 
-    function testGetLastModified() {
-
+    public function testGetLastModified()
+    {
         $i = $this->getInstance();
         $this->assertNull($i->getLastModified());
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testDelete() {
-
+    public function testDelete()
+    {
         $i = $this->getInstance();
         $i->delete();
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testSetName() {
-
+    public function testSetName()
+    {
         $i = $this->getInstance();
         $i->setName('foo');
-
     }
 
-    function testGetAlternateUriSet() {
-
+    public function testGetAlternateUriSet()
+    {
         $i = $this->getInstance();
         $this->assertEquals([], $i->getAlternateUriSet());
-
     }
 
-    function testGetPrincipalUri() {
-
+    public function testGetPrincipalUri()
+    {
         $i = $this->getInstance();
         $this->assertEquals('principal/user/calendar-proxy-read', $i->getPrincipalUrl());
-
     }
 
-    function testGetGroupMemberSet() {
-
+    public function testGetGroupMemberSet()
+    {
         $i = $this->getInstance();
         $this->assertEquals([], $i->getGroupMemberSet());
-
     }
 
-    function testGetGroupMembership() {
-
+    public function testGetGroupMembership()
+    {
         $i = $this->getInstance();
         $this->assertEquals([], $i->getGroupMembership());
-
     }
 
-    function testSetGroupMemberSet() {
-
+    public function testSetGroupMemberSet()
+    {
         $i = $this->getInstance();
         $i->setGroupMemberSet(['principals/foo']);
 
         $expected = [
-            $i->getPrincipalUrl() => ['principals/foo']
+            $i->getPrincipalUrl() => ['principals/foo'],
         ];
 
         $this->assertEquals($expected, $this->backend->groupMembers);
-
     }
 }

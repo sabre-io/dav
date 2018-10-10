@@ -1,12 +1,14 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 
-class ClientMock extends Client {
-
+class ClientMock extends Client
+{
     public $request;
     public $response;
 
@@ -14,22 +16,21 @@ class ClientMock extends Client {
     public $curlSettings;
 
     /**
-     * Just making this method public
+     * Just making this method public.
      *
      * @param string $url
+     *
      * @return string
      */
-    function getAbsoluteUrl($url) {
-
+    public function getAbsoluteUrl($url)
+    {
         return parent::getAbsoluteUrl($url);
-
     }
 
-    function doRequest(RequestInterface $request) : ResponseInterface {
-
+    public function doRequest(RequestInterface $request): ResponseInterface
+    {
         $this->request = $request;
+
         return $this->response;
-
     }
-
 }

@@ -1,11 +1,13 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
 use Sabre\DAV\PropPatch;
 
-class AddressBookTest extends \PHPUnit\Framework\TestCase {
-
+class AddressBookTest extends \PHPUnit\Framework\TestCase
+{
     use \Sabre\DAV\DbTestHelperTrait;
 
     /**
@@ -14,98 +16,88 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase {
     protected $ab;
     protected $backend;
 
-    function setUp() {
-
+    public function setUp()
+    {
         $this->backend = new Backend\Mock();
         $this->ab = new AddressBook(
             $this->backend,
             [
-                'uri'               => 'book1',
-                'id'                => 'foo',
+                'uri' => 'book1',
+                'id' => 'foo',
                 '{DAV:}displayname' => 'd-name',
-                'principaluri'      => 'principals/user1',
+                'principaluri' => 'principals/user1',
             ]
         );
-
     }
 
-    function testGetName() {
-
+    public function testGetName()
+    {
         $this->assertEquals('book1', $this->ab->getName());
-
     }
 
-    function testGetChild() {
-
+    public function testGetChild()
+    {
         $card = $this->ab->getChild('card1');
         $this->assertInstanceOf('Sabre\\CardDAV\\Card', $card);
         $this->assertEquals('card1', $card->getName());
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotFound
+     * @expectedException \Sabre\DAV\Exception\NotFound
      */
-    function testGetChildNotFound() {
-
+    public function testGetChildNotFound()
+    {
         $card = $this->ab->getChild('card3');
-
     }
 
-    function testGetChildren() {
-
+    public function testGetChildren()
+    {
         $cards = $this->ab->getChildren();
         $this->assertEquals(2, count($cards));
 
         $this->assertEquals('card1', $cards[0]->getName());
         $this->assertEquals('card2', $cards[1]->getName());
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
-    function testCreateDirectory() {
-
+    public function testCreateDirectory()
+    {
         $this->ab->createDirectory('name');
-
     }
 
-    function testCreateFile() {
-
+    public function testCreateFile()
+    {
         $file = fopen('php://memory', 'r+');
         fwrite($file, 'foo');
         rewind($file);
         $this->ab->createFile('card2', $file);
 
         $this->assertEquals('foo', $this->backend->cards['foo']['card2']);
-
     }
 
-    function testDelete() {
-
+    public function testDelete()
+    {
         $this->ab->delete();
         $this->assertEquals(1, count($this->backend->addressBooks));
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
-    function testSetName() {
-
+    public function testSetName()
+    {
         $this->ab->setName('foo');
-
     }
 
-    function testGetLastModified() {
-
+    public function testGetLastModified()
+    {
         $this->assertNull($this->ab->getLastModified());
-
     }
 
-    function testUpdateProperties() {
-
+    public function testUpdateProperties()
+    {
         $propPatch = new PropPatch([
             '{DAV:}displayname' => 'barrr',
         ]);
@@ -113,20 +105,18 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($propPatch->commit());
 
         $this->assertEquals('barrr', $this->backend->addressBooks[0]['{DAV:}displayname']);
-
     }
 
-    function testGetProperties() {
-
+    public function testGetProperties()
+    {
         $props = $this->ab->getProperties(['{DAV:}displayname']);
         $this->assertEquals([
             '{DAV:}displayname' => 'd-name',
         ], $props);
-
     }
 
-    function testACLMethods() {
-
+    public function testACLMethods()
+    {
         $this->assertEquals('principals/user1', $this->ab->getOwner());
         $this->assertNull($this->ab->getGroup());
         $this->assertEquals([
@@ -136,39 +126,35 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase {
                 'protected' => true,
             ],
         ], $this->ab->getACL());
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\Forbidden
+     * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testSetACL() {
-
-       $this->ab->setACL([]);
-
+    public function testSetACL()
+    {
+        $this->ab->setACL([]);
     }
 
-    function testGetSupportedPrivilegeSet() {
-
+    public function testGetSupportedPrivilegeSet()
+    {
         $this->assertNull(
             $this->ab->getSupportedPrivilegeSet()
         );
-
     }
 
-    function testGetSyncTokenNoSyncSupport() {
-
+    public function testGetSyncTokenNoSyncSupport()
+    {
         $this->assertNull($this->ab->getSyncToken());
-
     }
-    function testGetChangesNoSyncSupport() {
 
+    public function testGetChangesNoSyncSupport()
+    {
         $this->assertNull($this->ab->getChanges(1, null));
-
     }
 
-    function testGetSyncToken() {
-
+    public function testGetSyncToken()
+    {
         $this->driver = 'sqlite';
         $this->dropTables(['addressbooks', 'cards', 'addressbookchanges']);
         $this->createSchema('addressbooks');
@@ -179,8 +165,8 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(2, $ab->getSyncToken());
     }
 
-    function testGetSyncToken2() {
-
+    public function testGetSyncToken2()
+    {
         $this->driver = 'sqlite';
         $this->dropTables(['addressbooks', 'cards', 'addressbookchanges']);
         $this->createSchema('addressbooks');
@@ -190,5 +176,4 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase {
         $ab = new AddressBook($backend, ['id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
         $this->assertEquals(2, $ab->getSyncToken());
     }
-
 }

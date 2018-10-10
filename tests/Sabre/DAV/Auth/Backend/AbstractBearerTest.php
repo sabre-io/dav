@@ -1,13 +1,15 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class AbstractBearerTest extends \PHPUnit\Framework\TestCase {
-
-    function testCheckNoHeaders() {
-
+class AbstractBearerTest extends \PHPUnit\Framework\TestCase
+{
+    public function testCheckNoHeaders()
+    {
         $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
@@ -16,11 +18,10 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse(
             $backend->check($request, $response)[0]
         );
-
     }
 
-    function testCheckInvalidToken() {
-
+    public function testCheckInvalidToken()
+    {
         $request = new HTTP\Request('GET', '/', [
             'Authorization' => 'Bearer foo',
         ]);
@@ -31,11 +32,10 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse(
             $backend->check($request, $response)[0]
         );
-
     }
 
-    function testCheckSuccess() {
-
+    public function testCheckSuccess()
+    {
         $request = new HTTP\Request('GET', '/', [
             'Authorization' => 'Bearer valid',
         ]);
@@ -46,11 +46,10 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase {
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
-
     }
 
-    function testRequireAuth() {
-
+    public function testRequireAuth()
+    {
         $request = new HTTP\Request('GET', '/');
         $response = new HTTP\Response();
 
@@ -62,27 +61,23 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase {
             'Bearer realm="writing unittests on a saturday night"',
             $response->getHeader('WWW-Authenticate')
         );
-
     }
-
 }
 
-
-class AbstractBearerMock extends AbstractBearer {
-
+class AbstractBearerMock extends AbstractBearer
+{
     /**
-     * Validates a bearer token
+     * Validates a bearer token.
      *
      * This method should return true or false depending on if login
      * succeeded.
      *
      * @param string $bearerToken
+     *
      * @return bool
      */
-    function validateBearerToken($bearerToken) {
-
+    public function validateBearerToken($bearerToken)
+    {
         return 'valid' === $bearerToken ? 'principals/username' : false;
-
     }
-
 }

@@ -1,22 +1,22 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\DAV\Browser\HtmlOutputHelper;
-use Sabre\HTTP;
 
-class ACLTest extends \PHPUnit\Framework\TestCase {
-
-    function testConstruct() {
-
+class ACLTest extends \PHPUnit\Framework\TestCase
+{
+    public function testConstruct()
+    {
         $acl = new Acl([]);
         $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
-
     }
 
-    function testSerializeEmpty() {
-
+    public function testSerializeEmpty()
+    {
         $acl = new Acl([]);
         $xml = (new DAV\Server())->xml->write('{DAV:}root', $acl);
 
@@ -24,11 +24,10 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
 <d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" />';
 
         $this->assertXmlStringEqualsXmlString($expected, $xml);
-
     }
 
-    function testSerialize() {
-
+    public function testSerialize()
+    {
         $privileges = [
             [
                 'principal' => 'principals/evert',
@@ -70,11 +69,10 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
 </d:root>
 ';
         $this->assertXmlStringEqualsXmlString($expected, $xml);
-
     }
 
-    function testSerializeSpecialPrincipals() {
-
+    public function testSerializeSpecialPrincipals()
+    {
         $privileges = [
             [
                 'principal' => '{DAV:}authenticated',
@@ -88,7 +86,6 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
                 'principal' => '{DAV:}all',
                 'privilege' => '{DAV:}write',
             ],
-
         ];
 
         $acl = new Acl($privileges);
@@ -129,11 +126,10 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
 </d:root>
 ';
         $this->assertXmlStringEqualsXmlString($expected, $xml);
-
     }
 
-    function testUnserialize() {
-
+    public function testUnserialize()
+    {
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ace>
@@ -183,15 +179,13 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
         ];
 
         $this->assertEquals($expected, $result->getPrivileges());
-
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\BadRequest
+     * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testUnserializeNoPrincipal() {
-
+    public function testUnserializeNoPrincipal()
+    {
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ace>
@@ -204,17 +198,15 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
 </d:root>
 ';
 
-
         $reader = new \Sabre\Xml\Reader();
         $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
         $reader->xml($source);
 
         $result = $reader->parse();
-
     }
 
-    function testUnserializeOtherPrincipal() {
-
+    public function testUnserializeOtherPrincipal()
+    {
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ace>
@@ -273,14 +265,13 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
         ];
 
         $this->assertEquals($expected, $result->getPrivileges());
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception\NotImplemented
+     * @expectedException \Sabre\DAV\Exception\NotImplemented
      */
-    function testUnserializeDeny() {
-
+    public function testUnserializeDeny()
+    {
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ignore-me />
@@ -300,11 +291,10 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
         $reader->xml($source);
 
         $result = $reader->parse();
-
     }
 
-    function testToHtml() {
-
+    public function testToHtml()
+    {
         $privileges = [
             [
                 'principal' => 'principals/evert',
@@ -328,15 +318,13 @@ class ACLTest extends \PHPUnit\Framework\TestCase {
         );
 
         $expected =
-            '<table>' .
-            '<tr><th>Principal</th><th>Privilege</th><th></th></tr>' .
-            '<tr><td><a href="/base/principals/evert">/base/principals/evert</a></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>' .
-            '<tr><td><a href="/base/principals/foo">/base/principals/foo</a></td><td><span title="{http://example.org/ns}read">{http://example.org/ns}read</span></td><td>(protected)</td></tr>' .
-            '<tr><td><span title="{DAV:}authenticated">d:authenticated</span></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>' .
+            '<table>'.
+            '<tr><th>Principal</th><th>Privilege</th><th></th></tr>'.
+            '<tr><td><a href="/base/principals/evert">/base/principals/evert</a></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>'.
+            '<tr><td><a href="/base/principals/foo">/base/principals/foo</a></td><td><span title="{http://example.org/ns}read">{http://example.org/ns}read</span></td><td>(protected)</td></tr>'.
+            '<tr><td><span title="{DAV:}authenticated">d:authenticated</span></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>'.
             '</table>';
 
         $this->assertEquals($expected, $acl->toHtml($html));
-
     }
-
 }

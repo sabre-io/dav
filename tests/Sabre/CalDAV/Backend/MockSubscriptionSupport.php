@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
@@ -15,10 +17,10 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
-
+class MockSubscriptionSupport extends Mock implements SubscriptionSupport
+{
     /**
-     * Subscription list
+     * Subscription list.
      *
      * @var array
      */
@@ -49,15 +51,16 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      * 8. {http://apple.com/ns/ical/}calendar-order
      *
      * @param string $principalUri
+     *
      * @return array
      */
-    function getSubscriptionsForUser($principalUri) {
-
+    public function getSubscriptionsForUser($principalUri)
+    {
         if (isset($this->subs[$principalUri])) {
             return $this->subs[$principalUri];
         }
-        return [];
 
+        return [];
     }
 
     /**
@@ -68,11 +71,12 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      *
      * @param string $principalUri
      * @param string $uri
-     * @param array $properties
+     * @param array  $properties
+     *
      * @return mixed
      */
-    function createSubscription($principalUri, $uri, array $properties) {
-
+    public function createSubscription($principalUri, $uri, array $properties)
+    {
         $properties['uri'] = $uri;
         $properties['principaluri'] = $principalUri;
         $properties['source'] = $properties['{http://calendarserver.org/ns/}source']->getHref();
@@ -90,11 +94,10 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
         ]);
 
         return $id;
-
     }
 
     /**
-     * Updates a subscription
+     * Updates a subscription.
      *
      * The list of mutations is stored in a Sabre\DAV\PropPatch object.
      * To do the actual updates, you must tell this object which properties
@@ -105,52 +108,47 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport {
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param mixed $subscriptionId
+     * @param mixed                $subscriptionId
      * @param \Sabre\DAV\PropPatch $propPatch
-     * @return void
      */
-    function updateSubscription($subscriptionId, DAV\PropPatch $propPatch) {
-
+    public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch)
+    {
         $found = null;
         foreach ($this->subs[$subscriptionId[0]] as &$sub) {
-
             if ($sub['id'][1] === $subscriptionId[1]) {
-                $found = & $sub;
+                $found = &$sub;
                 break;
             }
-
         }
 
-        if (!$found) return;
+        if (!$found) {
+            return;
+        }
 
-        $propPatch->handleRemaining(function($mutations) use (&$found) {
+        $propPatch->handleRemaining(function ($mutations) use (&$found) {
             foreach ($mutations as $k => $v) {
                 $found[$k] = $v;
             }
+
             return true;
         });
-
     }
 
     /**
-     * Deletes a subscription
+     * Deletes a subscription.
      *
      * @param mixed $subscriptionId
-     * @return void
      */
-    function deleteSubscription($subscriptionId) {
-
+    public function deleteSubscription($subscriptionId)
+    {
         foreach ($this->subs[$subscriptionId[0]] as $index => $sub) {
-
             if ($sub['id'][1] === $subscriptionId[1]) {
                 unset($this->subs[$subscriptionId[0]][$index]);
+
                 return true;
             }
-
         }
 
         return false;
-
     }
-
 }

@@ -35,8 +35,9 @@ $tree = [
 
 $server = new Sabre\DAV\Server($tree);
 
-if (isset($baseUri))
+if (isset($baseUri)) {
     $server->setBaseUri($baseUri);
+}
 
 /* Server Plugins */
 $authPlugin = new Sabre\DAV\Auth\Plugin($authBackend);

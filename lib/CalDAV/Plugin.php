@@ -975,7 +975,8 @@ class Plugin extends DAV\ServerPlugin
      */
     public function httpAfterGet(RequestInterface $request, ResponseInterface $response)
     {
-        if (false === strpos($response->getHeader('Content-Type'), 'text/calendar')) {
+        $contentType = $response->getHeader('Content-Type');
+        if (null === $contentType || false === strpos($contentType, 'text/calendar')) {
             return;
         }
 

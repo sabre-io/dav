@@ -558,7 +558,7 @@ class CorePlugin extends ServerPlugin
 
         if ($requestBody) {
             $contentType = $request->getHeader('Content-Type');
-            if (is_null($contentType) || 0 !== strpos($contentType, 'application/xml') && 0 !== strpos($contentType, 'text/xml')) {
+            if (null === $contentType || (0 !== strpos($contentType, 'application/xml') && 0 !== strpos($contentType, 'text/xml'))) {
                 // We must throw 415 for unsupported mkcol bodies
                 throw new Exception\UnsupportedMediaType('The request body for the MKCOL request must have an xml Content-Type');
             }

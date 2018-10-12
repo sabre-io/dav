@@ -292,6 +292,15 @@ RRR;
         $this->assertEquals($xml, $request->getBody(true));
     }
 
+    public function testPostWithoutContentType()
+    {
+        $request = new HTTP\Request('POST', '/');
+        $response = new HTTP\ResponseMock();
+
+        $this->caldavSharingPlugin->httpPost($request, $response);
+        $this->assertTrue(true);
+    }
+
     public function testPublish()
     {
         $request = new HTTP\Request('POST', '/calendars/user1/cal1', ['Content-Type' => 'text/xml']);

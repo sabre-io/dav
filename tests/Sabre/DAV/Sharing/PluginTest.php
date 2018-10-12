@@ -21,6 +21,15 @@ class PluginTest extends \Sabre\DAVServerTest
         );
     }
 
+    public function testPostWithoutContentType()
+    {
+        $request = new \Sabre\HTTP\Request('POST', '/');
+        $response = new \Sabre\HTTP\ResponseMock();
+
+        $this->sharingPlugin->httpPost($request, $response);
+        $this->assertTrue(true);
+    }
+
     public function testFeatures()
     {
         $this->assertEquals(

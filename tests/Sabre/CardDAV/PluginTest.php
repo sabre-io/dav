@@ -90,4 +90,12 @@ class PluginTest extends AbstractPluginTest
 
         $this->assertEquals(200, $response->getStatus());
     }
+
+    public function testGetWithoutContentType()
+    {
+        $request = new \Sabre\HTTP\Request('GET', '/');
+        $response = new \Sabre\HTTP\ResponseMock();
+        $this->plugin->httpAfterGet($request, $response);
+        $this->assertTrue(true);
+    }
 }

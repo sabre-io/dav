@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+4.0.0-alpha4 (2018-10-12)
+-------------------------
+* Apply new code style
+* Fix for litmus test suite - test case: props propfind_invalid2
+* Depend on sabre/xml 2.0.1
+
+
 4.0.0-alpha3 (2018-10-05)
 -------------------------
 * Fixes for PHP 7.3

@@ -1,6 +1,5 @@
 language: php
 sudo: required
-dist: xenial
 php:
   - 7.0
   - 7.1

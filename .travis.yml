@@ -1,11 +1,10 @@
 language: php
 sudo: required
-dist: xenial
 php:
   - 7.0
   - 7.1
   - 7.2
-  - 7.3snapshot
+  - 7.3
 
 env:
   global:
@@ -29,9 +28,6 @@ before_script:
   - composer update --prefer-dist $LOWEST_DEPS
 
 addons:
-  apt:
-    packages:
-      - libzip4
   postgresql: "9.5"
 
 script:

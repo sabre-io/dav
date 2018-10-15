@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+4.0.0-alpha5 (2018-10-15)
+-------------------------
+* Fix issues with empty content-type header
+
+
 4.0.0-alpha4 (2018-10-12)
 -------------------------
 * Apply new code style

@@ -170,6 +170,9 @@ class Plugin extends ServerPlugin
     {
         $path = $request->getPath();
         $contentType = $request->getHeader('Content-Type');
+        if (null === $contentType) {
+            return;
+        }
 
         // We're only interested in the davsharing content type.
         if (false === strpos($contentType, 'application/davsharing+xml')) {

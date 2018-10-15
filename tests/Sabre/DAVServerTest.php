@@ -55,22 +55,22 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
     protected $propertyStorageBackend;
 
     /**
-     * @var Sabre\CalDAV\Plugin
+     * @var \Sabre\CalDAV\Plugin
      */
     protected $caldavPlugin;
 
     /**
-     * @var Sabre\CardDAV\Plugin
+     * @var \Sabre\CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var Sabre\DAVACL\Plugin
+     * @var \Sabre\DAVACL\Plugin
      */
     protected $aclPlugin;
 
     /**
-     * @var Sabre\CalDAV\SharingPlugin
+     * @var \Sabre\CalDAV\SharingPlugin
      */
     protected $caldavSharingPlugin;
 

@@ -216,6 +216,9 @@ class SharingPlugin extends DAV\ServerPlugin
 
         // Only handling xml
         $contentType = $request->getHeader('Content-Type');
+        if (null === $contentType) {
+            return;
+        }
         if (false === strpos($contentType, 'application/xml') && false === strpos($contentType, 'text/xml')) {
             return;
         }

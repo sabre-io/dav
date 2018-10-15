@@ -121,6 +121,13 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:'.$this->response->body);
     }
 
+    public function testGetWithoutContentType()
+    {
+        $request = new HTTP\Request('GET', '/');
+        $this->plugin->httpAfterGet($request, $this->response);
+        $this->assertTrue(true);
+    }
+
     public function testReportPassThrough()
     {
         $request = new HTTP\Request('REPORT', '/', ['Content-Type' => 'application/xml']);

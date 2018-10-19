@@ -60,7 +60,7 @@ class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertEquals(
+        $this->assertContains(
             'Basic realm="writing unittests on a saturday night"',
             $response->getHeader('WWW-Authenticate')
         );

@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-3.2.3 (????-??-??)
+3.2.3 (2018-10-19)
 ------------------
 
 * #982: Make sure that files that are siblings of directories, are reported

@@ -107,30 +107,8 @@ class SharingPlugin extends DAV\ServerPlugin
     {
         if ($node instanceof ISharedCalendar) {
             $propFind->handle('{'.Plugin::NS_CALENDARSERVER.'}invite', function () use ($node) {
-                // Fetching owner information
-                $props = $this->server->getPropertiesForPath($node->getOwner(), [
-                    '{http://sabredav.org/ns}email-address',
-                    '{DAV:}displayname',
-                ], 0);
-
-                $ownerInfo = [
-                    'href' => $node->getOwner(),
-                ];
-
-                if (isset($props[0][200])) {
-                    // We're mapping the internal webdav properties to the
-                    // elements caldav-sharing expects.
-                    if (isset($props[0][200]['{http://sabredav.org/ns}email-address'])) {
-                        $ownerInfo['href'] = 'mailto:'.$props[0][200]['{http://sabredav.org/ns}email-address'];
-                    }
-                    if (isset($props[0][200]['{DAV:}displayname'])) {
-                        $ownerInfo['commonName'] = $props[0][200]['{DAV:}displayname'];
-                    }
-                }
-
                 return new Xml\Property\Invite(
-                    $node->getInvites(),
-                    $ownerInfo
+                    $node->getInvites()
                 );
             });
         }

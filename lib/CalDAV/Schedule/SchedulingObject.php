@@ -17,20 +17,6 @@ use Sabre\DAV\Exception\MethodNotAllowed;
 class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements ISchedulingObject
 {
     /**
-     /* The CalDAV backend.
-     *
-     * @var Backend\SchedulingSupport
-     */
-    protected $caldavBackend;
-
-    /**
-     * Array with information about this SchedulingObject.
-     *
-     * @var array
-     */
-    protected $objectData;
-
-    /**
      * Constructor.
      *
      * The following properties may be passed within $objectData:
@@ -49,13 +35,11 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      */
     public function __construct(Backend\SchedulingSupport $caldavBackend, array $objectData)
     {
-        $this->caldavBackend = $caldavBackend;
+        parent::__construct($caldavBackend, [], $objectData);
 
         if (!isset($objectData['uri'])) {
             throw new \InvalidArgumentException('The objectData argument must contain an \'uri\' property');
         }
-
-        $this->objectData = $objectData;
     }
 
     /**

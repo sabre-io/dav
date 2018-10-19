@@ -26,14 +26,14 @@ class FreeBusyQueryReport implements XmlDeserializable
     /**
      * Starttime of report.
      *
-     * @var DateTime|null
+     * @var \DateTime|null
      */
     public $start;
 
     /**
      * End time of report.
      *
-     * @var DateTime|null
+     * @var \DateTime|null
      */
     public $end;
 

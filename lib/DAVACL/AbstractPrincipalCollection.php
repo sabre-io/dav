@@ -70,7 +70,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      *
      * @param array $principalInfo
      *
-     * @return IPrincipal
+     * @return DAV\INode
      */
     abstract public function getChildForPrincipal(array $principalInfo);
 

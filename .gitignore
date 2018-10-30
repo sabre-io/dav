@@ -1,3 +1,5 @@
+.php_cs.cache
+
 # Unit tests
 tests/temp
 tests/.sabredav

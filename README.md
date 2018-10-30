@@ -4,6 +4,8 @@
 Introduction
 ------------
 
+Trigger CI on 3.2 branch.
+
 sabre/dav is the most popular WebDAV framework for PHP. Use it to create WebDAV, CalDAV and CardDAV servers.
 
 Full documentation can be found on the website:

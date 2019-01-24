@@ -39,7 +39,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      * @param string          $name Name of the file
      * @param resource|string $data Initial payload
      *
-     * @return null|string
+     * @return string|null
      */
     public function createFile($name, $data = null)
     {

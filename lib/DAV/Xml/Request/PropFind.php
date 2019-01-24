@@ -31,7 +31,7 @@ class PropFind implements XmlDeserializable
     /**
      * The property list.
      *
-     * @var null|array
+     * @var array|null
      */
     public $properties;
 

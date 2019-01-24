@@ -676,7 +676,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string $uri
      *
-     * @return null|string
+     * @return string|null
      */
     public function getPrincipalByUri($uri)
     {

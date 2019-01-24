@@ -57,7 +57,7 @@ interface NotificationSupport extends BackendInterface
      * @param string $inReplyTo   The unique id this message is a response to
      * @param string $summary     A description of the reply
      *
-     * @return null|string
+     * @return string|null
      */
     public function shareReply($href, $status, $calendarUri, $inReplyTo, $summary = null);
 }

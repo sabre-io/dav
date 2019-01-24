@@ -100,7 +100,7 @@ class Inbox extends DAV\Collection implements IInbox
      * @param string          $name Name of the file
      * @param resource|string $data Initial payload
      *
-     * @return null|string
+     * @return string|null
      */
     public function createFile($name, $data = null)
     {

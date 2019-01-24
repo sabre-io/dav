@@ -164,7 +164,7 @@ class Plugin extends ServerPlugin
      * @param RequestInterface  $request
      * @param ResponseInterface $response
      *
-     * @return null|bool
+     * @return bool|null
      */
     public function httpPost(RequestInterface $request, ResponseInterface $response)
     {

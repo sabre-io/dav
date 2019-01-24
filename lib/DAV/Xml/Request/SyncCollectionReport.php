@@ -46,7 +46,7 @@ class SyncCollectionReport implements XmlDeserializable
     /**
      * The list of properties that are being requested for every change.
      *
-     * @var null|array
+     * @var array|null
      */
     public $properties;
 

@@ -1,64 +1,58 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 
-class MockPrincipal extends DAV\Node implements IPrincipal {
-
+class MockPrincipal extends DAV\Node implements IPrincipal
+{
     public $name;
     public $principalUrl;
     public $groupMembership = [];
     public $groupMemberSet = [];
 
-    function __construct($name, $principalUrl, array $groupMembership = [], array $groupMemberSet = []) {
-
+    public function __construct($name, $principalUrl, array $groupMembership = [], array $groupMemberSet = [])
+    {
         $this->name = $name;
         $this->principalUrl = $principalUrl;
         $this->groupMembership = $groupMembership;
         $this->groupMemberSet = $groupMemberSet;
-
     }
 
-    function getName() {
-
+    public function getName()
+    {
         return $this->name;
-
     }
 
-    function getDisplayName() {
-
+    public function getDisplayName()
+    {
         return $this->getName();
-
     }
 
-    function getAlternateUriSet() {
-
+    public function getAlternateUriSet()
+    {
         return [];
-
     }
 
-    function getPrincipalUrl() {
-
+    public function getPrincipalUrl()
+    {
         return $this->principalUrl;
-
     }
 
-    function getGroupMemberSet() {
-
+    public function getGroupMemberSet()
+    {
         return $this->groupMemberSet;
-
     }
 
-    function getGroupMemberShip() {
-
+    public function getGroupMemberShip()
+    {
         return $this->groupMembership;
-
     }
 
-    function setGroupMemberSet(array $groupMemberSet) {
-
+    public function setGroupMemberSet(array $groupMemberSet)
+    {
         $this->groupMemberSet = $groupMemberSet;
-
     }
 }

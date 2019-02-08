@@ -1,23 +1,24 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV\Sharing\Plugin;
 use Sabre\DAV\Xml\XmlTest;
 
-class ShareeTest extends XmlTest {
-
+class ShareeTest extends XmlTest
+{
     /**
      * @expectedException \InvalidArgumentException
      */
-    function testShareeUnknownPropertyInConstructor() {
-
+    public function testShareeUnknownPropertyInConstructor()
+    {
         new Sharee(['foo' => 'bar']);
-
     }
 
-    function testDeserialize() {
-
+    public function testDeserialize()
+    {
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sharee xmlns:D="DAV:">
@@ -33,27 +34,26 @@ class ShareeTest extends XmlTest {
 XML;
 
         $result = $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee'
+            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
         ]);
 
         $expected = new Sharee([
-            'href'       => 'mailto:eric@example.com',
+            'href' => 'mailto:eric@example.com',
             'properties' => ['{DAV:}displayname' => 'Eric York'],
-            'comment'    => 'Shared workspace',
-            'access'     => Plugin::ACCESS_READWRITE,
+            'comment' => 'Shared workspace',
+            'access' => Plugin::ACCESS_READWRITE,
         ]);
         $this->assertEquals(
             $expected,
             $result['value']
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeNoHref() {
-
+    public function testDeserializeNoHref()
+    {
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sharee xmlns:D="DAV:">
@@ -68,17 +68,15 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee'
+            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
         ]);
-
     }
-
 
     /**
      * @expectedException \Sabre\DAV\Exception\BadRequest
      */
-    function testDeserializeNoShareeAccess() {
-
+    public function testDeserializeNoShareeAccess()
+    {
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sharee xmlns:D="DAV:">
@@ -91,8 +89,7 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee'
+            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
         ]);
-
     }
 }

@@ -2,23 +2,21 @@
 
 namespace Sabre\DAV;
 
-class SimpleCollectionTest extends \PHPUnit\Framework\TestCase {
-
-    function testConstructNode() {
-
+class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
+{
+    public function testConstructNode()
+    {
         $s = new SimpleCollection('foo', [new SimpleFile('bar.txt', 'hi')]);
         $this->assertEquals('foo', $s->getName());
         $this->assertEquals('bar.txt', $s->getChild('bar.txt')->getName());
-
     }
 
-
-    function testConstructNodeArray() {
-
+    public function testConstructNodeArray()
+    {
         $s = new SimpleCollection('foo', [
-            'bar'     => [],
+            'bar' => [],
             'baz.txt' => 'hi',
-            'gir'     => [
+            'gir' => [
                 'zim' => 'world',
             ],
         ]);
@@ -26,34 +24,30 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals('bar', $s->getChild('bar')->getName());
         $this->assertEquals('hi', $s->getChild('baz.txt')->get());
         $this->assertEquals('world', $s->getChild('gir')->getChild('zim')->get());
-
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    function testConstructBadParam() {
-
+    public function testConstructBadParam()
+    {
         new SimpleCollection('foo', [new \StdClass()]);
-
     }
 
-    function testGetChildren() {
-
+    public function testGetChildren()
+    {
         $child = new SimpleFile('bar.txt', 'hi');
 
         $s = new SimpleCollection('foo', [$child]);
         $this->assertEquals([$child], $s->getChildren());
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\NotFound
      */
-    function testGetChild404() {
-
+    public function testGetChild404()
+    {
         $s = new SimpleCollection('foo', []);
         $this->assertEquals($s->getChild('404'));
-
     }
 }

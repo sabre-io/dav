@@ -6,10 +6,10 @@
 include 'vendor/autoload.php';
 
 $server = new Sabre\DAV\Server([
-    new Sabre\DAV\FS\Directory(__DIR__)
+    new Sabre\DAV\FS\Directory(__DIR__),
 ]);
 
-/**
+/*
  * Ok. Perhaps not the smallest possible. The browser plugin is 100% optional,
  * but it really helps understanding the server.
  */

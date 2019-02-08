@@ -1,31 +1,31 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-class PSR3Test extends \PHPUnit\Framework\TestCase {
-
-    function testIsLoggerAware() {
-
+class PSR3Test extends \PHPUnit\Framework\TestCase
+{
+    public function testIsLoggerAware()
+    {
         $server = new Server();
         $this->assertInstanceOf(
             'Psr\Log\LoggerAwareInterface',
             $server
         );
-
     }
 
-    function testGetNullLoggerByDefault() {
-
+    public function testGetNullLoggerByDefault()
+    {
         $server = new Server();
         $this->assertInstanceOf(
             'Psr\Log\NullLogger',
             $server->getLogger()
         );
-
     }
 
-    function testSetLogger() {
-
+    public function testSetLogger()
+    {
         $server = new Server();
         $logger = new MockLogger();
 
@@ -35,15 +35,14 @@ class PSR3Test extends \PHPUnit\Framework\TestCase {
             $logger,
             $server->getLogger()
         );
-
     }
 
     /**
      * Start the server, trigger an exception and see if the logger captured
      * it.
      */
-    function testLogException() {
-
+    public function testLogException()
+    {
         $server = new Server();
         $logger = new MockLogger();
 
@@ -81,7 +80,5 @@ class PSR3Test extends \PHPUnit\Framework\TestCase {
             'Exception',
             $logItem[2]['exception']
         );
-
     }
-
 }

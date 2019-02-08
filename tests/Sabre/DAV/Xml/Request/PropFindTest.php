@@ -1,13 +1,15 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
 
-class PropFindTest extends XmlTest {
-
-    function testDeserializeProp() {
-
+class PropFindTest extends XmlTest
+{
+    public function testDeserializeProp()
+    {
         $xml = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
     <d:prop>
@@ -22,12 +24,10 @@ class PropFindTest extends XmlTest {
         $propFind->properties = ['{DAV:}hello'];
 
         $this->assertEquals($propFind, $result['value']);
-
-
     }
 
-    function testDeserializeAllProp() {
-
+    public function testDeserializeAllProp()
+    {
         $xml = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
     <d:allprop />
@@ -40,9 +40,5 @@ class PropFindTest extends XmlTest {
         $propFind->allProp = true;
 
         $this->assertEquals($propFind, $result['value']);
-
-
     }
-
-
 }

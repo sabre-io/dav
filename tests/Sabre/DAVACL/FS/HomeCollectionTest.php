@@ -1,13 +1,15 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\FS;
 
 use Sabre\DAVACL\PrincipalBackend\Mock as PrincipalBackend;
 
-class HomeCollectionTest extends \PHPUnit\Framework\TestCase {
-
+class HomeCollectionTest extends \PHPUnit\Framework\TestCase
+{
     /**
-     * System under test
+     * System under test.
      *
      * @var HomeCollection
      */
@@ -16,35 +18,31 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase {
     protected $path;
     protected $name = 'thuis';
 
-    function setUp() {
-
+    public function setUp()
+    {
         $principalBackend = new PrincipalBackend();
 
-        $this->path = SABRE_TEMPDIR . '/home';
+        $this->path = SABRE_TEMPDIR.'/home';
 
         $this->sut = new HomeCollection($principalBackend, $this->path);
         $this->sut->collectionName = $this->name;
-
-
     }
 
-    function tearDown() {
-
+    public function tearDown()
+    {
         \Sabre\TestUtil::clearTempDir();
-
     }
 
-    function testGetName() {
-
+    public function testGetName()
+    {
         $this->assertEquals(
             $this->name,
             $this->sut->getName()
         );
-
     }
 
-    function testGetChild() {
-
+    public function testGetChild()
+    {
         $child = $this->sut->getChild('user1');
         $this->assertInstanceOf('Sabre\\DAVACL\\FS\\Collection', $child);
         $this->assertEquals('user1', $child->getName());
@@ -60,57 +58,50 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase {
 
         $this->assertEquals($acl, $child->getACL());
         $this->assertEquals($owner, $child->getOwner());
-
     }
 
-    function testGetOwner() {
-
+    public function testGetOwner()
+    {
         $this->assertNull(
             $this->sut->getOwner()
         );
-
     }
 
-    function testGetGroup() {
-
+    public function testGetGroup()
+    {
         $this->assertNull(
             $this->sut->getGroup()
         );
-
     }
 
-    function testGetACL() {
-
+    public function testGetACL()
+    {
         $acl = [
             [
                 'principal' => '{DAV:}authenticated',
                 'privilege' => '{DAV:}read',
                 'protected' => true,
-            ]
+            ],
         ];
 
         $this->assertEquals(
             $acl,
             $this->sut->getACL()
         );
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testSetAcl() {
-
+    public function testSetAcl()
+    {
         $this->sut->setACL([]);
-
     }
 
-    function testGetSupportedPrivilegeSet() {
-
+    public function testGetSupportedPrivilegeSet()
+    {
         $this->assertNull(
             $this->sut->getSupportedPrivilegeSet()
         );
-
     }
-
 }

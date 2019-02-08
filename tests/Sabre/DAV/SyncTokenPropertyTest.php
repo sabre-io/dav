@@ -1,21 +1,23 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
-
+class SyncTokenPropertyTest extends \Sabre\DAVServerTest
+{
     /**
      * The assumption in these tests is that a PROPFIND is going on, and to
      * fetch the sync-token, the event handler is just able to use the existing
      * result.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @dataProvider data
      */
-    function testAlreadyThere1($name, $value) {
-
+    public function testAlreadyThere1($name, $value)
+    {
         $propFind = new PropFind('foo', [
             '{http://calendarserver.org/ns/}getctag',
             $name,
@@ -25,8 +27,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
         $corePlugin = new CorePlugin();
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
-        $this->assertEquals("hello", $propFind->get('{http://calendarserver.org/ns/}getctag'));
-
+        $this->assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
     }
 
     /**
@@ -34,19 +35,19 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
      * fetch the items.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @dataProvider data
      */
-    function testRefetch($name, $value) {
-
+    public function testRefetch($name, $value)
+    {
         $this->server->tree = new Tree(
             new SimpleCollection('root', [
                 new Mock\PropertiesCollection(
                     'foo',
                     [],
                     [$name => $value]
-                )
+                ),
             ])
         );
         $propFind = new PropFind('foo', [
@@ -57,19 +58,18 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
         $corePlugin = $this->server->getPlugin('core');
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
-        $this->assertEquals("hello", $propFind->get('{http://calendarserver.org/ns/}getctag'));
-
+        $this->assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
     }
 
-    function testNoData() {
-
+    public function testNoData()
+    {
         $this->server->tree = new Tree(
             new SimpleCollection('root', [
                 new Mock\PropertiesCollection(
                     'foo',
                     [],
                     []
-                )
+                ),
             ])
         );
 
@@ -81,26 +81,23 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest {
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
         $this->assertNull($propFind->get('{http://calendarserver.org/ns/}getctag'));
-
     }
 
-    function data() {
-
+    public function data()
+    {
         return [
             [
                 '{http://sabredav.org/ns}sync-token',
-                "hello"
+                'hello',
             ],
             [
                 '{DAV:}sync-token',
-                "hello"
+                'hello',
             ],
             [
                 '{DAV:}sync-token',
-                new Xml\Property\Href(Sync\Plugin::SYNCTOKEN_PREFIX . "hello", false)
-            ]
+                new Xml\Property\Href(Sync\Plugin::SYNCTOKEN_PREFIX.'hello', false),
+            ],
         ];
-
     }
-
 }

@@ -1,4 +1,6 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Property;
 
@@ -7,59 +9,56 @@ use Sabre\DAV;
 use Sabre\DAV\Sharing\Plugin as SP;
 use Sabre\DAV\Xml\Element\Sharee;
 
-class InviteTest extends DAV\Xml\XmlTest {
-
-    function setUp() {
-
+class InviteTest extends DAV\Xml\XmlTest
+{
+    public function setUp()
+    {
         $this->namespaceMap[CalDAV\Plugin::NS_CALDAV] = 'cal';
         $this->namespaceMap[CalDAV\Plugin::NS_CALENDARSERVER] = 'cs';
-
-
     }
 
-    function testSimple() {
-
+    public function testSimple()
+    {
         $invite = new Invite([]);
         $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $invite);
         $this->assertEquals([], $invite->getValue());
-
     }
 
     /**
      * @depends testSimple
      */
-    function testSerialize() {
-
+    public function testSerialize()
+    {
         $property = new Invite([
             new Sharee([
-                'href'         => 'mailto:thedoctor@example.org',
-                'properties'   => ['{DAV:}displayname' => 'The Doctor'],
+                'href' => 'mailto:thedoctor@example.org',
+                'properties' => ['{DAV:}displayname' => 'The Doctor'],
                 'inviteStatus' => SP::INVITE_ACCEPTED,
-                'access'       => SP::ACCESS_SHAREDOWNER,
+                'access' => SP::ACCESS_SHAREDOWNER,
             ]),
             new Sharee([
-                'href'         => 'mailto:user1@example.org',
+                'href' => 'mailto:user1@example.org',
                 'inviteStatus' => SP::INVITE_ACCEPTED,
-                'access'       => SP::ACCESS_READWRITE,
+                'access' => SP::ACCESS_READWRITE,
             ]),
             new Sharee([
-                'href'         => 'mailto:user2@example.org',
-                'properties'   => ['{DAV:}displayname' => 'John Doe'],
+                'href' => 'mailto:user2@example.org',
+                'properties' => ['{DAV:}displayname' => 'John Doe'],
                 'inviteStatus' => SP::INVITE_DECLINED,
-                'access'       => SP::ACCESS_READ,
+                'access' => SP::ACCESS_READ,
             ]),
             new Sharee([
-                'href'         => 'mailto:user3@example.org',
-                'properties'   => ['{DAV:}displayname' => 'Joe Shmoe'],
+                'href' => 'mailto:user3@example.org',
+                'properties' => ['{DAV:}displayname' => 'Joe Shmoe'],
                 'inviteStatus' => SP::INVITE_NORESPONSE,
-                'access'       => SP::ACCESS_READ,
-                'comment'      => 'Something, something',
+                'access' => SP::ACCESS_READ,
+                'comment' => 'Something, something',
             ]),
             new Sharee([
-                'href'         => 'mailto:user4@example.org',
-                'properties'   => ['{DAV:}displayname' => 'Hoe Boe'],
+                'href' => 'mailto:user4@example.org',
+                'properties' => ['{DAV:}displayname' => 'Hoe Boe'],
                 'inviteStatus' => SP::INVITE_INVALID,
-                'access'       => SP::ACCESS_READ,
+                'access' => SP::ACCESS_READ,
             ]),
         ]);
 
@@ -67,7 +66,7 @@ class InviteTest extends DAV\Xml\XmlTest {
 
         $this->assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
-<d:root xmlns:d="DAV:" xmlns:cal="' . CalDAV\Plugin::NS_CALDAV . '" xmlns:cs="' . CalDAV\Plugin::NS_CALENDARSERVER . '">
+<d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cs:organizer>
     <d:href>mailto:thedoctor@example.org</d:href>
     <cs:common-name>The Doctor</cs:common-name>
@@ -106,7 +105,5 @@ class InviteTest extends DAV\Xml\XmlTest {
   </cs:user>
 </d:root>
 ', $xml);
-
     }
-
 }

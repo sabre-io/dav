@@ -15,10 +15,10 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "sabre/vobject": "^4.1.2",
+        "sabre/vobject": "^4.2.0-alpha1",
         "sabre/event" : "^5.0",
-        "sabre/xml"  : "^2.0.0",
-        "sabre/http" : "dev-master",
+        "sabre/xml"  : "^2.0.1",
+        "sabre/http" : "^5.0",
         "sabre/uri" : "^2.0",
         "ext-dom": "*",
         "ext-pcre": "*",
@@ -29,17 +29,18 @@
         "ext-date" : "*",
         "ext-iconv" : "*",
         "lib-libxml" : ">=2.7.0",
-        "psr/log": "^1.0"
+        "psr/log": "^1.0",
+        "ext-json": "*"
     },
     "require-dev" : {
         "phpunit/phpunit" : "^6",
         "evert/phpdoc-md" : "~0.1.0",
-        "sabre/cs"        : "^1.0.0",
         "monolog/monolog": "^1.18"
     },
     "suggest" : {
         "ext-curl" : "*",
-        "ext-pdo" : "*"
+        "ext-pdo" : "*",
+        "ext-imap": "*"
     },
     "autoload": {
         "psr-4" : {

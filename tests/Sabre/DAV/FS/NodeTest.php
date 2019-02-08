@@ -7,29 +7,26 @@ namespace Sabre\DAV\FS;
  * test it, as it doesn't override it and we can construct it as it's
  * non-abstract.
  */
-class NodeTest extends \PHPUnit\Framework\TestCase {
-
-    function testConstruct() {
-
+class NodeTest extends \PHPUnit\Framework\TestCase
+{
+    public function testConstruct()
+    {
         $node = new File(__FILE__);
         $this->assertEquals('NodeTest.php', $node->getName());
-
     }
 
-    function testConstructOverrideName() {
-
+    public function testConstructOverrideName()
+    {
         $node = new File(__FILE__, 'foo.txt');
         $this->assertEquals('foo.txt', $node->getName());
-
     }
 
     /**
      * @expectedException \Sabre\DAV\Exception\Forbidden
      */
-    function testOverrideNameSetName() {
-
+    public function testOverrideNameSetName()
+    {
         $node = new File(__FILE__, 'foo.txt');
         $node->setName('foo2.txt');
-
     }
 }

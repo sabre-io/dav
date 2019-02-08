@@ -1,7 +1,30 @@
 ChangeLog
 =========
 
-4.0.0-alpha1 (????-??-??)
+4.0.0-alpha5 (2018-10-15)
+-------------------------
+* Fix issues with empty content-type header
+
+
+4.0.0-alpha4 (2018-10-12)
+-------------------------
+* Apply new code style
+* Fix for litmus test suite - test case: props propfind_invalid2
+* Depend on sabre/xml 2.0.1
+
+
+4.0.0-alpha3 (2018-10-05)
+-------------------------
+* Fixes for PHP 7.3
+* Depend on sabre/http 5.0
+
+
+4.0.0-alpha2 (2018-09-27)
+-------------------------
+* Now supports PHP 7.3
+
+
+4.0.0-alpha1 (2018-06-05)
 -------------------------
 
 * Now requires PHP 7.
@@ -15,9 +38,10 @@ ChangeLog
  (@DeepDiver1975).
 * #982: Make sure that files that are siblings of directories, are reported
   as files (@nickvergessen)
+  
 
-3.3.0 (????-??-??)
------------------
+3.3.0-alpha1 (2018-06-04)
+-------------------------
 
 * SimpleCollection can now take arrays and strings as argument for super
   simple tree creation.
@@ -36,12 +60,16 @@ ChangeLog
   installations quite a bit.
 * #982: Make sure that files that are siblings of directories, are reported
   as files (@nickvergessen)
+* #1058: Don't open file resource on HEAD request (@icewind1991)
+* #1031: Fix copyNode for case of file named 0 (@phil-davis)
+
 
 3.2.3 (????-??-??)
 ------------------
 
 * #982: Make sure that files that are siblings of directories, are reported
   as files (@nickvergessen)
+  
 
 3.2.2 (2017-02-14)
 ------------------

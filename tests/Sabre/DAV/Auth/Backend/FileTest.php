@@ -1,41 +1,40 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
-class FileTest extends \PHPUnit\Framework\TestCase {
-
-    function tearDown() {
-
-        if (file_exists(SABRE_TEMPDIR . '/filebackend')) unlink(SABRE_TEMPDIR . '/filebackend');
-
+class FileTest extends \PHPUnit\Framework\TestCase
+{
+    public function tearDown()
+    {
+        if (file_exists(SABRE_TEMPDIR.'/filebackend')) {
+            unlink(SABRE_TEMPDIR.'/filebackend');
+        }
     }
 
-    function testConstruct() {
-
+    public function testConstruct()
+    {
         $file = new File();
         $this->assertTrue($file instanceof File);
-
     }
 
     /**
-     * @expectedException Sabre\DAV\Exception
+     * @expectedException \Sabre\DAV\Exception
      */
-    function testLoadFileBroken() {
-
-        file_put_contents(SABRE_TEMPDIR . '/backend', 'user:realm:hash');
-        $file = new File(SABRE_TEMPDIR . '/backend');
-
+    public function testLoadFileBroken()
+    {
+        file_put_contents(SABRE_TEMPDIR.'/backend', 'user:realm:hash');
+        $file = new File(SABRE_TEMPDIR.'/backend');
     }
 
-    function testLoadFile() {
-
-        file_put_contents(SABRE_TEMPDIR . '/backend', 'user:realm:' . md5('user:realm:password'));
+    public function testLoadFile()
+    {
+        file_put_contents(SABRE_TEMPDIR.'/backend', 'user:realm:'.md5('user:realm:password'));
         $file = new File();
-        $file->loadFile(SABRE_TEMPDIR . '/backend');
+        $file->loadFile(SABRE_TEMPDIR.'/backend');
 
         $this->assertFalse($file->getDigestHash('realm', 'blabla'));
         $this->assertEquals(md5('user:realm:password'), $file->getDigestHash('realm', 'user'));
-
     }
-
 }

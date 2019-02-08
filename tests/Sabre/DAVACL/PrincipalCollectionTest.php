@@ -1,24 +1,25 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL;
 
-class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase {
-
-    function testBasic() {
-
+class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase
+{
+    public function testBasic()
+    {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $this->assertTrue($pc instanceof PrincipalCollection);
 
         $this->assertEquals('principals', $pc->getName());
-
     }
 
     /**
      * @depends testBasic
      */
-    function testGetChildren() {
-
+    public function testGetChildren()
+    {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
 
@@ -28,30 +29,27 @@ class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase {
         foreach ($children as $child) {
             $this->assertTrue($child instanceof IPrincipal);
         }
-
     }
 
     /**
      * @depends testBasic
-     * @expectedException Sabre\DAV\Exception\MethodNotAllowed
+     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
-    function testGetChildrenDisable() {
-
+    public function testGetChildrenDisable()
+    {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $pc->disableListing = true;
 
         $children = $pc->getChildren();
-
     }
 
-    function testFindByUri() {
-
+    public function testFindByUri()
+    {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $this->assertEquals('principals/user1', $pc->findByUri('mailto:user1.sabredav@sabredav.org'));
         $this->assertNull($pc->findByUri('mailto:fake.user.sabredav@sabredav.org'));
         $this->assertNull($pc->findByUri(''));
     }
-
 }

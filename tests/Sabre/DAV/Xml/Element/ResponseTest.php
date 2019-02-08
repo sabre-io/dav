@@ -1,42 +1,42 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV;
 
-class ResponseTest extends DAV\Xml\XmlTest {
-
-    function testSimple() {
-
+class ResponseTest extends DAV\Xml\XmlTest
+{
+    public function testSimple()
+    {
         $innerProps = [
             200 => [
                 '{DAV:}displayname' => 'my file',
             ],
             404 => [
                 '{DAV:}owner' => null,
-            ]
+            ],
         ];
 
         $property = new Response('uri', $innerProps);
 
         $this->assertEquals('uri', $property->getHref());
         $this->assertEquals($innerProps, $property->getResponseProperties());
-
-
     }
 
     /**
      * @depends testSimple
      */
-    function testSerialize() {
-
+    public function testSerialize()
+    {
         $innerProps = [
             200 => [
                 '{DAV:}displayname' => 'my file',
             ],
             404 => [
                 '{DAV:}owner' => null,
-            ]
+            ],
         ];
 
         $property = new Response('uri', $innerProps);
@@ -63,16 +63,15 @@ class ResponseTest extends DAV\Xml\XmlTest {
   </d:response>
 </d:root>
 ', $xml);
-
     }
 
     /**
-     * This one is specifically for testing properties with no namespaces, which is legal xml
+     * This one is specifically for testing properties with no namespaces, which is legal xml.
      *
      * @depends testSerialize
      */
-    function testSerializeEmptyNamespace() {
-
+    public function testSerializeEmptyNamespace()
+    {
         $innerProps = [
             200 => [
                 '{}propertyname' => 'value',
@@ -96,16 +95,15 @@ class ResponseTest extends DAV\Xml\XmlTest {
  </d:response>
 </d:root>
 ', $xml);
-
     }
 
     /**
-     * This one is specifically for testing properties with no namespaces, which is legal xml
+     * This one is specifically for testing properties with no namespaces, which is legal xml.
      *
      * @depends testSerialize
      */
-    function testSerializeCustomNamespace() {
-
+    public function testSerializeCustomNamespace()
+    {
         $innerProps = [
             200 => [
                 '{http://sabredav.org/NS/example}propertyname' => 'value',
@@ -128,17 +126,16 @@ class ResponseTest extends DAV\Xml\XmlTest {
       </d:propstat>
   </d:response>
 </d:root>', $xml);
-
     }
 
     /**
      * @depends testSerialize
      */
-    function testSerializeComplexProperty() {
-
+    public function testSerializeComplexProperty()
+    {
         $innerProps = [
             200 => [
-                '{DAV:}link' => new DAV\Xml\Property\Href('http://sabredav.org/', false)
+                '{DAV:}link' => new DAV\Xml\Property\Href('http://sabredav.org/', false),
             ],
         ];
 
@@ -159,28 +156,26 @@ class ResponseTest extends DAV\Xml\XmlTest {
   </d:response>
 </d:root>
 ', $xml);
-
     }
 
     /**
      * @depends testSerialize
      * @expectedException \InvalidArgumentException
      */
-    function testSerializeBreak() {
-
+    public function testSerializeBreak()
+    {
         $innerProps = [
             200 => [
-                '{DAV:}link' => new \STDClass()
+                '{DAV:}link' => new \STDClass(),
             ],
         ];
 
         $property = new Response('uri', $innerProps);
         $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
-
     }
 
-    function testDeserializeComplexProperty() {
-
+    public function testDeserializeComplexProperty()
+    {
         $xml = '<?xml version="1.0"?>
 <d:response xmlns:d="DAV:">
   <d:href>/uri</d:href>
@@ -195,9 +190,9 @@ class ResponseTest extends DAV\Xml\XmlTest {
 
         $result = $this->parse($xml, [
             '{DAV:}response' => 'Sabre\DAV\Xml\Element\Response',
-            '{DAV:}foo'      => function($reader) {
-
+            '{DAV:}foo' => function ($reader) {
                 $reader->next();
+
                 return 'world';
             },
         ]);
@@ -205,18 +200,17 @@ class ResponseTest extends DAV\Xml\XmlTest {
             new Response('/uri', [
                 '200' => [
                     '{DAV:}foo' => 'world',
-                ]
+                ],
             ]),
             $result['value']
         );
-
     }
 
     /**
      * @depends testSimple
      */
-    function testSerializeUrlencoding() {
-
+    public function testSerializeUrlencoding()
+    {
         $innerProps = [
             200 => [
                 '{DAV:}displayname' => 'my file',
@@ -241,7 +235,6 @@ class ResponseTest extends DAV\Xml\XmlTest {
   </d:response>
 </d:root>
 ', $xml);
-
     }
 
     /**
@@ -254,8 +247,8 @@ class ResponseTest extends DAV\Xml\XmlTest {
      * In those cases we MUST specify at least one DAV:propstat anyway, with
      * no properties.
      */
-    function testSerializeNoProperties() {
-
+    public function testSerializeNoProperties()
+    {
         $innerProps = [];
 
         $property = new Response('uri', $innerProps);
@@ -273,15 +266,14 @@ class ResponseTest extends DAV\Xml\XmlTest {
   </d:response>
 </d:root>
 ', $xml);
-
     }
 
     /**
      * In the case of {DAV:}prop, a deserializer should never get called, if
      * the property element is empty.
      */
-    function testDeserializeComplexPropertyEmpty() {
-
+    public function testDeserializeComplexPropertyEmpty()
+    {
         $xml = '<?xml version="1.0"?>
 <d:response xmlns:d="DAV:">
   <d:href>/uri</d:href>
@@ -296,18 +288,17 @@ class ResponseTest extends DAV\Xml\XmlTest {
 
         $result = $this->parse($xml, [
             '{DAV:}response' => 'Sabre\DAV\Xml\Element\Response',
-            '{DAV:}foo'      => function($reader) {
+            '{DAV:}foo' => function ($reader) {
                 throw new \LogicException('This should never happen');
             },
         ]);
         $this->assertEquals(
             new Response('/uri', [
                 '404' => [
-                    '{DAV:}foo' => null
-                ]
+                    '{DAV:}foo' => null,
+                ],
             ]),
             $result['value']
         );
-
     }
 }

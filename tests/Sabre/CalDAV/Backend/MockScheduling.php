@@ -1,9 +1,11 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-class MockScheduling extends Mock implements SchedulingSupport {
-
+class MockScheduling extends Mock implements SchedulingSupport
+{
     public $schedulingObjects = [];
 
     /**
@@ -20,14 +22,14 @@ class MockScheduling extends Mock implements SchedulingSupport {
      *
      * @param string $principalUri
      * @param string $objectUri
+     *
      * @return array
      */
-    function getSchedulingObject($principalUri, $objectUri) {
-
+    public function getSchedulingObject($principalUri, $objectUri)
+    {
         if (isset($this->schedulingObjects[$principalUri][$objectUri])) {
             return $this->schedulingObjects[$principalUri][$objectUri];
         }
-
     }
 
     /**
@@ -39,30 +41,29 @@ class MockScheduling extends Mock implements SchedulingSupport {
      * The main difference is that 'calendardata' is optional.
      *
      * @param string $principalUri
+     *
      * @return array
      */
-    function getSchedulingObjects($principalUri) {
-
+    public function getSchedulingObjects($principalUri)
+    {
         if (isset($this->schedulingObjects[$principalUri])) {
             return array_values($this->schedulingObjects[$principalUri]);
         }
-        return [];
 
+        return [];
     }
 
     /**
-     * Deletes a scheduling object
+     * Deletes a scheduling object.
      *
      * @param string $principalUri
      * @param string $objectUri
-     * @return void
      */
-    function deleteSchedulingObject($principalUri, $objectUri) {
-
+    public function deleteSchedulingObject($principalUri, $objectUri)
+    {
         if (isset($this->schedulingObjects[$principalUri][$objectUri])) {
             unset($this->schedulingObjects[$principalUri][$objectUri]);
         }
-
     }
 
     /**
@@ -71,21 +72,18 @@ class MockScheduling extends Mock implements SchedulingSupport {
      * @param string $principalUri
      * @param string $objectUri
      * @param string $objectData;
-     * @return void
      */
-    function createSchedulingObject($principalUri, $objectUri, $objectData) {
-
+    public function createSchedulingObject($principalUri, $objectUri, $objectData)
+    {
         if (!isset($this->schedulingObjects[$principalUri])) {
             $this->schedulingObjects[$principalUri] = [];
         }
         $this->schedulingObjects[$principalUri][$objectUri] = [
-            'uri'          => $objectUri,
+            'uri' => $objectUri,
             'calendardata' => $objectData,
             'lastmodified' => null,
-            'etag'         => '"' . md5($objectData) . '"',
-            'size'         => strlen($objectData)
+            'etag' => '"'.md5($objectData).'"',
+            'size' => strlen($objectData),
         ];
-
     }
-
 }

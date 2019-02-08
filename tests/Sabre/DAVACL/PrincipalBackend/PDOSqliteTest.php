@@ -1,9 +1,10 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\PrincipalBackend;
 
-class PDOSqliteTest extends AbstractPDOTest {
-
+class PDOSqliteTest extends AbstractPDOTest
+{
     public $driver = 'sqlite';
-
 }

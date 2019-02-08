@@ -1,18 +1,20 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
 
-class AllowAccessTest extends \PHPUnit\Framework\TestCase {
-
+class AllowAccessTest extends \PHPUnit\Framework\TestCase
+{
     /**
      * @var DAV\Server
      */
     protected $server;
 
-    function setUp() {
-
+    public function setUp()
+    {
         $nodes = [
             new DAV\Mock\Collection('testdir', [
                 'file1.txt' => 'contents',
@@ -32,101 +34,87 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase {
         );
         $aclPlugin = new Plugin();
         $this->server->addPlugin($aclPlugin);
-
     }
 
-    function testGet() {
-
+    public function testGet()
+    {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testGetDoesntExist() {
-
+    public function testGetDoesntExist()
+    {
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/foo');
 
         $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testHEAD() {
-
+    public function testHEAD()
+    {
         $this->server->httpRequest->setMethod('HEAD');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:HEAD', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testOPTIONS() {
-
+    public function testOPTIONS()
+    {
         $this->server->httpRequest->setMethod('OPTIONS');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:OPTIONS', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testPUT() {
-
+    public function testPUT()
+    {
         $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl('/testdir/file1.txt');
 
         $this->assertTrue($this->server->emit('beforeMethod:PUT', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testPROPPATCH() {
-
+    public function testPROPPATCH()
+    {
         $this->server->httpRequest->setMethod('PROPPATCH');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:PROPPATCH', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testCOPY() {
-
+    public function testCOPY()
+    {
         $this->server->httpRequest->setMethod('COPY');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:COPY', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testMOVE() {
-
+    public function testMOVE()
+    {
         $this->server->httpRequest->setMethod('MOVE');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:MOVE', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testLOCK() {
-
+    public function testLOCK()
+    {
         $this->server->httpRequest->setMethod('LOCK');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->assertTrue($this->server->emit('beforeMethod:LOCK', [$this->server->httpRequest, $this->server->httpResponse]));
-
     }
 
-    function testBeforeBind() {
-
+    public function testBeforeBind()
+    {
         $this->assertTrue($this->server->emit('beforeBind', ['testdir/file']));
-
     }
 
-
-    function testBeforeUnbind() {
-
+    public function testBeforeUnbind()
+    {
         $this->assertTrue($this->server->emit('beforeUnbind', ['testdir']));
-
     }
-
 }

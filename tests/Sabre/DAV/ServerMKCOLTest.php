@@ -1,91 +1,90 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerMKCOLTest extends AbstractServer {
-
-    function testMkcol() {
-
+class ServerMKCOLTest extends AbstractServer
+{
+    public function testMkcol()
+    {
         $serverVars = [
-            'REQUEST_URI'    => '/testcol',
+            'REQUEST_URI' => '/testcol',
             'REQUEST_METHOD' => 'MKCOL',
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody("");
+        $request->setBody('');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Length'  => ['0'],
+            'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
         $this->assertEquals('', $this->response->body);
-        $this->assertTrue(is_dir($this->tempDir . '/testcol'));
-
+        $this->assertTrue(is_dir($this->tempDir.'/testcol'));
     }
 
     /**
      * @depends testMkcol
      */
-    function testMKCOLUnknownBody() {
-
+    public function testMKCOLUnknownBody()
+    {
         $serverVars = [
-            'REQUEST_URI'    => '/testcol',
+            'REQUEST_URI' => '/testcol',
             'REQUEST_METHOD' => 'MKCOL',
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody("Hello");
+        $request->setBody('Hello');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(415, $this->response->status);
-
     }
 
     /**
      * @depends testMkcol
      */
-    function testMKCOLBrokenXML() {
-
+    public function testMKCOLBrokenXML()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $request->setBody("Hello");
+        $request->setBody('Hello');
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(400, $this->response->getStatus(), $this->response->getBodyAsString());
-
     }
 
     /**
      * @depends testMkcol
      */
-    function testMKCOLUnknownXML() {
-
+    public function testMKCOLUnknownXML()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
@@ -96,21 +95,20 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
         $this->assertEquals(400, $this->response->getStatus());
-
     }
 
     /**
      * @depends testMkcol
      */
-    function testMKCOLNoResourceType() {
-
+    public function testMKCOLNoResourceType()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
@@ -128,21 +126,20 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(400, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(400, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMkcol
      */
-    function testMKCOLIncorrectResourceType() {
-
+    public function testMKCOLIncorrectResourceType()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
@@ -160,21 +157,20 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(403, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(403, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLIncorrectResourceType
      */
-    function testMKCOLSuccess() {
-
+    public function testMKCOLSuccess()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
@@ -192,21 +188,20 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Length'  => ['0'],
+            'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLIncorrectResourceType
      */
-    function testMKCOLWhiteSpaceResourceType() {
-
+    public function testMKCOLWhiteSpaceResourceType()
+    {
         $serverVars = [
-            'REQUEST_URI'       => '/testcol',
-            'REQUEST_METHOD'    => 'MKCOL',
+            'REQUEST_URI' => '/testcol',
+            'REQUEST_METHOD' => 'MKCOL',
             'HTTP_CONTENT_TYPE' => 'application/xml',
         ];
 
@@ -226,20 +221,19 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Length'  => ['0'],
+            'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLIncorrectResourceType
      */
-    function testMKCOLNoParent() {
-
+    public function testMKCOLNoParent()
+    {
         $serverVars = [
-            'REQUEST_URI'    => '/testnoparent/409me',
+            'REQUEST_URI' => '/testnoparent/409me',
             'REQUEST_METHOD' => 'MKCOL',
         ];
 
@@ -251,20 +245,19 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLIncorrectResourceType
      */
-    function testMKCOLParentIsNoCollection() {
-
+    public function testMKCOLParentIsNoCollection()
+    {
         $serverVars = [
-            'REQUEST_URI'    => '/test.txt/409me',
+            'REQUEST_URI' => '/test.txt/409me',
             'REQUEST_METHOD' => 'MKCOL',
         ];
 
@@ -276,20 +269,19 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLIncorrectResourceType
      */
-    function testMKCOLAlreadyExists() {
-
+    public function testMKCOLAlreadyExists()
+    {
         $serverVars = [
-            'REQUEST_URI'    => '/test.txt',
+            'REQUEST_URI' => '/test.txt',
             'REQUEST_METHOD' => 'MKCOL',
         ];
 
@@ -301,20 +293,19 @@ class ServerMKCOLTest extends AbstractServer {
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
-            'Allow'           => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+            'Allow' => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(405, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
-
+        $this->assertEquals(405, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
     }
 
     /**
      * @depends testMKCOLSuccess
      * @depends testMKCOLAlreadyExists
      */
-    function testMKCOLAndProps() {
-
+    public function testMKCOLAndProps()
+    {
         $request = new HTTP\Request(
             'MKCOL',
             '/testcol',
@@ -332,11 +323,11 @@ class ServerMKCOLTest extends AbstractServer {
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(207, $this->response->status, 'Wrong statuscode received. Full response body: ' . $this->response->body);
+        $this->assertEquals(207, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->body);
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type'    => ['application/xml; charset=utf-8'],
+            'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
         $responseBody = $this->response->getBodyAsString();
@@ -360,7 +351,5 @@ XML;
             $expected,
             $responseBody
         );
-
     }
-
 }

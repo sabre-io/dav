@@ -1,13 +1,15 @@
-<?php declare (strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Sabre\DAVACL\Exception;
 
 use Sabre\DAV;
 
-class NotRecognizedPrincipalTest extends \PHPUnit\Framework\TestCase {
-
-    function testSerialize() {
-
+class NotRecognizedPrincipalTest extends \PHPUnit\Framework\TestCase
+{
+    public function testSerialize()
+    {
         $ex = new NotRecognizedPrincipal('message');
 
         $server = new DAV\Server();
@@ -18,7 +20,7 @@ class NotRecognizedPrincipalTest extends \PHPUnit\Framework\TestCase {
         $ex->serialize($server, $root);
 
         $xpaths = [
-            '/d:root'                        => 1,
+            '/d:root' => 1,
             '/d:root/d:recognized-principal' => 1,
         ];
 
@@ -29,11 +31,7 @@ class NotRecognizedPrincipalTest extends \PHPUnit\Framework\TestCase {
         $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d', 'DAV:');
         foreach ($xpaths as $xpath => $count) {
-
-            $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : ' . $xpath . ', we could only find ' . $dxpath->query($xpath)->length . ' elements, while we expected ' . $count);
-
+            $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : '.$xpath.', we could only find '.$dxpath->query($xpath)->length.' elements, while we expected '.$count);
         }
-
     }
-
 }

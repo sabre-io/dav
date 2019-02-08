@@ -314,6 +314,10 @@ class Plugin extends DAV\ServerPlugin {
                     $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
                     $html .= $this->escapeHTML($lastMod->format('F j, Y, g:i a'));
                 }
+                $html .= '</td><td>';
+                if (isset($subProps['{DAV:}displayname'])) {
+                    $html .= $this->escapeHTML($subProps['{DAV:}displayname']);
+                }
                 $html .= '</td>';
 
                 $buttonActions = '';

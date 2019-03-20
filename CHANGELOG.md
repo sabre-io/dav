@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+3.2.4 (????-??-??)
+------------------
+
+* #1135: Fix use of continue in switch for PHP7.3 compatibility
+* #1159: fully support php 7.2 and 7.3
+
 3.2.3 (2018-10-19)
 ------------------
 

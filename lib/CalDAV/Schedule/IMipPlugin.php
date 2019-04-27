@@ -112,7 +112,7 @@ class IMipPlugin extends DAV\ServerPlugin
         if ($iTipMessage->senderName) {
             $sender = $iTipMessage->senderName.' <'.$sender.'>';
         }
-        if ($iTipMessage->recipientName) {
+        if ($iTipMessage->recipientName && $iTipMessage->recipientName != $recipient) {
             $recipient = $iTipMessage->recipientName.' <'.$recipient.'>';
         }
 

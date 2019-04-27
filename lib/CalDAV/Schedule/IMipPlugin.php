@@ -122,7 +122,7 @@ class IMipPlugin extends DAV\ServerPlugin
                 $subject = 'Re: '.$summary;
                 break;
             case 'REQUEST':
-                $subject = $summary;
+                $subject = 'Invitation: '.$summary;
                 break;
             case 'CANCEL':
                 $subject = 'Cancelled: '.$summary;

@@ -113,7 +113,7 @@ ICS;
         $expected = [
             [
                 'to' => 'Recipient <recipient@example.org>',
-                'subject' => 'Birthday party',
+                'subject' => 'Invitation: Birthday party',
                 'body' => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
@@ -206,5 +206,31 @@ ICS;
         $expected = [];
         $this->assertEquals($expected, $result);
         $this->assertEquals('1.0', $message->getScheduleStatus()[0]);
+    }
+
+    public function testRecipientNameIsEmail()
+    {
+        $message = new Message();
+        $message->sender = 'mailto:sender@example.org';
+        $message->senderName = 'Sender';
+        $message->recipient = 'mailto:recipient@example.org';
+        $message->recipientName = 'recipient@example.org';
+        $message->method = 'REQUEST';
+
+        $ics = <<<ICS
+BEGIN:VCALENDAR\r
+METHOD:REQUEST\r
+BEGIN:VEVENT\r
+SUMMARY:Birthday party\r
+END:VEVENT\r
+END:VCALENDAR\r
+
+ICS;
+
+        $message->message = Reader::read($ics);
+
+        $result = $this->schedule($message);
+
+        $this->assertEquals('recipient@example.org', $result[0]['to']);
     }
 }

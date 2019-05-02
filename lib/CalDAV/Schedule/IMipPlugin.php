@@ -131,7 +131,7 @@ class IMipPlugin extends DAV\ServerPlugin
 
         $headers = [
             'Reply-To: '.$sender,
-            'From: '.$this->senderEmail,
+            'From: '.$iTipMessage->senderName.' <'.$this->senderEmail.'>',
             'Content-Type: text/calendar; charset=UTF-8; method='.$iTipMessage->method,
         ];
         if (DAV\Server::$exposeVersion) {

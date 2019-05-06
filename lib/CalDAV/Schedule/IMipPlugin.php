@@ -112,7 +112,7 @@ class IMipPlugin extends DAV\ServerPlugin
         if ($iTipMessage->senderName) {
             $sender = $iTipMessage->senderName.' <'.$sender.'>';
         }
-        if ($iTipMessage->recipientName) {
+        if ($iTipMessage->recipientName && $iTipMessage->recipientName != $recipient) {
             $recipient = $iTipMessage->recipientName.' <'.$recipient.'>';
         }
 
@@ -122,7 +122,7 @@ class IMipPlugin extends DAV\ServerPlugin
                 $subject = 'Re: '.$summary;
                 break;
             case 'REQUEST':
-                $subject = $summary;
+                $subject = 'Invitation: '.$summary;
                 break;
             case 'CANCEL':
                 $subject = 'Cancelled: '.$summary;

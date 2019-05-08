@@ -49,7 +49,7 @@ ICS;
                 'body' => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
-                    'From: system@example.org',
+                    'From: Sender <system@example.org>',
                     'Content-Type: text/calendar; charset=UTF-8; method=REPLY',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],
@@ -117,7 +117,7 @@ ICS;
                 'body' => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
-                    'From: system@example.org',
+                    'From: Sender <system@example.org>',
                     'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],
@@ -157,7 +157,7 @@ ICS;
                 'body' => $ics,
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
-                    'From: system@example.org',
+                    'From: Sender <system@example.org>',
                     'Content-Type: text/calendar; charset=UTF-8; method=CANCEL',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],

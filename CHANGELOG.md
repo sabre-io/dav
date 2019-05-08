@@ -1,6 +1,16 @@
 ChangeLog
 =========
 
+4.0.0-beta1 (2019-05-08)
+-------------------------
+* Lock: Support lock timeout value Infinity 
+* Lock: Hide lock token in lock discovery when not set
+* BrowserPlugin: Show display name of nodes
+* FSExt: Fix folder (file) move issue if rename fails
+* IMipPlugin: Add sender name in invite mail headers
+* IMipPlugin: Fix email subject and recipient 
+
+
 4.0.0-alpha5 (2018-10-15)
 -------------------------
 * Fix issues with empty content-type header

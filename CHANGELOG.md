@@ -1,6 +1,33 @@
 ChangeLog
 =========
 
+4.0.0 (2019-07-01)
+-------------------------
+* Lock: Support lock timeout value Infinity 
+* Lock: Hide lock token in lock discovery when not set
+* BrowserPlugin: Show display name of nodes
+* FSExt: Fix folder (file) move issue if rename fails
+* IMipPlugin: Add sender name in invite mail headers
+* IMipPlugin: Fix email subject and recipient 
+* Fix issues with empty content-type header
+* Apply new code style
+* Fix for litmus test suite - test case: props propfind_invalid2
+* Depend on sabre/xml 2.0.1
+* Depend on sabre/http 5.0
+* Now supports PHP 7.3
+* Now requires PHP 7.
+* Using `strict_types` in every php file.
+* #896: Using the [sabre/event][evnt] `WildcardEmitter`. This allows event
+  handlers to listen to events using a wildcard.
+* #896: Event listeners that in the past listened to `beforeMethod` or `method`
+  no longer get called. They must listen to `beforeMethod:*` and `method:*` now.
+* #322: Imap authentication backend. (@c0d3z3r0).
+* #889: Support for selective property querying in CardDAV's addressbook-query.
+ (@DeepDiver1975).
+* #982: Make sure that files that are siblings of directories, are reported
+  as files (@nickvergessen)
+
+
 4.0.0-beta1 (2019-05-08)
 -------------------------
 * Lock: Support lock timeout value Infinity 

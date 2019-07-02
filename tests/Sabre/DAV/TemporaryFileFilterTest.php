@@ -99,6 +99,17 @@ class TemporaryFileFilterTest extends AbstractServer
         $this->assertEquals('Testing new file', stream_get_contents($this->response->body));
     }
 
+    public function testGetWithBrowserPlugin()
+    {
+        $this->server->addPlugin(new Browser\Plugin());
+        $request = new HTTP\Request('GET', '/');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(200, $this->response->status);
+    }
+
     public function testLockNonExistant()
     {
         mkdir(SABRE_TEMPDIR.'/locksdir');

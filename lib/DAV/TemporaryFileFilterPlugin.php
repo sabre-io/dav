@@ -172,6 +172,10 @@ class TemporaryFileFilterPlugin extends ServerPlugin
         // We're only interested in the basename.
         list(, $tempPath) = Uri\split($path);
 
+        if (null === $tempPath) {
+            return false;
+        }
+
         foreach ($this->temporaryFilePatterns as $tempFile) {
             if (preg_match($tempFile, $tempPath)) {
                 return $this->getDataDir().'/sabredav_'.md5($path).'.tempfile';

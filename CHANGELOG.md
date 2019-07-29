@@ -1,43 +1,7 @@
 ChangeLog
 =========
 
-4.0.0-alpha1 (????-??-??)
--------------------------
-
-* Now requires PHP 7.
-* Using `strict_types` in every php file.
-* #896: Using the [sabre/event][evnt] `WildcardEmitter`. This allows event
-  handlers to listen to events using a wildcard.
-* #896: Event listeners that in the past listened to `beforeMethod` or `method`
-  no longer get called. They must listen to `beforeMethod:*` and `method:*` now.
-* #322: Imap authentication backend. (@c0d3z3r0).
-* #889: Support for selective property querying in CardDAV's addressbook-query.
- (@DeepDiver1975).
-* #982: Make sure that files that are siblings of directories, are reported
-  as files (@nickvergessen)
-
-3.3.0 (????-??-??)
------------------
-
-* SimpleCollection can now take arrays and strings as argument for super
-  simple tree creation.
-* Added `Sabre\DAV\Server::start()`. This replaces `::exec()`. `::exec()`
-  is now deprecated, but we're keeping it around for a year or two to make
-  the transition easier.
-* `getChildren()` function in any collection may now return an iterator
-  instead of an array. This can result in memory savings for large
-  collections.
-* `Tree::getChildren()` now returns an Iterator instead of an array.
-* Added `$overrideName` to all `Sabre\DAV\FS` and `Sabre\DAV\FSExt` classes,
-  so users can specify under what name these nodes show up in the tree.
-* #889 Added support for filtering vCard properties in the addressbook-query
-  REPORT (@DeepDiver1975).
-* #918: Add a lot of sqlite indexes. This should speed up sqlite-based
-  installations quite a bit.
-* #982: Make sure that files that are siblings of directories, are reported
-  as files (@nickvergessen)
-
-3.2.3 (????-??-??)
+3.2.3 (2018-10-19)
 ------------------
 
 * #982: Make sure that files that are siblings of directories, are reported

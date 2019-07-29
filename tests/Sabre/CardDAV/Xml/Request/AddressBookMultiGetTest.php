@@ -16,7 +16,6 @@ class AddressBookMultiGetTest extends XmlTest {
      */
     function testDeserialize($xml, $expectedProps, $expectedVersion = '3.0') {
 
-        /* lines look a bit odd but this triggers an XML parsing bug */
         $result = $this->parse($xml);
         $addressBookMultiGetReport = new AddressBookMultiGetReport();
         $addressBookMultiGetReport->properties = [

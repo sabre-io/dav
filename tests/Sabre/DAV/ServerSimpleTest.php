@@ -143,6 +143,8 @@ class ServerSimpleTest extends AbstractServer{
             'http://www.example.org/root/somepath',
             '/root/somepath',
             '/root/somepath/',
+            '//root/somepath/',
+            '///root///somepath///',
         ];
 
         $this->server->setBaseUri('/root/');

@@ -571,7 +571,7 @@ class Server implements LoggerAwareInterface, EmitterInterface {
 
         }
 
-        $uri = Uri\normalize(str_replace('//', '/', $uri));
+        $uri = Uri\normalize(preg_replace('|/+|', '/', $uri));
         $baseUri = Uri\normalize($this->getBaseUri());
 
         if (strpos($uri, $baseUri) === 0) {

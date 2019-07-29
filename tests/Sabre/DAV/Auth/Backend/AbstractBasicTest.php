@@ -1,14 +1,14 @@
-<?php declare (strict_types=1);
+<?php
 
 namespace Sabre\DAV\Auth\Backend;
 
 use Sabre\HTTP;
 
-class AbstractBasicTest extends \PHPUnit\Framework\TestCase {
+class AbstractBasicTest extends \PHPUnit_Framework_TestCase {
 
     function testCheckNoHeaders() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new HTTP\Request();
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
@@ -22,10 +22,8 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase {
     function testCheckUnknownUser() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'PHP_AUTH_USER'  => 'username',
-            'PHP_AUTH_PW'    => 'wrongpassword',
+            'PHP_AUTH_USER' => 'username',
+            'PHP_AUTH_PW'   => 'wrongpassword',
         ]);
         $response = new HTTP\Response();
 
@@ -40,10 +38,8 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase {
     function testCheckSuccess() {
 
         $request = HTTP\Sapi::createFromServerArray([
-            'REQUEST_METHOD' => 'GET',
-            'REQUEST_URI'    => '/',
-            'PHP_AUTH_USER'  => 'username',
-            'PHP_AUTH_PW'    => 'password',
+            'PHP_AUTH_USER' => 'username',
+            'PHP_AUTH_PW'   => 'password',
         ]);
         $response = new HTTP\Response();
 
@@ -57,15 +53,15 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase {
 
     function testRequireAuth() {
 
-        $request = new HTTP\Request('GET', '/');
+        $request = new HTTP\Request();
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertEquals(
-            'Basic realm="writing unittests on a saturday night", charset="UTF-8"',
+        $this->assertContains(
+            'Basic realm="writing unittests on a saturday night"',
             $response->getHeader('WWW-Authenticate')
         );
 

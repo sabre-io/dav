@@ -68,7 +68,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * supplied by the authentication backend.
      *
      * @param array $principalInfo
-     * @return IPrincipal
+     * @return DAV\INode
      */
     abstract function getChildForPrincipal(array $principalInfo);
 

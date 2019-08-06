@@ -77,7 +77,7 @@ class Plugin extends DAV\ServerPlugin
         // parents extend IExtendedCollection
         list($parent, $name) = Uri\split($uri);
 
-        $node = $this->server->tree->getNodeForPath($parent);
+        $node = $this->server->tree->getNodeForPath($parent ?: '');
 
         if ($node instanceof DAV\IExtendedCollection) {
             try {

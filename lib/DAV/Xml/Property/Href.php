@@ -59,7 +59,7 @@ class Href implements Element, HtmlOutput
      */
     public function getHref()
     {
-        return $this->hrefs[0];
+        return $this->hrefs[0] ?? null;
     }
 
     /**

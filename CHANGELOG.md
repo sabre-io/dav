@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+4.0.1 (2019-08-20)
+-------------------------
+* TemporaryFileFilterPlugin: Fix Strict Error
+* CalDAV\Plugin: Fix null path
+
 4.0.0 (2019-07-01)
 -------------------------
 * Lock: Support lock timeout value Infinity 

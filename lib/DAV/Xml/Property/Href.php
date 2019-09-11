@@ -55,7 +55,7 @@ class Href implements Element, HtmlOutput
     /**
      * Returns the first Href.
      *
-     * @return string
+     * @return string|null
      */
     public function getHref()
     {

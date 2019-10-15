@@ -75,19 +75,33 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
     }
 
     /**
-     * Returns the list of properties.
+     * Returns a list of properties for this nodes.
      *
-     * @param array $requestedProperties
+     * The properties list is a list of propertynames the client requested,
+     * encoded in clark-notation {xmlnamespace}tagname
+     *
+     * If the array is empty, it means 'all properties' were requested.
+     *
+     * Note that it's fine to liberally give properties back, instead of
+     * conforming to the list of requested properties.
+     * The Server class will filter out the extra.
+     *
+     * @param array $properties
      *
      * @return array
      */
-    public function getProperties($requestedProperties)
+    public function getProperties($properties)
     {
         $response = [];
 
         foreach ($this->calendarInfo as $propName => $propValue) {
+            if (!empty($properties) && !in_array($propName, $properties)) {
+                // Return property only if it is present in requested properties
+                // or requested properties is an empty array (all properties has been requested).
+                continue;
+            }
             if (!is_null($propValue) && '{' === $propName[0]) {
-                $response[$propName] = $this->calendarInfo[$propName];
+                $response[$propName] = $propValue;
             }
         }
 

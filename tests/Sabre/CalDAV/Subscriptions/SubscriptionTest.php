@@ -73,6 +73,24 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($sub->getSupportedPrivilegeSet());
     }
 
+    public function testGetProperties()
+    {
+        $expectedValues = [
+            '{DAV:}displayname' => 'displayname',
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
+        ];
+
+        $sub = $this->getSub();
+
+        // Call with empty prop list should return all values
+        $this->assertEquals($expectedValues, $sub->getProperties([]));
+
+        foreach ($expectedValues as $propName => $propValue) {
+            // Call with not empty prop list should return only requested properties values
+            $this->assertEquals([$propName => $propValue], $sub->getProperties([$propName]));
+        }
+    }
+
     public function testValues2()
     {
         $sub = $this->getSub([

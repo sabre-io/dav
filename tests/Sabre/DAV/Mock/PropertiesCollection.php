@@ -76,20 +76,25 @@ class PropertiesCollection extends Collection implements IProperties
      * conforming to the list of requested properties.
      * The Server class will filter out the extra.
      *
-     * @param array $requestedProperties
+     * @param array $properties
      *
      * @return array
      */
-    public function getProperties($requestedProperties)
+    public function getProperties($properties)
     {
-        $returnedProperties = [];
-        foreach ($requestedProperties as $requestedProperty) {
-            if (isset($this->properties[$requestedProperty])) {
-                $returnedProperties[$requestedProperty] =
-                    $this->properties[$requestedProperty];
+        $response = [];
+
+        foreach ($this->properties as $propName => $propValue) {
+            if (!empty($properties) && !in_array($propName, $properties)) {
+                // Return property only if it is present in requested properties
+                // or requested properties is an empty array (all properties has been requested).
+                continue;
+            }
+            if (!is_null($propValue) && '{' === $propName[0]) {
+                $response[$propName] = $propValue;
             }
         }
 
-        return $returnedProperties;
+        return $response;
     }
 }

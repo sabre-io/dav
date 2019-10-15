@@ -144,22 +144,26 @@ class Subscription extends Collection implements ISubscription, IACL
      */
     public function getProperties($properties)
     {
-        $r = [];
+        $response = [];
 
-        foreach ($properties as $prop) {
-            switch ($prop) {
-                case '{http://calendarserver.org/ns/}source':
-                    $r[$prop] = new Href($this->subscriptionInfo['source']);
-                    break;
-                default:
-                    if (array_key_exists($prop, $this->subscriptionInfo)) {
-                        $r[$prop] = $this->subscriptionInfo[$prop];
-                    }
-                    break;
+        foreach ($this->subscriptionInfo as $propName => $propValue) {
+            if ('source' === $propName) {
+                $propName = '{http://calendarserver.org/ns/}source';
+                $propValue = new Href($propValue);
+            }
+
+            if (!empty($properties) && !in_array($propName, $properties)) {
+                // Return property only if it is present in requested properties
+                // or requested properties is an empty array (all properties has been requested).
+                continue;
+            }
+
+            if (!is_null($propName) && '{' === $propName[0]) {
+                $response[$propName] = $propValue;
             }
         }
 
-        return $r;
+        return $response;
     }
 
     /**

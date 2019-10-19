@@ -1,10 +1,17 @@
 ChangeLog
 =========
 
+4.0.2 (2019-10-18)
+-------------------------
+* Fix error with PHP 7.4
+* CardDAV: Fix content-type for Thunderbird
+
+
 4.0.1 (2019-08-20)
 -------------------------
 * TemporaryFileFilterPlugin: Fix Strict Error
 * CalDAV\Plugin: Fix null path
+
 
 4.0.0 (2019-07-01)
 -------------------------

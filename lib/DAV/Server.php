@@ -1641,7 +1641,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
     {
         $w = $this->xml->getWriter();
 
-        return function() use ($fileProperties, $strip404s, $w) {
+        return function () use ($fileProperties, $strip404s, $w) {
             $w->openUri('php://output');
             $w->contextUri = $this->baseUri;
             $w->startDocument();

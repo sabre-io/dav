@@ -37,7 +37,7 @@ class MultiGetTest extends AbstractPluginTest
         $this->server->exec();
 
         $body = $response->getBodyAsString();
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $body);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$body);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -80,7 +80,7 @@ class MultiGetTest extends AbstractPluginTest
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:' . $bodyAsString);
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);

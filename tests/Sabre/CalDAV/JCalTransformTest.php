@@ -81,7 +81,7 @@ XML;
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->getStatus(), 'Full rsponse: ' . $body);
+        $this->assertEquals(207, $response->getStatus(), 'Full rsponse: '.$body);
 
         $multiStatus = $this->server->xml->parse(
             $body
@@ -135,7 +135,7 @@ XML;
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $body);
+        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$body);
 
         $multiStatus = $this->server->xml->parse(
             $body
@@ -189,7 +189,7 @@ XML;
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->getStatus(), "Invalid response code. Full body: " . $body);
+        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$body);
 
         $multiStatus = $this->server->xml->parse(
             $body

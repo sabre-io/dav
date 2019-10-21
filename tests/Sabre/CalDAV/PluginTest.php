@@ -121,7 +121,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:' . $this->response->getBodyAsString());
+        $this->assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:'.$this->response->getBodyAsString());
     }
 
     public function testGetWithoutContentType()
@@ -339,7 +339,7 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
         $this->assertEquals(3, count($calendars));
@@ -384,7 +384,7 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
         $this->assertEquals(3, count($calendars));
@@ -610,7 +610,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -668,7 +668,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -730,7 +730,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -789,7 +789,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -819,7 +819,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -859,7 +859,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -891,7 +891,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -946,7 +946,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -998,7 +998,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -1024,7 +1024,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -1050,7 +1050,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: ' . $this->response->getBodyAsString());
+        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**

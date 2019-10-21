@@ -82,8 +82,8 @@ END:VCALENDAR
         $response = $this->request($request);
 
         $bodyAsString = $response->getBodyAsString();
-        $this->assertFalse(strpos($bodyAsString, '<s:exception>Exception</s:exception>'), 'Exception occurred: ' . $bodyAsString);
-        $this->assertFalse(strpos($bodyAsString, 'Unknown or bad format'), 'DateTime unknown format Exception: ' . $bodyAsString);
+        $this->assertFalse(strpos($bodyAsString, '<s:exception>Exception</s:exception>'), 'Exception occurred: '.$bodyAsString);
+        $this->assertFalse(strpos($bodyAsString, 'Unknown or bad format'), 'DateTime unknown format Exception: '.$bodyAsString);
 
         // Everts super awesome xml parser.
         $body = substr(

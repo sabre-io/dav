@@ -185,7 +185,7 @@ class TemporaryFileFilterTest extends AbstractServer
 
         $bodyAsString = $this->response->getBodyAsString();
 
-        $this->assertEquals(207, $this->response->status, 'Incorrect status code returned. Body: ' . $bodyAsString);
+        $this->assertEquals(207, $this->response->status, 'Incorrect status code returned. Body: '.$bodyAsString);
         $this->assertEquals([
             'X-Sabre-Temp' => ['true'],
             'Content-Type' => ['application/xml; charset=utf-8'],

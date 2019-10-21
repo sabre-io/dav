@@ -1628,41 +1628,44 @@ class Server implements LoggerAwareInterface, EmitterInterface
     // {{{ XML Readers & Writers
 
     /**
-     * Generates a WebDAV propfind response body based on a list of nodes.
+     * Returns a callback generating a WebDAV propfind response body based on a list of nodes.
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array|\Traversable $fileProperties The list with nodes
      * @param bool               $strip404s
      *
-     * @return string
+     * @return callable
      */
     public function generateMultiStatus($fileProperties, $strip404s = false)
     {
         $w = $this->xml->getWriter();
-        $w->openMemory();
-        $w->contextUri = $this->baseUri;
-        $w->startDocument();
 
-        $w->startElement('{DAV:}multistatus');
+        return function() use ($fileProperties, $strip404s, $w) {
+            $w->openUri('php://output');
+            $w->contextUri = $this->baseUri;
+            $w->startDocument();
 
-        foreach ($fileProperties as $entry) {
-            $href = $entry['href'];
-            unset($entry['href']);
-            if ($strip404s) {
-                unset($entry[404]);
+            $w->startElement('{DAV:}multistatus');
+
+            foreach ($fileProperties as $entry) {
+                $href = $entry['href'];
+                unset($entry['href']);
+                if ($strip404s) {
+                    unset($entry[404]);
+                }
+                $response = new Xml\Element\Response(
+                    ltrim($href, '/'),
+                    $entry
+                );
+                $w->write([
+                    'name' => '{DAV:}response',
+                    'value' => $response,
+                ]);
             }
-            $response = new Xml\Element\Response(
-                ltrim($href, '/'),
-                $entry
-            );
-            $w->write([
-                'name' => '{DAV:}response',
-                'value' => $response,
-            ]);
-        }
-        $w->endElement();
-
-        return $w->outputMemory();
+            $w->endElement();
+            $w->endDocument();
+            $w->flush();
+        };
     }
 }

@@ -85,12 +85,13 @@ class GuessContentType extends DAV\ServerPlugin
      */
     protected function getContentType($fileName)
     {
-        // Just grabbing the extension
-        $extension = strtolower(substr($fileName, strrpos($fileName, '.') + 1));
-        if (isset($this->extensionMap[$extension])) {
-            return $this->extensionMap[$extension];
+        if ($fileName!==null) {
+            // Just grabbing the extension
+            $extension = strtolower(substr($fileName, strrpos($fileName, '.') + 1));
+            if (isset($this->extensionMap[$extension])) {
+                return $this->extensionMap[$extension];
+            }
         }
-
         return 'application/octet-stream';
     }
 }

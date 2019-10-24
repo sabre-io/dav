@@ -92,6 +92,7 @@ class GuessContentType extends DAV\ServerPlugin
                 return $this->extensionMap[$extension];
             }
         }
+
         return 'application/octet-stream';
     }
 }

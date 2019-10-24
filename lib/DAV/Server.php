@@ -14,6 +14,7 @@ use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
+use Sabre\Xml\Writer;
 
 /**
  * Main DAV server class.
@@ -183,6 +184,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var bool
      */
     public static $exposeVersion = true;
+
+    public static $streamMultiStatus = false;
 
     /**
      * Sets up the server.
@@ -1635,37 +1638,50 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @param array|\Traversable $fileProperties The list with nodes
      * @param bool               $strip404s
      *
-     * @return callable
+     * @return callable|string
      */
     public function generateMultiStatus($fileProperties, $strip404s = false)
     {
         $w = $this->xml->getWriter();
+        if (self::$streamMultiStatus) {
+            return function () use ($fileProperties, $strip404s, $w) {
+                $w->openUri('php://output');
+                $this->writeMultiStatus($w, $fileProperties, $strip404s);
+            };
+        }
+        $w->openMemory();
+        $this->writeMultiStatus($w, $fileProperties, $strip404s);
+        return $w->outputMemory();
+    }
+    /**
+     * @param Writer $w
+     * @param $fileProperties
+     * @param bool $strip404s
+     */
+    private function writeMultiStatus(Writer $w, $fileProperties, bool $strip404s)
+    {
+        $w->contextUri = $this->baseUri;
+        $w->startDocument();
 
-        return function () use ($fileProperties, $strip404s, $w) {
-            $w->openUri('php://output');
-            $w->contextUri = $this->baseUri;
-            $w->startDocument();
+        $w->startElement('{DAV:}multistatus');
 
-            $w->startElement('{DAV:}multistatus');
-
-            foreach ($fileProperties as $entry) {
-                $href = $entry['href'];
-                unset($entry['href']);
-                if ($strip404s) {
-                    unset($entry[404]);
-                }
-                $response = new Xml\Element\Response(
-                    ltrim($href, '/'),
-                    $entry
-                );
-                $w->write([
-                    'name' => '{DAV:}response',
-                    'value' => $response,
-                ]);
+        foreach ($fileProperties as $entry) {
+            $href = $entry['href'];
+            unset($entry['href']);
+            if ($strip404s) {
+                unset($entry[404]);
             }
-            $w->endElement();
-            $w->endDocument();
-            $w->flush();
-        };
+            $response = new Xml\Element\Response(
+                ltrim($href, '/'),
+                $entry
+            );
+            $w->write([
+                'name' => '{DAV:}response',
+                'value' => $response,
+            ]);
+        }
+        $w->endElement();
+        $w->endDocument();
+        $w->flush();
     }
 }

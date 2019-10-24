@@ -100,7 +100,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
@@ -140,7 +140,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFileNoVersionFixed()
@@ -166,7 +166,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
@@ -213,7 +213,7 @@ ICS;
         $request->setBody($ics);
 
         $response = $this->request($request);
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFileNoUID()
@@ -226,7 +226,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFileVCard()
@@ -239,7 +239,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFile2Components()
@@ -252,7 +252,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFile2UIDS()
@@ -265,7 +265,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testCreateFileWrongComponent()
@@ -278,7 +278,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testUpdateFile()
@@ -338,7 +338,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testUpdateFileInvalidComponent()
@@ -352,7 +352,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(403, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     /**
@@ -385,7 +385,7 @@ ICS;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
         $this->assertNull($response->getHeader('ETag'));
     }
 }

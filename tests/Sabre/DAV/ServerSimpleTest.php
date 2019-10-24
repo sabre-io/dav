@@ -42,7 +42,7 @@ class ServerSimpleTest extends AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testOptionsUnmapped()
@@ -62,7 +62,7 @@ class ServerSimpleTest extends AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testNonExistantMethod()
@@ -371,7 +371,7 @@ class ServerSimpleTest extends AbstractServer
             $this->response->getHeaders()
          );
 
-        $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->body);
+        $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function testReportIntercepted()
@@ -394,7 +394,7 @@ class ServerSimpleTest extends AbstractServer
             $this->response->getHeaders()
         );
 
-        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->body);
+        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function reportHandler($reportName, $result, $path)

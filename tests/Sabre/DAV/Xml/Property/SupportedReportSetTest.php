@@ -38,9 +38,10 @@ class SupportedReportSetTest extends DAV\AbstractServer
 
         $this->sendPROPFIND($xml);
 
-        $this->assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$this->response->body);
+        $bodyAsString = $this->response->getBodyAsString();
+        $this->assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$bodyAsString);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
@@ -78,9 +79,10 @@ class SupportedReportSetTest extends DAV\AbstractServer
 
         $this->sendPROPFIND($xml);
 
-        $this->assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$this->response->body);
+        $bodyAsString = $this->response->getBodyAsString();
+        $this->assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$bodyAsString);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->body);
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
         $xml->registerXPathNamespace('x', 'http://www.rooftopsolutions.nl/testnamespace');
@@ -98,10 +100,10 @@ class SupportedReportSetTest extends DAV\AbstractServer
         $this->assertEquals(2, count($data), 'We expected 2 \'d:report\' elements');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report/d:report/x:myreport');
-        $this->assertEquals(1, count($data), 'We expected 1 \'x:myreport\' element. Full body: '.$this->response->body);
+        $this->assertEquals(1, count($data), 'We expected 1 \'x:myreport\' element. Full body: '.$bodyAsString);
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supported-report-set/d:supported-report/d:report/d:anotherreport');
-        $this->assertEquals(1, count($data), 'We expected 1 \'d:anotherreport\' element. Full body: '.$this->response->body);
+        $this->assertEquals(1, count($data), 'We expected 1 \'d:anotherreport\' element. Full body: '.$bodyAsString);
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
         $this->assertEquals(1, count($data), 'We expected 1 \'d:status\' element');

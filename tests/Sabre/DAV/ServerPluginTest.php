@@ -60,7 +60,7 @@ class ServerPluginTest extends AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals('OPTIONS', $this->testPlugin->beforeMethod);
     }
 

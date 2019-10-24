@@ -85,6 +85,6 @@ END:VCALENDAR
 
         // if this assert is reached, the endless loop is gone
         // There should be no matching events
-        $this->assertFalse(strpos('BEGIN:VEVENT', $response->body));
+        $this->assertFalse(strpos('BEGIN:VEVENT', $response->getBodyAsString()));
     }
 }

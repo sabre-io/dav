@@ -145,7 +145,7 @@ BLA
 
         $response = $this->request($request);
 
-        $this->assertEquals('', $response->getBodyAsString(), 'Expected empty body: '.$response->body);
+        $this->assertEquals('', $response->getBodyAsString(), 'Expected empty body: '.$response->getBodyAsString());
         $this->assertEquals(204, $response->status);
     }
 

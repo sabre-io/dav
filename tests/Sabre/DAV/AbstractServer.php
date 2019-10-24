@@ -9,7 +9,7 @@ use Sabre\HTTP;
 abstract class AbstractServer extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\HTTP\ResponseMock
+     * @var \Sabre\HTTP\ResponseMock
      */
     protected $response;
     protected $request;

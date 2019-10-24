@@ -21,6 +21,9 @@ matrix:
     - name: 'PHPStan'
       php: 7.2
       env: RUN_PHPSTAN="TRUE"
+    - name: 'Test with streaming propfind'
+      php: 7.2
+      env: RUN_TEST_WITH_STREAMING_PROPFIND="TRUE"
 
 services:
   - mysql

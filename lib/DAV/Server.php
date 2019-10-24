@@ -1651,8 +1651,10 @@ class Server implements LoggerAwareInterface, EmitterInterface
         }
         $w->openMemory();
         $this->writeMultiStatus($w, $fileProperties, $strip404s);
+
         return $w->outputMemory();
     }
+
     /**
      * @param Writer $w
      * @param $fileProperties

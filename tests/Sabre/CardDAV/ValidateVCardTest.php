@@ -240,7 +240,7 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
 
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
         $this->assertEquals("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n", $foo['carddata']);
@@ -256,7 +256,7 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testUpdateFile()

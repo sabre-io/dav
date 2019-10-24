@@ -82,7 +82,7 @@ ICS
         $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBodyAsString());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -108,7 +108,7 @@ ICS
         $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBodyAsString());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -166,7 +166,7 @@ ICS
         $response = $this->request($request, 200);
         $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBodyAsString());
 
         $this->assertEquals(8, count($obj->children()));
         $this->assertEquals(1, count($obj->VERSION));
@@ -276,7 +276,7 @@ ICS
 
         $response = $this->request($request, 200);
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBodyAsString());
         $this->assertEquals(1, count($obj->VTIMEZONE));
         $this->assertEquals(1, count($obj->VEVENT));
         $this->assertNull($obj->VTODO);
@@ -291,7 +291,7 @@ ICS
 
         $response = $this->request($request, 200);
 
-        $obj = VObject\Reader::read($response->body);
+        $obj = VObject\Reader::read($response->getBodyAsString());
 
         $this->assertNull($obj->VTIMEZONE);
         $this->assertNull($obj->VEVENT);

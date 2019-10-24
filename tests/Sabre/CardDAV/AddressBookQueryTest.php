@@ -303,7 +303,7 @@ class AddressBookQueryTest extends AbstractPluginTest
 
         $this->server->exec();
 
-        $this->assertEquals(415, $response->status, 'Incorrect status code. Full response body:'.$response->body);
+        $this->assertEquals(415, $response->status, 'Incorrect status code. Full response body:'.$response->getBodyAsString());
     }
 
     public function testAddressBookProperties()

@@ -14,6 +14,7 @@ use Sabre\HTTP;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\Uri;
+use Sabre\Xml\Writer;
 
 /**
  * Main DAV server class.
@@ -183,6 +184,15 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var bool
      */
     public static $exposeVersion = true;
+
+    /**
+     * If this setting is turned on, any multi status response on any PROPFIND will be streamed to the output buffer.
+     * This will be beneficial for large result sets which will no longer consume a large amount of memory as well as
+     * send back data to the client earlier.
+     *
+     * @var bool
+     */
+    public static $streamMultiStatus = false;
 
     /**
      * Sets up the server.
@@ -1628,19 +1638,38 @@ class Server implements LoggerAwareInterface, EmitterInterface
     // {{{ XML Readers & Writers
 
     /**
-     * Generates a WebDAV propfind response body based on a list of nodes.
+     * Returns a callback generating a WebDAV propfind response body based on a list of nodes.
      *
      * If 'strip404s' is set to true, all 404 responses will be removed.
      *
      * @param array|\Traversable $fileProperties The list with nodes
      * @param bool               $strip404s
      *
-     * @return string
+     * @return callable|string
      */
     public function generateMultiStatus($fileProperties, $strip404s = false)
     {
         $w = $this->xml->getWriter();
+        if (self::$streamMultiStatus) {
+            return function () use ($fileProperties, $strip404s, $w) {
+                $w->openUri('php://output');
+                $this->writeMultiStatus($w, $fileProperties, $strip404s);
+                $w->flush();
+            };
+        }
         $w->openMemory();
+        $this->writeMultiStatus($w, $fileProperties, $strip404s);
+
+        return $w->outputMemory();
+    }
+
+    /**
+     * @param Writer $w
+     * @param $fileProperties
+     * @param bool $strip404s
+     */
+    private function writeMultiStatus(Writer $w, $fileProperties, bool $strip404s)
+    {
         $w->contextUri = $this->baseUri;
         $w->startDocument();
 
@@ -1662,7 +1691,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
             ]);
         }
         $w->endElement();
-
-        return $w->outputMemory();
+        $w->endDocument();
     }
 }

@@ -36,12 +36,13 @@ class MultiGetTest extends AbstractPluginTest
 
         $this->server->exec();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$response->body);
+        $bodyAsString = $response->getBodyAsString();
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($bodyAsString);
 
         $this->assertEquals([
             '/addressbooks/user1/book1/card1' => [
@@ -78,12 +79,13 @@ class MultiGetTest extends AbstractPluginTest
 
         $this->server->exec();
 
-        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$response->body);
+        $bodyAsString = $response->getBodyAsString();
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
 
-        $result = $client->parseMultiStatus($response->body);
+        $result = $client->parseMultiStatus($bodyAsString);
 
         $prodId = 'PRODID:-//Sabre//Sabre VObject '.\Sabre\VObject\Version::VERSION.'//EN';
 

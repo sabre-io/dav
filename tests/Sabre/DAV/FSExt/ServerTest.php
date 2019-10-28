@@ -34,7 +34,7 @@ class ServerTest extends DAV\AbstractServer
             $this->response->getHeaders()
          );
 
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
+        $this->assertEquals('Test contents', $this->response->getBodyAsString());
     }
 
     public function testHEAD()
@@ -55,7 +55,7 @@ class ServerTest extends DAV\AbstractServer
          );
 
         $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testPut()
@@ -73,7 +73,7 @@ class ServerTest extends DAV\AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals('Testing new file', file_get_contents($filename));
     }
 
@@ -105,7 +105,7 @@ class ServerTest extends DAV\AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertTrue(is_dir($this->tempDir.'/testcol'));
     }
 
@@ -119,7 +119,7 @@ class ServerTest extends DAV\AbstractServer
         $this->assertEquals('0', $this->response->getHeader('Content-Length'));
 
         $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertEquals('Testing updated file', file_get_contents($this->tempDir.'/test.txt'));
     }
 
@@ -135,7 +135,7 @@ class ServerTest extends DAV\AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertFalse(file_exists($this->tempDir.'/test.txt'));
     }
 
@@ -153,7 +153,7 @@ class ServerTest extends DAV\AbstractServer
             'Content-Length' => ['0'],
         ], $this->response->getHeaders());
         $this->assertEquals(204, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
         $this->assertFalse(file_exists($this->tempDir.'/testcol'));
     }
 
@@ -173,7 +173,7 @@ class ServerTest extends DAV\AbstractServer
         ], $this->response->getHeaders());
 
         $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testMove()
@@ -185,7 +185,7 @@ class ServerTest extends DAV\AbstractServer
         $this->server->exec();
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
 
         $this->assertEquals([
             'Content-Length' => ['0'],
@@ -220,7 +220,7 @@ class ServerTest extends DAV\AbstractServer
         $this->server->exec();
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
 
         $this->assertEquals([
             'Content-Length' => ['0'],
@@ -241,7 +241,7 @@ class ServerTest extends DAV\AbstractServer
         $this->server->exec();
 
         $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->body);
+        $this->assertEquals('', $this->response->getBodyAsString());
 
         $this->assertEquals([
             'Content-Length' => ['0'],

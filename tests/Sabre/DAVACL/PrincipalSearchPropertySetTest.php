@@ -76,7 +76,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->body);
+        $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->getBodyAsString());
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -102,7 +102,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(200, $server->httpResponse->status, $server->httpResponse->body);
+        $bodyAsString = $server->httpResponse->getBodyAsString();
+        $this->assertEquals(200, $server->httpResponse->status, $bodyAsString);
         $this->assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -117,7 +118,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
             '/d:principal-search-property-set/d:principal-search-property/d:description' => 2,
         ];
 
-        $xml = simplexml_load_string($server->httpResponse->body);
+        $xml = simplexml_load_string($bodyAsString);
         $xml->registerXPathNamespace('d', 'DAV:');
         $xml->registerXPathNamespace('s', 'http://sabredav.org/ns');
         foreach ($check as $v1 => $v2) {
@@ -130,7 +131,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->body);
+            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$bodyAsString);
         }
     }
 }

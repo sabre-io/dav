@@ -190,7 +190,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($backend->findByUri('http://foo', 'principals'));
     }
 
-    public function testFindByUri()
+    public function testFindByUriWithMailtoAddress()
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
@@ -198,5 +198,22 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'principals/user',
             $backend->findByUri('mailto:user@example.org', 'principals')
         );
+    }
+
+    public function testFindByUriWithUri()
+    {
+        $pdo = $this->getPDO();
+        $backend = new PDO($pdo);
+        $this->assertEquals(
+            'principals/user',
+            $backend->findByUri('principals/user', 'principals')
+        );
+    }
+
+    public function testFindByUriWithUnknownUri()
+    {
+        $pdo = $this->getPDO();
+        $backend = new PDO($pdo);
+        $this->assertNull($backend->findByUri('principals/other', 'principals'));
     }
 }

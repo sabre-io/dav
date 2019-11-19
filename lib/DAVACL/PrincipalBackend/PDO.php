@@ -301,19 +301,21 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      */
     public function findByUri($uri, $principalPrefix)
     {
-        $value = null;
-        $scheme = null;
-        list($scheme, $value) = explode(':', $uri, 2);
-        if (empty($value)) {
+        $uriParts = Uri\parse($uri);
+
+        // Only two types of uri are supported :
+        //   - the "mailto:" scheme with some non-empty address
+        //   - a principals uri, in the form "principals/NAME"
+        // In both cases, `path` must not be empty.
+        if (empty($uriParts['path'])) {
             return null;
         }
 
         $uri = null;
-        switch ($scheme) {
-            case 'mailto':
+        if ($uriParts['scheme'] === 'mailto') {
                 $query = 'SELECT uri FROM '.$this->tableName.' WHERE lower(email)=lower(?)';
                 $stmt = $this->pdo->prepare($query);
-                $stmt->execute([$value]);
+                $stmt->execute([$uriParts['path']]);
 
                 while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                     // Checking if the principal is in the prefix
@@ -325,10 +327,20 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
                     $uri = $row['uri'];
                     break; //Stop on first match
                 }
-                break;
-            default:
-                //unsupported uri scheme
-                return null;
+        } else {
+            $pathParts = Uri\split($uriParts['path']); // We can do this since $uriParts['path'] is not null
+
+            if (count($pathParts) === 2 && $pathParts[0] === $principalPrefix) {
+                // Checking that this uri exists
+                $query = 'SELECT * FROM '.$this->tableName.' WHERE uri = ?';
+                $stmt = $this->pdo->prepare($query);
+                $stmt->execute([$uriParts['path']]);
+                $rows = $stmt->fetchAll();
+
+                if (count($rows) > 0) {
+                    $uri = $uriParts['path'];
+                }
+            }
         }
 
         return $uri;

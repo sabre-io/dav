@@ -312,25 +312,25 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
         }
 
         $uri = null;
-        if ($uriParts['scheme'] === 'mailto') {
-                $query = 'SELECT uri FROM '.$this->tableName.' WHERE lower(email)=lower(?)';
-                $stmt = $this->pdo->prepare($query);
-                $stmt->execute([$uriParts['path']]);
+        if ('mailto' === $uriParts['scheme']) {
+            $query = 'SELECT uri FROM '.$this->tableName.' WHERE lower(email)=lower(?)';
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([$uriParts['path']]);
 
-                while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                    // Checking if the principal is in the prefix
-                    list($rowPrefix) = Uri\split($row['uri']);
-                    if ($rowPrefix !== $principalPrefix) {
-                        continue;
-                    }
-
-                    $uri = $row['uri'];
-                    break; //Stop on first match
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                // Checking if the principal is in the prefix
+                list($rowPrefix) = Uri\split($row['uri']);
+                if ($rowPrefix !== $principalPrefix) {
+                    continue;
                 }
+
+                $uri = $row['uri'];
+                break; //Stop on first match
+            }
         } else {
             $pathParts = Uri\split($uriParts['path']); // We can do this since $uriParts['path'] is not null
 
-            if (count($pathParts) === 2 && $pathParts[0] === $principalPrefix) {
+            if (2 === count($pathParts) && $pathParts[0] === $principalPrefix) {
                 // Checking that this uri exists
                 $query = 'SELECT * FROM '.$this->tableName.' WHERE uri = ?';
                 $stmt = $this->pdo->prepare($query);

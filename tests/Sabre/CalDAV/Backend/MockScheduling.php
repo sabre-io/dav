@@ -69,9 +69,9 @@ class MockScheduling extends Mock implements SchedulingSupport
     /**
      * Creates a new scheduling object. This should land in a users' inbox.
      *
-     * @param string $principalUri
-     * @param string $objectUri
-     * @param string $objectData;
+     * @param string          $principalUri
+     * @param string          $objectUri
+     * @param string|resource $objectData;
      */
     public function createSchedulingObject($principalUri, $objectUri, $objectData)
     {

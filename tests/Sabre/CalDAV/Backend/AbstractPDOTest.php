@@ -1026,11 +1026,27 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $calData
         );
 
+        $calDataResource = "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n";
+        $stream = fopen('data://text/plain,'.$calData, 'r');
+
+        $backend->createSchedulingObject(
+            'principals/user1',
+            'schedule1-resource.ics',
+            $stream
+        );
+
         $expected = [
             'calendardata' => $calData,
             'uri' => 'schedule1.ics',
             'etag' => '"'.md5($calData).'"',
             'size' => strlen($calData),
+        ];
+
+        $expectedResource = [
+            'calendardata' => $calDataResource,
+            'uri' => 'schedule1-resource.ics',
+            'etag' => '"'.md5($calDataResource).'"',
+            'size' => strlen($calDataResource),
         ];
 
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
@@ -1041,6 +1057,17 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             }
             $this->assertEquals($v, $result[$k]);
         }
+
+        $resultResource = $backend->getSchedulingObject('principals/user1', 'schedule1-resource.ics');
+        foreach ($expected as $k => $v) {
+            $this->assertArrayHasKey($k, $result);
+            if (is_resource($result[$k])) {
+                $result[$k] = stream_get_contents($result[$k]);
+            }
+            $this->assertEquals($v, $result[$k]);
+        }
+
+        $backend->deleteSchedulingObject('principals/user1', 'schedule1-resource.ics');
 
         $results = $backend->getSchedulingObjects('principals/user1');
 

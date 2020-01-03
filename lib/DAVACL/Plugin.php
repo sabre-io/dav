@@ -214,7 +214,7 @@ class Plugin extends DAV\ServerPlugin
                     $this->server->httpRequest,
                     $this->server->httpResponse
                 );
-                throw new notAuthenticated(implode(', ', $reasons).'. Login was needed for privilege: '.implode(', ', $failed).' on '.$uri);
+                throw new NotAuthenticated(implode(', ', $reasons).'. Login was needed for privilege: '.implode(', ', $failed).' on '.$uri);
             }
             if ($throwExceptions) {
                 throw new NeedPrivileges($uri, $failed);

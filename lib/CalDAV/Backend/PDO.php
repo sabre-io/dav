@@ -874,6 +874,8 @@ WHERE
     calendar_instances.principaluri = ?
     AND
     calendarobjects.uid = ?
+    AND
+    calendar_instances.access = 1
 SQL;
 
         $stmt = $this->pdo->prepare($query);

@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+4.0.3 (2020-01-10)
+-------------------------
+* DAV: Streaming PROPFIND server implementation
+* DAVACL: Fix uppercase of NotAuthenticated class
+* CalDAV: Return only calendar objects owned by principal itself
+* CalDAV: Convert scheduling object data from resource to string
+* Browser Plugin: Fix content type guessing if setBaseUri is set to a folder
+
+
 4.0.2 (2019-10-18)
 -------------------------
 * Fix error with PHP 7.4

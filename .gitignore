@@ -19,6 +19,8 @@ bin/phpunit
 bin/vobject
 bin/generate_vcards
 bin/phpdocmd
+bin/phpstan
+bin/phpstan.phar
 bin/php-cs-fixer
 bin/sabre-cs-fixer
 

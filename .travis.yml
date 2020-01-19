@@ -30,7 +30,7 @@ services:
   - postgresql
 
 install:
-  - if [ $RUN_PHPSTAN == "TRUE"  ]; then wget https://github.com/phpstan/phpstan/releases/download/0.11.8/phpstan.phar; fi
+  - if [ $RUN_PHPSTAN == "TRUE"  ]; then composer require --dev phpstan/phpstan:^0.12; fi
 
 before_script:
 #  - mysql -u root -h 127.0.0.1 sabredav_test -e 'SELECT VERSION();'
@@ -45,7 +45,7 @@ addons:
 script:
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS; fi
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini; fi
-  - if [ $RUN_PHPSTAN == "TRUE"  ]; then php phpstan.phar analyse -c phpstan.neon lib; fi
+  - if [ $RUN_PHPSTAN == "TRUE"  ]; then php ./bin/phpstan analyse -c phpstan.neon lib; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

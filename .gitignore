@@ -19,7 +19,6 @@ bin/phpunit
 bin/vobject
 bin/generate_vcards
 bin/phpdocmd
-bin/phpunit
 bin/php-cs-fixer
 bin/sabre-cs-fixer
 
@@ -43,3 +42,6 @@ docs/wikidocs
 .DS_Store
 
 .php_cs.cache
+
+# IDEs
+/.idea

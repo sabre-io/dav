@@ -205,7 +205,7 @@ ICS;
 
         $expected = [];
         $this->assertEquals($expected, $result);
-        $this->assertEquals('1.0', $message->getScheduleStatus()[0]);
+        $this->assertSame('1', $message->getScheduleStatus()[0]);
     }
 
     public function testRecipientNameIsEmail()

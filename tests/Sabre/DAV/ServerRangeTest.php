@@ -133,7 +133,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
 
-        $this->assertEquals(206, $response->getStatus(), $response);
+        $this->assertEquals(206, $response->getStatus());
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],

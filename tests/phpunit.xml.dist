@@ -7,36 +7,38 @@
   convertWarningsToExceptions="true"
   beStrictAboutTestsThatDoNotTestAnything="true"
   beStrictAboutOutputDuringTests="true"
-  beStrictAboutTestSize="true">
+  enforceTimeLimit="true">
 
-  <testsuite name="sabre-event">
-      <directory>../vendor/sabre/event/tests/</directory>
-  </testsuite>
-  <testsuite name="sabre-uri">
-      <directory>../vendor/sabre/uri/tests/</directory>
-  </testsuite>
-  <testsuite name="sabre-xml">
-    <directory>../vendor/sabre/xml/tests/Sabre/Xml/</directory>
-  </testsuite>
-  <testsuite name="sabre-http">
-      <directory>../vendor/sabre/http/tests/HTTP</directory>
-  </testsuite>
-  <testsuite name="sabre-vobject">
-      <directory>../vendor/sabre/vobject/tests/VObject</directory>
-  </testsuite>
+  <testsuites>
+      <testsuite name="sabre-event">
+          <directory>../vendor/sabre/event/tests/</directory>
+      </testsuite>
+      <testsuite name="sabre-uri">
+          <directory>../vendor/sabre/uri/tests/</directory>
+      </testsuite>
+      <testsuite name="sabre-xml">
+        <directory>../vendor/sabre/xml/tests/Sabre/Xml/</directory>
+      </testsuite>
+      <testsuite name="sabre-http">
+          <directory>../vendor/sabre/http/tests/HTTP</directory>
+      </testsuite>
+      <testsuite name="sabre-vobject">
+          <directory>../vendor/sabre/vobject/tests/VObject</directory>
+      </testsuite>
 
-  <testsuite name="sabre-dav">
-      <directory>Sabre/DAV</directory>
-  </testsuite>
-  <testsuite name="sabre-davacl">
-      <directory>Sabre/DAVACL</directory>
-  </testsuite>
-  <testsuite name="sabre-caldav">
-      <directory>Sabre/CalDAV</directory>
-  </testsuite>
-  <testsuite name="sabre-carddav">
-      <directory>Sabre/CardDAV</directory>
-  </testsuite>
+      <testsuite name="sabre-dav">
+          <directory>Sabre/DAV</directory>
+      </testsuite>
+      <testsuite name="sabre-davacl">
+          <directory>Sabre/DAVACL</directory>
+      </testsuite>
+      <testsuite name="sabre-caldav">
+          <directory>Sabre/CalDAV</directory>
+      </testsuite>
+      <testsuite name="sabre-carddav">
+          <directory>Sabre/CardDAV</directory>
+      </testsuite>
+  </testsuites>
 
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">

@@ -265,19 +265,21 @@ class Plugin extends ServerPlugin
             }
         }
 
-        $output .= '<tr><td colspan="2"><form method="post" action="">
-            <h3>Share this resource</h3>
-            <input type="hidden" name="sabreAction" value="share" />
-            <label>Share with (uri):</label> <input type="text" name="href" placeholder="mailto:user@example.org"/><br />
-            <label>Access</label>
-                <select name="access">
-                    <option value="readwrite">Read-write</option>
-                    <option value="read">Read-only</option>
-                    <option value="no-access">Revoke access</option>
-                </select><br />
-             <input type="submit" value="share" />
-            </form>
-            </td></tr>';
+	             $output .= '<tr><td colspan="2"><form method="post" action="">
+	                 <h3>Share this resource</h3>
+		         <input type="hidden" name="sabreAction" value="share" />
+		         <label>Share with (uri):</label> <input type="text" name="href" placeholder="principals/[USER]"/><br />
+		         <label>Access</label>
+		                    <select name="access">
+		                         <option value="readwrite">Read-write</option>
+		                         <option value="read">Read-only</option>
+		                         <option value="no-access">Revoke access</option>
+		                    </select><br />
+		         <label>Email: </label><input type="text" name="emailAddress" placeholder="user@example.com"><br/>
+		         <input type="submit" value="share" /><br/>
+		         </form>
+		    </td></tr>';
+
     }
 
     /**
@@ -318,7 +320,13 @@ class Plugin extends ServerPlugin
         $this->shareResource(
             $path,
             [$sharee]
-        );
+	);
+
+	if ($postVars['access'] !== 'no-access') {
+		mail($postVars['emailAddress'],"A Calendar has been shared with you.","Hello! The following calendar has been shared with you: ". $path . '. You were granted the following level of access: ' . $postVars['access']);
+		} else {
+			mail($postVars['emailAddress'],"Access to calendar has been revoked","Hello, your access to the following calendar: " . $path . " has been revoked.");
+		}
 
         return false;
     }

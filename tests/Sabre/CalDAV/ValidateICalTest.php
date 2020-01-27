@@ -13,7 +13,7 @@ require_once 'Sabre/HTTP/ResponseMock.php';
 class ValidateICalTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
     /**
@@ -56,6 +56,9 @@ class ValidateICalTest extends \PHPUnit\Framework\TestCase
         $this->server->httpResponse = $response;
     }
 
+    /**
+     * @return Sabre\HTTP\ResponseMock
+     */
     public function request(HTTP\Request $request)
     {
         $this->server->httpRequest = $request;

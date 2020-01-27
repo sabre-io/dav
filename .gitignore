@@ -6,6 +6,9 @@ tests/cov
 # Custom settings for tests
 tests/config.user.php
 
+# PHPUnit test Cache
+.phpunit.result.cache
+
 # ViM
 *.swp
 

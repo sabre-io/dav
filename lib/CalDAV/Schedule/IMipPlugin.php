@@ -81,8 +81,6 @@ class IMipPlugin extends DAV\ServerPlugin
 
     /**
      * Event handler for the 'schedule' event.
-     *
-     * @param ITip\Message $iTipMessage
      */
     public function schedule(ITip\Message $iTipMessage)
     {

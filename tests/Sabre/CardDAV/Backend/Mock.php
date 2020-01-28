@@ -69,8 +69,7 @@ class Mock extends AbstractBackend
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param string               $addressBookId
-     * @param \Sabre\DAV\PropPatch $propPatch
+     * @param string $addressBookId
      */
     public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch)
     {

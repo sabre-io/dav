@@ -59,8 +59,6 @@ class Plugin extends DAV\ServerPlugin
 
     /**
      * Initializes the plugin.
-     *
-     * @param DAV\Server $server
      */
     public function initialize(DAV\Server $server)
     {
@@ -131,9 +129,6 @@ class Plugin extends DAV\ServerPlugin
 
     /**
      * Adds all CardDAV-specific properties.
-     *
-     * @param DAV\PropFind $propFind
-     * @param DAV\INode    $node
      */
     public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node)
     {
@@ -267,11 +262,10 @@ class Plugin extends DAV\ServerPlugin
      * This plugin uses this method to ensure that Card nodes receive valid
      * vcard data.
      *
-     * @param string    $path
-     * @param DAV\IFile $node
-     * @param resource  $data
-     * @param bool      $modified should be set to true, if this event handler
-     *                            changed &$data
+     * @param string   $path
+     * @param resource $data
+     * @param bool     $modified should be set to true, if this event handler
+     *                           changed &$data
      */
     public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified)
     {
@@ -288,11 +282,10 @@ class Plugin extends DAV\ServerPlugin
      * This plugin uses this method to ensure that Card nodes receive valid
      * vcard data.
      *
-     * @param string          $path
-     * @param resource        $data
-     * @param DAV\ICollection $parentNode
-     * @param bool            $modified   should be set to true, if this event handler
-     *                                    changed &$data
+     * @param string   $path
+     * @param resource $data
+     * @param bool     $modified should be set to true, if this event handler
+     *                           changed &$data
      */
     public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified)
     {
@@ -481,7 +474,6 @@ class Plugin extends DAV\ServerPlugin
      * Validates if a vcard makes it throught a list of filters.
      *
      * @param string $vcardData
-     * @param array  $filters
      * @param string $test      anyof or allof (which means OR or AND)
      *
      * @return bool
@@ -565,8 +557,6 @@ class Plugin extends DAV\ServerPlugin
      *       property. Any subsequence parameters with the same name are
      *       ignored.
      *
-     * @param array  $vProperties
-     * @param array  $filters
      * @param string $test
      *
      * @return bool
@@ -628,8 +618,6 @@ class Plugin extends DAV\ServerPlugin
     /**
      * Validates if a text-filter can be applied to a specific property.
      *
-     * @param array  $texts
-     * @param array  $filters
      * @param string $test
      *
      * @return bool
@@ -672,9 +660,6 @@ class Plugin extends DAV\ServerPlugin
      *
      * This event is scheduled late in the process, after most work for
      * propfind has been done.
-     *
-     * @param DAV\PropFind $propFind
-     * @param DAV\INode    $node
      */
     public function propFindLate(DAV\PropFind $propFind, DAV\INode $node)
     {
@@ -699,8 +684,7 @@ class Plugin extends DAV\ServerPlugin
      * Sabre\DAV\Browser\Plugin. This allows us to generate an interface users
      * can use to create new addressbooks.
      *
-     * @param DAV\INode $node
-     * @param string    $output
+     * @param string $output
      *
      * @return bool
      */
@@ -727,9 +711,6 @@ class Plugin extends DAV\ServerPlugin
      * This event is triggered after GET requests.
      *
      * This is used to transform data into jCal, if this was requested.
-     *
-     * @param RequestInterface  $request
-     * @param ResponseInterface $response
      */
     public function httpAfterGet(RequestInterface $request, ResponseInterface $response)
     {

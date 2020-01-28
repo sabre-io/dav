@@ -7,9 +7,6 @@ namespace Sabre\DAV\Locks;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
-
 class MSWordTest extends \PHPUnit\Framework\TestCase
 {
     public function tearDown()

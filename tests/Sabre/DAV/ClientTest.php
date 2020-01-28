@@ -6,8 +6,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP\Response;
 
-
-
 class ClientTest extends \PHPUnit\Framework\TestCase
 {
     public function setUp()

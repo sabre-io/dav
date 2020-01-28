@@ -7,8 +7,6 @@ namespace Sabre\DAV\Browser;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
 class MapGetToPropFindTest extends DAV\AbstractServer
 {
     public function setUp()

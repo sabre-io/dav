@@ -6,8 +6,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-
-
 class Issue33Test extends \PHPUnit\Framework\TestCase
 {
     public function setUp()

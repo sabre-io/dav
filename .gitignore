@@ -25,7 +25,6 @@ bin/phpdocmd
 bin/phpstan
 bin/phpstan.phar
 bin/php-cs-fixer
-bin/sabre-cs-fixer
 
 # Assuming every .php file in the root is for testing
 /*.php

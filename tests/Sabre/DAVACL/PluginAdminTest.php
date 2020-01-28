@@ -7,9 +7,6 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
-
 class PluginAdminTest extends \PHPUnit\Framework\TestCase
 {
     public $server;

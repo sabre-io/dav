@@ -7,8 +7,6 @@ namespace Sabre\CardDAV;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
 class MultiGetTest extends AbstractPluginTest
 {
     public function testMultiGet()

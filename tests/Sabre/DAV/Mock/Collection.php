@@ -31,7 +31,6 @@ class Collection extends DAV\Collection
      * Creates the object.
      *
      * @param string     $name
-     * @param array      $children
      * @param Collection $parent
      */
     public function __construct($name, array $children = [], Collection $parent = null)
@@ -120,8 +119,6 @@ class Collection extends DAV\Collection
 
     /**
      * Adds an already existing node to this collection.
-     *
-     * @param \Sabre\DAV\INode $node
      */
     public function addNode(\Sabre\DAV\INode $node)
     {

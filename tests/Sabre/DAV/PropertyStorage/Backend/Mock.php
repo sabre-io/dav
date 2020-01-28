@@ -21,8 +21,7 @@ class Mock implements BackendInterface
      * as this will give you the _exact_ list of properties that need to be
      * fetched, and haven't yet.
      *
-     * @param string   $path
-     * @param PropFind $propFind
+     * @param string $path
      */
     public function propFind($path, PropFind $propFind)
     {
@@ -44,8 +43,7 @@ class Mock implements BackendInterface
      * Usually you would want to call 'handleRemaining' on this object, to get;
      * a list of all properties that need to be stored.
      *
-     * @param string    $path
-     * @param PropPatch $propPatch
+     * @param string $path
      */
     public function propPatch($path, PropPatch $propPatch)
     {

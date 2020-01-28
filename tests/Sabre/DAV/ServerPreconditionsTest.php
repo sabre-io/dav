@@ -6,7 +6,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-
 class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
 {
     /**

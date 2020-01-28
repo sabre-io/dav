@@ -7,8 +7,6 @@ namespace Sabre\DAV\Browser;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
 class PluginTest extends DAV\AbstractServer
 {
     protected $plugin;

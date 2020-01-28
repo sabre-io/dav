@@ -48,8 +48,6 @@ class Plugin extends DAV\ServerPlugin
      * Initializes the plugin.
      *
      * This is when the plugin registers it's hooks.
-     *
-     * @param DAV\Server $server
      */
     public function initialize(DAV\Server $server)
     {
@@ -97,8 +95,7 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This method handles the {DAV:}sync-collection HTTP REPORT.
      *
-     * @param string               $uri
-     * @param SyncCollectionReport $report
+     * @param string $uri
      */
     public function syncCollection($uri, SyncCollectionReport $report)
     {
@@ -143,10 +140,6 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string $syncToken
      * @param string $collectionUrl
-     * @param array  $added
-     * @param array  $modified
-     * @param array  $deleted
-     * @param array  $properties
      */
     protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $added, array $modified, array $deleted, array $properties)
     {
@@ -183,9 +176,6 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This method is triggered whenever properties are requested for a node.
      * We intercept this to see if we must return a {DAV:}sync-token.
-     *
-     * @param DAV\PropFind $propFind
-     * @param DAV\INode    $node
      */
     public function propFind(DAV\PropFind $propFind, DAV\INode $node)
     {
@@ -204,8 +194,7 @@ class Plugin extends DAV\ServerPlugin
      * It's a moment where this plugin can check all the supplied lock tokens
      * in the If: header, and check if they are valid.
      *
-     * @param RequestInterface $request
-     * @param array            $conditions
+     * @param array $conditions
      */
     public function validateTokens(RequestInterface $request, &$conditions)
     {

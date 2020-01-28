@@ -49,8 +49,6 @@ class GuessContentType extends DAV\ServerPlugin
 
     /**
      * Initializes the plugin.
-     *
-     * @param DAV\Server $server
      */
     public function initialize(DAV\Server $server)
     {
@@ -63,9 +61,6 @@ class GuessContentType extends DAV\ServerPlugin
      * Our PROPFIND handler.
      *
      * Here we set a contenttype, if the node didn't already have one.
-     *
-     * @param PropFind $propFind
-     * @param INode    $node
      */
     public function propFind(PropFind $propFind, INode $node)
     {

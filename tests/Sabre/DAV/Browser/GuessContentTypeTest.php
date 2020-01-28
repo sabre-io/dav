@@ -6,7 +6,6 @@ namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 
-
 class GuessContentTypeTest extends DAV\AbstractServer
 {
     public function setUp()

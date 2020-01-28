@@ -6,9 +6,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-
-
-
 class GetIfConditionsTest extends AbstractServer
 {
     public function testNoConditions()

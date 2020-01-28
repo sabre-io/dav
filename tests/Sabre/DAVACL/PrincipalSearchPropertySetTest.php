@@ -7,7 +7,7 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
+
 
 class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 {

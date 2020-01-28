@@ -7,7 +7,7 @@ namespace Sabre\DAV\Browser;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/DAV/AbstractServer.php';
+
 
 class MapGetToPropFindTest extends DAV\AbstractServer
 {

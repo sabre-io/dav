@@ -6,7 +6,7 @@ namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 
-require_once 'Sabre/DAV/AbstractServer.php';
+
 class GuessContentTypeTest extends DAV\AbstractServer
 {
     public function setUp()

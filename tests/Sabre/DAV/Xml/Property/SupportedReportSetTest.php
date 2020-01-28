@@ -7,9 +7,6 @@ namespace Sabre\DAV\Property;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
-require_once 'Sabre/DAV/AbstractServer.php';
-
 class SupportedReportSetTest extends DAV\AbstractServer
 {
     public function sendPROPFIND($body)

@@ -6,8 +6,8 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-require_once 'Sabre/DAV/AbstractServer.php';
-require_once 'Sabre/DAV/TestPlugin.php';
+
+
 
 class ServerPluginTest extends AbstractServer
 {

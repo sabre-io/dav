@@ -50,6 +50,17 @@
             "Sabre\\CardDAV\\" : "lib/CardDAV/"
         }
     },
+    "autoload-dev" : {
+        "psr-4" : {
+            "Sabre\\" : "tests/sabre/",
+            "Sabre\\CalDAV\\" : "tests/sabre/CalDAV",
+            "Sabre\\CardDAV\\" : "tests/sabre/CardDAV",
+            "Sabre\\DAV\\" : "tests/sabre/DAV",
+            "Sabre\\DAV\\Property\\" : "tests/sabre/DAV/Xml/Property",
+            "Sabre\\DAVACL\\" : "tests/sabre/DAVACL",
+            "Sabre\\HTTP\\" : "tests/sabre/HTTP"
+        }
+    },
     "support" : {
         "forum" : "https://groups.google.com/group/sabredav-discuss",
         "source" : "https://github.com/fruux/sabre-dav"

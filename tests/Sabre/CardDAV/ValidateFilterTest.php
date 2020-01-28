@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
-require_once 'Sabre/CardDAV/AbstractPluginTest.php';
+
 
 class ValidateFilterTest extends AbstractPluginTest
 {

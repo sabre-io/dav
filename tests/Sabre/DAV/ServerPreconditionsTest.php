@@ -6,7 +6,6 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-require_once 'Sabre/HTTP/ResponseMock.php';
 
 class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-require_once 'Sabre/CalDAV/TestUtil.php';
+
 
 class CalendarObjectTest extends \PHPUnit\Framework\TestCase
 {

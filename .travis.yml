@@ -44,7 +44,7 @@ addons:
 
 script:
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/php-cs-fixer  fix --dry-run --diff; fi
-  - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/phpunit --verbose --configuration tests/phpunit.xml.dist $WITH_COVERAGE $TEST_DEPS; fi
+  - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/phpunit --verbose --configuration tests/phpunit.xml $WITH_COVERAGE $TEST_DEPS; fi
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini; fi
   - if [ $RUN_PHPSTAN == "TRUE"  ]; then php ./bin/phpstan analyse -c phpstan.neon lib; fi
 

@@ -1,5 +1,10 @@
 language: php
 sudo: required
+
+branches:
+  only:
+    - master
+
 php:
   - 7.1
   - 7.2

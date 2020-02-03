@@ -88,7 +88,7 @@ class PluginTest extends \Sabre\DAVServerTest
         $this->assertNull(
             $this->sharingPlugin->htmlActionsPanel($node, $html, 'shareable')
         );
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Share this resource',
             $html
         );

@@ -22,7 +22,7 @@ class ACLMethodTest extends \PHPUnit\Framework\TestCase
 
     /**
     /**
-    */
+     */
     public function testNotSupportedByNode()
     {
         $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');

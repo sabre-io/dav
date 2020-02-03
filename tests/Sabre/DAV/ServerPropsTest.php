@@ -13,7 +13,7 @@ class ServerPropsTest extends AbstractServer
         return new FSExt\Directory(SABRE_TEMPDIR);
     }
 
-    public function setUp()
+    public function setup(): void
     {
         if (file_exists(SABRE_TEMPDIR.'../.sabredav')) {
             unlink(SABRE_TEMPDIR.'../.sabredav');

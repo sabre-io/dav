@@ -9,7 +9,7 @@ use Sabre\HTTP;
 
 class MapGetToPropFindTest extends DAV\AbstractServer
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->server->addPlugin(new MapGetToPropFind());

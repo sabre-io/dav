@@ -16,7 +16,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
      */
     protected $backend;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->dropTables([
             'addressbooks',

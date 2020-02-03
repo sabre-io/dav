@@ -109,7 +109,7 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
      */
     protected $autoLogin = null;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->initializeEverything();
     }

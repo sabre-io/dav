@@ -11,7 +11,7 @@ use Sabre\DAV\Xml\Element\Sharee;
 
 class InviteTest extends DAV\Xml\XmlTest
 {
-    public function setUp()
+    public function setup(): void
     {
         $this->namespaceMap[CalDAV\Plugin::NS_CALDAV] = 'cal';
         $this->namespaceMap[CalDAV\Plugin::NS_CALENDARSERVER] = 'cs';

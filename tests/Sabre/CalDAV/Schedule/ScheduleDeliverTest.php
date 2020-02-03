@@ -28,7 +28,7 @@ class ScheduleDeliverTest extends \Sabre\DAVServerTest
         ],
     ];
 
-    public function setUp()
+    public function setup(): void
     {
         $this->calendarObjectUri = '/calendars/user1/cal/object.ics';
 

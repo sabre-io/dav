@@ -18,7 +18,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
     protected $path;
     protected $name = 'thuis';
 
-    public function setUp()
+    public function setup(): void
     {
         $principalBackend = new PrincipalBackend();
 

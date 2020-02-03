@@ -11,7 +11,7 @@ class PluginTest extends \Sabre\DAVServerTest
     protected $node;
     protected $plugin;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->node = new FileMock();
         $this->tree[] = $this->node;

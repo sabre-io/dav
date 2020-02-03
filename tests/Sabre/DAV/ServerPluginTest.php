@@ -13,7 +13,7 @@ class ServerPluginTest extends AbstractServer
      */
     protected $testPlugin;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
 

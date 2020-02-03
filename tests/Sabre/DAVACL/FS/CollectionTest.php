@@ -6,7 +6,7 @@ namespace Sabre\DAVACL\FS;
 
 class CollectionTest extends FileTest
 {
-    public function setUp()
+    public function setup(): void
     {
         $this->path = SABRE_TEMPDIR;
         $this->sut = new Collection($this->path, $this->acl, $this->owner);

@@ -18,7 +18,7 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
 {
     protected $server;
 
-    public function setUp()
+    public function setup(): void
     {
         $tree = [
             new File(SABRE_TEMPDIR.'/foobar.txt'),

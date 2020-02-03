@@ -8,7 +8,7 @@ use Sabre\HTTP;
 
 class Issue33Test extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setup(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

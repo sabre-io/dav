@@ -15,7 +15,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
     protected $pdo;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->dropTables([
             'calendarobjects',

@@ -21,7 +21,7 @@ class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
     protected $data;
     protected $data2;
 
-    public function setup()
+    public function setup(): void
     {
         if (!SABRE_HASSQLITE) {
             $this->markTestSkipped('SQLite driver is not available');

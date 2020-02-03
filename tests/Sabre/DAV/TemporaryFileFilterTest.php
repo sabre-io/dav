@@ -8,7 +8,7 @@ use Sabre\HTTP;
 
 class TemporaryFileFilterTest extends AbstractServer
 {
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $plugin = new TemporaryFileFilterPlugin(SABRE_TEMPDIR.'/tff');

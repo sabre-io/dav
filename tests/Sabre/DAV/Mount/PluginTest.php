@@ -9,7 +9,7 @@ use Sabre\HTTP;
 
 class PluginTest extends DAV\AbstractServer
 {
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->server->addPlugin(new Plugin());

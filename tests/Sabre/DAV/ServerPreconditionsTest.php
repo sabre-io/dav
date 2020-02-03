@@ -9,11 +9,9 @@ use Sabre\HTTP;
 
 class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfMatchNoNode()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('GET', '/bar', ['If-Match' => '*']);
@@ -30,11 +28,9 @@ class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfMatchWrongEtag()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('GET', '/foo', ['If-Match' => '1234']);
@@ -83,11 +79,9 @@ class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfNoneMatchHasNode()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '*']);
@@ -113,11 +107,9 @@ class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfNoneMatchCorrectEtag()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"abc123"']);
@@ -125,11 +117,9 @@ class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
         $server->checkPreconditions($httpRequest, $httpResponse);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfNoneMatchCorrectEtagMultiple()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('POST', '/foo', ['If-None-Match' => '"1234, "abc123"']);
@@ -236,11 +226,9 @@ class ServerPreconditionsTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($server->checkPreconditions($httpRequest, $httpResponse));
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\PreconditionFailed
-     */
     public function testIfUnmodifiedSinceModified()
     {
+        $this->expectException('Sabre\DAV\Exception\PreconditionFailed');
         $root = new SimpleCollection('root', [new ServerPreconditionsNode()]);
         $server = new Server($root);
         $httpRequest = new HTTP\Request('GET', '/foo', [

@@ -119,19 +119,15 @@ FOO
         ];
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testMissingArg()
     {
+        $this->expectException('InvalidArgumentException');
         new Invite([]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testUnknownArg()
     {
+        $this->expectException('InvalidArgumentException');
         new Invite([
             'foo-i-will-break' => true,
 

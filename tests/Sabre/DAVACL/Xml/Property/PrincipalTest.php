@@ -27,10 +27,10 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testSimple
-     * @expectedException \Sabre\DAV\Exception
      */
     public function testNoHref()
     {
+        $this->expectException('Sabre\DAV\Exception');
         $principal = new Principal(Principal::HREF);
     }
 
@@ -111,11 +111,9 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testUnserializeUnknown()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">'.
 '  <d:foo />'.

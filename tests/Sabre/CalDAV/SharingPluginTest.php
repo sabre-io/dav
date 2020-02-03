@@ -51,11 +51,9 @@ class SharingPluginTest extends \Sabre\DAVServerTest
         );
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testSetupWithoutCoreSharingPlugin()
     {
+        $this->expectException('LogicException');
         $server = new DAV\Server();
         $server->addPlugin(
             new SharingPlugin()

@@ -33,10 +33,10 @@ class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testBasic
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     public function testGetChildrenDisable()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
         $pc->disableListing = true;

@@ -72,11 +72,9 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(['bar', 'baz'], $tree[0]->getGroupMemberSet());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception
-     */
     public function testSetBadValue()
     {
+        $this->expectException('Sabre\DAV\Exception');
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];

@@ -15,11 +15,9 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($principal instanceof Principal);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception
-     */
     public function testConstructNoUri()
     {
+        $this->expectException('Sabre\DAV\Exception');
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, []);
     }
@@ -177,11 +175,9 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         ], $principal->getACL());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetACl()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $principal->setACL([]);

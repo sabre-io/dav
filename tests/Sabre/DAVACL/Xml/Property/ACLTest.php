@@ -181,11 +181,9 @@ class ACLTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $result->getPrivileges());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testUnserializeNoPrincipal()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ace>
@@ -267,11 +265,9 @@ class ACLTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $result->getPrivileges());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotImplemented
-     */
     public function testUnserializeDeny()
     {
+        $this->expectException('Sabre\DAV\Exception\NotImplemented');
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ignore-me />

@@ -8,7 +8,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 {
     protected $propPatch;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->propPatch = new PropPatch([
             '{DAV:}displayname' => 'foo',
@@ -212,11 +212,9 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         ], $propPatch->getResult());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testHandleSingleBrokenResult()
     {
+        $this->expectException('UnexpectedValueException');
         $propPatch = new PropPatch([
             '{DAV:}a' => 'foo',
         ]);
@@ -323,11 +321,9 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         ], $propPatch->getResult());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
     public function testHandleMultiValueBroken()
     {
+        $this->expectException('UnexpectedValueException');
         $propPatch = new PropPatch([
             '{DAV:}a' => 'foo',
             '{DAV:}b' => 'bar',

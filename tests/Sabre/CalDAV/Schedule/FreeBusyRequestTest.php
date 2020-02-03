@@ -19,7 +19,7 @@ class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase
     protected $authPlugin;
     protected $caldavBackend;
 
-    public function setUp()
+    public function setup(): void
     {
         $caldavNS = '{'.CalDAV\Plugin::NS_CALDAV.'}';
         $calendars = [
@@ -135,11 +135,9 @@ END:VCALENDAR',
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testNoItipMethod()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -157,11 +155,9 @@ ICS;
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotImplemented
-     */
     public function testNoVFreeBusy()
     {
+        $this->expectException('Sabre\DAV\Exception\NotImplemented');
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -180,11 +176,9 @@ ICS;
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testIncorrectOrganizer()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -204,11 +198,9 @@ ICS;
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testNoAttendees()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -228,11 +220,9 @@ ICS;
         $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testNoDTStart()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',

@@ -13,7 +13,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         return new FSExt\Directory(SABRE_TEMPDIR);
     }
 
-    public function setUp()
+    public function setup(): void
     {
         if (file_exists(SABRE_TEMPDIR.'../.sabredav')) {
             unlink(SABRE_TEMPDIR.'../.sabredav');
@@ -27,7 +27,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $this->server->enablePropfindDepthInfinity = true;
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         parent::tearDown();
         if (file_exists(SABRE_TEMPDIR.'../.locksdb')) {

@@ -18,7 +18,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
     protected $path;
     protected $name = 'thuis';
 
-    public function setUp()
+    public function setup(): void
     {
         $principalBackend = new PrincipalBackend();
 
@@ -28,7 +28,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         $this->sut->collectionName = $this->name;
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }
@@ -90,11 +90,9 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetAcl()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $this->sut->setACL([]);
     }
 

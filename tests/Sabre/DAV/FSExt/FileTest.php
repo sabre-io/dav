@@ -6,12 +6,12 @@ namespace Sabre\DAV\FSExt;
 
 class FileTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setup(): void
     {
         file_put_contents(SABRE_TEMPDIR.'/file.txt', 'Contents');
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

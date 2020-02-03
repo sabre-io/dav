@@ -57,11 +57,9 @@ XML;
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeNoHostUrl()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = <<<XML
 <?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">

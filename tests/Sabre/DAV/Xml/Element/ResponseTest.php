@@ -160,10 +160,10 @@ class ResponseTest extends DAV\Xml\XmlTest
 
     /**
      * @depends testSerialize
-     * @expectedException \InvalidArgumentException
      */
     public function testSerializeBreak()
     {
+        $this->expectException('InvalidArgumentException');
         $innerProps = [
             200 => [
                 '{DAV:}link' => new \STDClass(),

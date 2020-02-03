@@ -17,11 +17,9 @@ class CalendarHomeNotificationsTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChildNoSupport()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $backend = new Backend\Mock();
         $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
         $calendarHome->getChild('notifications');

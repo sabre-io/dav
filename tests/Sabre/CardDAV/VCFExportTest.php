@@ -28,7 +28,7 @@ class VCFExportTest extends \Sabre\DAVServerTest
         ],
     ];
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $plugin = new VCFExportPlugin();
@@ -84,7 +84,7 @@ END:VCARD
         $actions = '';
         $addressbook = new AddressBook($this->carddavBackend, []);
         $this->server->emit('browserButtonActions', ['/foo', $addressbook, &$actions]);
-        $this->assertContains('/foo?export', $actions);
+        $this->assertStringContainsString('/foo?export', $actions);
     }
 
     public function testContentDisposition()

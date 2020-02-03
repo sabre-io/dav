@@ -26,20 +26,16 @@ class UserTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testCreateFile()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $u = $this->getInstance();
         $u->createFile('test');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testCreateDirectory()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $u = $this->getInstance();
         $u->createDirectory('test');
     }
@@ -58,20 +54,16 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $child);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChildNotFound()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $u = $this->getInstance();
         $child = $u->getChild('foo');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChildNotFound2()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $u = $this->getInstance();
         $child = $u->getChild('random');
     }

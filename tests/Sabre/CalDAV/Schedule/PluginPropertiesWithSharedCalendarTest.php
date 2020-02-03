@@ -12,7 +12,7 @@ class PluginPropertiesWithSharedCalendarTest extends \Sabre\DAVServerTest
     protected $setupCalDAVScheduling = true;
     protected $setupCalDAVSharing = true;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->caldavBackend->createCalendar(

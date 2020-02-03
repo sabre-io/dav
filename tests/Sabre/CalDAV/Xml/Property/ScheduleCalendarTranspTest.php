@@ -9,7 +9,7 @@ use Sabre\DAV;
 
 class ScheduleCalendarTranspTest extends DAV\Xml\XmlTest
 {
-    public function setUp()
+    public function setup(): void
     {
         $this->namespaceMap[CalDAV\Plugin::NS_CALDAV] = 'cal';
         $this->namespaceMap[CalDAV\Plugin::NS_CALENDARSERVER] = 'cs';
@@ -24,11 +24,9 @@ class ScheduleCalendarTranspTest extends DAV\Xml\XmlTest
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testBadValue()
     {
+        $this->expectException('InvalidArgumentException');
         new ScheduleCalendarTransp('ahhh');
     }
 

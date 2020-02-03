@@ -26,11 +26,9 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('world', $s->getChild('gir')->getChild('zim')->get());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructBadParam()
     {
+        $this->expectException('InvalidArgumentException');
         new SimpleCollection('foo', [new \StdClass()]);
     }
 
@@ -42,11 +40,9 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([$child], $s->getChildren());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChild404()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $s = new SimpleCollection('foo', []);
         $this->assertEquals($s->getChild('404'));
     }

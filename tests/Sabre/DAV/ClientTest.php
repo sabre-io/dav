@@ -8,7 +8,7 @@ use Sabre\HTTP\Response;
 
 class ClientTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setup(): void
     {
         if (!function_exists('curl_init')) {
             $this->markTestSkipped('CURL must be installed to test the client');
@@ -23,11 +23,9 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf('Sabre\DAV\ClientMock', $client);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructNoBaseUri()
     {
+        $this->expectException('InvalidArgumentException');
         $client = new ClientMock([]);
     }
 
@@ -137,11 +135,9 @@ XML;
         ], $request->getHeaders());
     }
 
-    /**
-     * @expectedException \Sabre\HTTP\ClientHttpException
-     */
     public function testPropFindError()
     {
+        $this->expectException('Sabre\HTTP\ClientHttpException');
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
@@ -223,10 +219,10 @@ XML;
 
     /**
      * @depends testPropPatch
-     * @expectedException \Sabre\HTTP\ClientHttpException
      */
     public function testPropPatchHTTPError()
     {
+        $this->expectException('Sabre\HTTP\ClientHttpException');
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
@@ -237,10 +233,10 @@ XML;
 
     /**
      * @depends testPropPatch
-     * @expectedException \Sabre\HTTP\ClientException
      */
     public function testPropPatchMultiStatusError()
     {
+        $this->expectException('Sabre\HTTP\ClientException');
         $client = new ClientMock([
             'baseUri' => '/',
         ]);

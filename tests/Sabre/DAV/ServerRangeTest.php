@@ -23,7 +23,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
      */
     protected $lastModified;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->server->createFile('files/test.txt', 'Test contents');

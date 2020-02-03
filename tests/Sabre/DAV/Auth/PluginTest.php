@@ -16,7 +16,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
         $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
-        $this->assertInternalType('array', $plugin->getPluginInfo());
+        $this->assertIsArray($plugin->getPluginInfo());
     }
 
     /**
@@ -34,10 +34,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testInit
-     * @expectedException \Sabre\DAV\Exception\NotAuthenticated
      */
     public function testAuthenticateFail()
     {
+        $this->expectException('Sabre\DAV\Exception\NotAuthenticated');
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $backend = new Backend\Mock();
         $backend->fail = true;
@@ -87,10 +87,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testInit
-     * @expectedException \Sabre\DAV\Exception
      */
     public function testNoAuthBackend()
     {
+        $this->expectException('Sabre\DAV\Exception');
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
 
         $plugin = new Plugin();
@@ -100,10 +100,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testInit
-     * @expectedException \Sabre\DAV\Exception
      */
     public function testInvalidCheckResponse()
     {
+        $this->expectException('Sabre\DAV\Exception');
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $backend = new Backend\Mock();
         $backend->invalidCheckResponse = true;

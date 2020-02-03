@@ -8,7 +8,7 @@ use Sabre\DAV;
 
 class GuessContentTypeTest extends DAV\AbstractServer
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         \Sabre\TestUtil::clearTempDir();
@@ -16,7 +16,7 @@ class GuessContentTypeTest extends DAV\AbstractServer
         file_put_contents(SABRE_TEMPDIR.'/somefile.hoi', 'blabla');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         \Sabre\TestUtil::clearTempDir();
         parent::tearDown();

@@ -23,7 +23,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     protected $owner = 'principals/evert';
 
-    public function setUp()
+    public function setup(): void
     {
         $this->sut = new File($this->path, $this->acl, $this->owner);
     }
@@ -51,11 +51,9 @@ class FileTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetAcl()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $this->sut->setACL([]);
     }
 

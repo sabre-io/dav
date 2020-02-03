@@ -21,7 +21,7 @@ class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
     protected $data;
     protected $data2;
 
-    public function setup()
+    public function setup(): void
     {
         if (!SABRE_HASSQLITE) {
             $this->markTestSkipped('SQLite driver is not available');
@@ -49,7 +49,7 @@ ICS;
         $this->inbox->createFile('item1.ics', $this->data);
     }
 
-    public function teardown()
+    public function teardown(): void
     {
         unset($this->inbox);
         unset($this->backend);
@@ -60,17 +60,15 @@ ICS;
         $children = $this->inbox->getChildren();
         $this->assertTrue($children[0] instanceof SchedulingObject);
 
-        $this->assertInternalType('string', $children[0]->getName());
-        $this->assertInternalType('string', $children[0]->get());
-        $this->assertInternalType('string', $children[0]->getETag());
+        $this->assertIsString($children[0]->getName());
+        $this->assertIsString($children[0]->get());
+        $this->assertIsString($children[0]->getETag());
         $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidArg1()
     {
+        $this->expectException('InvalidArgumentException');
         $obj = new SchedulingObject(
             new Backend\MockScheduling([], []),
             [],
@@ -78,11 +76,9 @@ ICS;
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidArg2()
     {
+        $this->expectException('InvalidArgumentException');
         $obj = new SchedulingObject(
             new Backend\MockScheduling([], []),
             [],
@@ -92,10 +88,10 @@ ICS;
 
     /**
      * @depends testSetup
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
      */
     public function testPut()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $children = $this->inbox->getChildren();
         $this->assertTrue($children[0] instanceof SchedulingObject);
 
@@ -142,7 +138,7 @@ ICS;
         $obj = $children[0];
 
         $size = $obj->getSize();
-        $this->assertInternalType('int', $size);
+        $this->assertIsInt($size);
     }
 
     public function testGetOwner()
@@ -214,11 +210,9 @@ ICS;
         $this->assertEquals($expected, $calendarObject->getACL());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetACL()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $children = $this->inbox->getChildren();
         $this->assertTrue($children[0] instanceof SchedulingObject);
 

@@ -14,7 +14,7 @@ class DeliverNewEventTest extends \Sabre\DAVServerTest
     public $setupACL = true;
     public $autoLogin = 'user1';
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->caldavBackend->createCalendar(

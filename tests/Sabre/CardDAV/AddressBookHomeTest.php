@@ -14,7 +14,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     protected $s;
     protected $backend;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->backend = new Backend\Mock();
         $this->s = new AddressBookHome(
@@ -28,19 +28,15 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('user1', $this->s->getName());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
-     */
     public function testSetName()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $this->s->setName('user2');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
-     */
     public function testDelete()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $this->s->delete();
     }
 
@@ -49,19 +45,15 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($this->s->getLastModified());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
-     */
     public function testCreateFile()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $this->s->createFile('bla');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\MethodNotAllowed
-     */
     public function testCreateDirectory()
     {
+        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $this->s->createDirectory('bla');
     }
 
@@ -72,11 +64,9 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('book1', $child->getName());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChild404()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $this->s->getChild('book2');
     }
 
@@ -104,11 +94,9 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         ], $this->backend->addressBooks[2]);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\InvalidResourceType
-     */
     public function testCreateExtendedCollectionInvalid()
     {
+        $this->expectException('Sabre\DAV\Exception\InvalidResourceType');
         $resourceType = [
             '{DAV:}collection',
         ];
@@ -128,11 +116,9 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         ], $this->s->getACL());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetACL()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $this->s->setACL([]);
     }
 

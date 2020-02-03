@@ -34,7 +34,7 @@
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer": "~2.16.1",
-        "phpunit/phpunit" : "^7",
+        "phpunit/phpunit" : "^7.5 || ^8.0",
         "evert/phpdoc-md" : "~0.1.0",
         "monolog/monolog": "^1.18"
     },

@@ -11,7 +11,7 @@ class PluginTest extends \Sabre\DAVServerTest
 
     protected $setupFiles = true;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->backend = new Backend\Mock();

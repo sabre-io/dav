@@ -14,7 +14,7 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
     protected $server;
     protected $plugin;
 
-    public function setUp()
+    public function setup(): void
     {
         $nodes = [
             new DAV\SimpleCollection('testdir'),
@@ -36,11 +36,9 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->addPlugin($this->plugin);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testGet()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/testdir');
 
@@ -56,107 +54,87 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($r);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testHEAD()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('HEAD');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testOPTIONS()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('OPTIONS');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testPUT()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testPROPPATCH()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('PROPPATCH');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testCOPY()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('COPY');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testMOVE()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('MOVE');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testACL()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('ACL');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testLOCK()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->httpRequest->setMethod('LOCK');
         $this->server->httpRequest->setUrl('/testdir');
 
         $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testBeforeBind()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->emit('beforeBind', ['testdir/file']);
     }
 
-    /**
-     * @expectedException \Sabre\DAVACL\Exception\NeedPrivileges
-     */
     public function testBeforeUnbind()
     {
+        $this->expectException('Sabre\DAVACL\Exception\NeedPrivileges');
         $this->server->emit('beforeUnbind', ['testdir']);
     }
 

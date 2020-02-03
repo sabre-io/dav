@@ -17,11 +17,9 @@ class DirectoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(basename(SABRE_TEMPDIR), $dir->getName());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testChildExistDot()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $dir = $this->create();
         $dir->childExists('..');
     }

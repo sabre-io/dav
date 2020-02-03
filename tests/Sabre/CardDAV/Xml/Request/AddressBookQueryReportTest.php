@@ -84,11 +84,9 @@ XML;
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeBadTest()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -231,11 +229,9 @@ XML;
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeBadMatchType()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -254,11 +250,9 @@ XML;
         $this->parse($xml);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeBadMatchType2()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -275,11 +269,9 @@ XML;
         $this->parse($xml);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeDoubleFilter()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">

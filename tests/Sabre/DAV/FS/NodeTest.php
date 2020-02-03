@@ -21,11 +21,9 @@ class NodeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('foo.txt', $node->getName());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testOverrideNameSetName()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $node = new File(__FILE__, 'foo.txt');
         $node->setName('foo2.txt');
     }

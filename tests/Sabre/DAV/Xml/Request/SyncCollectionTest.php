@@ -73,11 +73,9 @@ class SyncCollectionTest extends XmlTest
         $this->assertEquals($elem, $result['value']);
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeMissingElem()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $xml = '<?xml version="1.0"?>
 <d:sync-collection xmlns:d="DAV:">
     <d:sync-token />

@@ -11,7 +11,7 @@ class PluginAdminTest extends \PHPUnit\Framework\TestCase
 {
     public $server;
 
-    public function setUp()
+    public function setup(): void
     {
         $principalBackend = new PrincipalBackend\Mock();
 

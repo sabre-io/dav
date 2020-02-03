@@ -28,7 +28,7 @@ class VCFExportTest extends \Sabre\DAVServerTest
         ],
     ];
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $plugin = new VCFExportPlugin();

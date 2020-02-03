@@ -27,7 +27,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
      */
     protected $caldavBackend;
 
-    public function setup()
+    public function setup(): void
     {
         $this->caldavBackend = new CalDAV\Backend\MockSharing();
         $principalBackend = new DAVACL\PrincipalBackend\Mock();

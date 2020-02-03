@@ -22,7 +22,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
      */
     protected $calendars;
 
-    public function setup()
+    public function setup(): void
     {
         $this->backend = TestUtil::getBackend();
 

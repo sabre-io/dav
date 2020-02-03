@@ -13,7 +13,7 @@ class ValidateVCardTest extends \PHPUnit\Framework\TestCase
     protected $server;
     protected $cardBackend;
 
-    public function setUp()
+    public function setup(): void
     {
         $addressbooks = [
             [

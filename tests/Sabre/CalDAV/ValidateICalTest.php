@@ -19,7 +19,7 @@ class ValidateICalTest extends \PHPUnit\Framework\TestCase
      */
     protected $calBackend;
 
-    public function setUp()
+    public function setup(): void
     {
         $calendars = [
             [

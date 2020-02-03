@@ -26,7 +26,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
      */
     protected $caldavBackend;
 
-    public function setup()
+    public function setup(): void
     {
         $caldavNS = '{urn:ietf:params:xml:ns:caldav}';
 

@@ -11,7 +11,7 @@ class PluginTest extends DAV\AbstractServer
 {
     protected $plugin;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->server->addPlugin($this->plugin = new Plugin());

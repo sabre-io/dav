@@ -6,7 +6,7 @@ namespace Sabre\DAV\Auth\Backend;
 
 class FileTest extends \PHPUnit\Framework\TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         if (file_exists(SABRE_TEMPDIR.'/filebackend')) {
             unlink(SABRE_TEMPDIR.'/filebackend');

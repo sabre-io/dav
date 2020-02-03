@@ -15,7 +15,7 @@ class CardTest extends \PHPUnit\Framework\TestCase
      */
     protected $backend;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->backend = new Backend\Mock();
         $this->card = new Card(

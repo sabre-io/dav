@@ -8,7 +8,7 @@ class ObjectTreeTest extends \PHPUnit\Framework\TestCase
 {
     protected $tree;
 
-    public function setup()
+    public function setup(): void
     {
         \Sabre\TestUtil::clearTempDir();
         mkdir(SABRE_TEMPDIR.'/root');

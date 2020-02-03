@@ -14,7 +14,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     protected $s;
     protected $backend;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->backend = new Backend\Mock();
         $this->s = new AddressBookHome(

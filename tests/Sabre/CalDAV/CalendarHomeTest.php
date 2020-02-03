@@ -19,7 +19,7 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
      */
     protected $backend;
 
-    public function setup()
+    public function setup(): void
     {
         $this->backend = TestUtil::getBackend();
         $this->usercalendars = new CalendarHome($this->backend, [

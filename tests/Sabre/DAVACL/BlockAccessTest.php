@@ -14,7 +14,7 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
     protected $server;
     protected $plugin;
 
-    public function setUp()
+    public function setup(): void
     {
         $nodes = [
             new DAV\SimpleCollection('testdir'),

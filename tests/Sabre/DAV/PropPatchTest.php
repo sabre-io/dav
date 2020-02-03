@@ -8,7 +8,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 {
     protected $propPatch;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->propPatch = new PropPatch([
             '{DAV:}displayname' => 'foo',

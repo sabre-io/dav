@@ -16,7 +16,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     protected $calendar;
     protected $principalBackend;
 
-    public function setup()
+    public function setup(): void
     {
         $this->backend = TestUtil::getBackend();
 

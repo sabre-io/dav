@@ -19,7 +19,7 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
     protected $server;
     protected $tempDir = SABRE_TEMPDIR;
 
-    public function setUp()
+    public function setup(): void
     {
         $this->response = new HTTP\ResponseMock();
         $this->server = new Server($this->getRootNode());
@@ -32,7 +32,7 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
         file_put_contents(SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->deleteTree(SABRE_TEMPDIR, false);
     }

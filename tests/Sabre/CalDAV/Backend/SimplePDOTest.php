@@ -11,7 +11,7 @@ class SimplePDOTest extends \PHPUnit\Framework\TestCase
 {
     protected $pdo;
 
-    public function setUp()
+    public function setup(): void
     {
         if (!SABRE_HASSQLITE) {
             $this->markTestSkipped('SQLite driver is not available');

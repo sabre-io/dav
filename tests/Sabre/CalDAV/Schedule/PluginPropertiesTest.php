@@ -12,7 +12,7 @@ class PluginPropertiesTest extends \Sabre\DAVServerTest
     protected $setupCalDAVScheduling = true;
     protected $setupPropertyStorage = true;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $this->caldavBackend->createCalendar(

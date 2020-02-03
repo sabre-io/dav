@@ -19,7 +19,7 @@ class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase
     protected $authPlugin;
     protected $caldavBackend;
 
-    public function setUp()
+    public function setup(): void
     {
         $caldavNS = '{'.CalDAV\Plugin::NS_CALDAV.'}';
         $calendars = [

@@ -8,7 +8,7 @@ use Sabre\HTTP\Response;
 
 class ClientTest extends \PHPUnit\Framework\TestCase
 {
-    public function setUp()
+    public function setup(): void
     {
         if (!function_exists('curl_init')) {
             $this->markTestSkipped('CURL must be installed to test the client');

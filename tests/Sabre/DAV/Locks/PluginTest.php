@@ -14,7 +14,7 @@ class PluginTest extends DAV\AbstractServer
      */
     protected $locksPlugin;
 
-    public function setUp()
+    public function setup(): void
     {
         parent::setUp();
         $locksBackend = new Backend\File(SABRE_TEMPDIR.'/locksdb');

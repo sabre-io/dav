@@ -18,7 +18,7 @@ class FreeBusyReportTest extends \PHPUnit\Framework\TestCase
      */
     protected $server;
 
-    public function setUp()
+    public function setup(): void
     {
         $obj1 = <<<ics
 BEGIN:VCALENDAR

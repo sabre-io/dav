@@ -6,9 +6,10 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAV;
 use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
-class SharingPluginTest extends \Sabre\DAVServerTest
+class SharingPluginTest extends DAVServerTest
 {
     protected $setupCalDAV = true;
     protected $setupCalDAVSharing = true;
@@ -129,7 +130,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->getBodyAsString());
+        $this->assertEquals(501, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testUnknownMethodNoXML()
@@ -142,7 +143,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->getBodyAsString());
+        $this->assertEquals(501, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testUnknownMethodNoNode()
@@ -155,7 +156,7 @@ class SharingPluginTest extends \Sabre\DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(501, $response->status, $response->getBodyAsString());
+        $this->assertEquals(501, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testShareRequest()
@@ -178,7 +179,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 200);
+        $this->request($request, 200);
 
         $this->assertEquals(
             [
@@ -228,7 +229,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 403);
+        $this->request($request, 403);
     }
 
     public function testInviteReply()
@@ -248,7 +249,7 @@ RRR;
 
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testInviteBadXML()
@@ -265,7 +266,7 @@ RRR;
 ';
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(400, $response->status, $response->getBodyAsString());
+        $this->assertEquals(400, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testInviteWrongUrl()
@@ -283,11 +284,11 @@ RRR;
 ';
         $request->setBody($xml);
         $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->getBodyAsString());
+        $this->assertEquals(501, $response->getStatus(), $response->getBodyAsString());
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
-        $this->assertEquals($xml, $request->getBody(true));
+        $this->assertEquals($xml, $request->getBody());
     }
 
     public function testPostWithoutContentType()
@@ -310,7 +311,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(202, $response->status, $response->getBodyAsString());
+        $this->assertEquals(202, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testUnpublish()
@@ -328,7 +329,7 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->getBodyAsString());
+        $this->assertEquals(200, $response->getStatus(), $response->getBodyAsString());
     }
 
     public function testPublishWrongUrl()
@@ -377,6 +378,6 @@ RRR;
         $request->setBody($xml);
 
         $response = $this->request($request);
-        $this->assertEquals(501, $response->status, $response->getBodyAsString());
+        $this->assertEquals(501, $response->getStatus(), $response->getBodyAsString());
     }
 }

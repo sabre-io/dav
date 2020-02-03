@@ -18,39 +18,37 @@ env:
     - SABRE_MYSQLDSN="mysql:host=127.0.0.1;dbname=sabredav_test"
     - RUN_PHPSTAN="FALSE"
   matrix:
-    - LOWEST_DEPS="" TEST_DEPS="" WITH_COVERAGE="--coverage-clover=coverage.xml"
-    - LOWEST_DEPS="--prefer-lowest" TEST_DEPS="tests/Sabre/" $WITH_COVERAGE=""
+    - PREFER_LOWEST="" TEST_DEPS="" WITH_COVERAGE="--coverage-clover=coverage.xml"
+    - PREFER_LOWEST="--prefer-lowest" TEST_DEPS="tests/Sabre/" $WITH_COVERAGE=""
 
 matrix:
   include:
     - name: 'PHPStan'
-      php: 7.2
+      php: 7.4
       env: RUN_PHPSTAN="TRUE"
     - name: 'Test with streaming propfind'
       php: 7.2
       env: RUN_TEST_WITH_STREAMING_PROPFIND="TRUE"
+  fast_finish: true
 
 services:
   - mysql
   - postgresql
 
-install:
-  - if [ $RUN_PHPSTAN == "TRUE"  ]; then composer require --dev phpstan/phpstan:^0.12; fi
-
 before_script:
   - mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
-  - composer update --prefer-dist $LOWEST_DEPS
+  - composer update $PREFER_LOWEST
 
 addons:
   postgresql: "9.5"
 
 script:
-  - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/php-cs-fixer  fix --dry-run --diff; fi
-  - if [ $RUN_PHPSTAN == "FALSE"  ]; then ./bin/phpunit --verbose --configuration tests/phpunit.xml $WITH_COVERAGE $TEST_DEPS; fi
+  - if [ $RUN_PHPSTAN == "FALSE" ]; then php vendor/bin/php-cs-fixer fix --dry-run --diff; fi
+  - if [ $RUN_PHPSTAN == "FALSE" ]; then php vendor/bin/phpunit --configuration tests/phpunit.xml $WITH_COVERAGE $TEST_DEPS; fi
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini; fi
-  - if [ $RUN_PHPSTAN == "TRUE"  ]; then php ./bin/phpstan analyse -c phpstan.neon lib; fi
+  - if [ $RUN_PHPSTAN == "TRUE" ]; then php vendor/bin/phpstan analyse -c phpstan.neon lib tests; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

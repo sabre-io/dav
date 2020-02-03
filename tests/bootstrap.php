@@ -44,6 +44,7 @@ $config = [
 ];
 
 if (file_exists(__DIR__.'/config.user.php')) {
+    $userConfig = [];
     include __DIR__.'/config.user.php';
     foreach ($userConfig as $key => $value) {
         $config[$key] = $value;

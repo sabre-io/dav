@@ -7,7 +7,7 @@
   convertWarningsToExceptions="true"
   beStrictAboutTestsThatDoNotTestAnything="true"
   beStrictAboutOutputDuringTests="true"
-  enforceTimeLimit="true">
+>
 
   <testsuites>
       <testsuite name="sabre-event">

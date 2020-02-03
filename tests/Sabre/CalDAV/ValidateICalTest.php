@@ -8,8 +8,6 @@ use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-
-
 class ValidateICalTest extends \PHPUnit\Framework\TestCase
 {
     /**

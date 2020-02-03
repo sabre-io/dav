@@ -24,8 +24,6 @@ class PropertiesCollection extends Collection implements IProperties
      * Creates the object.
      *
      * @param string $name
-     * @param array  $children
-     * @param array  $properties
      */
     public function __construct($name, array $children, array $properties = [])
     {
@@ -41,8 +39,6 @@ class PropertiesCollection extends Collection implements IProperties
      *
      * To update specific properties, call the 'handle' method on this object.
      * Read the PropPatch documentation for more information.
-     *
-     * @param PropPatch $proppatch
      *
      * @return bool|array
      */

@@ -71,7 +71,6 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport
      *
      * @param string $principalUri
      * @param string $uri
-     * @param array  $properties
      *
      * @return mixed
      */

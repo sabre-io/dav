@@ -65,7 +65,6 @@ class Mock extends AbstractBackend
      *
      * @param string $principalUri
      * @param string $calendarUri
-     * @param array  $properties
      *
      * @return string|int
      */
@@ -94,8 +93,7 @@ class Mock extends AbstractBackend
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param mixed                $calendarId
-     * @param \Sabre\DAV\PropPatch $propPatch
+     * @param mixed $calendarId
      */
     public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch)
     {

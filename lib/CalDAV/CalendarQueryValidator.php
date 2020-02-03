@@ -27,9 +27,6 @@ class CalendarQueryValidator
      *
      * The list of filters must be formatted as parsed by \Sabre\CalDAV\CalendarQueryParser
      *
-     * @param VObject\Component\VCalendar $vObject
-     * @param array                       $filters
-     *
      * @return bool
      */
     public function validate(VObject\Component\VCalendar $vObject, array $filters)
@@ -51,9 +48,6 @@ class CalendarQueryValidator
      * A list of comp-filters needs to be specified. Also the parent of the
      * component we're checking should be specified, not the component to check
      * itself.
-     *
-     * @param VObject\Component $parent
-     * @param array             $filters
      *
      * @return bool
      */
@@ -115,9 +109,6 @@ class CalendarQueryValidator
      * A list of prop-filters needs to be specified. Also the parent of the
      * property we're checking should be specified, not the property to check
      * itself.
-     *
-     * @param VObject\Component $parent
-     * @param array             $filters
      *
      * @return bool
      */
@@ -181,9 +172,6 @@ class CalendarQueryValidator
      * parameter we're checking should be specified, not the parameter to check
      * itself.
      *
-     * @param VObject\Property $parent
-     * @param array            $filters
-     *
      * @return bool
      */
     protected function validateParamFilters(VObject\Property $parent, array $filters)
@@ -231,8 +219,7 @@ class CalendarQueryValidator
      * A single text-match should be specified as well as the specific property
      * or parameter we need to validate.
      *
-     * @param VObject\Node|string $check     value to check against
-     * @param array               $textMatch
+     * @param VObject\Node|string $check value to check against
      *
      * @return bool
      */
@@ -253,9 +240,8 @@ class CalendarQueryValidator
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param VObject\Node $component
-     * @param DateTime     $start
-     * @param DateTime     $end
+     * @param DateTime $start
+     * @param DateTime $end
      *
      * @return bool
      */

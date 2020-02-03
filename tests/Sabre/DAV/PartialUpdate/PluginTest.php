@@ -6,8 +6,6 @@ namespace Sabre\DAV\PartialUpdate;
 
 use Sabre\HTTP;
 
-
-
 class PluginTest extends \Sabre\DAVServerTest
 {
     protected $node;

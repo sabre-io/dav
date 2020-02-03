@@ -11,7 +11,6 @@ use Sabre\Uri;
 /**
  * PDO principal backend.
  *
- *
  * This backend assumes all principals are in a single collection. The default collection
  * is 'principals/', but this can be overridden.
  *
@@ -65,8 +64,6 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
 
     /**
      * Sets up the backend.
-     *
-     * @param \PDO $pdo
      */
     public function __construct(\PDO $pdo)
     {
@@ -176,8 +173,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param string        $path
-     * @param DAV\PropPatch $propPatch
+     * @param string $path
      */
     public function updatePrincipal($path, DAV\PropPatch $propPatch)
     {
@@ -233,7 +229,6 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * from working.
      *
      * @param string $prefixPath
-     * @param array  $searchProperties
      * @param string $test
      *
      * @return array
@@ -400,7 +395,6 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * The principals should be passed as a list of uri's.
      *
      * @param string $principal
-     * @param array  $members
      */
     public function setGroupMemberSet($principal, array $members)
     {
@@ -439,7 +433,6 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * of the principal.
      *
      * @param string $path
-     * @param MkCol  $mkCol
      */
     public function createPrincipal($path, MkCol $mkCol)
     {

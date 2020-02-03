@@ -7,8 +7,6 @@ namespace Sabre\DAVACL;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-
-
 class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 {
     public function getServer()

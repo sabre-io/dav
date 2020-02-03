@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\FSExt;
 
-
-
 class FileTest extends \PHPUnit\Framework\TestCase
 {
     public function setUp()

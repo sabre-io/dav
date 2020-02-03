@@ -68,8 +68,6 @@ class GetLastModified implements Element
      *
      * Important note 2: If you are writing any new elements, you are also
      * responsible for closing them.
-     *
-     * @param Writer $writer
      */
     public function xmlSerialize(Writer $writer)
     {
@@ -95,8 +93,6 @@ class GetLastModified implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @param Reader $reader
      *
      * @return mixed
      */

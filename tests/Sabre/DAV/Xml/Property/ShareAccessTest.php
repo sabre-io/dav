@@ -98,11 +98,9 @@ XML;
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testDeserializeInvalid()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $input = <<<XML
 <?xml version="1.0"?>
 <d:root xmlns:d="DAV:">

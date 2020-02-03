@@ -6,20 +6,16 @@ namespace Sabre\DAV;
 
 class BasicNodeTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testPut()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $file = new FileMock();
         $file->put('hi');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testGet()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $file = new FileMock();
         $file->get();
     }
@@ -42,20 +38,16 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($file->getContentType());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testDelete()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $file = new FileMock();
         $file->delete();
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetName()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $file = new FileMock();
         $file->setName('hi');
     }
@@ -88,29 +80,23 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($dir->childExists('mockfile2'));
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\NotFound
-     */
     public function testGetChild404()
     {
+        $this->expectException('Sabre\DAV\Exception\NotFound');
         $dir = new DirectoryMock();
         $file = $dir->getChild('blabla');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testCreateFile()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $dir = new DirectoryMock();
         $dir->createFile('hello', 'data');
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testCreateDirectory()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $dir = new DirectoryMock();
         $dir->createDirectory('hello');
     }

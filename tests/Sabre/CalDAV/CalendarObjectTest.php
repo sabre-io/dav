@@ -36,17 +36,15 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof CalendarObject);
 
-        $this->assertInternalType('string', $children[0]->getName());
-        $this->assertInternalType('string', $children[0]->get());
-        $this->assertInternalType('string', $children[0]->getETag());
+        $this->assertIsString($children[0]->getName());
+        $this->assertIsString($children[0]->get());
+        $this->assertIsString($children[0]->getETag());
         $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidArg1()
     {
+        $this->expectException('InvalidArgumentException');
         $obj = new CalendarObject(
             new Backend\Mock([], []),
             [],
@@ -54,11 +52,9 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidArg2()
     {
+        $this->expectException('InvalidArgumentException');
         $obj = new CalendarObject(
             new Backend\Mock([], []),
             [],
@@ -135,7 +131,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         $obj = $children[0];
 
         $size = $obj->getSize();
-        $this->assertInternalType('int', $size);
+        $this->assertIsInt($size);
     }
 
     public function testGetOwner()
@@ -217,11 +213,9 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $calendarObject->getACL());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testSetACL()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $children = $this->calendar->getChildren();
         $this->assertTrue($children[0] instanceof CalendarObject);
 

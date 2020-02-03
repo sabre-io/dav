@@ -64,7 +64,7 @@ class PluginTest extends \Sabre\DAVServerTest
     public function testGetPluginInfo()
     {
         $result = $this->sharingPlugin->getPluginInfo();
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals('sharing', $result['name']);
     }
 
@@ -127,11 +127,9 @@ class PluginTest extends \Sabre\DAVServerTest
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testBrowserPostActionNoHref()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
@@ -141,11 +139,9 @@ class PluginTest extends \Sabre\DAVServerTest
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testBrowserPostActionNoAccess()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
@@ -155,11 +151,9 @@ class PluginTest extends \Sabre\DAVServerTest
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testBrowserPostActionBadAccess()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
@@ -170,11 +164,9 @@ class PluginTest extends \Sabre\DAVServerTest
         );
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\Forbidden
-     */
     public function testBrowserPostActionAccessDenied()
     {
+        $this->expectException('Sabre\DAV\Exception\Forbidden');
         $this->aclPlugin->setDefaultAcl([]);
         $this->sharingPlugin->browserPostAction(
             'shareable',

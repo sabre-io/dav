@@ -349,7 +349,7 @@ END:VCALENDAR';
             }
         }
 
-        $this->assertInternalType('array', $newCalendar);
+        $this->assertIsArray($newCalendar);
 
         $keys = [
             'uri' => 'NEWCALENDAR',
@@ -394,7 +394,7 @@ END:VCALENDAR';
             }
         }
 
-        $this->assertInternalType('array', $newCalendar);
+        $this->assertIsArray($newCalendar);
 
         $keys = [
             'uri' => 'NEWCALENDAR',

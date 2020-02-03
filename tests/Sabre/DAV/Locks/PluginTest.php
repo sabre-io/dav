@@ -849,11 +849,9 @@ class PluginTest extends DAV\AbstractServer
         $this->assertEquals(LockInfo::TIMEOUT_INFINITE, $this->locksPlugin->getTimeoutHeader());
     }
 
-    /**
-     * @expectedException \Sabre\DAV\Exception\BadRequest
-     */
     public function testGetTimeoutHeaderInvalid()
     {
+        $this->expectException('Sabre\DAV\Exception\BadRequest');
         $request = new HTTP\Request('GET', '/', ['Timeout' => 'yourmom']);
 
         $this->server->httpRequest = $request;

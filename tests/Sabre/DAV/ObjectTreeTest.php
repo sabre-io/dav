@@ -19,7 +19,7 @@ class ObjectTreeTest extends \PHPUnit\Framework\TestCase
         $this->tree = new Tree($rootNode);
     }
 
-    public function teardown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

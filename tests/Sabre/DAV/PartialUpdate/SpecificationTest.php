@@ -32,7 +32,7 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
         $this->server = $server;
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

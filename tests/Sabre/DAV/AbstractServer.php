@@ -32,7 +32,7 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
         file_put_contents(SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
     }
 
-    public function tearDown(): void
+    public function teardown(): void
     {
         $this->deleteTree(SABRE_TEMPDIR, false);
     }

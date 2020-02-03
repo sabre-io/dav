@@ -49,7 +49,7 @@ ICS;
         $this->inbox->createFile('item1.ics', $this->data);
     }
 
-    public function teardown()
+    public function teardown(): void
     {
         unset($this->inbox);
         unset($this->backend);

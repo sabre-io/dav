@@ -11,7 +11,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         file_put_contents(SABRE_TEMPDIR.'/file.txt', 'Contents');
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

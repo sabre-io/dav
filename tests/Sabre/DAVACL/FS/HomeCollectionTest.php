@@ -28,7 +28,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         $this->sut->collectionName = $this->name;
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

@@ -12,7 +12,7 @@ class CollectionTest extends FileTest
         $this->sut = new Collection($this->path, $this->acl, $this->owner);
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

@@ -14,7 +14,7 @@ class FileTest extends AbstractTest
         return $backend;
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

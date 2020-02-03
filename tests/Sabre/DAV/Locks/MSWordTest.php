@@ -9,7 +9,7 @@ use Sabre\HTTP;
 
 class MSWordTest extends \PHPUnit\Framework\TestCase
 {
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

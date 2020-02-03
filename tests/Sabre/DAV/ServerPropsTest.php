@@ -25,7 +25,7 @@ class ServerPropsTest extends AbstractServer
         $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(SABRE_TEMPDIR.'/.locksdb')));
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         parent::tearDown();
         if (file_exists(SABRE_TEMPDIR.'../.locksdb')) {

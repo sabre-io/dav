@@ -31,7 +31,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $this->calendar = new Calendar($this->backend, $this->calendars[0]);
     }
 
-    public function teardown()
+    public function teardown(): void
     {
         unset($this->backend);
     }

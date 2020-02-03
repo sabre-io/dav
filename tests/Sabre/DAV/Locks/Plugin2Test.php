@@ -15,7 +15,7 @@ class Plugin2Test extends \Sabre\DAVServerTest
         $this->tree = new \Sabre\DAV\FS\Directory(SABRE_TEMPDIR);
     }
 
-    public function tearDown()
+    public function teardown(): void
     {
         \Sabre\TestUtil::clearTempDir();
     }

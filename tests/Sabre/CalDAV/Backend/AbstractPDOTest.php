@@ -1314,8 +1314,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 ],
             ]),
         ];
-        $this->assertEquals($expected, $result, '');
-        $this->assertEqualsCanonicalizing($expected, $result, ''); // Last argument is $canonicalize = true, which allows us to compare, ignoring the order, because it's different between MySQL and Sqlite.
+        $this->assertEqualsCanonicalizing($expected, $result);
     }
 
     /**

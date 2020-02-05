@@ -50,6 +50,12 @@ $carddavBackend = new \Sabre\CardDAV\Backend\PDO($pdo);
 $caldavBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
 
 /**
+ * PSR-3 Logging facility
+ */
+$logger = new \Monolog\Logger('SabreDav');
+$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/sabredav.log', 3, \Monolog\Logger::DEBUG, true, 0600));
+
+/**
  * The directory tree.
  *
  * Basically this is an array which contains the 'top-level' directories in the
@@ -69,6 +75,10 @@ $server = new \Sabre\DAV\Server($nodes);
 if (isset($baseUri)) {
     $server->setBaseUri($baseUri);
 }
+
+// Logging
+$server->setLogger($logger);
+//$server->debugExceptions = true; //enable this to include the stacktrace in exception responses
 
 // Plugins
 $server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend));

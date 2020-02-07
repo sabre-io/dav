@@ -6,9 +6,10 @@ namespace Sabre\CalDAV;
 
 use Sabre\DAV;
 use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
-class SharingPluginTest extends \Sabre\DAVServerTest
+class SharingPluginTest extends DAVServerTest
 {
     protected $setupCalDAV = true;
     protected $setupCalDAVSharing = true;
@@ -178,7 +179,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 200);
+        $this->request($request, 200);
 
         $this->assertEquals(
             [
@@ -228,7 +229,7 @@ RRR;
 
         $request->setBody($xml);
 
-        $response = $this->request($request, 403);
+        $this->request($request, 403);
     }
 
     public function testInviteReply()
@@ -287,7 +288,7 @@ RRR;
 
         // If the plugin did not handle this request, it must ensure that the
         // body is still accessible by other plugins.
-        $this->assertEquals($xml, $request->getBody(true));
+        $this->assertEquals($xml, $request->getBody());
     }
 
     public function testPostWithoutContentType()

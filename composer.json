@@ -73,13 +73,13 @@
     ],
     "scripts": {
         "phpstan": [
-            "@php vendor/bin/phpstan analyse lib tests"
+            "phpstan analyse lib tests"
         ],
         "cs-fixer": [
-            "@php vendor/bin/php-cs-fixer fix"
+            "php-cs-fixer fix"
         ],
         "phpunit": [
-            "@php vendor/bin/phpunit --configuration tests/phpunit.xml"
+            "phpunit --configuration tests/phpunit.xml"
         ],
         "test": [
             "composer phpstan",

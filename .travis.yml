@@ -48,7 +48,7 @@ script:
   - if [ $RUN_PHPSTAN == "FALSE" ]; then php vendor/bin/php-cs-fixer fix --dry-run --diff; fi
   - if [ $RUN_PHPSTAN == "FALSE" ]; then php vendor/bin/phpunit --configuration tests/phpunit.xml $WITH_COVERAGE $TEST_DEPS; fi
   - if [ $RUN_PHPSTAN == "FALSE"  ]; then rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini; fi
-  - if [ $RUN_PHPSTAN == "TRUE" ]; then php vendor/bin/phpstan analyse -c phpstan.neon lib tests; fi
+  - if [ $RUN_PHPSTAN == "TRUE" ]; then composer phpstan; fi
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

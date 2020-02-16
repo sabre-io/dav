@@ -224,13 +224,18 @@ BLA;
         );
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(1, count($responses), 'We expected exactly 1 {DAV:}response');
+        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}responses');
 
         $response = $responses[0];
 
         $this->assertEquals('404', $response->getHttpStatus());
         $this->assertEquals('/coll/file3.txt', $response->getHref());
         $this->assertEquals([], $response->getResponseProperties());
+
+        $response = $responses[1];
+
+        $this->assertEquals('507', $response->getHttpStatus());
+        $this->assertEquals('/coll/', $response->getHref());
     }
 
     public function testSubsequentSyncSyncCollectionDepthFallBack()

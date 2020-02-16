@@ -124,6 +124,10 @@ class Plugin extends DAV\ServerPlugin
             throw new DAV\Exception\InvalidSyncToken('Invalid or unknown sync token');
         }
 
+        if (!array_key_exists('result_truncated', $changeInfo)) {
+            $changeInfo['result_truncated'] = false;
+        }
+
         // Encoding the response
         $this->sendSyncCollectionResponse(
             $changeInfo['syncToken'],
@@ -131,7 +135,8 @@ class Plugin extends DAV\ServerPlugin
             $changeInfo['added'],
             $changeInfo['modified'],
             $changeInfo['deleted'],
-            $report->properties
+            $report->properties,
+            $changeInfo['result_truncated']
         );
     }
 
@@ -141,7 +146,7 @@ class Plugin extends DAV\ServerPlugin
      * @param string $syncToken
      * @param string $collectionUrl
      */
-    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $added, array $modified, array $deleted, array $properties)
+    protected function sendSyncCollectionResponse($syncToken, $collectionUrl, array $added, array $modified, array $deleted, array $properties, bool $resultTruncated = false)
     {
         $fullPaths = [];
 
@@ -164,6 +169,10 @@ class Plugin extends DAV\ServerPlugin
             $fullPath = $collectionUrl.'/'.$item;
             $responses[] = new DAV\Xml\Element\Response($fullPath, [], 404);
         }
+        if ($resultTruncated) {
+            $responses[] = new DAV\Xml\Element\Response($collectionUrl.'/', [], 507);
+        }
+
         $multiStatus = new DAV\Xml\Response\MultiStatus($responses, self::SYNCTOKEN_PREFIX.$syncToken);
 
         $this->server->httpResponse->setStatus(207);

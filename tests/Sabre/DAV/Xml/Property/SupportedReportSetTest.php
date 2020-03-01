@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sabre\DAV\Property;
+namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV;
 use Sabre\HTTP;

@@ -75,6 +75,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
                 $f = fopen($this->path, 'c');
                 fseek($f, $offset, SEEK_END);
                 break;
+            default:
+                throw new \UnexpectedValueException('Unkown rangeType used: '.$rangeType);
         }
         if (is_string($data)) {
             fwrite($f, $data);

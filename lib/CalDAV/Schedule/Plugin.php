@@ -493,8 +493,7 @@ class Plugin extends ServerPlugin
             // There was an existing object, we need to update probably.
             $objectPath = $homePath.'/'.$result;
             $objectNode = $this->server->tree->getNodeForPath($objectPath);
-            $oldICalendarData = $objectNode->get();
-            $currentObject = Reader::read($oldICalendarData);
+            $currentObject = Reader::read($objectNode->get());
         } else {
             $isNewNode = true;
         }
@@ -528,7 +527,7 @@ class Plugin extends ServerPlugin
             // another itipMessage.
             if ('REPLY' === $iTipMessage->method) {
                 $this->processICalendarChange(
-                    $oldICalendarData,
+                    $objectNode->get(),
                     $newObject,
                     [$iTipMessage->recipient],
                     [$iTipMessage->sender]

@@ -137,7 +137,7 @@ class Mock extends AbstractBackend
                 break;
             }
         }
-        if (!$principal) {
+        if (!isset($principal) || !isset($principalIndex)) {
             return;
         }
 

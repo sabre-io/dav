@@ -313,6 +313,8 @@ class Tree
             foreach ($source->getChildren() as $child) {
                 $this->copyNode($child, $destination);
             }
+        } else {
+            throw new \UnexpectedValueException('Source must be either IFile or ICollection.');
         }
         if ($source instanceof IProperties && $destination instanceof IProperties) {
             $props = $source->getProperties([]);

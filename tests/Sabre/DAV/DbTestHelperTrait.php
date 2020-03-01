@@ -57,6 +57,8 @@ trait DbTestHelperTrait
                         $this->markTestSkipped('We require at least Postgres 9.5. This server is running '.$version);
                     }
                     break;
+                default:
+                    throw new \UnexpectedValueException('Unknown driver: '.$this->driver);
             }
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {

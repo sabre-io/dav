@@ -45,21 +45,12 @@
     },
     "autoload": {
         "psr-4" : {
-            "Sabre\\DAV\\"     : "lib/DAV/",
-            "Sabre\\DAVACL\\"  : "lib/DAVACL/",
-            "Sabre\\CalDAV\\"  : "lib/CalDAV/",
-            "Sabre\\CardDAV\\" : "lib/CardDAV/"
+            "Sabre\\" : "lib/"
         }
     },
     "autoload-dev" : {
         "psr-4" : {
-            "Sabre\\" : "tests/Sabre/",
-            "Sabre\\CalDAV\\" : "tests/Sabre/CalDAV",
-            "Sabre\\CardDAV\\" : "tests/Sabre/CardDAV",
-            "Sabre\\DAV\\" : "tests/Sabre/DAV",
-            "Sabre\\DAV\\Property\\" : "tests/Sabre/DAV/Xml/Property",
-            "Sabre\\DAVACL\\" : "tests/Sabre/DAVACL",
-            "Sabre\\HTTP\\" : "tests/Sabre/HTTP"
+            "Sabre\\" : "tests/Sabre/"
         }
     },
     "support" : {

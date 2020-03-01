@@ -70,7 +70,7 @@ class HrefTest extends XmlTest
      */
     public function testSerializeEntity()
     {
-        $href = new Href('http://example.org/?a&b', false);
+        $href = new Href('http://example.org/?a&b');
         $this->assertEquals('http://example.org/?a&b', $href->getHref());
 
         $xml = $this->write(['{DAV:}anything' => $href]);

@@ -1,5 +1,5 @@
 parameters:
-  level: 0
+  level: 1
   ignoreErrors:
     -
       message: '#Constant (SABRE_TEMPDIR|SABRE_MYSQLDSN|SABRE_MYSQLPASS|SABRE_MYSQLUSER|SABRE_PGSQLDSN|SABRE_HASSQLITE) not found\.#'

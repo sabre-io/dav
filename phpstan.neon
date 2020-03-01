@@ -1,5 +1,9 @@
 parameters:
   level: 0
+  ignoreErrors:
+    -
+      message: '#Constant (SABRE_TEMPDIR|SABRE_MYSQLDSN|SABRE_MYSQLPASS|SABRE_MYSQLUSER|SABRE_PGSQLDSN|SABRE_HASSQLITE) not found\.#'
+      path: tests/*
 includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-phpunit/rules.neon

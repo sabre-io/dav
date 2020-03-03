@@ -50,6 +50,7 @@ ICS;
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: Sender <system@example.org>',
+                    'MIME-Version: 1.0',
                     'Content-Type: text/calendar; charset=UTF-8; method=REPLY',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],
@@ -118,6 +119,7 @@ ICS;
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: Sender <system@example.org>',
+                    'MIME-Version: 1.0',
                     'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],
@@ -158,6 +160,7 @@ ICS;
                 'headers' => [
                     'Reply-To: Sender <sender@example.org>',
                     'From: Sender <system@example.org>',
+                    'MIME-Version: 1.0',
                     'Content-Type: text/calendar; charset=UTF-8; method=CANCEL',
                     'X-Sabre-Version: '.\Sabre\DAV\Version::VERSION,
                 ],

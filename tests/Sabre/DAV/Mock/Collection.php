@@ -87,8 +87,11 @@ class Collection extends DAV\Collection
      *
      * @return string|null
      */
-    public function createFile($name, $data = '')
+    public function createFile($name, $data = null)
     {
+        if (null === $data) {
+            $data = '';
+        }
         if (is_resource($data)) {
             $data = stream_get_contents($data);
         }

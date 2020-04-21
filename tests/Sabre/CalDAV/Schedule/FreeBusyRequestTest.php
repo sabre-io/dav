@@ -18,6 +18,10 @@ class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase
     protected $request;
     protected $authPlugin;
     protected $caldavBackend;
+    /**
+     * @var HTTP\ResponseMock
+     */
+    private $response;
 
     public function setup(): void
     {

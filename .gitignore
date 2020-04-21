@@ -17,14 +17,9 @@ composer.lock
 vendor
 
 # Composer binaries
-bin/phing
-bin/phpunit
 bin/vobject
 bin/generate_vcards
 bin/phpdocmd
-bin/phpstan
-bin/phpstan.phar
-bin/php-cs-fixer
 
 # Assuming every .php file in the root is for testing
 /*.php
@@ -42,10 +37,4 @@ build.properties
 docs/api
 docs/wikidocs
 
-# Mac
-.DS_Store
-
 .php_cs.cache
-
-# IDEs
-/.idea

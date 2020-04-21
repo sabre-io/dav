@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+4.1.0 (2020-03-20)
+-------------------------
+* Support PHP 7.4
+* Drop support for PHP 7.0
+* CalDAV: send MIME-Version header in scheduling emails
+
 4.0.3 (2020-01-10)
 -------------------------
 * DAV: Streaming PROPFIND server implementation

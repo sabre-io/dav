@@ -50,10 +50,10 @@ $carddavBackend = new \Sabre\CardDAV\Backend\PDO($pdo);
 $caldavBackend = new \Sabre\CalDAV\Backend\PDO($pdo);
 
 /**
- * PSR-3 Logging facility
+ * PSR-3 Logging facility.
  */
 $logger = new \Monolog\Logger('SabreDav');
-$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(__DIR__ . '/sabredav.log', 3, \Monolog\Logger::DEBUG, true, 0600));
+$logger->pushHandler(new \Monolog\Handler\RotatingFileHandler(__DIR__.'/sabredav.log', 3, \Monolog\Logger::DEBUG, true, 0600));
 
 /**
  * The directory tree.

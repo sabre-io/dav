@@ -12,7 +12,7 @@
  * statement.
  */
 
-/**
+/*
  * UTC or GMT is easy to work with, and usually recommended for any
  * application.
  */

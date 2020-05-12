@@ -141,8 +141,6 @@ class Tree
      *
      * @param string $sourcePath      The path to the file which should be moved
      * @param string $destinationPath The full destination path, so not just the destination parent node
-     *
-     * @return int
      */
     public function move($sourcePath, $destinationPath)
     {

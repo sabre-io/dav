@@ -208,8 +208,10 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * the nodes in the array as top-level children.
      *
      * @param Tree|INode|array|null $treeOrNode The tree object
+     *
+     * @throws Exception
      */
-    public function __construct($treeOrNode = null)
+    public function __construct($treeOrNode = null, HTTP\Sapi $sapi = null)
     {
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
@@ -226,7 +228,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
         }
 
         $this->xml = new Xml\Service();
-        $this->sapi = new HTTP\Sapi();
+        $this->sapi = $sapi ?? new HTTP\Sapi();
         $this->httpResponse = new HTTP\Response();
         $this->httpRequest = $this->sapi->getRequest();
         $this->addPlugin(new CorePlugin());

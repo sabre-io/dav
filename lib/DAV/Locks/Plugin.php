@@ -371,7 +371,7 @@ class Plugin extends DAV\ServerPlugin
     {
         return $this->server->xml->write('{DAV:}prop', [
             '{DAV:}lockdiscovery' => new DAV\Xml\Property\LockDiscovery([$lockInfo]),
-        ]);
+        ], $this->server->getBaseUri());
     }
 
     /**

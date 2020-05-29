@@ -110,6 +110,32 @@ class PluginTest extends DAV\AbstractServer
         $this->assertEquals($this->response->getHeader('Lock-Token'), '<'.(string) $token[0].'>', 'Token in response body didn\'t match token in response header.');
     }
 
+    public function testLockWithContext()
+    {
+        $request = new HTTP\Request('LOCK', '/baseuri/test.txt');
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
+</D:lockinfo>');
+
+        $this->server->setBaseUri('baseuri');
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(200, $this->response->status, 'Got an incorrect status back. Response body: '.$this->response->getBodyAsString());
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d', 'urn:DAV');
+
+        $lockRoot = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:lockroot/d:href');
+        $this->assertEquals('baseuri/test.txt', (string) $lockRoot[0]);
+    }
+
     /**
      * @depends testLock
      */

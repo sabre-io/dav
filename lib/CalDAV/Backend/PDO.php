@@ -787,6 +787,16 @@ SQL
             if ('VEVENT' == $componentType && isset($filters['comp-filters'][0]['time-range'])) {
                 $timeRange = $filters['comp-filters'][0]['time-range'];
 
+                if (!is_array($timeRange)) {
+                    $timeRange = [];
+                }
+
+                foreach (['start', 'end'] as $value) {
+                    if (!array_key_exists($value, $timeRange)) {
+                        $timeRange[$value] = false;
+                    }
+                }
+
                 // If start time OR the end time is not specified, we can do a
                 // 100% accurate mysql query.
                 if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && (!$timeRange['start'] || !$timeRange['end'])) {

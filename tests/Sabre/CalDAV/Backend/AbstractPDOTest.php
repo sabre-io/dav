@@ -780,7 +780,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         ], $backend->calendarQuery([1, 1], $filters));
     }
 
-    public function testCalendarQueryTimeRangeNoEnd()
+    public function testCalendarQueryTimeRangeEndNull()
     {
         $backend = new PDO($this->pdo);
         $backend->createCalendarObject([1, 1], 'todo', "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
@@ -809,6 +809,94 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([
             'event2',
         ], $backend->calendarQuery([1, 1], $filters));
+    }
+
+    public function testCalendarQueryTimeRangeNoEnd()
+    {
+        $backend = new PDO($this->pdo);
+        $backend->createCalendarObject([1, 1], 'todo', "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event2', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = [
+            'name' => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
+                    'is-not-defined' => false,
+                    'time-range' => [
+                        'start' => new \DateTime('20120102'),
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+            'is-not-defined' => false,
+            'time-range' => null,
+        ];
+
+        $this->assertEquals([
+            'event2',
+        ], $backend->calendarQuery([1, 1], $filters));
+    }
+
+    public function testCalendarQueryTimeRangeNoStart()
+    {
+        $backend = new PDO($this->pdo);
+        $backend->createCalendarObject([1, 1], 'todo', "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event2', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = [
+            'name' => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
+                    'is-not-defined' => false,
+                    'time-range' => [
+                        'end' => new \DateTime('20120102'),
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+            'is-not-defined' => false,
+            'time-range' => null,
+        ];
+
+        $this->assertEquals([
+            'event',
+        ], $backend->calendarQuery([1, 1], $filters));
+    }
+
+    public function testCalendarQueryTimeRangeNotSpecified()
+    {
+        $backend = new PDO($this->pdo);
+        $backend->createCalendarObject([1, 1], 'todo', "BEGIN:VCALENDAR\r\nBEGIN:VTODO\r\nEND:VTODO\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+        $backend->createCalendarObject([1, 1], 'event2', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART:20120103\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = [
+            'name' => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
+                    'is-not-defined' => false,
+                    'time-range' => false,
+                ],
+            ],
+            'prop-filters' => [],
+            'is-not-defined' => false,
+            'time-range' => null,
+        ];
+
+        $result = $backend->calendarQuery([1, 1], $filters);
+        $this->assertTrue(in_array('event', $result));
+        $this->assertTrue(in_array('event2', $result));
     }
 
     public function testGetChanges()

@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+4.1.1 (2020-07-13)
+-------------------------
+* Fix PHPdoc of Tree:move method
+* Allow using custom SAPI implementations
+* Include baseUri in lock responses
+
 4.1.0 (2020-03-20)
 -------------------------
 * Support PHP 7.4

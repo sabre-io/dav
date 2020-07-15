@@ -30,10 +30,6 @@ XML;
 <d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
     <d:status>HTTP/1.1 200 OK</d:status>
     <d:href>/principals/user1</d:href>
-    <d:propstat>
-        <d:prop/>
-        <d:status>HTTP/1.1 418 I'm a teapot</d:status>
-    </d:propstat>
 </d:multistatus>
 XML;
 

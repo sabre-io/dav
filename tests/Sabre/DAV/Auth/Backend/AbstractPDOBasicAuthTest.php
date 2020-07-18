@@ -36,6 +36,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $options = [
             'tableName' => 'users',
             'digestColumn' => 'digesta1',
+            'uuidColumn' => 'username',
         ];
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
@@ -58,6 +59,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $options = [
             'tableName' => 'users',
             'digestColumn' => 'digesta1',
+            'uuidColumn' => 'username',
         ];
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
@@ -80,6 +82,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $options = [
             'tableName' => 'users',
             'digestColumn' => 'digesta1',
+            'uuidColumn' => 'username',
         ];
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);

@@ -69,7 +69,7 @@ class PDOBasicAuth extends AbstractBasic
         } else {
             $this->digestColumn = 'digest';
         }
-        if (isset($options['uuidcolumn'])) {
+        if (isset($options['uuidColumn'])) {
             $this->uuidColumn = $options['uuidColumn'];
         } else {
             $this->uuidColumn = 'username';

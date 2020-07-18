@@ -6,7 +6,6 @@ namespace Sabre\DAV\Auth\Backend;
  * This is an authentication backend that uses a database to manage passwords.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
- * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
 class PDOBasicAuth extends AbstractBasic
@@ -76,6 +75,8 @@ class PDOBasicAuth extends AbstractBasic
         }
         if (isset($options['digestPrefix'])) {
             $this->digestPrefix = $options['digestPrefix'];
+        } else {
+            $this->digestPrefix = null;
         }
     }
 
@@ -98,18 +99,20 @@ class PDOBasicAuth extends AbstractBasic
 
         if (!count($result)) {
             return false;
+        } else {
+            $digest = $result[0][$this->digestColumn];
+
+            if (null != $this->digestPrefix) {
+                $digest = substr($digest, strlen($this->digestPrefix));
+            } else {
+                $digest = $digest;
+            }
+
+            if (password_verify($password, $digest)) {
+                return true;
+            }
+
+            return false;
         }
-
-        $digest = $result[0][$this->digestColumn];
-
-        if (isset($this->digestPrefix)) {
-            $digest = substr($digest, strlen($this->digestPrefix));
-        }
-
-        if (password_verify($password, $digest)) {
-            return true;
-        }
-
-        return false;
     }
 }

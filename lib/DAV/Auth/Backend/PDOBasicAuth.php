@@ -34,6 +34,14 @@ class PDOBasicAuth extends AbstractBasic
     protected $digestColumn;
 
     /**
+     * PDO uuid(unique user identifier) column name we'll be using
+     * (i.e. username, email).
+     *
+     * @var string
+     */
+    protected $uuidColumn;
+
+    /**
      * Digest prefix:
      * if the backend you are using for is prefixing
      * your password hashes set this option to your prefix to
@@ -54,12 +62,17 @@ class PDOBasicAuth extends AbstractBasic
         if (isset($options['tableName'])) {
             $this->tableName = $options['tableName'];
         } else {
-            $this->tableName = 'user';
+            $this->tableName = 'users';
         }
         if (isset($options['digestColumn'])) {
             $this->digestColumn = $options['digestColumn'];
         } else {
             $this->digestColumn = 'digest';
+        }
+        if (isset($options['uuidcolumn'])) {
+            $this->uuidColumn = $options['uuidColumn'];
+        } else {
+            $this->uuidColumn = 'username';
         }
         if (isset($options['digestPrefix'])) {
             $this->digestPrefix = $options['digestPrefix'];
@@ -79,7 +92,7 @@ class PDOBasicAuth extends AbstractBasic
      */
     public function validateUserPass($username, $password)
     {
-        $stmt = $this->pdo->prepare('SELECT '.$this->digestColumn.' FROM '.$this->tableName.' WHERE email = ?');
+        $stmt = $this->pdo->prepare('SELECT '.$this->digestColumn.' FROM '.$this->tableName.' WHERE '.$this->uuidColumn.' = ?');
         $stmt->execute([$username]);
         $result = $stmt->fetchAll();
 
@@ -87,7 +100,7 @@ class PDOBasicAuth extends AbstractBasic
             return false;
         }
 
-        $digest = $result[0]['password'];
+        $digest = $result[0][$this->digestColumn];
 
         if (isset($this->digestPrefix)) {
             $digest = substr($digest, strlen($this->digestPrefix));

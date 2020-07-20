@@ -75,8 +75,6 @@ class PDOBasicAuth extends AbstractBasic
         }
         if (isset($options['digestPrefix'])) {
             $this->digestPrefix = $options['digestPrefix'];
-        } else {
-            $this->digestPrefix = null;
         }
     }
 
@@ -102,10 +100,8 @@ class PDOBasicAuth extends AbstractBasic
         } else {
             $digest = $result[0][$this->digestColumn];
 
-            if (null != $this->digestPrefix) {
+            if (isset($this->digestPrefix)) {
                 $digest = substr($digest, strlen($this->digestPrefix));
-            } else {
-                $digest = $digest;
             }
 
             if (password_verify($password, $digest)) {

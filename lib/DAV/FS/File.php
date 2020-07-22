@@ -82,6 +82,6 @@ class File extends Node implements DAV\IFile
      */
     public function getContentType()
     {
-        return null;
+        return mime_content_type($this->path);
     }
 }

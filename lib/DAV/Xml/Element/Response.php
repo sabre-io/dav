@@ -120,7 +120,6 @@ class Response implements Element
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri.\Sabre\HTTP\encodePath($this->getHref()));
 
-
         foreach ($this->getResponseProperties() as $status => $properties) {
             // Skipping empty lists
             if (!$properties || (!ctype_digit($status) && !is_int($status))) {

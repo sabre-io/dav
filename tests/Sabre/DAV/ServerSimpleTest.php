@@ -98,7 +98,7 @@ class ServerSimpleTest extends AbstractServer
 
         $this->assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
-            'Content-Type' => ['application/octet-stream'],
+            'Content-Type' => [mime_content_type($filename)], // or should we hardcode text/plain?
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\toDate(new \DateTime('@'.filemtime($filename)))],
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],

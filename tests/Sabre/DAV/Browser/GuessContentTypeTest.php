@@ -13,7 +13,7 @@ class GuessContentTypeTest extends DAV\AbstractServer
         parent::setUp();
         \Sabre\TestUtil::clearTempDir();
         imagejpeg(imagecreatetruecolor(100, 100), SABRE_TEMPDIR.'/somefile.jpg');
-        file_put_contents(SABRE_TEMPDIR.'/somefile.hoi', 'blabla');
+        file_put_contents(SABRE_TEMPDIR.'/somefile.hoi', random_bytes(1024));
     }
 
     public function tearDown(): void

@@ -246,7 +246,7 @@ ChangeLog
   [sabre/uri 1.1.0][uri] and [sabre/xml 1.4.1][xml].
 
 
-3.1.5 (????-??-??)
+3.1.5 (2018-10-19)
 ------------------
 
 * Fixed: Creating a new calendar on some MySQL configurations caused an error.

@@ -62,7 +62,7 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      *
      * @return string
      */
-    public function put($calendarData,$params=null)
+    public function put($calendarData, $params = null)
     {
         throw new MethodNotAllowed('Updating scheduling objects is not supported');
     }

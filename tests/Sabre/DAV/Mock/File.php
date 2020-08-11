@@ -86,7 +86,7 @@ class File extends DAV\File
      *
      * @return string|null
      */
-    public function put($data)
+    public function put($data, $params = null)
     {
         if (is_resource($data)) {
             $data = stream_get_contents($data);

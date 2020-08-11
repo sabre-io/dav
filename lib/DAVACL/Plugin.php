@@ -751,7 +751,12 @@ class Plugin extends DAV\ServerPlugin
         $matches = [];
 
         foreach ($lookupResults as $lookupResult) {
-            list($matches[]) = $this->server->getPropertiesForPath($lookupResult, $requestedProperties, 0);
+            $properties = $this->server->getPropertiesForPath($lookupResult, $requestedProperties, 0);
+            if (empty($properties)) {
+                // Ignore found principals that we cannot access
+                continue;
+            }
+            list($matches[]) = $properties;
         }
 
         return $matches;

@@ -37,7 +37,7 @@ abstract class File extends Node implements IFile
      *
      * @return string|null
      */
-    public function put($data,$params=null)
+    public function put($data, $params = null)
     {
         throw new Exception\Forbidden('Permission denied to change data');
     }

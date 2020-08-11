@@ -95,7 +95,7 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      *
      * @return string
      */
-    public function put($calendarData,$params=null)
+    public function put($calendarData, $params = null)
     {
         if (is_resource($calendarData)) {
             $calendarData = stream_get_contents($calendarData);

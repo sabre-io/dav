@@ -20,7 +20,7 @@ class File extends Node implements DAV\IFile
      *
      * @param resource $data
      */
-    public function put($data)
+    public function put($data,$params=null)
     {
         file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);

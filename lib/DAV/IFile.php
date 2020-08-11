@@ -38,7 +38,7 @@ interface IFile extends INode
      *
      * @return string|null
      */
-    public function put($data);
+    public function put($data,$params=null);
 
     /**
      * Returns the data.

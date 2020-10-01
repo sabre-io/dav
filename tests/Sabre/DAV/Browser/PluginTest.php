@@ -182,4 +182,10 @@ class PluginTest extends DAV\AbstractServer
 
         $this->assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
     }
+    public function testGetPluginConfig(){
+      $request = new HTTP\Request('GET', '/?sabreAction=pluginConfigs&pluginName=browser');
+      $this->server->httpRequest = $request;
+      $this->server->exec();
+      $this->assertEquals(200, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
+    }
 }

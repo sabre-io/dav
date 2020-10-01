@@ -144,6 +144,19 @@ class Plugin extends DAV\ServerPlugin
                 $response->setBody(
                     $this->generatePluginListing()
                 );
+            case 'pluginConfigs':
+                if (!isset($getVars['pluginName'])){ 
+                  $response->setStatus(400);
+                  $response->setBody('Missing pluginName query param');
+                  return false;
+                }
+                $response->setStatus(200);
+                $response->setHeader('Content-Type', 'text/html; charset=utf-8');
+
+                $response->setBody(
+                    $this->generatePluginConfigs($getVars['pluginName'])
+                );
+
 
                 return false;
         }
@@ -386,6 +399,9 @@ class Plugin extends DAV\ServerPlugin
             if (isset($info['link']) && $info['link']) {
                 $html .= '<a href="'.$this->escapeHTML($info['link']).'"><span class="oi" data-glyph="book"></span></a>';
             }
+            if (isset($info['config']) && $info['config']) {
+                $html .= '<a href="?sabreAction=pluginConfig&pluginName='.$this->escapeHTML($info['name']).'"><span style="padding-left: 0.25rem" class="oi" data-glyph="cog"></span></a>';
+            }
             $html .= '</td></tr>';
         }
         $html .= '</table>';
@@ -394,6 +410,28 @@ class Plugin extends DAV\ServerPlugin
         /* Start of generating actions */
 
         $html .= $this->generateFooter();
+
+        return $html;
+    }
+
+    /**
+     * Generates the optional 'plugins' configuration page if one is available
+     *
+     * @param string pluginName
+     * @return string
+     */
+    public function generatePluginConfigs($pluginName)
+    {
+        $html = '';
+        foreach ($this->server->getPlugins() as $plugin) {
+            $info = $plugin->getPluginInfo();
+            if (isset($info['config']) && $info['config'] && $info['name'] == $pluginName) {
+              $html = $this->generateHeader(sprintf('Plugin - %s', $info['name']));
+              $html .= $plugin->getConfigBrowser();
+              $html .= $this->generateFooter();
+              break;
+            }
+        }
 
         return $html;
     }

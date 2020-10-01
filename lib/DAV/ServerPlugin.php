@@ -100,6 +100,15 @@ abstract class ServerPlugin
             'name' => $this->getPluginName(),
             'description' => null,
             'link' => null,
+            'config' => null
         ];
+    }
+
+    /**
+     * Returns a html to display an optional configuration page for the plugin
+     * @return array
+     */
+    public function getConfigBrowser() {
+      return '';
     }
 }

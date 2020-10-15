@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.1.2 (2020-10-04)
+-------------------------
+* #1296: Add experimental support for PHP 8.0
+
 4.1.1 (2020-07-13)
 -------------------------
 * Fix PHPdoc of Tree:move method

@@ -609,7 +609,7 @@ class Plugin extends ServerPlugin
      * @param bool             $modified  a marker to indicate that the original object
      *                                    modified by this process
      */
-    protected function processICalendarChange($oldObject = null, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false)
+    protected function processICalendarChange($oldObject, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false)
     {
         $broker = new ITip\Broker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);

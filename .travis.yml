@@ -30,6 +30,9 @@ matrix:
       php: nightly
       addons:
         postgresql: '12'
+        apt:
+          packages:
+            - postgresql-12
       env:
         - RUN_PHPCSFIXER="FALSE"
         - REPORT_COVERAGE="FALSE"

@@ -10,6 +10,7 @@ Full documentation can be found on the website:
 
 http://sabre.io/
 
+Investigate CI
 
 Build status
 ------------

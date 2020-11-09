@@ -26,10 +26,8 @@ env:
 matrix:
   include:
     - name: 'PHP8'
-      dist: focal
+      dist: bionic
       php: nightly
-      addons:
-        postgresql: '12'
       env:
         - RUN_PHPCSFIXER="FALSE"
         - REPORT_COVERAGE="FALSE"
@@ -55,7 +53,7 @@ before_script:
   - mysql -u root -h 127.0.0.1 -e 'create database sabredav_test'
   - psql -c "create database sabredav_test" -U postgres
   - psql -c "create user sabredav with PASSWORD 'sabredav';GRANT ALL PRIVILEGES ON DATABASE sabredav_test TO sabredav" -U postgres
-  - if [ $RUN_PHPCSFIXER == "FALSE" ]; then composer remove --dev friendsofphp/php-cs-fixer; fi
+  - if [ $RUN_PHPCSFIXER == "FALSE" ]; then composer remove --no-update --dev friendsofphp/php-cs-fixer; fi
   - composer update $PREFER_LOWEST
 
 addons:

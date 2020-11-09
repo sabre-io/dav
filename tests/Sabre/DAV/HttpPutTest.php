@@ -241,11 +241,29 @@ class HttpPutTest extends DAVServerTest
      *
      * @depends testPut
      */
-    public function testPutNoParent()
+    public function testPutParentIsNotCollection()
     {
         $request = new HTTP\Request(
             'PUT',
             '/file1/file2',
+            [],
+            'hello'
+        );
+
+        $response = $this->request($request);
+        $this->assertEquals(409, $response->getStatus());
+    }
+
+    /**
+     * PUT thats created in a non-existent collection should be rejected.
+     *
+     * @depends testPut
+     */
+    public function testPutParentCollectionDoesNotExist()
+    {
+        $request = new HTTP\Request(
+            'PUT',
+            '/non-existent-collection/file2',
             [],
             'hello'
         );

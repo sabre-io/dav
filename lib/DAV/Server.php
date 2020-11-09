@@ -1075,7 +1075,12 @@ class Server implements LoggerAwareInterface, EmitterInterface
             return false;
         }
 
-        $parent = $this->tree->getNodeForPath($dir);
+        try {
+            $parent = $this->tree->getNodeForPath($dir);
+        } catch (Exception\NotFound $e) {
+            throw new Exception\Conflict('Files cannot be created in non-existent collections');
+        }
+
         if (!$parent instanceof ICollection) {
             throw new Exception\Conflict('Files can only be created as children of collections');
         }

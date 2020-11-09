@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.1.3 (2020-11-09)
+-------------------------
+* #1306: Return 409 when trying to PUT a file into a non-existent collection
+
 4.1.2 (2020-10-04)
 -------------------------
 * #1296: Add experimental support for PHP 8.0

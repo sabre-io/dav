@@ -242,7 +242,8 @@ class Plugin extends DAV\ServerPlugin
             if (isset($props['200']['{'.self::NS_CARDDAV.'}address-data'])) {
                 $props['200']['{'.self::NS_CARDDAV.'}address-data'] = $this->convertVCard(
                     $props[200]['{'.self::NS_CARDDAV.'}address-data'],
-                    $vcardType
+                    $vcardType,
+                    $report->addressDataProperties
                 );
             }
             $propertyList[] = $props;

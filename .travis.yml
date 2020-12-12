@@ -27,7 +27,7 @@ matrix:
   include:
     - name: 'PHP8'
       dist: bionic
-      php: nightly
+      php: 8.0
       env:
         - RUN_PHPCSFIXER="FALSE"
         - REPORT_COVERAGE="FALSE"

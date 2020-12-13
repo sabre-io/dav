@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sabre\DAV\Exception;
 
 use Sabre\DAV;
+use Sabre\DAV\Server;
 
 /**
  * MethodNotAllowed.
@@ -34,7 +35,7 @@ class MethodNotAllowed extends DAV\Exception
      *
      * @return array
      */
-    public function getHTTPHeaders(\Sabre\DAV\Server $server)
+    public function getHTTPHeaders(Server $server)
     {
         $methods = $server->getAllowedMethods($server->getRequestUri());
 

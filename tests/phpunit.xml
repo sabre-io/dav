@@ -10,12 +10,6 @@
 >
 
   <testsuites>
-      <testsuite name="sabre-event">
-          <directory>../vendor/sabre/event/tests/</directory>
-      </testsuite>
-      <testsuite name="sabre-uri">
-          <directory>../vendor/sabre/uri/tests/</directory>
-      </testsuite>
       <testsuite name="sabre-xml">
         <directory>../vendor/sabre/xml/tests/Sabre/Xml/</directory>
       </testsuite>

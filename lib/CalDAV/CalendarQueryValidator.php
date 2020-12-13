@@ -258,11 +258,9 @@ class CalendarQueryValidator
             case 'VEVENT':
             case 'VTODO':
             case 'VJOURNAL':
-
                 return $component->isInTimeRange($start, $end);
 
             case 'VALARM':
-
                 // If the valarm is wrapped in a recurring event, we need to
                 // expand the recursions, and validate each.
                 //

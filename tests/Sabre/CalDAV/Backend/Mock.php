@@ -6,6 +6,7 @@ namespace Sabre\CalDAV\Backend;
 
 use Sabre\CalDAV;
 use Sabre\DAV;
+use Sabre\DAV\PropPatch;
 
 class Mock extends AbstractBackend
 {
@@ -95,7 +96,7 @@ class Mock extends AbstractBackend
      *
      * @param mixed $calendarId
      */
-    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch)
+    public function updateCalendar($calendarId, PropPatch $propPatch)
     {
         $propPatch->handleRemaining(function ($props) use ($calendarId) {
             foreach ($this->calendars as $k => $calendar) {

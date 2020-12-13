@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sabre\DAV\Mock;
 
 use Sabre\DAV;
+use Sabre\DAV\INode;
 
 /**
  * Mock Collection.
@@ -41,7 +42,7 @@ class Collection extends DAV\Collection
                 $this->children[] = new File($key, $value, $this);
             } elseif (is_array($value)) {
                 $this->children[] = new self($key, $value, $this);
-            } elseif ($value instanceof \Sabre\DAV\INode) {
+            } elseif ($value instanceof INode) {
                 $this->children[] = $value;
             } else {
                 throw new \InvalidArgumentException('Unknown value passed in $children');
@@ -113,7 +114,7 @@ class Collection extends DAV\Collection
     /**
      * Returns an array with all the child nodes.
      *
-     * @return \Sabre\DAV\INode[]
+     * @return INode[]
      */
     public function getChildren()
     {
@@ -123,7 +124,7 @@ class Collection extends DAV\Collection
     /**
      * Adds an already existing node to this collection.
      */
-    public function addNode(\Sabre\DAV\INode $node)
+    public function addNode(INode $node)
     {
         $this->children[] = $node;
     }

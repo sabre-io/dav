@@ -25,8 +25,8 @@ use Sabre\Xml\Writer;
  */
 class Server implements LoggerAwareInterface, EmitterInterface
 {
-    use WildcardEmitterTrait;
     use LoggerAwareTrait;
+    use WildcardEmitterTrait;
 
     /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree.

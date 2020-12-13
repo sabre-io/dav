@@ -94,8 +94,7 @@ class ResourceType extends Element\Elements implements HtmlOutput
      */
     public static function xmlDeserialize(Reader $reader)
     {
-        return
-            new self(parent::xmlDeserialize($reader));
+        return new self(parent::xmlDeserialize($reader));
     }
 
     /**

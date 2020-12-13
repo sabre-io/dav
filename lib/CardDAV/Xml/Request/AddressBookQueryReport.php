@@ -146,7 +146,6 @@ class AddressBookQueryReport implements XmlDeserializable
                     }
                     break;
                 case '{'.Plugin::NS_CARDDAV.'}filter':
-
                     if (!is_null($newProps['filters'])) {
                         throw new BadRequest('You can only include 1 {'.Plugin::NS_CARDDAV.'}filter element');
                     }

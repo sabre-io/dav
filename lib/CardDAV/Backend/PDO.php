@@ -6,6 +6,7 @@ namespace Sabre\CardDAV\Backend;
 
 use Sabre\CardDAV;
 use Sabre\DAV;
+use Sabre\DAV\PropPatch;
 
 /**
  * PDO CardDAV backend.
@@ -93,7 +94,7 @@ class PDO extends AbstractBackend implements SyncSupport
      *
      * @param string $addressBookId
      */
-    public function updateAddressBook($addressBookId, \Sabre\DAV\PropPatch $propPatch)
+    public function updateAddressBook($addressBookId, PropPatch $propPatch)
     {
         $supportedProperties = [
             '{DAV:}displayname',

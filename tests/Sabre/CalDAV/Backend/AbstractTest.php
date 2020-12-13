@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-use
-    Sabre\DAV\PropPatch;
+use Sabre\DAV\PropPatch;
 
 class AbstractTest extends \PHPUnit\Framework\TestCase
 {

@@ -209,7 +209,6 @@ class Plugin extends DAV\ServerPlugin
 
                 // @codeCoverageIgnoreStart
                 case 'put':
-
                     if ($_FILES) {
                         $file = current($_FILES);
                     } else {

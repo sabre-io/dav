@@ -84,7 +84,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         StringUtil::textMatch('foobar', 'foo', 'i;octet', 'booh');
     }
 
-    public function testEnsureUTF8_ascii()
+    public function testEnsureUTF8Ascii()
     {
         $inputString = 'harkema';
         $outputString = 'harkema';
@@ -95,7 +95,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testEnsureUTF8_latin1()
+    public function testEnsureUTF8Latin1()
     {
         $inputString = "m\xfcnster";
         $outputString = 'münster';
@@ -106,7 +106,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testEnsureUTF8_utf8()
+    public function testEnsureUTF8UTF8()
     {
         $inputString = "m\xc3\xbcnster";
         $outputString = 'münster';

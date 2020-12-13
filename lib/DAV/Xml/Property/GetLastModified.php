@@ -98,7 +98,6 @@ class GetLastModified implements Element
      */
     public static function xmlDeserialize(Reader $reader)
     {
-        return
-            new self(new DateTime($reader->parseInnerTree()));
+        return new self(new DateTime($reader->parseInnerTree()));
     }
 }

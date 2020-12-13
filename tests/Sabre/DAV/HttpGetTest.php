@@ -85,7 +85,7 @@ class HttpGetTest extends DAVServerTest
         $this->assertEquals(404, $response->getStatus());
     }
 
-    public function testGet404_aswell()
+    public function testGet404AsWell()
     {
         $request = new HTTP\Request('GET', '/file1/subfile');
         $response = $this->request($request);

@@ -7,6 +7,7 @@ namespace Sabre\CalDAV\Backend;
 use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\Exception\Forbidden;
+use Sabre\DAV\PropPatch;
 use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\VObject;
 
@@ -289,7 +290,7 @@ SQL
      *
      * @param mixed $calendarId
      */
-    public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch)
+    public function updateCalendar($calendarId, PropPatch $propPatch)
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -1153,10 +1154,9 @@ SQL;
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param mixed                $subscriptionId
-     * @param \Sabre\DAV\PropPatch $propPatch
+     * @param mixed $subscriptionId
      */
-    public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch)
+    public function updateSubscription($subscriptionId, PropPatch $propPatch)
     {
         $supportedProperties = array_keys($this->subscriptionPropertyMap);
         $supportedProperties[] = '{http://calendarserver.org/ns/}source';

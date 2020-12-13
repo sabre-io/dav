@@ -179,7 +179,6 @@ class Plugin extends ServerPlugin
 
         switch ($documentType) {
             case '{DAV:}share-resource':
-
                 $this->shareResource($path, $message->sharees);
                 $response->setStatus(200);
                 // Adding this because sending a response body may cause issues,

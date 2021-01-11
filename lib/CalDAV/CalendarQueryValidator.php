@@ -67,7 +67,7 @@ class CalendarQueryValidator
                 return false;
             }
 
-            if ($filter['time-range']) {
+            if (array_key_exists('time-range', $filter) && $filter['time-range']) {
                 foreach ($parent->{$filter['name']} as $subComponent) {
                     $start = null;
                     $end = null;
@@ -136,7 +136,7 @@ class CalendarQueryValidator
                 return false;
             }
 
-            if ($filter['time-range']) {
+            if (array_key_exists('time-range', $filter) && $filter['time-range']) {
                 foreach ($parent->{$filter['name']} as $subComponent) {
                     $start = null;
                     $end = null;

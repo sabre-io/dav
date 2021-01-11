@@ -69,7 +69,15 @@ class CalendarQueryValidator
 
             if ($filter['time-range']) {
                 foreach ($parent->{$filter['name']} as $subComponent) {
-                    if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
+                    $start = null;
+                    $end = null;
+                    if (array_key_exists('start', $filter['time-range'])) {
+                        $start = $filter['time-range']['start'];
+                    }
+                    if (array_key_exists('end', $filter['time-range'])) {
+                        $end = $filter['time-range']['end'];
+                    }
+                    if ($this->validateTimeRange($subComponent, $start, $end)) {
                         continue 2;
                     }
                 }
@@ -130,7 +138,15 @@ class CalendarQueryValidator
 
             if ($filter['time-range']) {
                 foreach ($parent->{$filter['name']} as $subComponent) {
-                    if ($this->validateTimeRange($subComponent, $filter['time-range']['start'], $filter['time-range']['end'])) {
+                    $start = null;
+                    $end = null;
+                    if (array_key_exists('start', $filter['time-range'])) {
+                        $start = $filter['time-range']['start'];
+                    }
+                    if (array_key_exists('end', $filter['time-range'])) {
+                        $end = $filter['time-range']['end'];
+                    }
+                    if ($this->validateTimeRange($subComponent, $start, $end)) {
                         continue 2;
                     }
                 }

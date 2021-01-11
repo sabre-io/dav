@@ -789,8 +789,10 @@ SQL
 
                 // If start time OR the end time is not specified, we can do a
                 // 100% accurate mysql query.
-                if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && (!$timeRange['start'] || !$timeRange['end'])) {
-                    $requirePostFilter = false;
+                if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['prop-filters'] && $timeRange) {
+                    if ((array_key_exists('start', $timeRange) && !$timeRange['start']) || (array_key_exists('end', $timeRange) && !$timeRange['end'])) {
+                        $requirePostFilter = false;
+                    }
                 }
             }
         }
@@ -810,11 +812,11 @@ SQL
             $values['componenttype'] = $componentType;
         }
 
-        if ($timeRange && $timeRange['start']) {
+        if ($timeRange && array_key_exists('start', $timeRange) && $timeRange['start']) {
             $query .= ' AND lastoccurence > :startdate';
             $values['startdate'] = $timeRange['start']->getTimeStamp();
         }
-        if ($timeRange && $timeRange['end']) {
+        if ($timeRange && array_key_exists('end', $timeRange) && $timeRange['end']) {
             $query .= ' AND firstoccurence < :enddate';
             $values['enddate'] = $timeRange['end']->getTimeStamp();
         }

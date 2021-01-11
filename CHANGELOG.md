@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+4.1.4 (2021-01-11)
+-------------------------
+* #1312: Reduce package size by ignoring test and other non-run-time files
+* #1316: Minor code changes for latest PHP cs-fixer
+* #1319: Fix "Trying to access array offset on value of type bool"
+* #1321: Complete checks for non existing/null/false time-range array keys
+
 4.1.3 (2020-11-09)
 -------------------------
 * #1306: Return 409 when trying to PUT a file into a non-existent collection

@@ -780,11 +780,12 @@ SQL
             $componentType = $filters['comp-filters'][0]['name'];
 
             // Checking if we need post-filters
-            if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$filters['comp-filters'][0]['time-range'] && !$filters['comp-filters'][0]['prop-filters']) {
+            $has_time_range = array_key_exists('time-range', $filters['comp-filters'][0]) && $filters['comp-filters'][0]['time-range'];
+            if (!$filters['prop-filters'] && !$filters['comp-filters'][0]['comp-filters'] && !$has_time_range && !$filters['comp-filters'][0]['prop-filters']) {
                 $requirePostFilter = false;
             }
             // There was a time-range filter
-            if ('VEVENT' == $componentType && isset($filters['comp-filters'][0]['time-range'])) {
+            if ('VEVENT' == $componentType && $has_time_range) {
                 $timeRange = $filters['comp-filters'][0]['time-range'];
 
                 // If start time OR the end time is not specified, we can do a

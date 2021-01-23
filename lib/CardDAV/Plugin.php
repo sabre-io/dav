@@ -635,14 +635,14 @@ class Plugin extends DAV\ServerPlugin
             $success = false;
             foreach ($texts as $haystack) {
                 $success = DAV\StringUtil::textMatch($haystack, $filter['value'], $filter['collation'], $filter['match-type']);
+                if ($filter['negate-condition']) {
+                    $success = !$success;
+                }
 
                 // Breaking on the first match
                 if ($success) {
                     break;
                 }
-            }
-            if ($filter['negate-condition']) {
-                $success = !$success;
             }
 
             if ($success && 'anyof' === $test) {

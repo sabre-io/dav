@@ -134,6 +134,7 @@ HELLO;
         $filter14['text-matches'][0]['negate-condition'] = true;
 
         // Param filter with text
+        // Check there is a TEL;TYPE that contains WORK
         $filter15 = $filter5;
         $filter15['param-filters'][0]['text-match'] = [
             'match-type' => 'contains',
@@ -141,8 +142,15 @@ HELLO;
             'collation' => 'i;octet',
             'negate-condition' => false,
         ];
+
+        // Check if there is a TEL;TYPE that does not contain WORK
         $filter16 = $filter15;
         $filter16['param-filters'][0]['text-match']['negate-condition'] = true;
+
+        // Check there is a TEL;TYPE that does not contain OTHER
+        // All TEL properties with a TYPE parameter match this
+        $filterNoTelWithTypeOther = $filter16;
+        $filterNoTelWithTypeOther['param-filters'][0]['text-match']['value'] = 'OTHER';
 
         // Param filter + text filter
         $filter17 = $filter5;
@@ -179,7 +187,7 @@ HELLO;
             [$body1, [$filter6], 'anyof', false, 'TEL;FOO is not defined, so this should return false'],
 
             [$body1, [$filter7], 'anyof', false, 'TEL;TYPE is defined, so this should return false'],
-            [$body1, [$filter8], 'anyof', true, 'TEL;TYPE is not defined, so this should return true'],
+            [$body1, [$filter8], 'anyof', true, 'TEL;FOO is not defined, so this should return true'],
 
             // Combined parameters
             [$body1, [$filter9], 'anyof', true],
@@ -192,8 +200,9 @@ HELLO;
             [$body1, [$filter14], 'anyof', true],
 
             // Param filter with text-match
-            [$body1, [$filter15], 'anyof', true],
-            [$body1, [$filter16], 'anyof', false],
+            [$body1, [$filter15], 'anyof', true, 'TEL;TYPE with value WORK exists, so this should return true' ],
+            [$body1, [$filter16], 'anyof', true, 'Some TEL;TYPE that do not match WORK exist. Match result is inverted, so this should return true'],
+            [$body1, [$filterNoTelWithTypeOther], 'anyof', true, 'No TEL;TYPE contains OTHER. Match result is inverted, so this should return true'],
 
             // Param filter + text filter
             [$body1, [$filter17], 'anyof', true],

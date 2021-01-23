@@ -594,13 +594,13 @@ class Plugin extends DAV\ServerPlugin
                             $filter['text-match']['collation'],
                             $filter['text-match']['match-type']
                         );
+                        if ($filter['text-match']['negate-condition']) {
+                            $success = !$success;
+                        }
                     }
                     if ($success) {
                         break;
                     }
-                }
-                if ($filter['text-match']['negate-condition']) {
-                    $success = !$success;
                 }
             } // else
 

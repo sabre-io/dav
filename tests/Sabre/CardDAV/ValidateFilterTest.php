@@ -209,10 +209,10 @@ HELLO;
             [$body1, [$filter12], 'anyof', false],
             [$body1, [$filter13], 'anyof', false],
             [$body1, [$filter14], 'anyof', true],
-            [$body1, [$filterEmailWithoutSpecificDomain], 'anyof', true, "EMAIL properties with other domain exists, so this should return true"],
+            [$body1, [$filterEmailWithoutSpecificDomain], 'anyof', true, 'EMAIL properties with other domain exists, so this should return true'],
 
             // Param filter with text-match
-            [$body1, [$filter15], 'anyof', true, 'TEL;TYPE with value WORK exists, so this should return true' ],
+            [$body1, [$filter15], 'anyof', true, 'TEL;TYPE with value WORK exists, so this should return true'],
             [$body1, [$filter16], 'anyof', true, 'Some TEL;TYPE that do not match WORK exist. Match result is inverted, so this should return true'],
             [$body1, [$filterNoTelWithTypeOther], 'anyof', true, 'No TEL;TYPE contains OTHER. Match result is inverted, so this should return true'],
 

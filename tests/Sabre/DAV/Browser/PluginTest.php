@@ -104,6 +104,15 @@ class PluginTest extends DAV\AbstractServer
         $this->assertEquals(501, $this->response->status);
     }
 
+    public function testPostNoContentType()
+    {
+        $request = new HTTP\Request('POST', '/', []);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(501, $this->response->status);
+    }
+
     public function testPostNoSabreAction()
     {
         $request = new HTTP\Request('POST', '/', ['Content-Type' => 'application/x-www-form-urlencoded']);

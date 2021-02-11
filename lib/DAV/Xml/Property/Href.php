@@ -39,9 +39,6 @@ class Href implements Element, HtmlOutput
      *
      * You must either pass a string for a single href, or an array of hrefs.
      *
-     * If auto-prefix is set to false, the hrefs will be treated as absolute
-     * and not relative to the servers base uri.
-     *
      * @param string|string[] $hrefs
      */
     public function __construct($hrefs)

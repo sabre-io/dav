@@ -75,7 +75,6 @@ ICS;
         $this->expectException('InvalidArgumentException');
         $obj = new SchedulingObject(
             new Backend\MockScheduling([], []),
-            [],
             []
         );
     }
@@ -85,7 +84,6 @@ ICS;
         $this->expectException('InvalidArgumentException');
         $obj = new SchedulingObject(
             new Backend\MockScheduling([], []),
-            [],
             ['calendarid' => '1']
         );
     }

@@ -30,6 +30,8 @@ trait DbTestHelperTrait
             throw new \Exception('You must set the $driver public property');
         }
 
+        $pdo = null;
+
         if (array_key_exists($this->driver, DbCache::$cache)) {
             $pdo = DbCache::$cache[$this->driver];
             if (null === $pdo) {
@@ -58,6 +60,11 @@ trait DbTestHelperTrait
                     }
                     break;
             }
+
+            if (null === $pdo) {
+                $this->markTestSkipped($this->driver.' was not recognised');
+            }
+
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             $this->markTestSkipped($this->driver.' was not enabled or not correctly configured. Error message: '.$e->getMessage());

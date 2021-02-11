@@ -135,7 +135,7 @@ class ResponseTest extends DAV\Xml\XmlTest
     {
         $innerProps = [
             200 => [
-                '{DAV:}link' => new DAV\Xml\Property\Href('http://sabredav.org/', false),
+                '{DAV:}link' => new DAV\Xml\Property\Href('http://sabredav.org/'),
             ],
         ];
 

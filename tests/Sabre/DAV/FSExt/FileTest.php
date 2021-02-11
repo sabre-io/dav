@@ -34,13 +34,40 @@ class FileTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testRange()
+    public function testRangeAppend()
+    {
+        $file = new File(SABRE_TEMPDIR.'/file.txt');
+        $file->put('0000000');
+        $file->patch('111', 1);
+
+        $this->assertEquals('0000000111', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+    }
+
+    public function testRangeOffset()
     {
         $file = new File(SABRE_TEMPDIR.'/file.txt');
         $file->put('0000000');
         $file->patch('111', 2, 3);
 
         $this->assertEquals('0001110', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+    }
+
+    public function testRangeOffsetEnd()
+    {
+        $file = new File(SABRE_TEMPDIR.'/file.txt');
+        $file->put('0000000');
+        $file->patch('11', 3, -4);
+
+        $this->assertEquals('0001100', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+    }
+
+    public function testRangeOffsetDefault()
+    {
+        $file = new File(SABRE_TEMPDIR.'/file.txt');
+        $file->put('0000000');
+        $file->patch('11', 0);
+
+        $this->assertEquals('000000011', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testRangeStream()

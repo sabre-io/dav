@@ -16,9 +16,6 @@
       <testsuite name="sabre-http">
           <directory>../vendor/sabre/http/tests/HTTP</directory>
       </testsuite>
-      <testsuite name="sabre-vobject">
-          <directory>../vendor/sabre/vobject/tests/VObject</directory>
-      </testsuite>
 
       <testsuite name="sabre-dav">
           <directory>Sabre/DAV</directory>

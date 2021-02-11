@@ -292,6 +292,8 @@ class Tree
             $destinationName = $source->getName();
         }
 
+        $destination = null;
+
         if ($source instanceof IFile) {
             $data = $source->get();
 

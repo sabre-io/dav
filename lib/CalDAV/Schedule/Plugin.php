@@ -486,6 +486,7 @@ class Plugin extends ServerPlugin
 
         $currentObject = null;
         $objectNode = null;
+        $oldICalendarData = null;
         $isNewNode = false;
 
         $result = $home->getCalendarObjectByUID($uid);

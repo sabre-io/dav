@@ -16,7 +16,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
         $caldavBackend = new \Sabre\CalDAV\Backend\MockSubscriptionSupport([], []);
 
         $info = [
-            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src'),
             'lastmodified' => date('2013-04-06 11:40:00'), // tomorrow is my birthday!
             '{DAV:}displayname' => 'displayname',
         ];
@@ -43,7 +43,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             [
                 '{DAV:}displayname' => 'displayname',
-                '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src', false),
+                '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src'),
             ],
             $sub->getProperties(['{DAV:}displayname', '{http://calendarserver.org/ns/}source'])
         );

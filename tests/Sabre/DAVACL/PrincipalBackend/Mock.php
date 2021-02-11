@@ -131,6 +131,8 @@ class Mock extends AbstractBackend
     public function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch)
     {
         $value = null;
+        $principal = false;
+        $principalIndex = null;
         foreach ($this->principals as $principalIndex => $value) {
             if ($value['uri'] === $path) {
                 $principal = $value;

@@ -96,7 +96,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest
             ],
             [
                 '{DAV:}sync-token',
-                new Xml\Property\Href(Sync\Plugin::SYNCTOKEN_PREFIX.'hello', false),
+                new Xml\Property\Href(Sync\Plugin::SYNCTOKEN_PREFIX.'hello'),
             ],
         ];
     }

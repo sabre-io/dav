@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+4.1.5 (2021-02-12)
+-------------------------
+* #1322: Fixes for addressbook-query filters (@mstilkerich)
+* #1329: Correctly process a POST with no Content-Type specified plus phpstan level 1 (@phil-davis)
+
 4.1.4 (2021-01-11)
 -------------------------
 * #1312: Reduce package size by ignoring test and other non-run-time files

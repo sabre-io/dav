@@ -30,13 +30,13 @@ BEGIN:VCARD
 VERSION:3.0
 ORG:Company;
 TITLE:Title
+ITEM4.TEL:(111) 11 11 11
+ITEM5.TEL:(6) 66 66 66 66
+ITEM6.TEL:(77) 777 77 77
 TEL;TYPE=IPHONE;TYPE=pref:(222) 22 22 22
 TEL;TYPE=HOME:(33) 333 66 66
 TEL;TYPE=WORK:(444) 44 44 44
 TEL;TYPE=MAIN:(55) 555 55 55
-ITEM4.TEL:(111) 11 11 11
-ITEM5.TEL:(6) 66 66 66 66
-ITEM6.TEL:(77) 777 77 77
 UID:3151DE6A-BC35-4612-B340-B53A034A2B27
 ITEM1.EMAIL:1111@111.com
 ITEM2.EMAIL:bbbbb@bbbb.com
@@ -133,7 +133,14 @@ HELLO;
         $filter14['text-matches'][0]['value'] = 'bing';
         $filter14['text-matches'][0]['negate-condition'] = true;
 
+        // Check if there is an EMAIL address that does not have the 111.com domain
+        $filterEmailWithoutSpecificDomain = $filter11;
+        $filterEmailWithoutSpecificDomain['name'] = 'email';
+        $filterEmailWithoutSpecificDomain['text-matches'][0]['value'] = '@111.com';
+        $filterEmailWithoutSpecificDomain['text-matches'][0]['negate-condition'] = true;
+
         // Param filter with text
+        // Check there is a TEL;TYPE that contains WORK
         $filter15 = $filter5;
         $filter15['param-filters'][0]['text-match'] = [
             'match-type' => 'contains',
@@ -141,11 +148,21 @@ HELLO;
             'collation' => 'i;octet',
             'negate-condition' => false,
         ];
+
+        // Check if there is a TEL;TYPE that does not contain WORK
         $filter16 = $filter15;
         $filter16['param-filters'][0]['text-match']['negate-condition'] = true;
 
+        // Check there is a TEL;TYPE that does not contain OTHER
+        // All TEL properties with a TYPE parameter match this
+        $filterNoTelWithTypeOther = $filter16;
+        $filterNoTelWithTypeOther['param-filters'][0]['text-match']['value'] = 'OTHER';
+
         // Param filter + text filter
         $filter17 = $filter5;
+
+        // Matches if the VCard contains a TEL property that either has a TYPE property defined (-> true),
+        // or that has a value containing 444 (true)
         $filter17['test'] = 'anyof';
         $filter17['text-matches'][] = [
             'match-type' => 'contains',
@@ -154,6 +171,8 @@ HELLO;
             'negate-condition' => false,
         ];
 
+        // Matches if the VCard contains a TEL property that has a TYPE property defined
+        // AND that has a value NOT containing 444 -> there is 3 properties matching these criteria
         $filter18 = $filter17;
         $filter18['text-matches'][0]['negate-condition'] = true;
 
@@ -179,7 +198,7 @@ HELLO;
             [$body1, [$filter6], 'anyof', false, 'TEL;FOO is not defined, so this should return false'],
 
             [$body1, [$filter7], 'anyof', false, 'TEL;TYPE is defined, so this should return false'],
-            [$body1, [$filter8], 'anyof', true, 'TEL;TYPE is not defined, so this should return true'],
+            [$body1, [$filter8], 'anyof', true, 'TEL;FOO is not defined, so this should return true'],
 
             // Combined parameters
             [$body1, [$filter9], 'anyof', true],
@@ -190,15 +209,16 @@ HELLO;
             [$body1, [$filter12], 'anyof', false],
             [$body1, [$filter13], 'anyof', false],
             [$body1, [$filter14], 'anyof', true],
+            [$body1, [$filterEmailWithoutSpecificDomain], 'anyof', true, 'EMAIL properties with other domain exists, so this should return true'],
 
             // Param filter with text-match
-            [$body1, [$filter15], 'anyof', true],
-            [$body1, [$filter16], 'anyof', false],
+            [$body1, [$filter15], 'anyof', true, 'TEL;TYPE with value WORK exists, so this should return true'],
+            [$body1, [$filter16], 'anyof', true, 'Some TEL;TYPE that do not match WORK exist. Match result is inverted, so this should return true'],
+            [$body1, [$filterNoTelWithTypeOther], 'anyof', true, 'No TEL;TYPE contains OTHER. Match result is inverted, so this should return true'],
 
             // Param filter + text filter
             [$body1, [$filter17], 'anyof', true],
-            [$body1, [$filter18], 'anyof', false],
-            [$body1, [$filter18], 'anyof', false],
+            [$body1, [$filter18], 'anyof', true],
         ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
+use DateInterval;
 use DateTime;
 use DateTimeZone;
 use Sabre\DAV;
@@ -24,6 +25,7 @@ use Sabre\VObject;
  *
  * Further options that can be added to the url:
  *   start=123456789 - Only return events after the given unix timestamp
+ *   startrel=1year  - Only return events after the given interval before now
  *   end=123245679   - Only return events from before the given unix timestamp
  *   expand=1        - Strip timezone information and expand recurring events.
  *                     If you'd like to expand, you _must_ also specify start
@@ -115,6 +117,20 @@ class ICSExportPlugin extends DAV\ServerPlugin
             }
             $start = DateTime::createFromFormat('U', $queryParams['start']);
         }
+        if (isset($queryParams['startrel'])) {
+            try {
+                $rel = new DateInterval($queryParams['startrel']);
+            } catch (\Exception $ex) {
+                try {
+                    $rel = DateInterval::createFromDateString($queryParams['startrel']);
+                } catch (\Exception $ex) {
+                    throw new BadRequest('The startrel= parameter must contain a valid interval string: '.$ex->getMessage());
+                }
+            }
+            $start = new DateTime('now');
+            $start->sub($rel);
+            header('x-computed-start: '.$start->format('U'));
+        }
         if (isset($queryParams['end'])) {
             if (!ctype_digit($queryParams['end'])) {
                 throw new BadRequest('The end= parameter must contain a unix timestamp');
@@ -179,6 +195,10 @@ class ICSExportPlugin extends DAV\ServerPlugin
 
         $blobs = [];
         if ($start || $end || $componentType) {
+            if (empty($componentType)) {
+                // componentType is needed, and should be VEVENT
+                $componentType = 'VEVENT';
+            }
             // If there was a start or end filter, we need to enlist
             // calendarQuery for speed.
             $queryResult = $calendarNode->calendarQuery([

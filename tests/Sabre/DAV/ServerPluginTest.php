@@ -32,6 +32,7 @@ class ServerPluginTest extends AbstractServer
                 'name' => 'Sabre\DAV\ServerPluginMock',
                 'description' => null,
                 'link' => null,
+                'config' => null,
             ], $p->getPluginInfo()
         );
     }

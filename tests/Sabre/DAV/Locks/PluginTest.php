@@ -523,6 +523,45 @@ class PluginTest extends DAV\AbstractServer
 
     /**
      * @depends testLock
+     * Similar to testLockDeleteParent but don't lock the file but the Parent-DIR.
+     */
+    public function testParentLockDelete()
+    {
+        $request = new HTTP\Request('LOCK', '/dir/');
+        $request->setBody('<?xml version="1.0"?>
+<D:lockinfo xmlns:D="DAV:">
+    <D:lockscope><D:exclusive/></D:lockscope>
+    <D:locktype><D:write/></D:locktype>
+    <D:owner>
+        <D:href>http://example.org/~ejw/contact.html</D:href>
+    </D:owner>
+</D:lockinfo>');
+
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(200, $this->response->status);
+        $lockToken = $this->response->getHeader('Lock-Token');
+
+        $request = new HTTP\Request('DELETE', '/dir/child.txt', [
+            'If' => '('.$lockToken.')',
+        ]);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        $this->assertEquals(204, $this->response->status);
+
+        // verify that the LOCK on /dir/ itself continues to exist by unlocking:
+        $request = new HTTP\Request('UNLOCK', '/dir/', ['Lock-Token' => $lockToken]);
+        $this->server->httpRequest = $request;
+        $this->server->httpResponse = new HTTP\ResponseMock();
+        $this->server->invokeMethod($request, $this->server->httpResponse);
+
+        $this->assertEquals(204, $this->server->httpResponse->status, 'Got an incorrect status code. Full response body: '.$this->response->getBodyAsString());
+    }
+
+    /**
+     * @depends testLock
      */
     public function testLockCopyLockSource()
     {

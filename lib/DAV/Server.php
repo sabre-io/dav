@@ -1634,6 +1634,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function generateMultiStatus($fileProperties, $strip404s = false)
     {
+        $this->emit('beforeMultiStatus', [&$fileProperties]);
+
         $w = $this->xml->getWriter();
         if (self::$streamMultiStatus) {
             return function () use ($fileProperties, $strip404s, $w) {

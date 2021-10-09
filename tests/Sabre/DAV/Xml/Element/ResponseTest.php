@@ -301,4 +301,35 @@ class ResponseTest extends DAV\Xml\XmlTest
             $result['value']
         );
     }
+
+    public function testDeserializeNoProperties()
+    {
+        $xml = '<?xml version="1.0"?>
+<d:response xmlns:d="DAV:">
+  <d:href>/uri</d:href>
+  <d:propstat>
+    <d:prop></d:prop>
+    <d:status>HTTP/1.1 200 OK</d:status>
+  </d:propstat>  
+  <d:propstat>
+    <d:prop>
+        <d:foo />
+    </d:prop>
+    <d:status>HTTP/1.1 404 OK</d:status>
+  </d:propstat>
+</d:response>
+';
+
+        $result = $this->parse($xml, [
+            '{DAV:}response' => Response::class,
+        ]);
+        $this->assertEquals(
+            new Response('/uri', [
+                '404' => [
+                    '{DAV:}foo' => null,
+                ],
+            ]),
+            $result['value']
+        );
+    }
 }

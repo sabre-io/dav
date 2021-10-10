@@ -1,4 +1,4 @@
-name: ci
+name: continuous-integration
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  code:
+  code-analysis:
     runs-on: ubuntu-latest
     name: Code Analysis (PHP ${{ matrix.php-versions }})
     strategy:
@@ -46,3 +46,82 @@ jobs:
 
       - name: PHPStan
         run: composer phpstan
+
+  unit-testing:
+    name: PHPUnit (PHP ${{ matrix.php-versions }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: [ '7.1', '7.2', '7.3', '7.4', '8.0' ]
+        coverage: [ 'none' ]
+        streaming: [ false ]
+        include:
+          - php-versions: '8.1'
+            coverage: 'pcov'
+            streaming: true
+
+    services:
+      mariadb:
+        image: mariadb
+        env:
+          MARIADB_DATABASE: 'sabredav_test'
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: 'sabredav_test'
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, dom, fileinfo, pdo_sqlite, pgsql, mysql, redis, opcache
+          coverage: ${{ matrix.coverage }}
+          tools: composer
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          # Use composer.json for key, if composer.lock is not committed.
+          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: PHPUnit
+        if: matrix.streaming == false
+        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml
+        env:
+          SABRE_MYSQLUSER: root
+          SABRE_MYSQLPASS: root
+          SABRE_MYSQLDSN: "mysql:host=127.0.0.1;port=3306;dbname=sabredav_test"
+          SABRE_PGSQLDSN: "pgsql:host=127.0.0.1;port=5432;dbname=sabredav_test;user=postgres;password=postgres"
+
+      - name: PHPUnit (with streaming)
+        if: matrix.streaming == true
+        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml
+        env:
+          SABRE_MYSQLUSER: root
+          SABRE_MYSQLPASS: root
+          SABRE_MYSQLDSN: "mysql:host=127.0.0.1;port=3306;dbname=sabredav_test"
+          SABRE_PGSQLDSN: "pgsql:host=127.0.0.1;port=5432;dbname=sabredav_test;user=postgres;password=postgres"
+          RUN_TEST_WITH_STREAMING_PROPFIND: "true"
+
+      - uses: codecov/codecov-action@v2
+        if: matrix.coverage != 'none'

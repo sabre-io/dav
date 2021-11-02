@@ -65,6 +65,8 @@ class Mock extends AbstractBackend
                 return $principal;
             }
         }
+
+        return [];
     }
 
     public function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof')

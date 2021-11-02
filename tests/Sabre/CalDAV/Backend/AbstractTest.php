@@ -140,6 +140,8 @@ class AbstractMock extends AbstractBackend
                     ],
                 ];
         }
+
+        return [];
     }
 
     public function getCalendarObject($calendarId, $objectUri)

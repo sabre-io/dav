@@ -927,8 +927,6 @@ class Plugin extends DAV\ServerPlugin
      * Triggered before properties are looked up in specific nodes.
      *
      * @TODO really should be broken into multiple methods, or even a class.
-     *
-     * @return bool
      */
     public function propFind(DAV\PropFind $propFind, DAV\INode $node)
     {
@@ -1070,8 +1068,6 @@ class Plugin extends DAV\ServerPlugin
      * @param string $reportName
      * @param mixed  $report
      * @param mixed  $path
-     *
-     * @return bool
      */
     public function report($reportName, $report, $path)
     {

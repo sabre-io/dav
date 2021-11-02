@@ -30,6 +30,8 @@ class MockScheduling extends Mock implements SchedulingSupport
         if (isset($this->schedulingObjects[$principalUri][$objectUri])) {
             return $this->schedulingObjects[$principalUri][$objectUri];
         }
+
+        return [];
     }
 
     /**

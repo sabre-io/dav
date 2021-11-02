@@ -113,8 +113,6 @@ class Plugin extends ServerPlugin
 
     /**
      * This method is called before any HTTP method and forces users to be authenticated.
-     *
-     * @return bool
      */
     public function beforeMethod(RequestInterface $request, ResponseInterface $response)
     {
@@ -204,8 +202,6 @@ class Plugin extends ServerPlugin
      * This method will for example cause a HTTP Basic backend to set a
      * WWW-Authorization header, indicating to the client that it should
      * authenticate.
-     *
-     * @return array
      */
     public function challenge(RequestInterface $request, ResponseInterface $response)
     {

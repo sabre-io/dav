@@ -39,8 +39,6 @@ class PropertiesCollection extends Collection implements IProperties
      *
      * To update specific properties, call the 'handle' method on this object.
      * Read the PropPatch documentation for more information.
-     *
-     * @return bool|array
      */
     public function propPatch(PropPatch $proppatch)
     {

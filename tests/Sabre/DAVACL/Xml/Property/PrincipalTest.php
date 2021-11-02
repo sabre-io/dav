@@ -170,6 +170,10 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
                 new Principal(Principal::HREF, 'principals/admin'),
                 '<a href="/principals/admin/">/principals/admin/</a>',
             ],
+            [
+                new Principal(42),
+                '<em>unknown</em>',
+            ],
         ];
     }
 }

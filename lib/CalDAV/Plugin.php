@@ -243,7 +243,7 @@ class Plugin extends DAV\ServerPlugin
      * @param mixed  $report
      * @param mixed  $path
      *
-     * @return bool
+     * @return bool|null
      */
     public function report($reportName, $report, $path)
     {

@@ -142,6 +142,8 @@ class Principal extends DAV\Xml\Property\Href
             case self::ALL:
                 return '<em>all</em>';
         }
+
+        return '<em>unknown</em>';
     }
 
     /**

@@ -253,5 +253,7 @@ class Mock extends AbstractBackend
     public function deleteCard($addressBookId, $cardUri)
     {
         unset($this->cards[$addressBookId][$cardUri]);
+
+        return true;
     }
 }

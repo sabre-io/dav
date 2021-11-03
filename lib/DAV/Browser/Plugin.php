@@ -85,8 +85,6 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This method intercepts GET requests that have ?sabreAction=info
      * appended to the URL.
-     *
-     * @return bool
      */
     public function httpGetEarly(RequestInterface $request, ResponseInterface $response)
     {

@@ -10,9 +10,6 @@
 >
 
   <testsuites>
-      <testsuite name="sabre-xml">
-        <directory>../vendor/sabre/xml/tests/Sabre/Xml/</directory>
-      </testsuite>
       <testsuite name="sabre-http">
           <directory>../vendor/sabre/http/tests/HTTP</directory>
       </testsuite>

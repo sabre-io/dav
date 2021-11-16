@@ -12,9 +12,9 @@ class ServerEventsTest extends AbstractServer
 
     private $exception;
 
-    public function testAfterBind()
+    public function testAfterBindOfFile()
     {
-        $this->server->on('afterBind', [$this, 'afterBindHandler']);
+        $this->server->on('afterBind', [$this, 'afterHandler']);
         $newPath = 'afterBind';
 
         $this->tempPath = '';
@@ -22,7 +22,37 @@ class ServerEventsTest extends AbstractServer
         $this->assertEquals($newPath, $this->tempPath);
     }
 
-    public function afterBindHandler($path)
+    public function testAfterBindOfCollection()
+    {
+        $this->server->on('afterBind', [$this, 'afterHandler']);
+        $newPath = 'afterBind';
+
+        $this->tempPath = '';
+        $this->server->createDirectory($newPath);
+        $this->assertEquals($newPath, $this->tempPath);
+    }
+
+    public function testAfterCreateFile()
+    {
+        $this->server->on('afterCreateFile', [$this, 'afterHandler']);
+        $newPath = 'afterCreateFile';
+
+        $this->tempPath = '';
+        $this->server->createFile($newPath, 'body');
+        $this->assertEquals($newPath, $this->tempPath);
+    }
+
+    public function testAfterCreateCollection()
+    {
+        $this->server->on('afterCreateCollection', [$this, 'afterHandler']);
+        $newPath = 'afterCreateCollection';
+
+        $this->tempPath = '';
+        $this->server->createDirectory($newPath);
+        $this->assertEquals($newPath, $this->tempPath);
+    }
+
+    public function afterHandler($path)
     {
         $this->tempPath = $path;
     }

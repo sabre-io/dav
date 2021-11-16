@@ -92,7 +92,6 @@ class ServerPropsTest extends AbstractServer
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:ishidden');
         $this->assertEquals(5, count($data), 'Response should contain 5 elements');
 
-        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:ishidden');
         foreach ($data as $prop) {
             $this->assertEquals('1', $prop[0]);
         }

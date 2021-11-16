@@ -895,7 +895,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
         }
 
         $propertyNames = $propFind->getRequestedProperties();
-        $propFindType = !empty($propertyNames) ? PropFind::NORMAL : PropFind::ALLPROPS;
+        $propFindType = !$propFind->isAllProps() ? PropFind::NORMAL : PropFind::ALLPROPS;
 
         foreach ($this->tree->getChildren($path) as $childNode) {
             if ('' !== $path) {

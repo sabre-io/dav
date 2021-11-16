@@ -103,3 +103,6 @@ CREATE TABLE schedulingobjects (
     etag VARCHAR(32),
     size INTEGER NOT NULL
 );
+
+ALTER TABLE ONLY schedulingobjects
+    ADD CONSTRAINT schedulingobjects_pkey PRIMARY KEY (id);

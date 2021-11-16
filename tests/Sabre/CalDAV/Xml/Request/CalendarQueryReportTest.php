@@ -137,14 +137,14 @@ XML;
                         [
                             'name' => 'UID',
                             'is-not-defined' => false,
-                            'time-range' => false,
+                            'time-range' => [],
                             'text-match' => null,
                             'param-filters' => [],
                         ],
                         [
                             'name' => 'X-PROP',
                             'is-not-defined' => false,
-                            'time-range' => false,
+                            'time-range' => [],
                             'text-match' => null,
                             'param-filters' => [
                                 [
@@ -171,7 +171,7 @@ XML;
                         [
                             'name' => 'X-PROP2',
                             'is-not-defined' => true,
-                            'time-range' => false,
+                            'time-range' => [],
                             'text-match' => null,
                             'param-filters' => [],
                         ],
@@ -188,7 +188,7 @@ XML;
                         [
                             'name' => 'X-PROP4',
                             'is-not-defined' => false,
-                            'time-range' => false,
+                            'time-range' => [],
                             'text-match' => [
                                 'negate-condition' => false,
                                 'collation' => 'i;ascii-casemap',

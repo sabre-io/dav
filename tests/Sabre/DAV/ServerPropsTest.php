@@ -55,8 +55,7 @@ class ServerPropsTest extends AbstractServer
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
@@ -85,8 +84,7 @@ class ServerPropsTest extends AbstractServer
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:ishidden');
@@ -111,8 +109,7 @@ class ServerPropsTest extends AbstractServer
             $this->response->getHeaders()
          );
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
@@ -133,8 +130,7 @@ class ServerPropsTest extends AbstractServer
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
@@ -167,8 +163,7 @@ class ServerPropsTest extends AbstractServer
 
         $this->sendRequest($xml);
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
@@ -185,7 +180,7 @@ class ServerPropsTest extends AbstractServer
 </d:propfind>';
 
         $this->sendRequest($xml);
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
+        $body = $this->getSanitizedBody();
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
         $pathTests = [

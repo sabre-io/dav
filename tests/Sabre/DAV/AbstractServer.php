@@ -42,6 +42,16 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
         return new FS\Directory(SABRE_TEMPDIR);
     }
 
+    protected function getSanitizedBody()
+    {
+        return preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
+    }
+
+    protected function getSanitizedBodyAsXml()
+    {
+        return simplexml_load_string($this->getSanitizedBody());
+    }
+
     private function deleteTree($path, $deleteRoot = true)
     {
         foreach (scandir($path) as $node) {

@@ -77,8 +77,7 @@ class PluginTest extends DAV\AbstractServer
 
         $this->assertEquals(200, $this->response->status, 'Got an incorrect status back. Response body: '.$this->response->getBodyAsString());
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $elements = [
@@ -128,8 +127,7 @@ class PluginTest extends DAV\AbstractServer
 
         $this->assertEquals(200, $this->response->status, 'Got an incorrect status back. Response body: '.$this->response->getBodyAsString());
 
-        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $this->response->getBodyAsString());
-        $xml = simplexml_load_string($body);
+        $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $lockRoot = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:lockroot/d:href');

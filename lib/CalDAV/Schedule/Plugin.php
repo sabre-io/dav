@@ -916,7 +916,7 @@ class Plugin extends ServerPlugin
                 ],
                 'prop-filters' => [],
                 'is-not-defined' => false,
-                'time-range' => null,
+                'time-range' => [],
             ]);
 
             $calObjects = array_map(function ($url) use ($node) {

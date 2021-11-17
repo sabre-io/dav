@@ -1,6 +1,17 @@
 ChangeLog
 =========
 
+4.2.0 (2021-11-17)
+-------------------------
+* #1317: Add primary key to schedulingobjects table in pgsql.calendars.sql example (@perguth)
+* #1335: don't remove lock on dir when deleting a child node (@tbsmark86)
+* #1341: Add new event "afterCreateCollection" like "afterCreateFile" (@woutersamaey)
+* #1344: Fix propfind type of subnodes with depth >= 1 (@n-peugnet)
+* #1355: Make sure a {DAV:}prop is not empty (@kesselb)
+* #1356: Switch CI to GitHub Actions (@kesselb)
+* #1362: Adjust PHPdoc return types (@phil-davis)
+* #1354: Fix deprecated usages on PHP 8.1 (@cedric-anne)
+
 4.1.5 (2021-02-12)
 -------------------------
 * #1322: Fixes for addressbook-query filters (@mstilkerich)

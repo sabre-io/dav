@@ -295,6 +295,10 @@ class Plugin extends DAV\ServerPlugin
     {
         $locks = $this->getLocks($path, $includeChildren = true);
         foreach ($locks as $lock) {
+            // don't delete a lock on a parent dir
+            if (0 !== strpos($lock->uri, $path)) {
+                continue;
+            }
             $this->unlockNode($path, $lock);
         }
     }

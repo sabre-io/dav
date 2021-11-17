@@ -78,7 +78,8 @@ class Card extends DAV\File implements ICard, DAVACL\IACL
     /**
      * Updates the VCard-formatted object.
      *
-     * @param string $cardData
+     * @param string      $cardData
+     * @param object|null $params
      *
      * @return string|null
      */

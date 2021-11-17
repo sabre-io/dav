@@ -1114,13 +1114,14 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * This method will return true if the file was actually updated
      *
-     * @param string   $uri
-     * @param resource $data
-     * @param string   $etag
+     * @param string      $uri
+     * @param resource    $data
+     * @param string      $etag
+     * @param object|null $params
      *
      * @return bool
      */
-    public function updateFile($uri, $data, &$etag = null, $params)
+    public function updateFile($uri, $data, &$etag = null, $params = null)
     {
         $node = $this->tree->getNodeForPath($uri);
 

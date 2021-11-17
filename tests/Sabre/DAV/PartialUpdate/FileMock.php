@@ -10,12 +10,12 @@ class FileMock implements IPatchSupport
 {
     protected $data = '';
 
-    public function put($str, $params = null)
+    public function put($data, $params = null)
     {
-        if (is_resource($str)) {
-            $str = stream_get_contents($str);
+        if (is_resource($data)) {
+            $data = stream_get_contents($data);
         }
-        $this->data = $str;
+        $this->data = $data;
     }
 
     /**

@@ -82,7 +82,8 @@ class File extends DAV\File
      * different object on a subsequent GET you are strongly recommended to not
      * return an ETag, and just return null.
      *
-     * @param resource $data
+     * @param resource    $data
+     * @param object|null $params
      *
      * @return string|null
      */

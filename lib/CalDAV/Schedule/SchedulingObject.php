@@ -59,6 +59,7 @@ class SchedulingObject extends \Sabre\CalDAV\CalendarObject implements IScheduli
      * Updates the ICalendar-formatted object.
      *
      * @param string|resource $calendarData
+     * @param object|null     $params
      *
      * @return string
      */

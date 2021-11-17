@@ -35,6 +35,7 @@ interface IFile extends INode
      * return an ETag, and just return null.
      *
      * @param resource|string $data
+     * @param object|null     $params
      *
      * @return string|null
      */

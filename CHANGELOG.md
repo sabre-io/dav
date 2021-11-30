@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.2.1 (2021-11-30)
+-------------------------
+* #1371: Fix phpdoc return type of findByUri in BackendInterface (@come-nc)
+
 4.2.0 (2021-11-17)
 -------------------------
 * #1317: Add primary key to schedulingobjects table in pgsql.calendars.sql example (@perguth)

@@ -22,10 +22,11 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      * Data is a readable stream resource.
      *
      * @param resource|string $data
+     * @param object|null     $params
      *
      * @return string
      */
-    public function put($data)
+    public function put($data, $params = null)
     {
         file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);

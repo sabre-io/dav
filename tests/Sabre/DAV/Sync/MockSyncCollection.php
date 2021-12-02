@@ -127,6 +127,8 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         $modified = [];
         $deleted = [];
 
+        $result_truncated = false;
+
         foreach ($this->changeLog as $token => $change) {
             if ($token > $syncToken) {
                 $added = array_merge($added, $change['added']);
@@ -143,6 +145,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
                     if (0 === $left) {
                         break;
                     }
+                    $result_truncated = true;
                     if ($left < 0) {
                         $modified = array_slice($modified, 0, $left);
                     }
@@ -158,11 +161,17 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
             }
         }
 
-        return [
+        $result = [
             'syncToken' => $this->token,
             'added' => $added,
             'modified' => $modified,
             'deleted' => $deleted,
         ];
+
+        if ($result_truncated) {
+            $result += ['result_truncated' => $result_truncated];
+        }
+
+        return $result;
     }
 }

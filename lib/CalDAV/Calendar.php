@@ -396,7 +396,8 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      *   'deleted' => [
      *      'foo.php.bak',
      *      'old.txt'
-     *   ]
+     *   ],
+     *   'result_truncated' : true
      * ];
      *
      * The syncToken property should reflect the *current* syncToken of the
@@ -405,6 +406,9 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      *
      * If the syncToken is specified as null, this is an initial sync, and all
      * members should be reported.
+     *
+     * If result is truncated due to server limitation or limit by client,
+     * set result_truncated to true, otherwise set to false or do not add the key.
      *
      * The modified property is an array of nodenames that have changed since
      * the last token.
@@ -422,12 +426,17 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      * should be treated as infinite.
      *
      * If the limit (infinite or not) is higher than you're willing to return,
-     * you should throw a Sabre\DAV\Exception\TooMuchMatches() exception.
+     * the result should be truncated to fit the limit.
+     * Note that even when the result is truncated, syncToken must be consistent
+     * with the truncated result, not the result before truncation.
+     * (See RFC6578 Section 3.6 for detail)
      *
      * If the syncToken is expired (due to data cleanup) or unknown, you must
      * return null.
      *
      * The limit is 'suggestive'. You are free to ignore it.
+     * TODO: RFC6578 Setion 3.7 says that the server must fail when the server
+     * cannot truncate according to the limit, so it may not be just suggestive.
      *
      * @param string $syncToken
      * @param int    $syncLevel

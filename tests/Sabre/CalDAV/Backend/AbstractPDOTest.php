@@ -943,6 +943,34 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'deleted' => [],
             'added' => ['todo1.ics', 'todo3.ics'],
         ], $result);
+
+        $backend->createCalendarObject($id, 'todo7.ics', $dummyTodo);
+        $backend->createCalendarObject($id, 'todo8.ics', $dummyTodo);
+        $backend->createCalendarObject($id, 'todo9.ics', $dummyTodo);
+
+        $currentToken = $result['syncToken'];
+
+        $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
+
+        // according to RFC6578 Section 3.6, the result including syncToken must correpsond to one time (syncToken=8 here)
+        $this->assertEquals([
+            'syncToken' => 8,
+            'modified' => [],
+            'deleted' => [],
+            'added' => ['todo7.ics', 'todo8.ics'],
+            'result_truncated' => true,
+        ], $result);
+
+        $currentToken = $result['syncToken'];
+
+        $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
+
+        $this->assertEquals([
+            'syncToken' => 9,
+            'modified' => [],
+            'deleted' => [],
+            'added' => ['todo9.ics'],
+        ], $result);
     }
 
     /**

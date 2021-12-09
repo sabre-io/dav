@@ -35,12 +35,11 @@ class StreamingFile extends File
      * different object on a subsequent GET you are strongly recommended to not
      * return an ETag, and just return null.
      *
-     * @param resource    $data
-     * @param object|null $params
+     * @param resource $data
      *
      * @return string|null
      */
-    public function put($data, $params = null)
+    public function put($data)
     {
         if (is_string($data)) {
             $stream = fopen('php://memory', 'r+');

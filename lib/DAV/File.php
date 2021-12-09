@@ -34,11 +34,10 @@ abstract class File extends Node implements IFile
      * return an ETag, and just return null.
      *
      * @param string|resource $data
-     * @param object|null     $params
      *
      * @return string|null
      */
-    public function put($data, $params = null)
+    public function put($data)
     {
         throw new Exception\Forbidden('Permission denied to change data');
     }

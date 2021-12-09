@@ -82,12 +82,11 @@ class File extends DAV\File
      * different object on a subsequent GET you are strongly recommended to not
      * return an ETag, and just return null.
      *
-     * @param resource    $data
-     * @param object|null $params
+     * @param resource $data
      *
      * @return string|null
      */
-    public function put($data, $params = null)
+    public function put($data)
     {
         if (is_resource($data)) {
             $data = stream_get_contents($data);

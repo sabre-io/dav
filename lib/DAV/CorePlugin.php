@@ -429,7 +429,6 @@ class CorePlugin extends ServerPlugin
     {
         $body = $request->getBodyAsStream();
         $path = $request->getPath();
-        $params = (object) ['versioning' => $request->getHeader('versioning')];
 
         // Intercepting Content-Range
         if ($request->getHeader('Content-Range')) {
@@ -490,7 +489,7 @@ class CorePlugin extends ServerPlugin
             if (!($node instanceof IFile)) {
                 throw new Exception\Conflict('PUT is not allowed on non-files.');
             }
-            if (!$this->server->updateFile($path, $body, $etag, $params)) {
+            if (!$this->server->updateFile($path, $body, $etag)) {
                 return false;
             }
 

@@ -25,7 +25,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      *
      * @return string
      */
-    public function put($data,$params=null)
+    public function put($data)
     {
         file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);

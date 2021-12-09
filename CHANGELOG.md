@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.2.3 (2021-12-09)
+-------------------------
+* #1375: revert 1365 'add params for put interface' (@phil-davis)
+
 4.2.2 (2021-12-09)
 -------------------------
 * #1248: CalDAV to sync properly when limit is set in PDO backend (@nhirokinet)

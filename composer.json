@@ -29,7 +29,7 @@
         "ext-date" : "*",
         "ext-iconv" : "*",
         "lib-libxml" : ">=2.7.0",
-        "psr/log": "^1.0",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
         "ext-json": "*"
     },
     "require-dev" : {

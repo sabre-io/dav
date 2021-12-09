@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+4.2.2 (2021-12-09)
+-------------------------
+* #1248: CalDAV to sync properly when limit is set in PDO backend (@nhirokinet)
+* #1365: add params for put interface (@yrong)
+* #1372: Allow psr/log major versions 2 and 3 as dependencies (@fezfez)
+
 4.2.1 (2021-11-30)
 -------------------------
 * #1371: Fix phpdoc return type of findByUri in BackendInterface (@come-nc)

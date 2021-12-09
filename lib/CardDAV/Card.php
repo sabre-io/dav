@@ -82,7 +82,7 @@ class Card extends DAV\File implements ICard, DAVACL\IACL
      *
      * @return string|null
      */
-    public function put($cardData, $params = null)
+    public function put($cardData,$params=null)
     {
         if (is_resource($cardData)) {
             $cardData = stream_get_contents($cardData);

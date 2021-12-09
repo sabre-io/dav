@@ -22,7 +22,6 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      * Data is a readable stream resource.
      *
      * @param resource|string $data
-     * @param object|null     $params
      *
      * @return string
      */

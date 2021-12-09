@@ -92,7 +92,6 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
      * Updates the ICalendar-formatted object.
      *
      * @param string|resource $calendarData
-     * @param object|null     $params
      *
      * @return string
      */

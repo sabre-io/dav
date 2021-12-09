@@ -18,8 +18,7 @@ class File extends Node implements DAV\IFile
     /**
      * Updates the data.
      *
-     * @param resource    $data
-     * @param object|null $params
+     * @param resource $data
      */
     public function put($data, $params = null)
     {

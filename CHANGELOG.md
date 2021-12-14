@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.3.0 (2021-12-14)
+-------------------------
+* #1284: A more secure and generalized approach for PDO Basic Auth Backend (@lightbluetom)
+
 4.2.3 (2021-12-09)
 -------------------------
 * #1375: revert 1365 'add params for put interface' (@phil-davis)

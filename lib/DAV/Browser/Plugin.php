@@ -582,7 +582,6 @@ HTML;
         }
 
         $this->server->httpResponse->setHeader('Content-Type', $mime);
-        $this->server->httpResponse->setHeader('Content-Length', filesize($assetPath));
         $this->server->httpResponse->setHeader('Cache-Control', 'public, max-age=1209600');
         $this->server->httpResponse->setStatus(200);
         $this->server->httpResponse->setBody(fopen($assetPath, 'r'));

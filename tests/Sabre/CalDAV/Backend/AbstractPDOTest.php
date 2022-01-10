@@ -68,7 +68,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->assertIsArray($calendars);
-        $this->assertEquals(1, count($calendars));
+        $this->assertEquals(2, count($calendars));
 
         foreach ($elementCheck as $name => $value) {
             $this->assertArrayHasKey($name, $calendars[0]);

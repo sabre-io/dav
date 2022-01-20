@@ -58,6 +58,15 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($tree->getNodeForPath('hi/sub')->isDeleted);
     }
 
+    public function testDeepMoveNumber()
+    {
+        $tree = new TreeMock();
+        $tree->move('1/2', 'hi/sub');
+
+        $this->assertArrayHasKey('sub', $tree->getNodeForPath('hi')->newDirectories);
+        $this->assertTrue($tree->getNodeForPath('1/2')->isDeleted);
+    }
+
     public function testDelete()
     {
         $tree = new TreeMock();
@@ -114,6 +123,9 @@ class TreeMock extends Tree
                     new TreeFileTester('2'),
                     new TreeFileTester('3'),
                 ]),
+                new TreeDirectoryTester('1', [
+                    new TreeDirectoryTester('2'),
+                ]),
             ])
         );
     }
@@ -169,7 +181,7 @@ class TreeFileTester extends File implements IProperties
 {
     public $name;
     public $data;
-    public $properties;
+    public $properties = [];
 
     public function __construct($name, $data = null)
     {

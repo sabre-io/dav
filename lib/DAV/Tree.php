@@ -226,7 +226,7 @@ class Tree
         // flushing the entire cache
         $path = trim($path, '/');
         foreach ($this->cache as $nodePath => $node) {
-            if ('' === $path || $nodePath == $path || 0 === strpos($nodePath, $path.'/')) {
+            if ('' === $path || $nodePath == $path || 0 === strpos((string) $nodePath, $path.'/')) {
                 unset($this->cache[$nodePath]);
             }
         }

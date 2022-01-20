@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.3.1 (2022-01-20)
+-------------------------
+* #1385: fix: ensure first argument on strpos is a string (@DeepDiver1975)
+
 4.3.0 (2021-12-14)
 -------------------------
 * #1284: A more secure and generalized approach for PDO Basic Auth Backend (@lightbluetom)

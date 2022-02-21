@@ -31,6 +31,12 @@ class IMipPlugin extends DAV\ServerPlugin
     protected $senderEmail;
 
     /**
+     * mailing object made by PEAR
+     *
+     */
+     protected $mailer;
+
+    /**
      * ITipMessage.
      *
      * @var ITip\Message
@@ -45,9 +51,14 @@ class IMipPlugin extends DAV\ServerPlugin
      *                             generally be some kind of no-reply email
      *                             address you own.
      */
-    public function __construct($senderEmail)
+    public function __construct($senderEmail, $smtp_host = "", $smtp_port = "", $smtp_username = "", $smtp_password = "")
     {
+        require_once "Mail.php";
         $this->senderEmail = $senderEmail;
+        if($smtp_host == '')
+            $this->mailer = \Mail::factory('mail');
+        else
+            $this->mailer = \Mail::factory('smtp', array ('host' => $smtp_host, 'port' => $smtp_port, 'auth' => true, 'username' => $smtp_username, 'password' => $smtp_password));
     }
 
     /*
@@ -127,20 +138,21 @@ class IMipPlugin extends DAV\ServerPlugin
                 break;
         }
 
-        $headers = [
-            'Reply-To: '.$sender,
-            'From: '.$iTipMessage->senderName.' <'.$this->senderEmail.'>',
-            'MIME-Version: 1.0',
-            'Content-Type: text/calendar; charset=UTF-8; method='.$iTipMessage->method,
-        ];
+        $headers = array(
+            'Reply-To' => $sender,
+            'From' => $iTipMessage->senderName.' <'.$this->senderEmail.'>',
+            'To' => $recipient,
+            'Subject' => $subject,
+            'MIME-Version' => '1.0',
+            'Content-Type' => 'text/calendar; charset=UTF-8; method='.$iTipMessage->method,
+        );
         if (DAV\Server::$exposeVersion) {
-            $headers[] = 'X-Sabre-Version: '.DAV\Version::VERSION;
+            $headers += ['X-Sabre-Version' => DAV\Version::VERSION];
         }
         $this->mail(
             $recipient,
-            $subject,
-            $iTipMessage->message->serialize(),
-            $headers
+            $headers,
+            $iTipMessage->message->serialize()
         );
         $iTipMessage->scheduleStatus = '1.1; Scheduling message is sent via iMip';
     }
@@ -152,13 +164,16 @@ class IMipPlugin extends DAV\ServerPlugin
      * This function is responsible for sending the actual email.
      *
      * @param string $to      Recipient email address
-     * @param string $subject Subject of the email
      * @param string $body    iCalendar body
      * @param array  $headers List of headers
      */
-    protected function mail($to, $subject, $body, array $headers)
+    protected function mail($to, array $headers, $body)
     {
-        mail($to, $subject, $body, implode("\r\n", $headers));
+        $mail = $this->mailer->send($to, $headers, $body);
+        if (\PEAR::isError($mail))
+            error_log($mail->getMessage());
+        else
+            error_log("Email successfully sent!");
     }
 
     // @codeCoverageIgnoreEnd

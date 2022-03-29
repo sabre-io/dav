@@ -52,6 +52,30 @@ class ServerEventsTest extends AbstractServer
         $this->assertEquals($newPath, $this->tempPath);
     }
 
+    public function testAfterCopy()
+    {
+        $tmpPath1 = '';
+        $tmpPath2 = '';
+        $this->server->on('afterCopy', function ($source, $destination) use (&$tmpPath1, &$tmpPath2) {
+            $tmpPath1 = $source;
+            $tmpPath2 = $destination;
+        });
+
+        $oldPath = '/oldCopy.txt';
+        $newPath = '/newCopy.txt';
+
+        $this->server->createFile($oldPath, 'body');
+        $request = new HTTP\Request('COPY', $oldPath, [
+            'Destination' => $newPath,
+        ]);
+        $this->server->httpRequest = $request;
+
+        $this->server->exec();
+        $this->assertEquals(201, $this->server->httpResponse->getStatus());
+        $this->assertEquals(trim($oldPath, '/'), $tmpPath1);
+        $this->assertEquals(trim($newPath, '/'), $tmpPath2);
+    }
+
     public function afterHandler($path)
     {
         $this->tempPath = $path;
@@ -89,6 +113,32 @@ class ServerEventsTest extends AbstractServer
         $this->server->exec();
 
         $this->assertEquals(500, $this->server->httpResponse->getStatus());
+    }
+
+    public function testBeforeCopyCancel()
+    {
+        $tmpPath1 = '';
+        $tmpPath2 = '';
+        $this->server->on('beforeCopy', function ($source, $destination) use (&$tmpPath1, &$tmpPath2) {
+            $tmpPath1 = $source;
+            $tmpPath2 = $destination;
+
+            return false;
+        });
+
+        $oldPath = '/oldCopy.txt';
+        $newPath = '/newCopy.txt';
+
+        $this->server->createFile($oldPath, 'body');
+        $request = new HTTP\Request('COPY', $oldPath, [
+            'Destination' => $newPath,
+        ]);
+        $this->server->httpRequest = $request;
+
+        $this->server->exec();
+        $this->assertEquals(500, $this->server->httpResponse->getStatus());
+        $this->assertEquals(trim($oldPath, '/'), $tmpPath1);
+        $this->assertEquals(trim($newPath, '/'), $tmpPath2);
     }
 
     public function beforeBindCancelHandler($path)

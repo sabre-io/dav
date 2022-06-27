@@ -1,6 +1,11 @@
 ChangeLog
 =========
 
+4.4.0 (2022-06-27)
+-------------------------
+* #1396: Include "before" and "after" copy events (@jvillafanez)
+* #1404: Fix encoding detection on PHP 8.1 (@come-nc)
+
 4.3.1 (2022-01-20)
 -------------------------
 * #1385: fix: ensure first argument on strpos is a string (@DeepDiver1975)

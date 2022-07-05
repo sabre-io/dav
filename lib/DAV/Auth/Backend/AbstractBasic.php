@@ -40,6 +40,20 @@ abstract class AbstractBasic implements BackendInterface
     protected $principalPrefix = 'principals/';
 
     /**
+     * Whether to auto create user on successful authentication
+     *
+     * @var bool
+     */
+    protected $autoCreateUser = false;
+
+    /**
+     * user data fetched by validateUserPass
+     *
+     * @var array
+     */
+    protected $userData = [];
+
+    /**
      * Validates a username and password.
      *
      * This method should return true or false depending on if login
@@ -60,6 +74,31 @@ abstract class AbstractBasic implements BackendInterface
     public function setRealm($realm)
     {
         $this->realm = $realm;
+    }
+
+    /**
+     * Check if a user exists
+     *
+     * @param string username
+     *
+     * @return bool
+     */
+    public function userExists($username)
+    {
+        return true;
+    }
+
+    /**
+     * Create a user if it doesn't exist
+     *
+     * @param string username
+     * @param string password
+     *
+     * @return bool
+     */
+    public function userCreate($username, $password)
+    {
+        return false;
     }
 
     /**
@@ -102,6 +141,11 @@ abstract class AbstractBasic implements BackendInterface
         }
         if (!$this->validateUserPass($userpass[0], $userpass[1])) {
             return [false, 'Username or password was incorrect'];
+        }
+        if ($this->autoCreateUser && !$this->userExists($userpass[0])) {
+            if(!$this->userCreate($userpass[0], $userpass[1])) {
+                return [false, 'Could not create user: '.$userpass[0]];
+            }
         }
 
         return [true, $this->principalPrefix.$userpass[0]];

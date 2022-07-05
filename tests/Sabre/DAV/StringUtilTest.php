@@ -116,4 +116,30 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
             StringUtil::ensureUTF8($inputString)
         );
     }
+
+    /**
+     * @param string $username
+     * @param string $line
+     * @param string $result
+     *
+     * @throws Exception\BadRequest
+     *
+     * @dataProvider cyrusDataset
+     */
+    public function testParseCyrusSasl($username, $line, $result)
+    {
+        $this->assertEquals($result, StringUtil::parseCyrusSasl($username, $line));
+    }
+
+    public function cyrusDataset()
+    {
+        return [
+            ['jane.doe@mail.example.org', 'uid=%U,ou=Users,dc=%3,dc=%2,dc=%1', 'uid=jane.doe,ou=Users,dc=mail,dc=example,dc=org'],
+            ['jane.doe.mail.example.org', 'uid=%u', 'uid=jane.doe.mail.example.org'],
+            ['jane.doe@example.org', 'uid=%U,test=%%,%%u%%%%u%U%5', 'uid=jane.doe,test=%,%u%%ujane.doe'],
+            ['@', '%5%%%u%U%d%%10', '%@%10'],
+            ['', '%u%U%d%1%2%3%%', '%'],
+            ['%%@%%', '%uid=%U%5%%', '%%@%%id=%%%'],
+        ];
+    }
 }

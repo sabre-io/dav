@@ -83,4 +83,78 @@ class StringUtil
             return $input;
         }
     }
+
+    /**
+     * substitution function to parse a given line using the
+     * given username, using cyrus-sasl style replacements.
+     *
+     * %u   - gets replaced by full username
+     * %U   - gets replaced by user part when the
+     *        username is an email address
+     * %d   - gets replaced by domain part when the
+     *        username is an email address
+     * %%   - gets replaced by %
+     * %1-9 - gets replaced by parts of the the domain
+     *        split by '.' in reverse order
+     *
+     * full example for jane.doe@mail.example.org:
+     *        %u = jane.doe@mail.example.org
+     *        %U = jane.doe
+     *        %d = mail.example.org
+     *        %1 = org
+     *        %2 = example
+     *        %3 = mail
+     *
+     * @param string username
+     * @param string line
+     *
+     * @return string
+     */
+    public static function parseCyrusSasl($username, $line)
+    {
+        $user_split = [$username];
+        $user = $username;
+        $domain = '';
+        try {
+            $user_split = explode('@', $username, 2);
+            $user = $user_split[0];
+            if (2 == count($user_split)) {
+                $domain = $user_split[1];
+            }
+        } catch (Exception $ignored) {
+        }
+        $domain_split = [];
+        try {
+            $domain_split = array_reverse(explode('.', $domain));
+        } catch (Exception $ignored) {
+            $domain_split = [];
+        }
+
+        $parsed_line = '';
+        for ($i = 0; $i < strlen($line); ++$i) {
+            if ('%' == $line[$i]) {
+                ++$i;
+                $next_char = $line[$i];
+                if ('u' == $next_char) {
+                    $parsed_line .= $username;
+                } elseif ('U' == $next_char) {
+                    $parsed_line .= $user;
+                } elseif ('d' == $next_char) {
+                    $parsed_line .= $domain;
+                } elseif ('%' == $next_char) {
+                    $parsed_line .= '%';
+                } else {
+                    for ($j = 1; $j <= count($domain_split) && $j <= 9; ++$j) {
+                        if ($next_char == ''.$j) {
+                            $parsed_line .= $domain_split[$j - 1];
+                        }
+                    }
+                }
+            } else {
+                $parsed_line .= $line[$i];
+            }
+        }
+
+        return $parsed_line;
+    }
 }

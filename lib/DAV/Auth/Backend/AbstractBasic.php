@@ -40,14 +40,14 @@ abstract class AbstractBasic implements BackendInterface
     protected $principalPrefix = 'principals/';
 
     /**
-     * Whether to auto create user on successful authentication
+     * Whether to auto create user on successful authentication.
      *
      * @var bool
      */
     protected $autoCreateUser = false;
 
     /**
-     * user data fetched by validateUserPass
+     * user data fetched by validateUserPass.
      *
      * @var array
      */
@@ -77,7 +77,7 @@ abstract class AbstractBasic implements BackendInterface
     }
 
     /**
-     * Check if a user exists
+     * Check if a user exists.
      *
      * @param string username
      *
@@ -89,7 +89,7 @@ abstract class AbstractBasic implements BackendInterface
     }
 
     /**
-     * Create a user if it doesn't exist
+     * Create a user if it doesn't exist.
      *
      * @param string username
      * @param string password
@@ -143,7 +143,7 @@ abstract class AbstractBasic implements BackendInterface
             return [false, 'Username or password was incorrect'];
         }
         if ($this->autoCreateUser && !$this->userExists($userpass[0])) {
-            if(!$this->userCreate($userpass[0], $userpass[1])) {
+            if (!$this->userCreate($userpass[0], $userpass[1])) {
                 return [false, 'Could not create user: '.$userpass[0]];
             }
         }

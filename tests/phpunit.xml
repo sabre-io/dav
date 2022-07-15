@@ -33,4 +33,9 @@
        <directory suffix=".php">../lib/</directory>
     </whitelist>
   </filter>
+
+  <php>
+    <env name="BASEURL" value="http://localhost:8000"/>
+    <env name="SABRE_HTTP_TEST_GET_LARGE_CONTENT_MAX_PEAK_MEMORY_USAGE" value="80000000"/>
+  </php>
 </phpunit>

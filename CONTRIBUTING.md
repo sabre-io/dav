@@ -42,12 +42,12 @@ sabre projects don't follow [PSR-2][3].
 
 In addition to that, here's a list of basic rules:
 
-1. PHP 5.4 array syntax must be used every where. This means you use `[` and
+1. PHP 5.4 array syntax must be used everywhere. This means you use `[` and
    `]` instead of `array(` and `)`.
 2. Use PHP namespaces everywhere.
 3. Use 4 spaces for indentation.
 4. Try to keep your lines under 80 characters. This is not a hard rule, as
-   there are many places in the source where it felt more sensibile to not
+   there are many places in the source where it felt more sensible to not
    do so. In particular, function declarations are never split over multiple
    lines.
 5. Opening braces (`{`) are _always_ on the same line as the `class`, `if`,
@@ -65,18 +65,20 @@ In addition to that, here's a list of basic rules:
 Unit test requirements
 ----------------------
 
-Any new feature or change requires unittests. We use [PHPUnit][7] for all our
+Any new feature or change requires unit tests. We use [PHPUnit][7] for all our
 tests.
 
-Adding unittests will greatly increase the likelyhood of us quickly accepting
+Adding unittests will greatly increase the likelihood of us quickly accepting
 your pull request. If unittests are not included though for whatever reason,
 we'd still _love_ your pull request.
 
 We may have to write the tests ourselves, which can increase the time it takes
 to accept the patch, but we'd still really like your contribution!
 
-To run the testsuite jump into the directory `cd tests` and trigger `phpunit`.
-Make sure you did a `composer install` beforehand.
+To run the unit tests locally:
+1. `composer install`
+2. start a PHP dev server in a separate terminal: `php -S localhost:8000 -t vendor/sabre/http/tests/www`
+3. `composer phpunit`
 
 Release process
 ---------------
@@ -88,12 +90,11 @@ Generally, these are the steps taken to do releases.
    release. I generally run a `git diff` to figure out if I missed any changes.
    This file should also have the current date.
 2. If there were BC breaks, this usually now means a major version bump.
-3. Ensure that `lib/Version.php` or `lib/DAV/Version.php` also matches this
-   version number.
-4. Tag the release (Example `git tag 3.0.1` and push the tag (`git push --tags`).
+3. Ensure that `lib/DAV/Version.php` also matches this version number.
+4. Tag the release (Example `git tag 3.0.1` and push the tag (`git push --tags`)).
 5. (only for the sabre/dav project), create a zip distribution. Run
    `php bin/build.php`.
-6. For the relevant project, go to github and click the 'releases' tab. On this
+6. For the relevant project, go to GitHub and click the 'releases' tab. On this
    tab I create the release with the relevant version. I also set the
    description of the release to the same information of the changelog. In the
    case of the `sabre/dav` project I also upload the zip distribution here.

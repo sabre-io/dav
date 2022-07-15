@@ -33,4 +33,8 @@
        <directory suffix=".php">../lib/</directory>
     </whitelist>
   </filter>
+
+  <php>
+    <env name="BASEURL" value="http://localhost:8000"/>
+  </php>
 </phpunit>

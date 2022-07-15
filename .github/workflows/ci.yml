@@ -104,6 +104,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      - name: Run application server
+        run: php -S localhost:8000 -t vendor/sabre/http/tests/www 2>/dev/null &
+
       - name: PHPUnit
         if: matrix.streaming == false
         run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml

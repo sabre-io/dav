@@ -66,195 +66,204 @@ class CorePlugin extends ServerPlugin
     }
 
     /**
-	 * This is the default implementation for the GET method.
-	 *
-	 * @return bool
-	 */
-	public function httpGet(RequestInterface $request, ResponseInterface $response)
-	{
-		$path = $request->getPath();
-		$node = $this->server->tree->getNodeForPath($path);
+     * This is the default implementation for the GET method.
+     *
+     * @return bool
+     */
+    public function httpGet(RequestInterface $request, ResponseInterface $response)
+    {
+        $path = $request->getPath();
+        $node = $this->server->tree->getNodeForPath($path);
 
-		if (!$node instanceof IFile) {
-			return;
-		}
+        if (!$node instanceof IFile) {
+            return;
+        }
 
-		if ('HEAD' === $request->getHeader('X-Sabre-Original-Method')) {
-			$body = '';
-		} else {
-			$body = $node->get();
+        if ('HEAD' === $request->getHeader('X-Sabre-Original-Method')) {
+            $body = '';
+        } else {
+            $body = $node->get();
 
-			// Converting string into stream, if needed.
-			if (is_string($body)) {
-				$stream = fopen('php://temp', 'r+');
-				fwrite($stream, $body);
-				rewind($stream);
-				$body = $stream;
-			}
-		}
+            // Converting string into stream, if needed.
+            if (is_string($body)) {
+                $stream = fopen('php://temp', 'r+');
+                fwrite($stream, $body);
+                rewind($stream);
+                $body = $stream;
+            }
+        }
 
-		/*
+        /*
          * TODO: getetag, getlastmodified, getsize should also be used using
          * this method
          */
-		$httpHeaders = $this->server->getHTTPHeaders($path);
+        $httpHeaders = $this->server->getHTTPHeaders($path);
 
-		/* ContentType needs to get a default, because many webservers will otherwise
+        /* ContentType needs to get a default, because many webservers will otherwise
          * default to text/html, and we don't want this for security reasons.
          */
-		if (!isset($httpHeaders['Content-Type'])) {
-			$httpHeaders['Content-Type'] = 'application/octet-stream';
-		}
+        if (!isset($httpHeaders['Content-Type'])) {
+            $httpHeaders['Content-Type'] = 'application/octet-stream';
+        }
 
-		if (isset($httpHeaders['Content-Length'])) {
-			$nodeSize = $httpHeaders['Content-Length'];
+        if (isset($httpHeaders['Content-Length'])) {
+            $nodeSize = $httpHeaders['Content-Length'];
 
-			// Need to unset Content-Length, because we'll handle that during figuring out the range
-			unset($httpHeaders['Content-Length']);
-		} else {
-			$nodeSize = null;
-		}
+            // Need to unset Content-Length, because we'll handle that during figuring out the range
+            unset($httpHeaders['Content-Length']);
+        } else {
+            $nodeSize = null;
+        }
 
-		$response->addHeaders($httpHeaders);
+        $response->addHeaders($httpHeaders);
 
-		// this function now only checks, if the range string correctly formatted
-		// and returns it (or null if it isn't or it doesn't exist)
-		// processing of the ranges will then be done further below
-		$rangeString = $this->server->getHTTPRange();
-		$ifRange = $request->getHeader('If-Range');
-		$ignoreRangeHeader = false;
+        // this function now only checks, if the range string correctly formatted
+        // and returns it (or null if it isn't or it doesn't exist)
+        // processing of the ranges will then be done further below
+        $rangeString = $this->server->getHTTPRange();
+        $ifRange = $request->getHeader('If-Range');
+        $ignoreRangeHeader = false;
 
-		// If ifRange is set, and range is specified, we first need to check
-		// the precondition.
-		if ($nodeSize && $rangeString && $ifRange) {
-			// if IfRange is parsable as a date we'll treat it as a DateTime
-			// otherwise, we must treat it as an etag.
-			try {
-				$ifRangeDate = new \DateTime($ifRange);
+        // If ifRange is set, and range is specified, we first need to check
+        // the precondition.
+        if ($nodeSize && $rangeString && $ifRange) {
+            // if IfRange is parsable as a date we'll treat it as a DateTime
+            // otherwise, we must treat it as an etag.
+            try {
+                $ifRangeDate = new \DateTime($ifRange);
 
-				// It's a date. We must check if the entity is modified since
-				// the specified date.
-				if (!isset($httpHeaders['Last-Modified'])) {
-					$ignoreRangeHeader = true;
-				} else {
-					$modified = new \DateTime($httpHeaders['Last-Modified']);
-					if ($modified > $ifRangeDate) {
-						$ignoreRangeHeader = true;
-					}
-				}
-			} catch (\Exception $e) {
-				// It's an entity. We can do a simple comparison.
-				if (!isset($httpHeaders['ETag'])) {
-					$ignoreRangeHeader = true;
-				} elseif ($httpHeaders['ETag'] !== $ifRange) {
-					$ignoreRangeHeader = true;
-				}
-			}
-		}
+                // It's a date. We must check if the entity is modified since
+                // the specified date.
+                if (!isset($httpHeaders['Last-Modified'])) {
+                    $ignoreRangeHeader = true;
+                } else {
+                    $modified = new \DateTime($httpHeaders['Last-Modified']);
+                    if ($modified > $ifRangeDate) {
+                        $ignoreRangeHeader = true;
+                    }
+                }
+            } catch (\Exception $e) {
+                // It's an entity. We can do a simple comparison.
+                if (!isset($httpHeaders['ETag'])) {
+                    $ignoreRangeHeader = true;
+                } elseif ($httpHeaders['ETag'] !== $ifRange) {
+                    $ignoreRangeHeader = true;
+                }
+            }
+        }
 
-		if (!$ignoreRangeHeader && $nodeSize && $rangeString) {
-			// preprocess the ranges now
-			// this involves removing invalid ranges and security checks
-			$ranges = $this->server->preprocessRanges($rangeString, $nodeSize);
-		}
+        $ranges = null;
 
-		if (!$ignoreRangeHeader && $nodeSize && $ranges) {
-			// create a new stream for the partial responses
-			$rangeBody = fopen('php://temp', 'r+');
+        if (!$ignoreRangeHeader && $nodeSize && $rangeString) {
+            // preprocess the ranges now
+            // this involves removing invalid ranges and security checks
+            $ranges = $this->server->preprocessRanges($rangeString, $nodeSize);
+        }
 
-			// create a boundary string that is being used as identifier for multipart ranges
-			$boundary = hash('md5', uniqid('', true));
+        if (!$ignoreRangeHeader && $nodeSize && $ranges) {
+            // create a new stream for the partial responses
+            $rangeBody = fopen('php://temp', 'r+');
 
-			// create a content length counter
-			$contentLength = 0;
+            // create a boundary string that is being used as identifier for multipart ranges
+            $boundary = hash('md5', uniqid('', true));
 
-			foreach ($ranges as $range) {
-				$start = $range[0];
-				$end = $range[1];
+            // create a content length counter
+            $contentLength = 0;
 
-				// Streams may advertise themselves as seekable, but still not
-				// actually allow fseek.  We'll manually go forward in the stream
-				// if fseek failed.
-				if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
-					// because of potential multiple ranges with descending order, rewind stream after finishing each range
-					if (!rewind($body)) {
-						throw new Exception\PreconditionFailed('Could not rewind the response stream');
-					}
-					$consumeBlock = 8192;
-					for ($consumed = 0; $start - $consumed > 0;) {
-						if (feof($body)) {
-							throw new Exception\RequestedRangeNotSatisfiable('The start offset (' . $start . ') exceeded the size of the entity (' . $consumed . ')');
-						}
-						$consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
-					}
-				}
+            // define the node's content type
+            $nodeContentType = $node->getContentType();
 
-				// if there is only one range, write it into the reponse body
-				// otherwise, write multipart header info first before writing the data
-				if (count($ranges) === 1) {
-					$rangeLength = $end - $start + 1;
-					$consumeBlock = 8192;
+            if (!$nodeContentType) {
+                $nodeContentType = 'application/octet-stream';
+            }
 
-					// write body data into response body (max 8192 bytes per read cycle)
-					while ($rangeLength > 0) {
-						fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
-						$rangeLength -= min($rangeLength, $consumeBlock);
-					}
+            foreach ($ranges as $range) {
+                $start = $range[0];
+                $end = $range[1];
 
-					// update content length
-					$contentLength = $end - $start + 1;
-				} else {
-					// define new boundary section and write to response body
-					$boundarySection = "--" . $boundary . "\nContent-Type: " . $node->getContentType() . "\nContent-Range: bytes " . $start . "-" . $end . '/' . $nodeSize . "\n\n";
-					fwrite($rangeBody, $boundarySection);
+                // Streams may advertise themselves as seekable, but still not
+                // actually allow fseek.  We'll manually go forward in the stream
+                // if fseek failed.
+                if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
+                    // don't allow multipart ranges for non-seekable streams
+                    // these streams are not rewindable, so they would have to be closed and opened for each range
+                    if (count($ranges) > 1) {
+                        throw new Exception\RequestedRangeNotSatisfiable('Multipart range requests are not allowed on a non-seekable resource.');
+                    }
+                    $consumeBlock = 8192;
+                    for ($consumed = 0; $start - $consumed > 0;) {
+                        if (feof($body)) {
+                            throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$start.') exceeded the size of the entity ('.$consumed.')');
+                        }
+                        $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
+                    }
+                }
 
-					// write body data into response body (max 8192 bytes per read cycle)
-					$rangeLength = $end - $start + 1;
-					$consumeBlock = 8192;
-					while ($rangeLength > 0) {
-						fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
-						$rangeLength -= min($rangeLength, $consumeBlock);
-					}
+                // if there is only one range, write it into the reponse body
+                // otherwise, write multipart header info first before writing the data
+                if (1 === count($ranges)) {
+                    $rangeLength = $end - $start + 1;
+                    $consumeBlock = 8192;
 
-					// write line breaks at the end of section
-					fwrite($rangeBody, "\n\n");
+                    // write body data into response body (max 8192 bytes per read cycle)
+                    while ($rangeLength > 0) {
+                        fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
+                        $rangeLength -= min($rangeLength, $consumeBlock);
+                    }
 
-					// update content length
-					// +2 for double linebreak at the end of each section
-					$contentLength += strlen($boundarySection) + ($end - $start + 1) + 2;
-				}
-			}
+                    // update content length
+                    $contentLength = $end - $start + 1;
+                } else {
+                    // define new boundary section and write to response body
+                    $boundarySection = '--'.$boundary."\nContent-Type: ".$nodeContentType."\nContent-Range: bytes ".$start.'-'.$end.'/'.$nodeSize."\n\n";
+                    fwrite($rangeBody, $boundarySection);
 
-			// rewind the range body after the loop
-			if (!rewind($rangeBody)) {
-				throw new Exception\PreconditionFailed('Could not rewind the response stream');
-			}
+                    // write body data into response body (max 8192 bytes per read cycle)
+                    $rangeLength = $end - $start + 1;
+                    $consumeBlock = 8192;
+                    while ($rangeLength > 0) {
+                        fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
+                        $rangeLength -= min($rangeLength, $consumeBlock);
+                    }
 
-			if (count($ranges) === 1) {
-				// if only one range, content range header MUST be set (according to spec)
-				$response->setHeader('Content-Range', 'bytes ' . $start . '-' . $end . '/' . $nodeSize);
-			} else {
-				// if multiple ranges, content range header MUST NOT be set (according to spec)
-				// content type header MUST be of type multipart/byteranges
-				// more specific types can be set in each body section header
-				$response->setHeader('Content-Type', 'multipart/byteranges; boundary=' . $boundary);
-			}
+                    // write line breaks at the end of section
+                    fwrite($rangeBody, "\n\n");
 
-			$response->setHeader('Content-Length', $contentLength);
-			$response->setHeader('Vary', 'Range');
+                    // update content length
+                    // +2 for double linebreak at the end of each section
+                    $contentLength += strlen($boundarySection) + ($end - $start + 1) + 2;
+                }
+            }
 
-			$response->setStatus(206);
-			$response->setBody($rangeBody);
-		} else {
-			if ($nodeSize) {
-				$response->setHeader('Content-Length', $nodeSize);
-			}
-			$response->setStatus(200);
-			$response->setBody($body);
-		}
+            // rewind the range body after the loop
+            if (!rewind($rangeBody)) {
+                throw new Exception\PreconditionFailed('Could not rewind the response stream');
+            }
 
-		return false;
-	}
+            if (1 === count($ranges)) {
+                // if only one range, content range header MUST be set (according to spec)
+                $response->setHeader('Content-Range', 'bytes '.$start.'-'.$end.'/'.$nodeSize);
+            } else {
+                // if multiple ranges, content range header MUST NOT be set (according to spec)
+                // content type header MUST be of type multipart/byteranges
+                // more specific types can be set in each body section header
+                $response->setHeader('Content-Type', 'multipart/byteranges; boundary='.$boundary);
+            }
+
+            $response->setHeader('Content-Length', $contentLength);
+
+            $response->setStatus(206);
+            $response->setBody($rangeBody);
+        } else {
+            if ($nodeSize) {
+                $response->setHeader('Content-Length', $nodeSize);
+            }
+            $response->setStatus(200);
+            $response->setBody($body);
+        }
+
+        return false;
+    }
 
     /**
      * HTTP OPTIONS.

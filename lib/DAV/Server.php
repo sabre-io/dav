@@ -609,193 +609,201 @@ class Server implements LoggerAwareInterface, EmitterInterface
     }
 
     /**
-	 * Returns the HTTP range header.
-	 *
-	 * This method returns null if there is no well-formed HTTP range request
-	 * header.
-	 * 
-	 * If the string is valid, the ranges will be evaluated and processed in 
-	 * the next function
-	 * 
-	 * @return string|null
-	 */
-	public function getHTTPRange()
-	{
-		$rangeHeader = $this->httpRequest->getHeader('range');
+     * Returns the HTTP range header.
+     *
+     * This method returns null if there is no well-formed HTTP range request
+     * header.
+     *
+     * If the string is valid, the ranges will be evaluated and processed in
+     * the next function
+     *
+     * @return string|null
+     */
+    public function getHTTPRange()
+    {
+        $rangeHeader = $this->httpRequest->getHeader('range');
 
-		if (is_null($rangeHeader)) {
-			return null;
-		}
+        if (is_null($rangeHeader)) {
+            return null;
+        }
 
-		// remove all spaces before evaluation
-		$rangeHeader = str_replace(' ', '', $rangeHeader);
+        // remove all spaces before evaluation
+        $rangeHeader = str_replace(' ', '', $rangeHeader);
 
-		// regex to allow multiple ranges
-		// e.g.'Range: bytes=0-50,100-140, 200-500'
-		if (!preg_match('/^bytes=(([0-9]*-{1}[0-9]*,? ?)*)$/i', $rangeHeader, $matches)) {
-			return null;
-		}
+        // regex to allow multiple ranges
+        // e.g.'Range: bytes=0-50,100-140, 200-500'
+        if (!preg_match('/^bytes=(([0-9]*-{1}[0-9]*,? ?)*)$/i', $rangeHeader, $matches)) {
+            return null;
+        }
 
-		// remove trailing comma
-		$matches[1] = trim($matches[1], ',');
+        // remove trailing comma
+        $matches[1] = trim($matches[1], ',');
 
-		// remove the range string
-		return $matches[1];
-	}
+        // remove the range string
+        return $matches[1];
+    }
 
-	/**
-	 * Returns the processed ranges of the previously parsed range header
-	 * 
-	 * Each range consists of 2 numbers
-	 * The first number specifies the offset of the first byte in the range
-	 * The second number specifies the offset of the last byte in the range
-	 *
-	 * If the second offset is null, it should be treated as the offset of the last byte of the entity
-	 * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
-	 * 
-	 * If multiple ranges are specified, they will be preprocessed to avoid DOS attacks
-	 * Amount of ranges will be capped dependent on boundary size 
-	 * Overlapping ranges will be capped to 2 per request
-	 * Ranges in descending order will be capped dependent on boundary size
-	 *
-	 * @throws Exception\PreconditionFailed   if ranges overlap or too many ranges are being requested
-	 * @throws Exception\RequestedRangeNotSatisfiable   if an invalid range is requested
-	 * 
-	 * @return array|null
-	 */
-	public function preprocessRanges($rangeString, $nodeSize)
-	{
-		// create an array of all ranges
-		// result example: [[0, 100], [200, 300]]
-		$ranges = explode(',', $rangeString);
+    /**
+     * Returns the processed ranges of the previously parsed range header.
+     *
+     * Each range consists of 2 numbers
+     * The first number specifies the offset of the first byte in the range
+     * The second number specifies the offset of the last byte in the range
+     *
+     * If the second offset is null, it should be treated as the offset of the last byte of the entity
+     * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
+     *
+     * If multiple ranges are specified, they will be preprocessed to avoid DOS attacks
+     * Amount of ranges will be capped dependent on boundary size
+     * Overlapping ranges will be capped to 2 per request
+     * Ranges in descending order will be capped dependent on boundary size
+     *
+     * @throws Exception\PreconditionFailed           if ranges overlap or too many ranges are being requested
+     * @throws Exception\RequestedRangeNotSatisfiable if an invalid range is requested
+     *
+     * @return array|null
+     */
+    public function preprocessRanges($rangeString, $nodeSize)
+    {
+        // create an array of all ranges
+        // result example: [[0, 100], [200, 300]]
+        $ranges = explode(',', $rangeString);
 
-		// if an invalid range is encountered, its index will be saved in here
-		// invalid ranges will be removed after the for loop
-		// examples: start > end, '---200-300---', '-'
-		$rangesToRemove = [];
+        // if an invalid range is encountered, its index will be saved in here
+        // invalid ranges will be removed after the for loop
+        // examples: start > end, '---200-300---', '-'
+        $rangesToRemove = [];
 
-		// loop over the array of ranges and do some basic checks and transforms
-		for ($i = 0; $i < count($ranges); $i++) {
-			$ranges[$i] = explode('-', $ranges[$i]);
+        // loop over the array of ranges and do some basic checks and transforms
+        for ($i = 0; $i < count($ranges); ++$i) {
+            $ranges[$i] = explode('-', $ranges[$i]);
 
-			// mark invalid ranges for removal
-			// "---200-300---" would be considered a valid range by the regexp
-			if (count($ranges[$i]) !== 2) {
-				$rangesToRemove[] = $i;
-				continue;
-			}
+            // mark invalid ranges for removal
+            // "---200-300---" would be considered a valid range by the regexp
+            if (2 !== count($ranges[$i])) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
 
-			// copy the ranges into temporary variables for comparisons
-			$start = $ranges[$i][0];
-			$end = $ranges[$i][1];
+            // copy the ranges into temporary variables for comparisons
+            $start = $ranges[$i][0];
+            $end = $ranges[$i][1];
 
-			// if neither start nor end value is defined, mark range for removal
-			if ($start === "" && $end === "") {
-				$rangesToRemove[] = $i;
-				continue;
-			}
+            // if neither start nor end value is defined, mark range for removal
+            if ('' === $start && '' === $end) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
 
-			// transform range parameters for special ranges immediately
-			// this will make security checks later in this function much simpler
-			if ($start === "") {
-				$ranges[$i][0] = $nodeSize - intval($end);
-				$ranges[$i][1] = $nodeSize - 1;
-			} else if ($end === "" || $end > ($nodeSize - 1)) {
-				$ranges[$i][0] = intval($start);
-				$ranges[$i][1] = $nodeSize - 1;
-			} else {
-				$ranges[$i][0] = intval($start);
-				$ranges[$i][1] = intval($end);
-			}
+            // if start > filesize, mark for removal
+            if ($start > $nodeSize) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
 
-			// if start > end, mark it for removal
-			if ($ranges[$i][0] > $ranges[$i][1]) {
-				$rangesToRemove[] = $i;
-			}
-		}
+            // transform range parameters for special ranges immediately
+            // this will make security checks later in this function much simpler
+            if ('' === $start) {
+                $ranges[$i][0] = max($nodeSize - intval($end), 0);
+                $ranges[$i][1] = $nodeSize - 1;
+            } elseif ('' === $end || $end > ($nodeSize - 1)) {
+                $ranges[$i][0] = intval($start);
+                $ranges[$i][1] = $nodeSize - 1;
+            } else {
+                $ranges[$i][0] = intval($start);
+                $ranges[$i][1] = intval($end);
+            }
 
-		// remove invalid ranges
-		foreach ($rangesToRemove as $idx) {
-			unset($ranges[$idx]);
-		}
+            // if start > end, mark it for removal
+            if ($ranges[$i][0] > $ranges[$i][1]) {
+                $rangesToRemove[] = $i;
+            }
+        }
 
-		// if no ranges are left at this point, return
-		if (count($ranges) === 0) {
-			return null;
-		}
+        // remove invalid ranges
+        foreach ($rangesToRemove as $idx) {
+            unset($ranges[$idx]);
+        }
 
-		// rearrange the array keys
-		$ranges = array_values($ranges);
+        // if no ranges are left at this point, return
+        if (0 === count($ranges)) {
+            throw new Exception\RequestedRangeNotSatisfiable('None of the provided ranges satisfy the requirements. Check out RFC 7233 to learn how to form range requests.');
+        }
 
-		/**
-		 * implement checks to prevent DOS attacks, according to rfc7233, 6.1
-		 */
+        // rearrange the array keys
+        $ranges = array_values($ranges);
 
-		// set up a sorted copy of the ranges array and define the boundary
-		$sortedRanges = $ranges;
-		sort($sortedRanges);
+        /**
+         * implement checks to prevent DOS attacks, according to rfc7233, 6.1.
+         */
 
-		$minRangeBoundary = $sortedRanges[0][0];
-		$maxRangeBoundary = max(array_column($sortedRanges, 1));
-		$rangeBoundary = $maxRangeBoundary - $minRangeBoundary;
+        // set up a sorted copy of the ranges array and define the boundary
+        $sortedRanges = $ranges;
+        sort($sortedRanges);
 
-		// check 1: limit the amount of ranges per request depending on range boundary
-		// accept 1024 requests for a boundary < 1MB, and 512 for boundaries larger than that
-		// rfc standard doesn't provide specification for the amount of ranges to be allowed per request
-		if (
-			($rangeBoundary < (1 << 20) && count($ranges) > 1024)
-			|| ($rangeBoundary > (1 << 20) && count($ranges) > 512)
-		) {
-			throw new Exception\PreconditionFailed('Too many ranges in this request');
-		}
+        $minRangeBoundary = $sortedRanges[0][0];
+        $maxRangeBoundary = max(array_column($sortedRanges, 1));
+        $rangeBoundary = $maxRangeBoundary - $minRangeBoundary;
 
-		// check2: check for overlapping ranges and allow a maximum of 2
-		// compare each start value with either the previous end value 
-		// or current max end range value, whichever is bigger
-		$overlapCounter = 0;
-		$maxEndValue = -1;
+        // check 1: limit the amount of ranges per request depending on range boundary
+        // accept 1024 requests for a boundary < 1MB, and 512 for boundaries larger than that
+        // rfc standard doesn't provide specification for the amount of ranges to be allowed per request
+        if (
+            ($rangeBoundary < (1 << 20) && count($ranges) > 1024)
+            || ($rangeBoundary > (1 << 20) && count($ranges) > 512)
+        ) {
+            throw new Exception\RequestedRangeNotSatisfiable('Too many ranges in this request');
+        }
 
-		foreach ($sortedRanges as $range) {
-			// compare start value with the current maxEndValue
-			if ($range[0] <= $maxEndValue) {
-				$overlapCounter++;
+        // check2: check for overlapping ranges and allow a maximum of 2
+        // compare each start value with either the previous end value
+        // or current max end range value, whichever is bigger
+        $overlapCounter = 0;
+        $maxEndValue = -1;
 
-				if ($overlapCounter > 2) {
-					throw new Exception\PreconditionFailed('Too many overlaps');
-				}
-			}
+        foreach ($sortedRanges as $range) {
+            // compare start value with the current maxEndValue
+            if ($range[0] <= $maxEndValue) {
+                ++$overlapCounter;
 
-			// check if this ranges end value is larger than maxEndValue and update
-			if ($range[1] > $maxEndValue) {
-				$maxEndValue = $range[1];
-			}
-		}
+                if ($overlapCounter > 2) {
+                    throw new Exception\RequestedRangeNotSatisfiable('Too many overlaps. Consider coalescing your overlapping ranges');
+                }
+            }
 
-		// check3: ranges should be requested in ascending order
-		// it can be useful to do occasional descending requests, i.e. if a necessary
-		// piece of information is located at the end of the file. however, if a range
-		// consists of many unordered ranges, it can be indicative of a deliberate attack
-		// limit descending ranges to 32 for boundaries < 1MB and 16 for boundaries larger than that
-		$descendingStartCounter = 0;
+            // check if this ranges end value is larger than maxEndValue and update
+            if ($range[1] > $maxEndValue) {
+                $maxEndValue = $range[1];
+            }
+        }
 
-		foreach ($ranges as $idx => $range) {
-			// skip the first range
-			if ($idx === 0) continue;
+        // check3: ranges should be requested in ascending order
+        // it can be useful to do occasional descending requests, i.e. if a necessary
+        // piece of information is located at the end of the file. however, if a range
+        // consists of many unordered ranges, it can be indicative of a deliberate attack
+        // limit descending ranges to 32 for boundaries < 1MB and 16 for boundaries larger than that
+        $descendingStartCounter = 0;
 
-			if ($range[0] < $ranges[$idx - 1][0]) {
-				$descendingStartCounter++;
-			}
-		}
+        foreach ($ranges as $idx => $range) {
+            // skip the first range
+            if (0 === $idx) {
+                continue;
+            }
 
-		if (
-			($rangeBoundary < (1 << 20) && $descendingStartCounter > 32)
-			|| ($rangeBoundary > (1 << 20) && $descendingStartCounter > 16)
-		) {
-			throw new Exception\PreconditionFailed('Too many ranges in this request');
-		}
+            if ($range[0] < $ranges[$idx - 1][0]) {
+                ++$descendingStartCounter;
+            }
+        }
 
-		return $ranges;
-	}
+        if (
+            ($rangeBoundary < (1 << 20) && $descendingStartCounter > 32)
+            || ($rangeBoundary > (1 << 20) && $descendingStartCounter > 16)
+        ) {
+            throw new Exception\RequestedRangeNotSatisfiable('Too many unordered ranges in this request. Avoid listing ranges in descending order.');
+        }
+
+        return $ranges;
+    }
 
     /**
      * Returns the HTTP Prefer header information.

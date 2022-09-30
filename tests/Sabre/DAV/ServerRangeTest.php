@@ -249,4 +249,106 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $this->assertEquals(200, $response->getStatus());
         $this->assertEquals('Test contents', $response->getBodyAsString());
     }
+
+    // the following section contains new multipart range request tests
+    // this string will be on top of every range. we will need this one a lot
+    public function getBoundaryResponseString($boundary, $range)
+    {
+        return '--'.$boundary."\nContent-Type: application/octet-stream\nContent-Range: bytes ".$range[0].'-'.$range[1].'/'.$range[2]."\n\n";
+    }
+
+    public function testMultipartRange()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5, 8-11']);
+        $response = $this->request($request);
+
+        $boundary = explode('boundary=', $response->getHeader('Content-Type'))[1];
+
+        $this->assertEquals([
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['multipart/byteranges; boundary='.$boundary],
+            'Content-Length' => [219],
+            'ETag' => ['"'.md5('Test contents').'"'],
+            'Last-Modified' => [$this->lastModified],
+            ],
+            $response->getHeaders()
+        );
+        $this->assertEquals(206, $response->getStatus());
+        $this->assertEquals($this->getBoundaryResponseString($boundary, [2, 5, 13]).'st c'."\n\n".$this->getBoundaryResponseString($boundary, [8, 11, 13]).'tent'."\n\n", $response->getBodyAsString());
+    }
+
+    /**
+     * @depends testMultipartRange
+     */
+    public function testPartiallyValidRangeWithSingleValidRange()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5, 11-8, 100-200, -5-5']);
+        $response = $this->request($request);
+
+        $this->assertEquals([
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [4],
+            'Content-Range' => ['bytes 2-5/13'],
+            'ETag' => ['"'.md5('Test contents').'"'],
+            'Last-Modified' => [$this->lastModified],
+            ],
+            $response->getHeaders()
+        );
+        $this->assertEquals(206, $response->getStatus());
+        $this->assertEquals('st c', $response->getBodyAsString());
+    }
+
+    /**
+     * @depends testMultipartRange
+     */
+    public function testPartiallyValidRangeWithMultipleValidRanges()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5, 8-11, 11-8, 100-200, -5-5']);
+        $response = $this->request($request);
+
+        $boundary = explode('boundary=', $response->getHeader('Content-Type'))[1];
+
+        $this->assertEquals([
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['multipart/byteranges; boundary='.$boundary],
+            'Content-Length' => [219],
+            'ETag' => ['"'.md5('Test contents').'"'],
+            'Last-Modified' => [$this->lastModified],
+            ],
+            $response->getHeaders()
+        );
+        $this->assertEquals(206, $response->getStatus());
+        $this->assertEquals($this->getBoundaryResponseString($boundary, [2, 5, 13]).'st c'."\n\n".$this->getBoundaryResponseString($boundary, [8, 11, 13]).'tent'."\n\n", $response->getBodyAsString());
+    }
+
+    /**
+     * @depends testMultipartRange
+     */
+    public function testCompletelyInvalidRange()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=11-8, 100-200, -5-5']);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
+    }
+
+    /**
+     * @depends testMultipartRange
+     */
+    public function testOverlappingRange()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-12, 3-5, 6-9, 9-11']);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
+    }
+
+    public function testNonSeekableMultipartRange()
+    {
+        $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5, 7-11']);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
+    }
 }

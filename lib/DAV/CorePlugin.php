@@ -236,9 +236,7 @@ class CorePlugin extends ServerPlugin
             }
 
             // rewind the range body after the loop
-            if (!rewind($rangeBody)) {
-                throw new Exception\PreconditionFailed('Could not rewind the response stream');
-            }
+            rewind($rangeBody);
 
             if (1 === count($ranges)) {
                 // if only one range, content range header MUST be set (according to spec)

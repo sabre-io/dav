@@ -27,6 +27,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
     {
         parent::setUp();
         $this->server->createFile('files/test.txt', 'Test contents');
+        $this->server->createFile('files/rangetest.txt', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras massa quam, tempus a bibendum eget, accumsan et risus. Duis volutpat diam consectetur lorem scelerisque, vitae tristique massa tristique. Donec porta elementum condimentum. Duis fringilla, est sed tempus placerat, tortor tortor pulvinar lacus, in semper magna felis id nisi. Pellentesque eleifend augue elit, non hendrerit ex euismod at. Morbi a auctor mi. Suspendisse vel imperdiet lacus. Aenean auctor nulla urna, in sagittis felis venenatis fringilla. Nulla facilisi. Suspendisse nunc.');
 
         $this->lastModified = HTTP\toDate(
             new DateTime('@'.$this->server->tree->getNodeForPath('files/test.txt')->getLastModified())
@@ -146,6 +147,17 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         );
 
         $this->assertEquals('st c', $response->getBodyAsString());
+    }
+
+    /**
+     * @depends testNonSeekableStream
+     */
+    public function testNonSeekableExceedingRange()
+    {
+        $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=100-200']);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
     }
 
     /**
@@ -327,7 +339,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
      */
     public function testCompletelyInvalidRange()
     {
-        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=11-8, 100-200, -5-5']);
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=11-8, 100-200, -5-5, -']);
         $response = $this->request($request);
 
         $this->assertEquals(416, $response->getStatus());
@@ -339,6 +351,34 @@ class ServerRangeTest extends \Sabre\DAVServerTest
     public function testOverlappingRange()
     {
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-12, 3-5, 6-9, 9-11']);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
+    }
+
+    public function testTooManyRanges()
+    {
+        $ranges = [];
+        for ($i = 0; $i < 513; ++$i) {
+            $ranges[] = $i.'-'.$i;
+        }
+        $byterange = 'bytes='.implode(',', $ranges);
+
+        $request = new HTTP\Request('GET', '/files/rangetest.txt', ['Range' => $byterange]);
+        $response = $this->request($request);
+
+        $this->assertEquals(416, $response->getStatus());
+    }
+
+    public function testUnorderedRanges()
+    {
+        $ranges = [];
+        for ($i = 0; $i < 18; ++$i) {
+            $ranges[] = (20 - $i).'-'.(20 - $i);
+        }
+        $byterange = 'bytes='.implode(',', $ranges);
+
+        $request = new HTTP\Request('GET', '/files/rangetest.txt', ['Range' => $byterange]);
         $response = $this->request($request);
 
         $this->assertEquals(416, $response->getStatus());

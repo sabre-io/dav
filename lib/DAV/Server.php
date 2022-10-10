@@ -746,12 +746,9 @@ class Server implements LoggerAwareInterface, EmitterInterface
         $rangeBoundary = $maxRangeBoundary - $minRangeBoundary;
 
         // check 1: limit the amount of ranges per request depending on range boundary
-        // accept 1024 requests for a boundary < 1MB, and 512 for boundaries larger than that
+        // accept  512 ranges per request
         // rfc standard doesn't provide specification for the amount of ranges to be allowed per request
-        if (
-            ($rangeBoundary < (1 << 20) && count($ranges) > 1024)
-            || ($rangeBoundary > (1 << 20) && count($ranges) > 512)
-        ) {
+        if (count($ranges) > 512) {
             throw new Exception\RequestedRangeNotSatisfiable('Too many ranges in this request');
         }
 
@@ -795,10 +792,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
             }
         }
 
-        if (
-            ($rangeBoundary < (1 << 20) && $descendingStartCounter > 32)
-            || ($rangeBoundary > (1 << 20) && $descendingStartCounter > 16)
-        ) {
+        if ($descendingStartCounter > 16) {
             throw new Exception\RequestedRangeNotSatisfiable('Too many unordered ranges in this request. Avoid listing ranges in descending order.');
         }
 

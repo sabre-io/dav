@@ -19,7 +19,7 @@ class Service extends \Sabre\Xml\Service
      * For instance, this list may contain an entry `{DAV:}propfind` that would
      * be mapped to Sabre\DAV\Xml\Request\PropFind
      */
-    public $elementMap = [
+    public array $elementMap = [
         '{DAV:}multistatus' => 'Sabre\\DAV\\Xml\\Response\\MultiStatus',
         '{DAV:}response' => 'Sabre\\DAV\\Xml\\Element\\Response',
 
@@ -40,7 +40,7 @@ class Service extends \Sabre\Xml\Service
      *
      * @var array
      */
-    public $namespaceMap = [
+    public array $namespaceMap = [
         'DAV:' => 'd',
         'http://sabredav.org/ns' => 's',
     ];

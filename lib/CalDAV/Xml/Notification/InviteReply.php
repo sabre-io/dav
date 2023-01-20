@@ -131,7 +131,7 @@ class InviteReply implements NotificationInterface
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         $writer->writeElement('{'.CalDAV\Plugin::NS_CALENDARSERVER.'}invite-reply');
     }

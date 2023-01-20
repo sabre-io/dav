@@ -66,7 +66,7 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         $this->serializePriv($writer, '{DAV:}all', ['aggregates' => $this->privileges]);
     }

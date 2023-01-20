@@ -110,7 +110,7 @@ class Response implements Element
      * Important note 2: If you are writing any new elements, you are also
      * responsible for closing them.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         if ($status = $this->getHTTPStatus()) {
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 '.$status.' '.\Sabre\HTTP\Response::$statusCodes[$status]);

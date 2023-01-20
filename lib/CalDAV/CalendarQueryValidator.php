@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTime;
 use Sabre\VObject;
 
 /**
@@ -256,18 +255,18 @@ class CalendarQueryValidator
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
      *
      * @return bool
      */
     protected function validateTimeRange(VObject\Node $component, $start, $end)
     {
         if (is_null($start)) {
-            $start = new DateTime('1900-01-01');
+            $start = new \DateTime('1900-01-01');
         }
         if (is_null($end)) {
-            $end = new DateTime('3000-01-01');
+            $end = new \DateTime('3000-01-01');
         }
 
         switch ($component->name) {

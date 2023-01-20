@@ -71,7 +71,7 @@ class ServerSimpleTest extends AbstractServer
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -93,7 +93,7 @@ class ServerSimpleTest extends AbstractServer
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->setBaseUri('/blabla/');
         $this->assertEquals('/blabla/', $this->server->getBaseUri());
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -104,7 +104,7 @@ class ServerSimpleTest extends AbstractServer
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $this->assertEquals(200, $this->response->status);
         $this->assertEquals('Test contents', stream_get_contents($this->response->body));
@@ -356,7 +356,7 @@ class ServerSimpleTest extends AbstractServer
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->exec();
 
@@ -365,7 +365,7 @@ class ServerSimpleTest extends AbstractServer
             'Content-Type' => ['application/xml; charset=utf-8'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
@@ -378,7 +378,7 @@ class ServerSimpleTest extends AbstractServer
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->on('report', [$this, 'reportHandler']);
         $this->server->exec();

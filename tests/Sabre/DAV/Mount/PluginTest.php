@@ -23,7 +23,7 @@ class PluginTest extends DAV\AbstractServer
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(501, $this->response->status, 'We expected GET to not be implemented for Directories. Response body: '.$this->response->getBodyAsString());
@@ -39,7 +39,7 @@ class PluginTest extends DAV\AbstractServer
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(200, $this->response->status);

@@ -25,17 +25,17 @@ class PDO implements BackendInterface
     /**
      * Value is stored as string.
      */
-    const VT_STRING = 1;
+    public const VT_STRING = 1;
 
     /**
      * Value is stored as XML fragment.
      */
-    const VT_XML = 2;
+    public const VT_XML = 2;
 
     /**
      * Value is stored as a property object.
      */
-    const VT_OBJECT = 3;
+    public const VT_OBJECT = 3;
 
     /**
      * PDO.

@@ -25,22 +25,22 @@ class Principal extends DAV\Xml\Property\Href
     /**
      * To specify a not-logged-in user, use the UNAUTHENTICATED principal.
      */
-    const UNAUTHENTICATED = 1;
+    public const UNAUTHENTICATED = 1;
 
     /**
      * To specify any principal that is logged in, use AUTHENTICATED.
      */
-    const AUTHENTICATED = 2;
+    public const AUTHENTICATED = 2;
 
     /**
      * Specific principals can be specified with the HREF.
      */
-    const HREF = 3;
+    public const HREF = 3;
 
     /**
      * Everybody, basically.
      */
-    const ALL = 4;
+    public const ALL = 4;
 
     /**
      * Principal-type.

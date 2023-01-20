@@ -36,7 +36,7 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
         $lockToken = $server->httpResponse->getHeader('Lock-Token');
 
-        //sleep(10);
+        // sleep(10);
 
         $response2 = new HTTP\ResponseMock();
 
@@ -47,7 +47,7 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(201, $server->httpResponse->status);
         $this->assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
 
-        //sleep(10);
+        // sleep(10);
 
         $response3 = new HTTP\ResponseMock();
         $server->httpRequest = $this->getPutRequest($lockToken);

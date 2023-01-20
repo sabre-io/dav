@@ -39,7 +39,7 @@ class Mock extends AbstractBackend
 
         foreach ($locks as $lock) {
             if ($lock->uri === $uri ||
-                //deep locks on parents
+                // deep locks on parents
                 (0 != $lock->depth && 0 === strpos($uri, $lock->uri.'/')) ||
 
                 // locks on children

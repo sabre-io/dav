@@ -83,7 +83,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -129,7 +129,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->expectException('InvalidArgumentException');
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -148,7 +148,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -207,7 +207,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->expectException('Sabre\DAV\Exception');
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', [
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => 'blabla',
         ]);
@@ -996,7 +996,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1037,7 +1037,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1079,7 +1079,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1110,7 +1110,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 

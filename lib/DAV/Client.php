@@ -54,37 +54,37 @@ class Client extends HTTP\Client
     /**
      * Basic authentication.
      */
-    const AUTH_BASIC = 1;
+    public const AUTH_BASIC = 1;
 
     /**
      * Digest authentication.
      */
-    const AUTH_DIGEST = 2;
+    public const AUTH_DIGEST = 2;
 
     /**
      * NTLM authentication.
      */
-    const AUTH_NTLM = 4;
+    public const AUTH_NTLM = 4;
 
     /**
      * Identity encoding, which basically does not nothing.
      */
-    const ENCODING_IDENTITY = 1;
+    public const ENCODING_IDENTITY = 1;
 
     /**
      * Deflate encoding.
      */
-    const ENCODING_DEFLATE = 2;
+    public const ENCODING_DEFLATE = 2;
 
     /**
      * Gzip encoding.
      */
-    const ENCODING_GZIP = 4;
+    public const ENCODING_GZIP = 4;
 
     /**
      * Sends all encoding headers.
      */
-    const ENCODING_ALL = 7;
+    public const ENCODING_ALL = 7;
 
     /**
      * Content-encoding.
@@ -356,9 +356,9 @@ class Client extends HTTP\Client
      * @param string               $url
      * @param string|resource|null $body
      *
-     * @throws clientException, in case a curl error occurred
-     *
      * @return array
+     *
+     * @throws clientException, in case a curl error occurred
      */
     public function request($method, $url = '', $body = null, array $headers = [])
     {

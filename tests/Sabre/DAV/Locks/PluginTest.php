@@ -52,7 +52,7 @@ class PluginTest extends DAV\AbstractServer
             'Content-Type' => ['application/xml; charset=utf-8'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $this->assertEquals(400, $this->response->status);
     }
@@ -268,7 +268,7 @@ class PluginTest extends DAV\AbstractServer
             'Content-Type' => ['application/xml; charset=utf-8'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $this->assertEquals(400, $this->response->status);
     }
@@ -287,7 +287,7 @@ class PluginTest extends DAV\AbstractServer
             'Content-Type' => ['application/xml; charset=utf-8'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $this->assertEquals(409, $this->response->status, 'Got an incorrect status code. Full response body: '.$this->response->getBodyAsString());
     }
@@ -357,7 +357,7 @@ class PluginTest extends DAV\AbstractServer
             'Content-Length' => ['0'],
             ],
             $this->server->httpResponse->getHeaders()
-         );
+        );
     }
 
     /**
@@ -394,7 +394,7 @@ class PluginTest extends DAV\AbstractServer
             'Content-Length' => ['0'],
             ],
             $this->server->httpResponse->getHeaders()
-         );
+        );
     }
 
     /**

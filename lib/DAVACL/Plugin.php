@@ -37,21 +37,21 @@ class Plugin extends DAV\ServerPlugin
      *
      * This only checks the base node
      */
-    const R_PARENT = 1;
+    public const R_PARENT = 1;
 
     /**
      * Recursion constants.
      *
      * This checks every node in the tree
      */
-    const R_RECURSIVE = 2;
+    public const R_RECURSIVE = 2;
 
     /**
      * Recursion constants.
      *
      * This checks every parentnode in the tree, but not leaf-nodes.
      */
-    const R_RECURSIVEPARENTS = 3;
+    public const R_RECURSIVEPARENTS = 3;
 
     /**
      * Reference to server object.
@@ -185,10 +185,10 @@ class Plugin extends DAV\ServerPlugin
      * @param int          $recursion
      * @param bool         $throwExceptions if set to false, this method won't throw exceptions
      *
+     * @return bool
+     *
      * @throws NeedPrivileges
      * @throws NotAuthenticated
-     *
-     * @return bool
      */
     public function checkPrivileges($uri, $privileges, $recursion = self::R_PARENT, $throwExceptions = true)
     {
@@ -618,7 +618,7 @@ class Plugin extends DAV\ServerPlugin
                     }
                     break;
 
-                // 'all' matches for every user
+                    // 'all' matches for every user
                 case '{DAV:}all':
                     $collected[] = $ace;
                     break;
@@ -917,6 +917,7 @@ class Plugin extends DAV\ServerPlugin
      * Triggered before a node is unlocked.
      *
      * @param string $uri
+     *
      * @TODO: not yet implemented
      */
     public function beforeUnlock($uri, DAV\Locks\LockInfo $lock)

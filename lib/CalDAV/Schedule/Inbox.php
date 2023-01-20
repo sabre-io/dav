@@ -68,7 +68,7 @@ class Inbox extends DAV\Collection implements IInbox
         $objs = $this->caldavBackend->getSchedulingObjects($this->principalUri);
         $children = [];
         foreach ($objs as $obj) {
-            //$obj['acl'] = $this->getACL();
+            // $obj['acl'] = $this->getACL();
             $obj['principaluri'] = $this->principalUri;
             $children[] = new SchedulingObject($this->caldavBackend, $obj);
         }

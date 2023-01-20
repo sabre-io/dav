@@ -19,17 +19,17 @@ class LockInfo
     /**
      * A shared lock.
      */
-    const SHARED = 1;
+    public const SHARED = 1;
 
     /**
      * An exclusive lock.
      */
-    const EXCLUSIVE = 2;
+    public const EXCLUSIVE = 2;
 
     /**
      * A never expiring timeout.
      */
-    const TIMEOUT_INFINITE = -1;
+    public const TIMEOUT_INFINITE = -1;
 
     /**
      * The owner of the lock.

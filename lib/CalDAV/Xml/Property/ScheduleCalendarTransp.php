@@ -28,8 +28,8 @@ use Sabre\Xml\Writer;
  */
 class ScheduleCalendarTransp implements Element
 {
-    const TRANSPARENT = 'transparent';
-    const OPAQUE = 'opaque';
+    public const TRANSPARENT = 'transparent';
+    public const OPAQUE = 'opaque';
 
     /**
      * value.

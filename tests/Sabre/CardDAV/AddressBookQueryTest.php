@@ -18,7 +18,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         );
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -27,7 +27,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         <c:prop-filter name="uid" />
     </c:filter>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -67,7 +67,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         );
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -76,7 +76,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         <c:prop-filter name="uid" />
     </c:filter>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -111,7 +111,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         );
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -120,7 +120,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         <c:prop-filter name="email" />
     </c:filter>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -149,7 +149,7 @@ class AddressBookQueryTest extends AbstractPluginTest
         ]);
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -159,7 +159,7 @@ class AddressBookQueryTest extends AbstractPluginTest
     </c:filter>
     <c:limit><c:nresults>1</c:nresults></c:limit>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -194,14 +194,14 @@ class AddressBookQueryTest extends AbstractPluginTest
         );
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <c:address-data content-type="application/vcard+json" />
       <d:getetag />
     </d:prop>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -239,14 +239,14 @@ class AddressBookQueryTest extends AbstractPluginTest
         );
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <c:address-data content-type="text/vcard" version="4.0" />
       <d:getetag />
     </d:prop>
 </c:addressbook-query>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 

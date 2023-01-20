@@ -9,8 +9,6 @@ use Sabre\DAV;
 abstract class AbstractTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @abstract
-     *
      * @return AbstractBackend
      */
     abstract public function getBackend();

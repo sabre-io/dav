@@ -43,7 +43,7 @@ class SupportedCalendarComponentSetTest extends DAV\Xml\XmlTest
         $xml = $this->write(['{DAV:}root' => $property]);
 
         $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cal:comp name="VEVENT"/>
   <cal:comp name="VTODO"/>

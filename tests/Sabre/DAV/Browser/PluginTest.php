@@ -67,7 +67,7 @@ class PluginTest extends DAV\AbstractServer
     public function testCollectionGetRoot()
     {
         $request = new HTTP\Request('GET', '/');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals(200, $this->response->status, 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());

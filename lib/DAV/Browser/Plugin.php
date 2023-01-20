@@ -208,7 +208,7 @@ class Plugin extends DAV\ServerPlugin
                     }
                     break;
 
-                // @codeCoverageIgnoreStart
+                    // @codeCoverageIgnoreStart
                 case 'put':
                     if ($_FILES) {
                         $file = current($_FILES);
@@ -228,7 +228,7 @@ class Plugin extends DAV\ServerPlugin
                         $this->server->createFile($uri.'/'.$newName, fopen($file['tmp_name'], 'r'));
                     }
                     break;
-                // @codeCoverageIgnoreEnd
+                    // @codeCoverageIgnoreEnd
             }
         }
         $response->setHeader('Location', $request->getUrl());
@@ -538,9 +538,9 @@ HTML;
      *
      * @param string $assetName
      *
-     * @throws DAV\Exception\NotFound
-     *
      * @return string
+     *
+     * @throws DAV\Exception\NotFound
      */
     protected function getLocalAssetPath($assetName)
     {

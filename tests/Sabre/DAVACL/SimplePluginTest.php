@@ -145,7 +145,7 @@ class SimplePluginTest extends \PHPUnit\Framework\TestCase
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($auth);
 
-        //forcing login
+        // forcing login
         $auth->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $this->assertEquals(['principals/admin'], $acl->getCurrentUserPrincipals());
@@ -170,7 +170,7 @@ class SimplePluginTest extends \PHPUnit\Framework\TestCase
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($auth);
 
-        //forcing login
+        // forcing login
         $auth->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $expected = [
@@ -244,7 +244,7 @@ class SimplePluginTest extends \PHPUnit\Framework\TestCase
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($auth);
 
-        //forcing login
+        // forcing login
         $auth->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
 
         $expected = [
@@ -294,8 +294,8 @@ class SimplePluginTest extends \PHPUnit\Framework\TestCase
         $auth = new DAV\Auth\Plugin(new DAV\Auth\Backend\Mock());
         $server->addPlugin($auth);
 
-        //forcing login
-        //$auth->beforeMethod('GET','/');
+        // forcing login
+        // $auth->beforeMethod('GET','/');
 
         $this->assertFalse($aclPlugin->checkPrivileges('foo', ['{DAV:}read'], Plugin::R_PARENT, false));
     }

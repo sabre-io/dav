@@ -60,17 +60,17 @@ class ParamFilter implements XmlDeserializable
         if (is_array($elems)) {
             foreach ($elems as $elem) {
                 switch ($elem['name']) {
-                case '{'.Plugin::NS_CALDAV.'}is-not-defined':
-                    $result['is-not-defined'] = true;
-                    break;
-                case '{'.Plugin::NS_CALDAV.'}text-match':
-                    $result['text-match'] = [
-                        'negate-condition' => isset($elem['attributes']['negate-condition']) && 'yes' === $elem['attributes']['negate-condition'],
-                        'collation' => isset($elem['attributes']['collation']) ? $elem['attributes']['collation'] : 'i;ascii-casemap',
-                        'value' => $elem['value'],
-                    ];
-                    break;
-            }
+                    case '{'.Plugin::NS_CALDAV.'}is-not-defined':
+                        $result['is-not-defined'] = true;
+                        break;
+                    case '{'.Plugin::NS_CALDAV.'}text-match':
+                        $result['text-match'] = [
+                            'negate-condition' => isset($elem['attributes']['negate-condition']) && 'yes' === $elem['attributes']['negate-condition'],
+                            'collation' => isset($elem['attributes']['collation']) ? $elem['attributes']['collation'] : 'i;ascii-casemap',
+                            'value' => $elem['value'],
+                        ];
+                        break;
+                }
             }
         }
 

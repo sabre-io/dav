@@ -17,7 +17,7 @@ class ServerMKCOLTest extends AbstractServer
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -42,7 +42,7 @@ class ServerMKCOLTest extends AbstractServer
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('Hello');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -66,7 +66,7 @@ class ServerMKCOLTest extends AbstractServer
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('Hello');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -90,7 +90,7 @@ class ServerMKCOLTest extends AbstractServer
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('<?xml version="1.0"?><html></html>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -121,7 +121,7 @@ class ServerMKCOLTest extends AbstractServer
     </prop>
   </set>
 </mkcol>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -152,7 +152,7 @@ class ServerMKCOLTest extends AbstractServer
     </prop>
   </set>
 </mkcol>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -183,7 +183,7 @@ class ServerMKCOLTest extends AbstractServer
     </prop>
   </set>
 </mkcol>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -216,7 +216,7 @@ class ServerMKCOLTest extends AbstractServer
     </prop>
   </set>
 </mkcol>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -240,7 +240,7 @@ class ServerMKCOLTest extends AbstractServer
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -264,7 +264,7 @@ class ServerMKCOLTest extends AbstractServer
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -288,7 +288,7 @@ class ServerMKCOLTest extends AbstractServer
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $this->assertEquals([
@@ -320,7 +320,7 @@ class ServerMKCOLTest extends AbstractServer
     </prop>
   </set>
 </mkcol>');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();

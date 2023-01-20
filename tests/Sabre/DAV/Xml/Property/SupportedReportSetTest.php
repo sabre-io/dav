@@ -20,7 +20,7 @@ class SupportedReportSetTest extends DAV\AbstractServer
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody($body);
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
     }
 

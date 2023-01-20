@@ -25,7 +25,7 @@ class LockDiscoveryTest extends XmlTest
         $xml = $this->write(['{DAV:}root' => $prop]);
 
         $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>
   <d:lockscope><d:exclusive /></d:lockscope>
@@ -62,7 +62,7 @@ class LockDiscoveryTest extends XmlTest
         $xml = $this->write(['{DAV:}root' => $prop]);
 
         $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>
   <d:lockscope><d:shared /></d:lockscope>

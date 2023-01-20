@@ -179,7 +179,7 @@ class AddressBookQueryReport implements XmlDeserializable
              * include the filter element, and we need to treat it as if no
              * filters are supplied
              */
-            //throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
+            // throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
             $newProps['filters'] = [];
         }
 

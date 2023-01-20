@@ -31,7 +31,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * in 2038-01-19 to avoid problems when the date is converted
      * to a unix timestamp.
      */
-    const MAX_DATE = '2038-01-01';
+    public const MAX_DATE = '2038-01-01';
 
     /**
      * pdo.
@@ -193,8 +193,8 @@ SQL
             // 1 = owner, 2 = readonly, 3 = readwrite
             if ($row['access'] > 1) {
                 // We need to find more information about the original owner.
-                //$stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
-                //$stmt2->execute([$row['id']]);
+                // $stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
+                // $stmt2->execute([$row['id']]);
 
                 // read-only is for backwards compatbility. Might go away in
                 // the future.
@@ -1462,7 +1462,7 @@ SQL;
             $result[] = new Sharee([
                 'href' => isset($row['share_href']) ? $row['share_href'] : \Sabre\HTTP\encodePath($row['principaluri']),
                 'access' => (int) $row['access'],
-                /// Everyone is always immediately accepted, for now.
+                // Everyone is always immediately accepted, for now.
                 'inviteStatus' => (int) $row['share_invitestatus'],
                 'properties' => !empty($row['share_displayname'])
                     ? ['{DAV:}displayname' => $row['share_displayname']]

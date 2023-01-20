@@ -58,7 +58,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
                 'Vary' => ['Brief,Prefer'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);

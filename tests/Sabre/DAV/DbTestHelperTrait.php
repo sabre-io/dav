@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sabre\DAV;
 
 use PDO;
-use PDOException;
 
 class DbCache
 {
@@ -22,7 +21,7 @@ trait DbTestHelperTrait
     /**
      * Returns a fully configured PDO object.
      *
-     * @return PDO
+     * @return \PDO
      */
     public function getDb()
     {
@@ -44,7 +43,7 @@ trait DbTestHelperTrait
         try {
             switch ($this->driver) {
                 case 'mysql':
-                    $pdo = new PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
+                    $pdo = new \PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
                     break;
                 case 'sqlite':
                     $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/testdb');
@@ -66,7 +65,7 @@ trait DbTestHelperTrait
             }
 
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->markTestSkipped($this->driver.' was not enabled or not correctly configured. Error message: '.$e->getMessage());
         }
 
@@ -78,7 +77,7 @@ trait DbTestHelperTrait
     /**
      * Alias for getDb.
      *
-     * @return PDO
+     * @return \PDO
      */
     public function getPDO()
     {

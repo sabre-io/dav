@@ -25,7 +25,7 @@ class LocalHrefTest extends XmlTest
         $xml = $this->write(['{DAV:}anything' => $href]);
 
         $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ', $xml);
     }
@@ -40,7 +40,7 @@ class LocalHrefTest extends XmlTest
         $xml = $this->write(['{DAV:}anything' => $href]);
 
         $this->assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path%20alsopath</d:href></d:anything>
 ', $xml);
     }

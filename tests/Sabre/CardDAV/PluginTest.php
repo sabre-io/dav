@@ -50,7 +50,7 @@ class PluginTest extends AbstractPluginTest
 
     public function testReportPassThrough()
     {
-        $this->assertNull($this->plugin->report('{DAV:}foo', new \DomDocument(), ''));
+        $this->assertNull($this->plugin->report('{DAV:}foo', new \DOMDocument(), ''));
     }
 
     public function testHTMLActionsPanel()

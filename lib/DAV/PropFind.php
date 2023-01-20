@@ -15,7 +15,7 @@ class PropFind
     /**
      * A normal propfind.
      */
-    const NORMAL = 0;
+    public const NORMAL = 0;
 
     /**
      * An allprops request.
@@ -26,13 +26,13 @@ class PropFind
      *
      * So 'all properties' now means a hardcoded list.
      */
-    const ALLPROPS = 1;
+    public const ALLPROPS = 1;
 
     /**
      * A propname request. This just returns a list of properties that are
      * defined on a node, without their values.
      */
-    const PROPNAME = 2;
+    public const PROPNAME = 2;
 
     /**
      * Creates the PROPFIND object.

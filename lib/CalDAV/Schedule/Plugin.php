@@ -638,6 +638,11 @@ class Plugin extends ServerPlugin
                             if ($message->scheduleStatus) {
                                 $attendee['SCHEDULE-STATUS'] = $message->getScheduleStatus();
                             }
+                            // In case change to an existing event is significant, reset participation
+                            // status of attendee to NEEDS-ACTION
+                            if ($message->significantChange) {
+                                $attendee['PARTSTAT'] = "NEEDS-ACTION";
+                            }
                             unset($attendee['SCHEDULE-FORCE-SEND']);
                             break;
                         }

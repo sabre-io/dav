@@ -91,7 +91,7 @@ class SystemStatus implements NotificationInterface
      * Important note 2: If you are writing any new elements, you are also
      * responsible for closing them.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         switch ($this->type) {
             case self::TYPE_LOW:

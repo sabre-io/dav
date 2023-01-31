@@ -69,7 +69,7 @@ class AllowedSharingModes implements XmlSerializable
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         if ($this->canBeShared) {
             $writer->writeElement('{'.Plugin::NS_CALENDARSERVER.'}can-be-shared');

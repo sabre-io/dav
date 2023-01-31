@@ -19,5 +19,5 @@ class ResponseMock extends Response
      * Making these public.
      */
     public $body;
-    public $status;
+    public int $status;
 }

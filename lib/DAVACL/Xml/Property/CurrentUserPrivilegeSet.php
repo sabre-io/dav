@@ -55,7 +55,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         foreach ($this->privileges as $privName) {
             $writer->startElement('{DAV:}privilege');

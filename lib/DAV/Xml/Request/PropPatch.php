@@ -46,7 +46,7 @@ class PropPatch implements Element
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         foreach ($this->properties as $propertyName => $propertyValue) {
             if (is_null($propertyValue)) {

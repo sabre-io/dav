@@ -69,7 +69,7 @@ class GetLastModified implements Element
      * Important note 2: If you are writing any new elements, you are also
      * responsible for closing them.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         $writer->write(
             HTTP\toDate($this->time)

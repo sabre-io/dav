@@ -39,7 +39,7 @@ class Complex extends XmlFragment
      *
      * @return mixed
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): XmlFragment
     {
         $xml = $reader->readInnerXml();
 
@@ -47,7 +47,7 @@ class Complex extends XmlFragment
             // Easy!
             $reader->next();
 
-            return null;
+            return new XmlFragment('');
         }
         // Now we have a copy of the inner xml, we need to traverse it to get
         // all the strings. If there's no non-string data, we just return the
@@ -81,7 +81,9 @@ class Complex extends XmlFragment
 
             return $new;
         } else {
-            return $text;
+            $new = new XmlFragment($text);
+
+            return $new;
         }
     }
 }

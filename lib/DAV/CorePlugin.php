@@ -548,7 +548,7 @@ class CorePlugin extends ServerPlugin
             if (!isset($properties['{DAV:}resourcetype'])) {
                 throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
             }
-            $resourceType = $properties['{DAV:}resourcetype']->getValue();
+            $resourceType = $properties['{DAV:}resourcetype'];
             unset($properties['{DAV:}resourcetype']);
         } else {
             $properties = [];

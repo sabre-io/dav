@@ -73,31 +73,6 @@ class ResourceType extends Element\Elements implements HtmlOutput
     }
 
     /**
-     * The deserialize method is called during xml parsing.
-     *
-     * This method is called statically, this is because in theory this method
-     * may be used as a type of constructor, or factory method.
-     *
-     * Often you want to return an instance of the current class, but you are
-     * free to return other data as well.
-     *
-     * Important note 2: You are responsible for advancing the reader to the
-     * next element. Not doing anything will result in a never-ending loop.
-     *
-     * If you just want to skip parsing for this element altogether, you can
-     * just call $reader->next();
-     *
-     * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
-     * the next element.
-     *
-     * @return mixed
-     */
-    public static function xmlDeserialize(Reader $reader)
-    {
-        return new self(parent::xmlDeserialize($reader));
-    }
-
-    /**
      * Generate html representation for this value.
      *
      * The html output is 100% trusted, and no effort is being made to sanitize

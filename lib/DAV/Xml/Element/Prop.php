@@ -100,6 +100,9 @@ class Prop implements XmlDeserializable
             }
         } else {
             $value = Complex::xmlDeserialize($reader);
+            if (!($value instanceof Complex)) {
+                $value = $value->getXml();
+            }
         }
 
         return [

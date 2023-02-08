@@ -10,9 +10,9 @@ class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase
     {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
-        $this->assertTrue($pc instanceof PrincipalCollection);
+        self::assertTrue($pc instanceof PrincipalCollection);
 
-        $this->assertEquals('principals', $pc->getName());
+        self::assertEquals('principals', $pc->getName());
     }
 
     /**
@@ -24,10 +24,10 @@ class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase
         $pc = new PrincipalCollection($backend);
 
         $children = $pc->getChildren();
-        $this->assertTrue(is_array($children));
+        self::assertTrue(is_array($children));
 
         foreach ($children as $child) {
-            $this->assertTrue($child instanceof IPrincipal);
+            self::assertTrue($child instanceof IPrincipal);
         }
     }
 
@@ -48,8 +48,8 @@ class PrincipalCollectionTest extends \PHPUnit\Framework\TestCase
     {
         $backend = new PrincipalBackend\Mock();
         $pc = new PrincipalCollection($backend);
-        $this->assertEquals('principals/user1', $pc->findByUri('mailto:user1.sabredav@sabredav.org'));
-        $this->assertNull($pc->findByUri('mailto:fake.user.sabredav@sabredav.org'));
-        $this->assertNull($pc->findByUri(''));
+        self::assertEquals('principals/user1', $pc->findByUri('mailto:user1.sabredav@sabredav.org'));
+        self::assertNull($pc->findByUri('mailto:fake.user.sabredav@sabredav.org'));
+        self::assertNull($pc->findByUri(''));
     }
 }

@@ -27,7 +27,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertTrue($backend instanceof PDO);
+        self::assertTrue($backend instanceof PDO);
     }
 
     /**
@@ -56,8 +56,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $backend->getPrincipalsByPrefix('principals'));
-        $this->assertEquals([], $backend->getPrincipalsByPrefix('foo'));
+        self::assertEquals($expected, $backend->getPrincipalsByPrefix('principals'));
+        self::assertEquals([], $backend->getPrincipalsByPrefix('foo'));
     }
 
     /**
@@ -75,8 +75,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{DAV:}displayname' => 'User',
         ];
 
-        $this->assertEquals($expected, $backend->getPrincipalByPath('principals/user'));
-        $this->assertEquals(null, $backend->getPrincipalByPath('foo'));
+        self::assertEquals($expected, $backend->getPrincipalByPath('principals/user'));
+        self::assertEquals(null, $backend->getPrincipalByPath('foo'));
     }
 
     public function testGetGroupMemberSet()
@@ -85,7 +85,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend = new PDO($pdo);
         $expected = ['principals/user'];
 
-        $this->assertEquals($expected, $backend->getGroupMemberSet('principals/group'));
+        self::assertEquals($expected, $backend->getGroupMemberSet('principals/group'));
     }
 
     public function testGetGroupMembership()
@@ -94,7 +94,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend = new PDO($pdo);
         $expected = ['principals/group'];
 
-        $this->assertEquals($expected, $backend->getGroupMembership('principals/user'));
+        self::assertEquals($expected, $backend->getGroupMembership('principals/user'));
     }
 
     public function testSetGroupMemberSet()
@@ -103,15 +103,15 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         // Start situation
         $backend = new PDO($pdo);
-        $this->assertEquals(['principals/user'], $backend->getGroupMemberSet('principals/group'));
+        self::assertEquals(['principals/user'], $backend->getGroupMemberSet('principals/group'));
 
         // Removing all principals
         $backend->setGroupMemberSet('principals/group', []);
-        $this->assertEquals([], $backend->getGroupMemberSet('principals/group'));
+        self::assertEquals([], $backend->getGroupMemberSet('principals/group'));
 
         // Adding principals again
         $backend->setGroupMemberSet('principals/group', ['principals/user']);
-        $this->assertEquals(['principals/user'], $backend->getGroupMemberSet('principals/group'));
+        self::assertEquals(['principals/user'], $backend->getGroupMemberSet('principals/group'));
     }
 
     public function testSearchPrincipals()
@@ -121,16 +121,16 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend = new PDO($pdo);
 
         $result = $backend->searchPrincipals('principals', ['{DAV:}blabla' => 'foo']);
-        $this->assertEquals([], $result);
+        self::assertEquals([], $result);
 
         $result = $backend->searchPrincipals('principals', ['{DAV:}displayname' => 'ou']);
-        $this->assertEquals(['principals/group'], $result);
+        self::assertEquals(['principals/group'], $result);
 
         $result = $backend->searchPrincipals('principals', ['{DAV:}displayname' => 'UsEr', '{http://sabredav.org/ns}email-address' => 'USER@EXAMPLE']);
-        $this->assertEquals(['principals/user'], $result);
+        self::assertEquals(['principals/user'], $result);
 
         $result = $backend->searchPrincipals('mom', ['{DAV:}displayname' => 'UsEr', '{http://sabredav.org/ns}email-address' => 'USER@EXAMPLE']);
-        $this->assertEquals([], $result);
+        self::assertEquals([], $result);
     }
 
     public function testUpdatePrincipal()
@@ -145,9 +145,9 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->updatePrincipal('principals/user', $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             'id' => 4,
             'uri' => 'principals/user',
             '{DAV:}displayname' => 'pietje',
@@ -168,14 +168,14 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->updatePrincipal('principals/user', $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertFalse($result);
+        self::assertFalse($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}displayname' => 424,
             '{DAV:}unknown' => 403,
         ], $propPatch->getResult());
 
-        $this->assertEquals([
+        self::assertEquals([
             'id' => '4',
             'uri' => 'principals/user',
             '{DAV:}displayname' => 'User',
@@ -187,14 +187,14 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertNull($backend->findByUri('http://foo', 'principals'));
+        self::assertNull($backend->findByUri('http://foo', 'principals'));
     }
 
     public function testFindByUriWithMailtoAddress()
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertEquals(
+        self::assertEquals(
             'principals/user',
             $backend->findByUri('mailto:user@example.org', 'principals')
         );
@@ -204,7 +204,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertEquals(
+        self::assertEquals(
             'principals/user',
             $backend->findByUri('principals/user', 'principals')
         );
@@ -214,6 +214,6 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertNull($backend->findByUri('principals/other', 'principals'));
+        self::assertNull($backend->findByUri('principals/other', 'principals'));
     }
 }

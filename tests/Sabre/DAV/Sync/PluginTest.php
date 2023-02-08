@@ -19,7 +19,7 @@ class PluginTest extends \Sabre\DAVServerTest
 
     public function testGetInfo()
     {
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             'name',
             (new Plugin())->getPluginInfo()
         );
@@ -41,31 +41,31 @@ class PluginTest extends \Sabre\DAVServerTest
     public function testSupportedReportSet()
     {
         $result = $this->server->getProperties('/coll', ['{DAV:}supported-report-set']);
-        $this->assertFalse($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
+        self::assertFalse($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
 
         // Making a change
         $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/coll', ['{DAV:}supported-report-set']);
-        $this->assertTrue($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
+        self::assertTrue($result['{DAV:}supported-report-set']->has('{DAV:}sync-collection'));
     }
 
     public function testGetSyncToken()
     {
         $result = $this->server->getProperties('/coll', ['{DAV:}sync-token']);
-        $this->assertFalse(isset($result['{DAV:}sync-token']));
+        self::assertFalse(isset($result['{DAV:}sync-token']));
 
         // Making a change
         $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/coll', ['{DAV:}sync-token']);
-        $this->assertTrue(isset($result['{DAV:}sync-token']));
+        self::assertTrue(isset($result['{DAV:}sync-token']));
 
         // non-sync-enabled collection
         $this->collection->addChange(['file1.txt'], [], []);
 
         $result = $this->server->getProperties('/normalcoll', ['{DAV:}sync-token']);
-        $this->assertFalse(isset($result['{DAV:}sync-token']));
+        self::assertFalse(isset($result['{DAV:}sync-token']));
     }
 
     public function testSyncInitialSyncCollection()
@@ -90,24 +90,24 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
         // Checking the sync-token
-        $this->assertEquals(
+        self::assertEquals(
             'http://sabre.io/ns/sync/1',
             $multiStatus->getSyncToken()
         );
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
+        self::assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];
 
-        $this->assertNull($response->getHttpStatus());
-        $this->assertEquals('/coll/file1.txt', $response->getHref());
-        $this->assertEquals([
+        self::assertNull($response->getHttpStatus());
+        self::assertEquals('/coll/file1.txt', $response->getHref());
+        self::assertEquals([
             200 => [
                 '{DAV:}getcontentlength' => 3,
             ],
@@ -115,9 +115,9 @@ BLA;
 
         $response = $responses[1];
 
-        $this->assertNull($response->getHttpStatus());
-        $this->assertEquals('/coll/file2.txt', $response->getHref());
-        $this->assertEquals([
+        self::assertNull($response->getHttpStatus());
+        self::assertEquals('/coll/file2.txt', $response->getHref());
+        self::assertEquals([
             200 => [
                 '{DAV:}getcontentlength' => 3,
             ],
@@ -152,24 +152,24 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
         // Checking the sync-token
-        $this->assertEquals(
+        self::assertEquals(
             'http://sabre.io/ns/sync/2',
             $multiStatus->getSyncToken()
         );
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
+        self::assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];
 
-        $this->assertNull($response->getHttpStatus());
-        $this->assertEquals('/coll/file2.txt', $response->getHref());
-        $this->assertEquals([
+        self::assertNull($response->getHttpStatus());
+        self::assertEquals('/coll/file2.txt', $response->getHref());
+        self::assertEquals([
             200 => [
                 '{DAV:}getcontentlength' => 3,
             ],
@@ -177,9 +177,9 @@ BLA;
 
         $response = $responses[1];
 
-        $this->assertEquals('404', $response->getHttpStatus());
-        $this->assertEquals('/coll/file3.txt', $response->getHref());
-        $this->assertEquals([], $response->getResponseProperties());
+        self::assertEquals('404', $response->getHttpStatus());
+        self::assertEquals('/coll/file3.txt', $response->getHref());
+        self::assertEquals([], $response->getResponseProperties());
     }
 
     public function testSubsequentSyncSyncCollectionLimit()
@@ -211,31 +211,31 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
         );
 
         // Checking the sync-token
-        $this->assertEquals(
+        self::assertEquals(
             'http://sabre.io/ns/sync/2',
             $multiStatus->getSyncToken()
         );
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}responses');
+        self::assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}responses');
 
         $response = $responses[0];
 
-        $this->assertEquals('404', $response->getHttpStatus());
-        $this->assertEquals('/coll/file3.txt', $response->getHref());
-        $this->assertEquals([], $response->getResponseProperties());
+        self::assertEquals('404', $response->getHttpStatus());
+        self::assertEquals('/coll/file3.txt', $response->getHref());
+        self::assertEquals([], $response->getResponseProperties());
 
         $response = $responses[1];
 
-        $this->assertEquals('507', $response->getHttpStatus());
-        $this->assertEquals('/coll/', $response->getHref());
+        self::assertEquals('507', $response->getHttpStatus());
+        self::assertEquals('/coll/', $response->getHref());
     }
 
     public function testSubsequentSyncSyncCollectionDepthFallBack()
@@ -266,26 +266,26 @@ BLA;
 
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
         );
 
         // Checking the sync-token
-        $this->assertEquals(
+        self::assertEquals(
             'http://sabre.io/ns/sync/2',
             $multiStatus->getSyncToken()
         );
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
+        self::assertEquals(2, count($responses), 'We expected exactly 2 {DAV:}response');
 
         $response = $responses[0];
 
-        $this->assertNull($response->getHttpStatus());
-        $this->assertEquals('/coll/file2.txt', $response->getHref());
-        $this->assertEquals([
+        self::assertNull($response->getHttpStatus());
+        self::assertEquals('/coll/file2.txt', $response->getHref());
+        self::assertEquals([
             200 => [
                 '{DAV:}getcontentlength' => 3,
             ],
@@ -293,9 +293,9 @@ BLA;
 
         $response = $responses[1];
 
-        $this->assertEquals('404', $response->getHttpStatus());
-        $this->assertEquals('/coll/file3.txt', $response->getHref());
-        $this->assertEquals([], $response->getResponseProperties());
+        self::assertEquals('404', $response->getHttpStatus());
+        self::assertEquals('/coll/file3.txt', $response->getHref());
+        self::assertEquals([], $response->getResponseProperties());
     }
 
     public function testSyncNoSyncInfo()
@@ -323,7 +323,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoSyncCollection()
@@ -351,7 +351,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncInvalidToken()
@@ -380,7 +380,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncInvalidTokenNoPrefix()
@@ -409,7 +409,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoSyncToken()
@@ -436,7 +436,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoProp()
@@ -462,7 +462,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        $this->assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testIfConditions()
@@ -478,7 +478,7 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals(403, $response->status);
+        self::assertEquals(403, $response->status);
     }
 
     public function testIfConditionsNot()
@@ -494,7 +494,7 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        $this->assertEquals(403, $response->status);
+        self::assertEquals(403, $response->status);
     }
 
     public function testIfConditionsNoSyncToken()
@@ -507,6 +507,6 @@ BLA;
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals(412, $response->status);
+        self::assertEquals(412, $response->status);
     }
 }

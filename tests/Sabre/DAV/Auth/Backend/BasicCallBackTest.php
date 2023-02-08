@@ -24,11 +24,11 @@ class BasicCallBackTest extends \PHPUnit\Framework\TestCase
         ]);
         $response = new HTTP\Response();
 
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/foo'],
             $backend->check($request, $response)
         );
 
-        $this->assertEquals(['foo', 'bar'], $args);
+        self::assertEquals(['foo', 'bar'], $args);
     }
 }

@@ -29,7 +29,7 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testSimple()
     {
-        $this->assertEquals('user1', $this->usercalendars->getName());
+        self::assertEquals('user1', $this->usercalendars->getName());
     }
 
     /**
@@ -43,18 +43,18 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testChildExists()
     {
-        $this->assertFalse($this->usercalendars->childExists('foo'));
-        $this->assertTrue($this->usercalendars->childExists('UUID-123467'));
+        self::assertFalse($this->usercalendars->childExists('foo'));
+        self::assertTrue($this->usercalendars->childExists('UUID-123467'));
     }
 
     public function testGetOwner()
     {
-        $this->assertEquals('principals/user1', $this->usercalendars->getOwner());
+        self::assertEquals('principals/user1', $this->usercalendars->getOwner());
     }
 
     public function testGetGroup()
     {
-        $this->assertNull($this->usercalendars->getGroup());
+        self::assertNull($this->usercalendars->getGroup());
     }
 
     public function testGetACL()
@@ -86,7 +86,7 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
                 'protected' => true,
             ],
         ];
-        $this->assertEquals($expected, $this->usercalendars->getACL());
+        self::assertEquals($expected, $this->usercalendars->getACL());
     }
 
     public function testSetACL()
@@ -118,7 +118,7 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLastModified()
     {
-        $this->assertNull($this->usercalendars->getLastModified());
+        self::assertNull($this->usercalendars->getLastModified());
     }
 
     /**
@@ -149,9 +149,9 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
             []
         );
         $result = $this->usercalendars->createExtendedCollection('newcalendar', $mkCol);
-        $this->assertNull($result);
+        self::assertNull($result);
         $cals = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(3, count($cals));
+        self::assertEquals(3, count($cals));
     }
 
     /**
@@ -182,7 +182,7 @@ class CalendarHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegesSet()
     {
-        $this->assertNull($this->usercalendars->getSupportedPrivilegeSet());
+        self::assertNull($this->usercalendars->getSupportedPrivilegeSet());
     }
 
     public function testShareReplyFail()

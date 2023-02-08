@@ -10,10 +10,10 @@ class SimpleFileTest extends \PHPUnit\Framework\TestCase
     {
         $file = new SimpleFile('filename.txt', 'contents', 'text/plain');
 
-        $this->assertEquals('filename.txt', $file->getName());
-        $this->assertEquals('contents', $file->get());
-        $this->assertEquals(8, $file->getSize());
-        $this->assertEquals('"'.sha1('contents').'"', $file->getETag());
-        $this->assertEquals('text/plain', $file->getContentType());
+        self::assertEquals('filename.txt', $file->getName());
+        self::assertEquals('contents', $file->get());
+        self::assertEquals(8, $file->getSize());
+        self::assertEquals('"'.sha1('contents').'"', $file->getETag());
+        self::assertEquals('text/plain', $file->getContentType());
     }
 }

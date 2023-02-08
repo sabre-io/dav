@@ -22,8 +22,8 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file = new File($filename);
         $result = $file->put('New contents');
 
-        $this->assertEquals('New contents', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
-        $this->assertEquals(
+        self::assertEquals('New contents', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals(
             '"'.
             sha1(
                 fileinode($filename).
@@ -40,7 +40,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file->put('0000000');
         $file->patch('111', 1);
 
-        $this->assertEquals('0000000111', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals('0000000111', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testRangeOffset()
@@ -49,7 +49,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file->put('0000000');
         $file->patch('111', 2, 3);
 
-        $this->assertEquals('0001110', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals('0001110', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testRangeOffsetEnd()
@@ -58,7 +58,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file->put('0000000');
         $file->patch('11', 3, -4);
 
-        $this->assertEquals('0001100', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals('0001100', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testRangeOffsetDefault()
@@ -67,7 +67,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file->put('0000000');
         $file->patch('11', 0);
 
-        $this->assertEquals('000000011', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals('000000011', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testRangeStream()
@@ -80,13 +80,13 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file->put('0000000');
         $file->patch($stream, 2, 3);
 
-        $this->assertEquals('0002220', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
+        self::assertEquals('0002220', file_get_contents(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testGet()
     {
         $file = new File(SABRE_TEMPDIR.'/file.txt');
-        $this->assertEquals('Contents', stream_get_contents($file->get()));
+        self::assertEquals('Contents', stream_get_contents($file->get()));
     }
 
     public function testDelete()
@@ -94,14 +94,14 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file = new File(SABRE_TEMPDIR.'/file.txt');
         $file->delete();
 
-        $this->assertFalse(file_exists(SABRE_TEMPDIR.'/file.txt'));
+        self::assertFalse(file_exists(SABRE_TEMPDIR.'/file.txt'));
     }
 
     public function testGetETag()
     {
         $filename = SABRE_TEMPDIR.'/file.txt';
         $file = new File($filename);
-        $this->assertEquals(
+        self::assertEquals(
             '"'.
             sha1(
                 fileinode($filename).
@@ -115,12 +115,12 @@ class FileTest extends \PHPUnit\Framework\TestCase
     public function testGetContentType()
     {
         $file = new File(SABRE_TEMPDIR.'/file.txt');
-        $this->assertNull($file->getContentType());
+        self::assertNull($file->getContentType());
     }
 
     public function testGetSize()
     {
         $file = new File(SABRE_TEMPDIR.'/file.txt');
-        $this->assertEquals(8, $file->getSize());
+        self::assertEquals(8, $file->getSize());
     }
 }

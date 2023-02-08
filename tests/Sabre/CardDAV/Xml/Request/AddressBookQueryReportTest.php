@@ -42,7 +42,7 @@ XML;
             ],
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
@@ -78,7 +78,7 @@ XML;
             ],
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
@@ -124,7 +124,7 @@ XML;
         $addressBookQueryReport->test = 'anyof';
         $addressBookQueryReport->filters = [];
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
@@ -223,7 +223,7 @@ XML;
         $addressBookQueryReport->contentType = 'application/vcard+json';
         $addressBookQueryReport->limit = 10;
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookQueryReport,
             $result['value']
         );
@@ -325,7 +325,7 @@ XML;
             'TEL',
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookQueryReport,
             $result['value']
         );

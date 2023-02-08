@@ -18,7 +18,7 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
     public function testSetup()
     {
         $backend = $this->getBackend();
-        $this->assertInstanceOf('Sabre\\DAV\\Locks\\Backend\\AbstractBackend', $backend);
+        self::assertInstanceOf('Sabre\\DAV\\Locks\\Backend\\AbstractBackend', $backend);
     }
 
     /**
@@ -35,13 +35,13 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->token = 'MY-UNIQUE-TOKEN';
         $lock->uri = 'someuri';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
 
-        $this->assertEquals(1, count($locks));
-        $this->assertEquals('Sinterklaas', $locks[0]->owner);
-        $this->assertEquals('someuri', $locks[0]->uri);
+        self::assertEquals(1, count($locks));
+        self::assertEquals('Sinterklaas', $locks[0]->owner);
+        self::assertEquals('someuri', $locks[0]->uri);
     }
 
     /**
@@ -58,13 +58,13 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->depth = DAV\Server::DEPTH_INFINITY;
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri/child', false);
 
-        $this->assertEquals(1, count($locks));
-        $this->assertEquals('Sinterklaas', $locks[0]->owner);
-        $this->assertEquals('someuri', $locks[0]->uri);
+        self::assertEquals(1, count($locks));
+        self::assertEquals('Sinterklaas', $locks[0]->owner);
+        self::assertEquals('someuri', $locks[0]->uri);
     }
 
     /**
@@ -81,11 +81,11 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->depth = 0;
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri/child', false);
 
-        $this->assertEquals(0, count($locks));
+        self::assertEquals(0, count($locks));
     }
 
     public function testGetLocksChildren()
@@ -99,16 +99,16 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->depth = 0;
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri/child', $lock));
+        self::assertTrue($backend->lock('someuri/child', $lock));
 
         $locks = $backend->getLocks('someuri/child', false);
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
 
         $locks = $backend->getLocks('someuri', false);
-        $this->assertEquals(0, count($locks));
+        self::assertEquals(0, count($locks));
 
         $locks = $backend->getLocks('someuri', true);
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
     }
 
     /**
@@ -124,18 +124,18 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->created = time();
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
         /* Second time */
 
         $lock->owner = 'Santa Clause';
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
 
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
 
-        $this->assertEquals('Santa Clause', $locks[0]->owner);
-        $this->assertEquals('someuri', $locks[0]->uri);
+        self::assertEquals('Santa Clause', $locks[0]->owner);
+        self::assertEquals('someuri', $locks[0]->uri);
     }
 
     /**
@@ -151,15 +151,15 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->created = time();
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
 
-        $this->assertTrue($backend->unlock('someuri', $lock));
+        self::assertTrue($backend->unlock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
-        $this->assertEquals(0, count($locks));
+        self::assertEquals(0, count($locks));
     }
 
     /**
@@ -175,15 +175,15 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
         $lock->created = time();
         $lock->token = 'MY-UNIQUE-TOKEN';
 
-        $this->assertTrue($backend->lock('someuri', $lock));
+        self::assertTrue($backend->lock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
 
         $lock->token = 'SOME-OTHER-TOKEN';
-        $this->assertFalse($backend->unlock('someuri', $lock));
+        self::assertFalse($backend->unlock('someuri', $lock));
 
         $locks = $backend->getLocks('someuri', false);
-        $this->assertEquals(1, count($locks));
+        self::assertEquals(1, count($locks));
     }
 }

@@ -19,7 +19,7 @@ class ServerEventsTest extends AbstractServer
 
         $this->tempPath = '';
         $this->server->createFile($newPath, 'body');
-        $this->assertEquals($newPath, $this->tempPath);
+        self::assertEquals($newPath, $this->tempPath);
     }
 
     public function testAfterBindOfCollection()
@@ -29,7 +29,7 @@ class ServerEventsTest extends AbstractServer
 
         $this->tempPath = '';
         $this->server->createDirectory($newPath);
-        $this->assertEquals($newPath, $this->tempPath);
+        self::assertEquals($newPath, $this->tempPath);
     }
 
     public function testAfterCreateFile()
@@ -39,7 +39,7 @@ class ServerEventsTest extends AbstractServer
 
         $this->tempPath = '';
         $this->server->createFile($newPath, 'body');
-        $this->assertEquals($newPath, $this->tempPath);
+        self::assertEquals($newPath, $this->tempPath);
     }
 
     public function testAfterCreateCollection()
@@ -49,7 +49,7 @@ class ServerEventsTest extends AbstractServer
 
         $this->tempPath = '';
         $this->server->createDirectory($newPath);
-        $this->assertEquals($newPath, $this->tempPath);
+        self::assertEquals($newPath, $this->tempPath);
     }
 
     public function testAfterCopy()
@@ -71,9 +71,9 @@ class ServerEventsTest extends AbstractServer
         $this->server->httpRequest = $request;
 
         $this->server->exec();
-        $this->assertEquals(201, $this->server->httpResponse->getStatus());
-        $this->assertEquals(trim($oldPath, '/'), $tmpPath1);
-        $this->assertEquals(trim($newPath, '/'), $tmpPath2);
+        self::assertEquals(201, $this->server->httpResponse->getStatus());
+        self::assertEquals(trim($oldPath, '/'), $tmpPath1);
+        self::assertEquals(trim($newPath, '/'), $tmpPath2);
     }
 
     public function afterHandler($path)
@@ -101,7 +101,7 @@ class ServerEventsTest extends AbstractServer
     public function testBeforeBindCancel()
     {
         $this->server->on('beforeBind', [$this, 'beforeBindCancelHandler']);
-        $this->assertFalse($this->server->createFile('bla', 'body'));
+        self::assertFalse($this->server->createFile('bla', 'body'));
 
         // Also testing put()
         $req = HTTP\Sapi::createFromServerArray([
@@ -112,7 +112,7 @@ class ServerEventsTest extends AbstractServer
         $this->server->httpRequest = $req;
         $this->server->exec();
 
-        $this->assertEquals(500, $this->server->httpResponse->getStatus());
+        self::assertEquals(500, $this->server->httpResponse->getStatus());
     }
 
     public function testBeforeCopyCancel()
@@ -136,9 +136,9 @@ class ServerEventsTest extends AbstractServer
         $this->server->httpRequest = $request;
 
         $this->server->exec();
-        $this->assertEquals(500, $this->server->httpResponse->getStatus());
-        $this->assertEquals(trim($oldPath, '/'), $tmpPath1);
-        $this->assertEquals(trim($newPath, '/'), $tmpPath2);
+        self::assertEquals(500, $this->server->httpResponse->getStatus());
+        self::assertEquals(trim($oldPath, '/'), $tmpPath1);
+        self::assertEquals(trim($newPath, '/'), $tmpPath2);
     }
 
     public function beforeBindCancelHandler($path)
@@ -157,7 +157,7 @@ class ServerEventsTest extends AbstractServer
         $this->server->httpRequest = $req;
         $this->server->exec();
 
-        $this->assertInstanceOf('Sabre\\DAV\\Exception\\NotFound', $this->exception);
+        self::assertInstanceOf('Sabre\\DAV\\Exception\\NotFound', $this->exception);
     }
 
     public function exceptionHandler(Exception $exception)
@@ -189,6 +189,6 @@ class ServerEventsTest extends AbstractServer
         }
 
         // Fun fact, PHP 7.1 changes the order when sorting-by-callback.
-        $this->assertTrue($k >= 2 && $k <= 3);
+        self::assertTrue($k >= 2 && $k <= 3);
     }
 }

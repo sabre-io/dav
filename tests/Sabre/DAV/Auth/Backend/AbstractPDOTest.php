@@ -22,7 +22,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
-        $this->assertTrue($backend instanceof PDO);
+        self::assertTrue($backend instanceof PDO);
     }
 
     /**
@@ -33,10 +33,10 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
 
-        $this->assertNull($backend->getDigestHash('realm', 'blabla'));
+        self::assertNull($backend->getDigestHash('realm', 'blabla'));
 
         $expected = 'hash';
 
-        $this->assertEquals($expected, $backend->getDigestHash('realm', 'user'));
+        self::assertEquals($expected, $backend->getDigestHash('realm', 'user'));
     }
 }

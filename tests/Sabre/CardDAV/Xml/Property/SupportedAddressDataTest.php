@@ -12,7 +12,7 @@ class SupportedAddressDataTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $property = new SupportedAddressData();
-        $this->assertInstanceOf('Sabre\CardDAV\Xml\Property\SupportedAddressData', $property);
+        self::assertInstanceOf('Sabre\CardDAV\Xml\Property\SupportedAddressData', $property);
     }
 
     /**
@@ -25,7 +25,7 @@ class SupportedAddressDataTest extends DAV\Xml\XmlTest
         $this->namespaceMap[CardDAV\Plugin::NS_CARDDAV] = 'card';
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:card="'.CardDAV\Plugin::NS_CARDDAV.'" xmlns:d="DAV:">'.
 '<card:address-data-type content-type="text/vcard" version="3.0"/>'.

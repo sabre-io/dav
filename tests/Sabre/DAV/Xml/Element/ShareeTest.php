@@ -41,7 +41,7 @@ XML;
             'comment' => 'Shared workspace',
             'access' => Plugin::ACCESS_READWRITE,
         ]);
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $result['value']
         );

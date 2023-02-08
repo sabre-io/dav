@@ -41,7 +41,7 @@ XML;
         $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatus(), (string) $response->getBodyAsString());
+        self::assertEquals(200, $response->getStatus(), (string) $response->getBodyAsString());
 
         $expected = [
             new Sharee([
@@ -55,7 +55,7 @@ XML;
             ]),
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $this->sharingNodeMock->getInvites()
         );
@@ -84,11 +84,11 @@ XML;
         $request = new Request('POST', '/shareable', ['Content-Type' => 'application/davsharing+xml; charset="utf-8"'], $body);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->getStatus(), (string) $response->getBodyAsString());
+        self::assertEquals(200, $response->getStatus(), (string) $response->getBodyAsString());
 
         $expected = [];
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $this->sharingNodeMock->getInvites()
         );
@@ -116,7 +116,7 @@ XML;
         $request = new Request('PROPFIND', '/shareable', ['Content-Type' => 'application/xml'], $body);
         $response = $this->request($request);
 
-        $this->assertEquals(207, $response->getStatus());
+        self::assertEquals(207, $response->getStatus());
 
         $expected = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
@@ -144,7 +144,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $response->getBodyAsString());
+        self::assertXmlStringEqualsXmlString($expected, $response->getBodyAsString());
     }
 
     public function testShareResourceNotFound()

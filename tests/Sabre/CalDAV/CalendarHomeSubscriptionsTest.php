@@ -28,14 +28,14 @@ class CalendarHomeSubscriptionsTest extends \PHPUnit\Framework\TestCase
     public function testSimple()
     {
         $instance = $this->getInstance();
-        $this->assertEquals('user1', $instance->getName());
+        self::assertEquals('user1', $instance->getName());
     }
 
     public function testGetChildren()
     {
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(1, count($children));
+        self::assertEquals(1, count($children));
         foreach ($children as $child) {
             if ($child instanceof Subscriptions\Subscription) {
                 return;
@@ -56,7 +56,7 @@ class CalendarHomeSubscriptionsTest extends \PHPUnit\Framework\TestCase
         $instance->createExtendedCollection('sub2', new MkCol($rt, $props));
 
         $children = $instance->getChildren();
-        $this->assertEquals(2, count($children));
+        self::assertEquals(2, count($children));
     }
 
     public function testNoSubscriptionSupport()

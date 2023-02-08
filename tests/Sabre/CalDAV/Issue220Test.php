@@ -93,9 +93,9 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
-        $this->assertFalse(strpos($response->getBodyAsString(), '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: '.$response->getBodyAsString());
-        $this->assertFalse(strpos($response->getBodyAsString(), 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): '.$response->getBodyAsString());
+        self::assertFalse(strpos($response->getBodyAsString(), '<s:exception>PHPUnit_Framework_Error_Warning</s:exception>'), 'Error Warning occurred: '.$response->getBodyAsString());
+        self::assertFalse(strpos($response->getBodyAsString(), 'Invalid argument supplied for foreach()'), 'Invalid argument supplied for foreach(): '.$response->getBodyAsString());
 
-        $this->assertEquals(207, $response->status);
+        self::assertEquals(207, $response->status);
     }
 }

@@ -208,7 +208,7 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
 
         if ($expectedStatus) {
             $responseBody = $expectedStatus !== $response->getStatus() ? $response->getBodyAsString() : '';
-            $this->assertEquals($expectedStatus, $response->getStatus(), 'Incorrect HTTP status received for request. Response body: '.$responseBody);
+            self::assertEquals($expectedStatus, $response->getStatus(), 'Incorrect HTTP status received for request. Response body: '.$responseBody);
         }
 
         return $this->server->httpResponse;
@@ -300,6 +300,6 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
     public function assertHttpStatus($expectedStatus, HTTP\Request $req)
     {
         $resp = $this->request($req);
-        $this->assertEquals((int) $expectedStatus, (int) $resp->getStatus(), 'Incorrect HTTP status received: '.$resp->getStatus());
+        self::assertEquals((int) $expectedStatus, (int) $resp->getStatus(), 'Incorrect HTTP status received: '.$resp->getStatus());
     }
 }

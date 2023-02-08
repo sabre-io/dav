@@ -18,20 +18,20 @@ class InviteTest extends DAV\Xml\XmlTest
     {
         $notification = new Invite($notification);
 
-        $this->assertEquals('foo', $notification->getId());
-        $this->assertEquals('"1"', $notification->getETag());
+        self::assertEquals('foo', $notification->getId());
+        self::assertEquals('"1"', $notification->getETag());
 
         $simpleExpected = '<cs:invite-notification xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" />'."\n";
         $this->namespaceMap['http://calendarserver.org/ns/'] = 'cs';
 
         $xml = $this->write($notification);
 
-        $this->assertXmlStringEqualsXmlString($simpleExpected, $xml);
+        self::assertXmlStringEqualsXmlString($simpleExpected, $xml);
 
         $this->namespaceMap['urn:ietf:params:xml:ns:caldav'] = 'cal';
         $xml = $this->writeFull($notification);
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function dataProvider()

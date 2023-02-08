@@ -59,7 +59,7 @@ class ACLMethodTest extends \PHPUnit\Framework\TestCase
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
-        $this->assertFalse($acl->httpACL($server->httpRequest, $server->httpResponse));
+        self::assertFalse($acl->httpACL($server->httpRequest, $server->httpResponse));
     }
 
     public function testUnrecognizedPrincipal()
@@ -293,9 +293,9 @@ class ACLMethodTest extends \PHPUnit\Framework\TestCase
         $server->addPlugin(new DAV\Auth\Plugin());
         $server->addPlugin($acl);
 
-        $this->assertFalse($acl->httpAcl($server->httpRequest, $server->httpResponse));
+        self::assertFalse($acl->httpAcl($server->httpRequest, $server->httpResponse));
 
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'principal' => 'principals/foo',
                 'privilege' => '{DAV:}write',

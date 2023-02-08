@@ -47,7 +47,7 @@ class ShareAccessTest extends XmlTest
 </d:root>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testDeserialize()
@@ -91,7 +91,7 @@ XML;
             ],
         ];
 
-        $this->assertParsedValue(
+        self::assertParsedValue(
             $data,
             $input,
             ['{DAV:}share-access' => ShareAccess::class]

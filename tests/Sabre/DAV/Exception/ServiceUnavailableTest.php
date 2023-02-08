@@ -9,6 +9,6 @@ class ServiceUnavailableTest extends \PHPUnit\Framework\TestCase
     public function testGetHTTPCode()
     {
         $ex = new ServiceUnavailable();
-        $this->assertEquals(503, $ex->getHTTPCode());
+        self::assertEquals(503, $ex->getHTTPCode());
     }
 }

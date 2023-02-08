@@ -26,7 +26,7 @@ class SyncCollectionTest extends XmlTest
         $elem->syncLevel = 1;
         $elem->properties = ['{DAV:}foo'];
 
-        $this->assertEquals($elem, $result['value']);
+        self::assertEquals($elem, $result['value']);
     }
 
     public function testDeserializeLimit()
@@ -49,7 +49,7 @@ class SyncCollectionTest extends XmlTest
         $elem->properties = ['{DAV:}foo'];
         $elem->limit = 5;
 
-        $this->assertEquals($elem, $result['value']);
+        self::assertEquals($elem, $result['value']);
     }
 
     public function testDeserializeInfinity()
@@ -70,7 +70,7 @@ class SyncCollectionTest extends XmlTest
         $elem->syncLevel = \Sabre\DAV\Server::DEPTH_INFINITY;
         $elem->properties = ['{DAV:}foo'];
 
-        $this->assertEquals($elem, $result['value']);
+        self::assertEquals($elem, $result['value']);
     }
 
     public function testDeserializeMissingElem()

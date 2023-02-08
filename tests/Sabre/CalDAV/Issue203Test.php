@@ -97,7 +97,7 @@ END:VCALENDAR
 
         $vObject = VObject\Reader::read($body);
 
-        $this->assertEquals(2, count($vObject->VEVENT));
+        self::assertEquals(2, count($vObject->VEVENT));
 
         $expectedEvents = [
             [
@@ -132,7 +132,7 @@ END:VCALENDAR
                 break;
             }
 
-            $this->assertTrue($matching, 'Did not find the following event in the response: '.var_export($expectedEvent, true));
+            self::assertTrue($matching, 'Did not find the following event in the response: '.var_export($expectedEvent, true));
         }
     }
 }

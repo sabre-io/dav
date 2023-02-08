@@ -64,26 +64,26 @@ ICS
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Response body:'.$response->getBodyAsString());
+        self::assertEquals(201, $response->getStatus(), 'Incorrect status code received. Response body:'.$response->getBodyAsString());
 
         $result = $this->request(new Request('GET', '/calendars/user1/default/foo.ics'))->getBody();
         $resultVObj = VObject\Reader::read($result);
 
-        $this->assertEquals(
+        self::assertEquals(
             '1.2',
             $resultVObj->VEVENT->ATTENDEE[1]['SCHEDULE-STATUS']->getValue()
         );
 
-        $this->assertEquals(1, count($messages));
+        self::assertEquals(1, count($messages));
         $message = $messages[0];
 
-        $this->assertInstanceOf('\Sabre\VObject\ITip\Message', $message);
-        $this->assertEquals('mailto:user2.sabredav@sabredav.org', $message->recipient);
-        $this->assertEquals('Roxy Kesh', $message->recipientName);
-        $this->assertEquals('mailto:user1.sabredav@sabredav.org', $message->sender);
-        $this->assertEquals('Administrator', $message->senderName);
-        $this->assertEquals('REQUEST', $message->method);
+        self::assertInstanceOf('\Sabre\VObject\ITip\Message', $message);
+        self::assertEquals('mailto:user2.sabredav@sabredav.org', $message->recipient);
+        self::assertEquals('Roxy Kesh', $message->recipientName);
+        self::assertEquals('mailto:user1.sabredav@sabredav.org', $message->sender);
+        self::assertEquals('Administrator', $message->senderName);
+        self::assertEquals('REQUEST', $message->method);
 
-        $this->assertEquals('REQUEST', $message->message->METHOD->getValue());
+        self::assertEquals('REQUEST', $message->message->METHOD->getValue());
     }
 }

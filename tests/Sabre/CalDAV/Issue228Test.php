@@ -75,6 +75,6 @@ END:VCALENDAR
         $response = $this->request($request);
 
         // We must check if absolutely nothing was returned from this query.
-        $this->assertFalse(strpos($response->getBodyAsString(), 'BEGIN:VCALENDAR'));
+        self::assertFalse(strpos($response->getBodyAsString(), 'BEGIN:VCALENDAR'));
     }
 }

@@ -84,7 +84,7 @@ END:VCALENDAR
 
         $vObject = VObject\Reader::read($body);
 
-        $this->assertEquals(2, count($vObject->VEVENT));
+        self::assertEquals(2, count($vObject->VEVENT));
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
@@ -93,10 +93,10 @@ END:VCALENDAR
                 /** @var $child Sabre\VObject\Property */
                 if ('DTSTART' == $child->name) {
                     // DTSTART has to be one of two valid values
-                    $this->assertContains($child->getValue(), ['20120214T171500Z', '20120216T171500Z'], 'DTSTART is not a valid value: '.$child->getValue());
+                    self::assertContains($child->getValue(), ['20120214T171500Z', '20120216T171500Z'], 'DTSTART is not a valid value: '.$child->getValue());
                 } elseif ('DTEND' == $child->name) {
                     // DTEND has to be one of two valid values
-                    $this->assertContains($child->getValue(), ['20120214T181500Z', '20120216T181500Z'], 'DTEND is not a valid value: '.$child->getValue());
+                    self::assertContains($child->getValue(), ['20120214T181500Z', '20120216T181500Z'], 'DTEND is not a valid value: '.$child->getValue());
                 }
             }
         }

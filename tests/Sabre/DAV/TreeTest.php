@@ -10,8 +10,8 @@ class TreeTest extends \PHPUnit\Framework\TestCase
     {
         $tree = new TreeMock();
 
-        $this->assertTrue($tree->nodeExists('hi'));
-        $this->assertFalse($tree->nodeExists('hello'));
+        self::assertTrue($tree->nodeExists('hi'));
+        self::assertFalse($tree->nodeExists('hello'));
     }
 
     public function testCopy()
@@ -19,9 +19,9 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->copy('hi', 'hi2');
 
-        $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
-        $this->assertEquals('foobar', $tree->getNodeForPath('hi/file')->get());
-        $this->assertEquals(['test1' => 'value'], $tree->getNodeForPath('hi/file')->getProperties([]));
+        self::assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
+        self::assertEquals('foobar', $tree->getNodeForPath('hi/file')->get());
+        self::assertEquals(['test1' => 'value'], $tree->getNodeForPath('hi/file')->getProperties([]));
     }
 
     public function testCopyFile()
@@ -29,7 +29,7 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->copy('hi/file', 'hi/newfile');
 
-        $this->assertArrayHasKey('newfile', $tree->getNodeForPath('hi')->newFiles);
+        self::assertArrayHasKey('newfile', $tree->getNodeForPath('hi')->newFiles);
     }
 
     public function testCopyFile0()
@@ -37,7 +37,7 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->copy('hi/file', 'hi/0');
 
-        $this->assertArrayHasKey('0', $tree->getNodeForPath('hi')->newFiles);
+        self::assertArrayHasKey('0', $tree->getNodeForPath('hi')->newFiles);
     }
 
     public function testMove()
@@ -45,8 +45,8 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->move('hi', 'hi2');
 
-        $this->assertEquals('hi2', $tree->getNodeForPath('hi')->getName());
-        $this->assertTrue($tree->getNodeForPath('hi')->isRenamed);
+        self::assertEquals('hi2', $tree->getNodeForPath('hi')->getName());
+        self::assertTrue($tree->getNodeForPath('hi')->isRenamed);
     }
 
     public function testDeepMove()
@@ -54,8 +54,8 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->move('hi/sub', 'hi2');
 
-        $this->assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
-        $this->assertTrue($tree->getNodeForPath('hi/sub')->isDeleted);
+        self::assertArrayHasKey('hi2', $tree->getNodeForPath('')->newDirectories);
+        self::assertTrue($tree->getNodeForPath('hi/sub')->isDeleted);
     }
 
     public function testDeepMoveNumber()
@@ -63,15 +63,15 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $tree->move('1/2', 'hi/sub');
 
-        $this->assertArrayHasKey('sub', $tree->getNodeForPath('hi')->newDirectories);
-        $this->assertTrue($tree->getNodeForPath('1/2')->isDeleted);
+        self::assertArrayHasKey('sub', $tree->getNodeForPath('hi')->newDirectories);
+        self::assertTrue($tree->getNodeForPath('1/2')->isDeleted);
     }
 
     public function testDelete()
     {
         $tree = new TreeMock();
         $tree->delete('hi');
-        $this->assertTrue($tree->getNodeForPath('hi')->isDeleted);
+        self::assertTrue($tree->getNodeForPath('hi')->isDeleted);
     }
 
     public function testGetChildren()
@@ -79,26 +79,26 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $tree = new TreeMock();
         $children = $tree->getChildren('');
         $firstChild = $children->current();
-        $this->assertEquals('hi', $firstChild->getName());
+        self::assertEquals('hi', $firstChild->getName());
     }
 
     public function testGetMultipleNodes()
     {
         $tree = new TreeMock();
         $result = $tree->getMultipleNodes(['hi/sub', 'hi/file']);
-        $this->assertArrayHasKey('hi/sub', $result);
-        $this->assertArrayHasKey('hi/file', $result);
+        self::assertArrayHasKey('hi/sub', $result);
+        self::assertArrayHasKey('hi/file', $result);
 
-        $this->assertEquals('sub', $result['hi/sub']->getName());
-        $this->assertEquals('file', $result['hi/file']->getName());
+        self::assertEquals('sub', $result['hi/sub']->getName());
+        self::assertEquals('file', $result['hi/file']->getName());
     }
 
     public function testGetMultipleNodes2()
     {
         $tree = new TreeMock();
         $result = $tree->getMultipleNodes(['multi/1', 'multi/2']);
-        $this->assertArrayHasKey('multi/1', $result);
-        $this->assertArrayHasKey('multi/2', $result);
+        self::assertArrayHasKey('multi/1', $result);
+        self::assertArrayHasKey('multi/2', $result);
     }
 }
 

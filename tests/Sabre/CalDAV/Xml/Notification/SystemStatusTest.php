@@ -16,8 +16,8 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      */
     public function testSerializers($notification, $expected1, $expected2)
     {
-        $this->assertEquals('foo', $notification->getId());
-        $this->assertEquals('"1"', $notification->getETag());
+        self::assertEquals('foo', $notification->getId());
+        self::assertEquals('"1"', $notification->getETag());
 
         $writer = new Writer();
         $writer->namespaceMap = [
@@ -28,7 +28,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $writer->startElement('{http://calendarserver.org/ns/}root');
         $writer->write($notification);
         $writer->endElement();
-        $this->assertXmlStringEqualsXmlString($expected1, $writer->outputMemory());
+        self::assertXmlStringEqualsXmlString($expected1, $writer->outputMemory());
 
         $writer = new Writer();
         $writer->namespaceMap = [
@@ -40,7 +40,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $writer->startElement('{http://calendarserver.org/ns/}root');
         $notification->xmlSerializeFull($writer);
         $writer->endElement();
-        $this->assertXmlStringEqualsXmlString($expected2, $writer->outputMemory());
+        self::assertXmlStringEqualsXmlString($expected2, $writer->outputMemory());
     }
 
     public function dataProvider()

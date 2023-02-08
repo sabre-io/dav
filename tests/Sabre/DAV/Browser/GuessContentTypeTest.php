@@ -28,9 +28,9 @@ class GuessContentTypeTest extends DAV\AbstractServer
             '{DAV:}getcontenttype',
         ];
         $result = $this->server->getPropertiesForPath('/somefile.jpg', $properties);
-        $this->assertArrayHasKey(0, $result);
-        $this->assertArrayHasKey(404, $result[0]);
-        $this->assertArrayHasKey('{DAV:}getcontenttype', $result[0][404]);
+        self::assertArrayHasKey(0, $result);
+        self::assertArrayHasKey(404, $result[0]);
+        self::assertArrayHasKey('{DAV:}getcontenttype', $result[0][404]);
     }
 
     /**
@@ -43,10 +43,10 @@ class GuessContentTypeTest extends DAV\AbstractServer
             '{DAV:}getcontenttype',
         ];
         $result = $this->server->getPropertiesForPath('/somefile.jpg', $properties);
-        $this->assertArrayHasKey(0, $result);
-        $this->assertArrayHasKey(200, $result[0], 'We received: '.print_r($result, true));
-        $this->assertArrayHasKey('{DAV:}getcontenttype', $result[0][200]);
-        $this->assertEquals('image/jpeg', $result[0][200]['{DAV:}getcontenttype']);
+        self::assertArrayHasKey(0, $result);
+        self::assertArrayHasKey(200, $result[0], 'We received: '.print_r($result, true));
+        self::assertArrayHasKey('{DAV:}getcontenttype', $result[0][200]);
+        self::assertEquals('image/jpeg', $result[0][200]['{DAV:}getcontenttype']);
     }
 
     /**
@@ -59,9 +59,9 @@ class GuessContentTypeTest extends DAV\AbstractServer
             '{DAV:}getcontenttype',
         ];
         $result = $this->server->getPropertiesForPath('/somefile.hoi', $properties);
-        $this->assertArrayHasKey(0, $result);
-        $this->assertArrayHasKey(200, $result[0]);
-        $this->assertArrayHasKey('{DAV:}getcontenttype', $result[0][200]);
-        $this->assertEquals('application/octet-stream', $result[0][200]['{DAV:}getcontenttype']);
+        self::assertArrayHasKey(0, $result);
+        self::assertArrayHasKey(200, $result[0]);
+        self::assertArrayHasKey('{DAV:}getcontenttype', $result[0][200]);
+        self::assertEquals('application/octet-stream', $result[0][200]['{DAV:}getcontenttype']);
     }
 }

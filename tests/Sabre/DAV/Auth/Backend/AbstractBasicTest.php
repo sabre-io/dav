@@ -15,7 +15,7 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase
 
         $backend = new AbstractBasicMock();
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -32,7 +32,7 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase
 
         $backend = new AbstractBasicMock();
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -48,7 +48,7 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractBasicMock();
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
@@ -63,7 +63,7 @@ class AbstractBasicTest extends \PHPUnit\Framework\TestCase
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertEquals(
+        self::assertEquals(
             'Basic realm="writing unittests on a saturday night", charset="UTF-8"',
             $response->getHeader('WWW-Authenticate')
         );

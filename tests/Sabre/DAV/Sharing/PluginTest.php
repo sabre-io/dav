@@ -27,12 +27,12 @@ class PluginTest extends \Sabre\DAVServerTest
         $response = new \Sabre\HTTP\ResponseMock();
 
         $this->sharingPlugin->httpPost($request, $response);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     public function testFeatures()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['resource-sharing'],
             $this->sharingPlugin->getFeatures()
         );
@@ -55,7 +55,7 @@ class PluginTest extends \Sabre\DAVServerTest
             ],
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $result
         );
@@ -64,8 +64,8 @@ class PluginTest extends \Sabre\DAVServerTest
     public function testGetPluginInfo()
     {
         $result = $this->sharingPlugin->getPluginInfo();
-        $this->assertIsArray($result);
-        $this->assertEquals('sharing', $result['name']);
+        self::assertIsArray($result);
+        self::assertEquals('sharing', $result['name']);
     }
 
     public function testHtmlActionsPanel()
@@ -73,11 +73,11 @@ class PluginTest extends \Sabre\DAVServerTest
         $node = new \Sabre\DAV\Mock\Collection('foo');
         $html = '';
 
-        $this->assertNull(
+        self::assertNull(
             $this->sharingPlugin->htmlActionsPanel($node, $html, 'foo/bar')
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             '',
             $html
         );
@@ -85,10 +85,10 @@ class PluginTest extends \Sabre\DAVServerTest
         $node = new \Sabre\DAV\Mock\SharedNode('foo', \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER);
         $html = '';
 
-        $this->assertNull(
+        self::assertNull(
             $this->sharingPlugin->htmlActionsPanel($node, $html, 'shareable')
         );
-        $this->assertStringContainsString(
+        self::assertStringContainsString(
             'Share this resource',
             $html
         );
@@ -96,7 +96,7 @@ class PluginTest extends \Sabre\DAVServerTest
 
     public function testBrowserPostActionUnknownAction()
     {
-        $this->assertNull($this->sharingPlugin->browserPostAction(
+        self::assertNull($this->sharingPlugin->browserPostAction(
             'shareable',
             'foo',
             []
@@ -105,7 +105,7 @@ class PluginTest extends \Sabre\DAVServerTest
 
     public function testBrowserPostActionSuccess()
     {
-        $this->assertFalse($this->sharingPlugin->browserPostAction(
+        self::assertFalse($this->sharingPlugin->browserPostAction(
             'shareable',
             'share',
             [
@@ -121,7 +121,7 @@ class PluginTest extends \Sabre\DAVServerTest
                 'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
             ]),
         ];
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $this->tree[0]->getInvites()
         );

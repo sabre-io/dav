@@ -30,9 +30,9 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     public function testGetChildren()
     {
         $col = $this->getInstance();
-        $this->assertEquals('notifications', $col->getName());
+        self::assertEquals('notifications', $col->getName());
 
-        $this->assertEquals([
+        self::assertEquals([
             new Node($this->caldavBackend, $this->principalUri, $this->notification),
         ], $col->getChildren());
     }
@@ -40,13 +40,13 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     public function testGetOwner()
     {
         $col = $this->getInstance();
-        $this->assertEquals('principals/user1', $col->getOwner());
+        self::assertEquals('principals/user1', $col->getOwner());
     }
 
     public function testGetGroup()
     {
         $col = $this->getInstance();
-        $this->assertNull($col->getGroup());
+        self::assertNull($col->getGroup());
     }
 
     public function testGetACL()
@@ -60,7 +60,7 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $col->getACL());
+        self::assertEquals($expected, $col->getACL());
     }
 
     public function testSetACL()
@@ -73,6 +73,6 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
     public function testGetSupportedPrivilegeSet()
     {
         $col = $this->getInstance();
-        $this->assertNull($col->getSupportedPrivilegeSet());
+        self::assertNull($col->getSupportedPrivilegeSet());
     }
 }

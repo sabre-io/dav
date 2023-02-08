@@ -25,9 +25,9 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $plugin->allowAccessToNodesWithoutACL = true;
         $plugin->allowUnauthenticatedAccess = false;
 
-        $this->assertTrue($plugin instanceof Plugin);
+        self::assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
+        self::assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
         return $fakeServer;
     }
@@ -62,8 +62,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -99,8 +99,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->getStatus(), 'Full body: '.$server->httpResponse->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->getStatus(), 'Full body: '.$server->httpResponse->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Vary' => ['Brief,Prefer'],
@@ -139,8 +139,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $server->httpResponse->status, $bodyAsString);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Vary' => ['Brief,Prefer'],
@@ -169,7 +169,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
 
@@ -211,8 +211,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $server->httpResponse->status, $bodyAsString);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Vary' => ['Brief,Prefer'],
@@ -241,7 +241,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
 
@@ -283,8 +283,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $server->httpResponse->status, $bodyAsString);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Vary' => ['Brief,Prefer'],
@@ -313,7 +313,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
 
@@ -348,8 +348,8 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $server->httpResponse->status, $bodyAsString);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Vary' => ['Brief,Prefer'],
@@ -372,7 +372,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
 }

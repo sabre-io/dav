@@ -16,7 +16,7 @@ class AbstractTest extends \PHPUnit\Framework\TestCase
         $abstract->updateCalendar('randomid', $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertFalse($result);
+        self::assertFalse($result);
     }
 
     public function testCalendarQuery()
@@ -38,7 +38,7 @@ class AbstractTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event1.ics',
         ], $abstract->calendarQuery(1, $filters));
     }
@@ -46,17 +46,17 @@ class AbstractTest extends \PHPUnit\Framework\TestCase
     public function testGetCalendarObjectByUID()
     {
         $abstract = new AbstractMock();
-        $this->assertNull(
+        self::assertNull(
             $abstract->getCalendarObjectByUID('principal1', 'zim')
         );
-        $this->assertEquals(
+        self::assertEquals(
             'cal1/event1.ics',
             $abstract->getCalendarObjectByUID('principal1', 'foo')
         );
-        $this->assertNull(
+        self::assertNull(
             $abstract->getCalendarObjectByUID('principal3', 'foo')
         );
-        $this->assertNull(
+        self::assertNull(
             $abstract->getCalendarObjectByUID('principal1', 'shared')
         );
     }
@@ -84,7 +84,7 @@ class AbstractTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }
 

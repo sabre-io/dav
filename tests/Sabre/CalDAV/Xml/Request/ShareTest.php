@@ -47,7 +47,7 @@ XML;
             ]),
         ]);
 
-        $this->assertEquals(
+        self::assertEquals(
             $share,
             $result['value']
         );
@@ -74,7 +74,7 @@ XML;
             ]),
         ]);
 
-        $this->assertEquals(
+        self::assertEquals(
             $share,
             $result['value']
         );

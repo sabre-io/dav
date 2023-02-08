@@ -21,7 +21,7 @@ class LastModifiedTest extends XmlTest
 <d:getlastmodified xmlns:d="DAV:">Tue, 24 Mar 2015 18:47:00 GMT</d:getlastmodified>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $result);
+        self::assertXmlStringEqualsXmlString($expected, $result);
     }
 
     public function testSerializeTimeStamp()
@@ -36,7 +36,7 @@ XML;
 <d:getlastmodified xmlns:d="DAV:">Tue, 24 Mar 2015 18:47:00 GMT</d:getlastmodified>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $result);
+        self::assertXmlStringEqualsXmlString($expected, $result);
     }
 
     public function testDeserialize()
@@ -49,7 +49,7 @@ XML;
         $elementMap = ['{DAV:}getlastmodified' => 'Sabre\DAV\Xml\Property\GetLastModified'];
         $result = $this->parse($input, $elementMap);
 
-        $this->assertEquals(
+        self::assertEquals(
             new DateTime('2015-03-24 18:47:00', new DateTimeZone('UTC')),
             $result['value']->getTime()
         );

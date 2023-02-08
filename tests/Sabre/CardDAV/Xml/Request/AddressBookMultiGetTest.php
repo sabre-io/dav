@@ -30,7 +30,7 @@ class AddressBookMultiGetTest extends XmlTest
         $addressBookMultiGetReport->version = $expectedVersion;
         $addressBookMultiGetReport->addressDataProperties = $expectedProps;
 
-        $this->assertEquals(
+        self::assertEquals(
             $addressBookMultiGetReport,
             $result['value']
         );

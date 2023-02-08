@@ -108,7 +108,7 @@ END:VCALENDAR',
             ['Content-Type' => 'text/plain']
         );
 
-        $this->assertNull(
+        self::assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
     }
@@ -121,7 +121,7 @@ END:VCALENDAR',
             ['Content-Type' => 'text/calendar']
         );
 
-        $this->assertNull(
+        self::assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
     }
@@ -134,7 +134,7 @@ END:VCALENDAR',
             ['Content-Type' => 'text/calendar']
         );
 
-        $this->assertNull(
+        self::assertNull(
             $this->plugin->httpPost($this->server->httpRequest, $this->server->httpResponse)
         );
     }
@@ -273,12 +273,12 @@ ICS;
         // Lazily making the current principal an admin.
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
 
@@ -291,13 +291,13 @@ ICS;
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(
+            self::assertTrue(
                 false !== strpos($this->response->getBodyAsString(), $string),
                 'The response body did not contain: '.$string.'Full response: '.$this->response->getBodyAsString()
             );
         }
 
-        $this->assertTrue(
+        self::assertTrue(
             false == strpos($this->response->getBodyAsString(), 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z'),
             'The response body did contain free busy info from a transparent calendar.'
         );
@@ -336,12 +336,12 @@ ICS;
         // Lazily making the current principal an admin.
         $this->aclPlugin->adminPrincipals[] = 'principals/user1';
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
 
@@ -351,7 +351,7 @@ ICS;
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(
+            self::assertTrue(
                 false !== strpos($this->response->getBodyAsString(), $string),
                 'The response body did not contain: '.$string.'Full response: '.$this->response->getBodyAsString()
             );
@@ -388,12 +388,12 @@ ICS;
             $propFind->set('{'.Plugin::NS_CALDAV.'}calendar-home-set', null, 403);
         });
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
 
@@ -403,7 +403,7 @@ ICS;
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(
+            self::assertTrue(
                 false !== strpos($this->response->getBodyAsString(), $string),
                 'The response body did not contain: '.$string.'Full response: '.$this->response->getBodyAsString()
             );
@@ -440,12 +440,12 @@ ICS;
             $propFind->set('{'.Plugin::NS_CALDAV.'}schedule-inbox-URL', null, 403);
         });
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
 
@@ -455,7 +455,7 @@ ICS;
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(
+            self::assertTrue(
                 false !== strpos($this->response->getBodyAsString(), $string),
                 'The response body did not contain: '.$string.'Full response: '.$this->response->getBodyAsString()
             );
@@ -507,12 +507,12 @@ ICS;
             });
         });
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
 
@@ -525,7 +525,7 @@ ICS;
         ];
 
         foreach ($strings as $string) {
-            $this->assertTrue(
+            self::assertTrue(
                 false !== strpos($this->response->getBodyAsString(), $string),
                 'The response body did not contain: '.$string.'Full response: '.$this->response->getBodyAsString()
             );

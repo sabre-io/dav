@@ -20,14 +20,14 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(201, $this->response->status);
-        $this->assertEquals('', $this->response->getBodyAsString());
-        $this->assertTrue(is_dir($this->tempDir.'/testcol'));
+        self::assertEquals(201, $this->response->status);
+        self::assertEquals('', $this->response->getBodyAsString());
+        self::assertTrue(is_dir($this->tempDir.'/testcol'));
     }
 
     /**
@@ -45,12 +45,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(415, $this->response->status);
+        self::assertEquals(415, $this->response->status);
     }
 
     /**
@@ -69,12 +69,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(400, $this->response->getStatus(), $this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->getStatus(), $this->response->getBodyAsString());
     }
 
     /**
@@ -93,12 +93,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(400, $this->response->getStatus());
+        self::assertEquals(400, $this->response->getStatus());
     }
 
     /**
@@ -124,12 +124,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(400, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -155,12 +155,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(403, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(403, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -186,12 +186,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -219,12 +219,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Length' => ['0'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(201, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -243,12 +243,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -267,12 +267,12 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(409, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -291,13 +291,13 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             'Allow' => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(405, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(405, $this->response->status, 'Wrong statuscode received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -324,9 +324,9 @@ class ServerMKCOLTest extends AbstractServer
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Wrong statuscode received. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Wrong statuscode received. Full response body: '.$bodyAsString);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
@@ -346,7 +346,7 @@ class ServerMKCOLTest extends AbstractServer
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
             $expected,
             $bodyAsString
         );

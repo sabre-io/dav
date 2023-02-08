@@ -9,7 +9,7 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
     public function testIsLoggerAware()
     {
         $server = new Server();
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Psr\Log\LoggerAwareInterface',
             $server
         );
@@ -18,7 +18,7 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
     public function testGetNullLoggerByDefault()
     {
         $server = new Server();
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Psr\Log\NullLogger',
             $server->getLogger()
         );
@@ -31,7 +31,7 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
 
         $server->setLogger($logger);
 
-        $this->assertEquals(
+        self::assertEquals(
             $logger,
             $server->getLogger()
         );
@@ -64,19 +64,19 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         // The request should have triggered a 404 status.
-        $this->assertEquals(404, $response->getStatus());
+        self::assertEquals(404, $response->getStatus());
 
         // We should also see this in the PSR-3 log.
-        $this->assertEquals(1, count($logger->logs));
+        self::assertEquals(1, count($logger->logs));
 
         $logItem = $logger->logs[0];
 
-        $this->assertEquals(
+        self::assertEquals(
             \Psr\Log\LogLevel::INFO,
             $logItem[0]
         );
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Exception',
             $logItem[2]['exception']
         );

@@ -23,7 +23,7 @@ class PropFindTest extends XmlTest
         $propFind = new PropFind();
         $propFind->properties = ['{DAV:}hello'];
 
-        $this->assertEquals($propFind, $result['value']);
+        self::assertEquals($propFind, $result['value']);
     }
 
     public function testDeserializeAllProp()
@@ -39,6 +39,6 @@ class PropFindTest extends XmlTest
         $propFind = new PropFind();
         $propFind->allProp = true;
 
-        $this->assertEquals($propFind, $result['value']);
+        self::assertEquals($propFind, $result['value']);
     }
 }

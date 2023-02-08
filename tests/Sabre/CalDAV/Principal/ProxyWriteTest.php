@@ -22,18 +22,18 @@ class ProxyWriteTest extends ProxyReadTest
     public function testGetName()
     {
         $i = $this->getInstance();
-        $this->assertEquals('calendar-proxy-write', $i->getName());
+        self::assertEquals('calendar-proxy-write', $i->getName());
     }
 
     public function testGetDisplayName()
     {
         $i = $this->getInstance();
-        $this->assertEquals('calendar-proxy-write', $i->getDisplayName());
+        self::assertEquals('calendar-proxy-write', $i->getDisplayName());
     }
 
     public function testGetPrincipalUri()
     {
         $i = $this->getInstance();
-        $this->assertEquals('principal/user/calendar-proxy-write', $i->getPrincipalUrl());
+        self::assertEquals('principal/user/calendar-proxy-write', $i->getPrincipalUrl());
     }
 }

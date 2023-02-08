@@ -33,7 +33,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $backend = new PDO($this->pdo);
-        $this->assertTrue($backend instanceof PDO);
+        self::assertTrue($backend instanceof PDO);
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $backend = new PDO($this->pdo);
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals([], $calendars);
+        self::assertEquals([], $calendars);
     }
 
     /**
@@ -67,12 +67,12 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
         ];
 
-        $this->assertIsArray($calendars);
-        $this->assertEquals(1, count($calendars));
+        self::assertIsArray($calendars);
+        self::assertEquals(1, count($calendars));
 
         foreach ($elementCheck as $name => $value) {
-            $this->assertArrayHasKey($name, $calendars[0]);
-            $this->assertEquals($value, $calendars[0][$name]);
+            self::assertArrayHasKey($name, $calendars[0]);
+            self::assertEquals($value, $calendars[0][$name]);
         }
     }
 
@@ -96,7 +96,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $result = $propPatch->commit();
 
         // Verifying the result of the update
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         // Fetching all calendars from this user
         $calendars = $backend->getCalendarsForUser('principals/user2');
@@ -112,12 +112,12 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
         ];
 
-        $this->assertIsArray($calendars);
-        $this->assertEquals(1, count($calendars));
+        self::assertIsArray($calendars);
+        self::assertEquals(1, count($calendars));
 
         foreach ($elementCheck as $name => $value) {
-            $this->assertArrayHasKey($name, $calendars[0]);
-            $this->assertEquals($value, $calendars[0][$name]);
+            self::assertArrayHasKey($name, $calendars[0]);
+            self::assertEquals($value, $calendars[0][$name]);
         }
     }
 
@@ -161,7 +161,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propPatch->commit();
 
         // Verifying the result of the update
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}yourmom' => 403,
             '{DAV:}displayname' => 424,
         ], $propPatch->getResult());
@@ -181,7 +181,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->deleteCalendar($returnedId);
 
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals([], $calendars);
+        self::assertEquals([], $calendars);
     }
 
     /**
@@ -229,7 +229,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -276,7 +276,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
                 switch ($key) {
                     case 'lastmodified':
-                        $this->assertIsInt($actual);
+                        self::assertIsInt($actual);
                         break;
                     case 'calendardata':
                         if (is_resource($actual)) {
@@ -284,7 +284,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                         }
                         // no break intentional
                     default:
-                        $this->assertEquals($expected, $actual);
+                        self::assertEquals($expected, $actual);
                 }
             }
         }
@@ -333,7 +333,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -375,7 +375,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -403,7 +403,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -431,7 +431,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -459,7 +459,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -487,7 +487,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $row['calendardata'] = stream_get_contents($row['calendardata']);
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'etag' => md5($object),
             'size' => strlen($object),
             'calendardata' => $object,
@@ -510,11 +510,11 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $data = $backend->getCalendarObjects($returnedId);
 
-        $this->assertEquals(1, count($data));
+        self::assertEquals(1, count($data));
         $data = $data[0];
 
-        $this->assertEquals('random-id', $data['uri']);
-        $this->assertEquals(strlen($object), $data['size']);
+        self::assertEquals('random-id', $data['uri']);
+        self::assertEquals(strlen($object), $data['size']);
     }
 
     /**
@@ -548,10 +548,10 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $this->assertNull(
+        self::assertNull(
             $backend->getCalendarObjectByUID('principals/user2', 'bar')
         );
-        $this->assertEquals(
+        self::assertEquals(
             'somerandomid/random-id',
             $backend->getCalendarObjectByUID('principals/user2', 'foo')
         );
@@ -576,8 +576,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $data['calendardata'] = stream_get_contents($data['calendardata']);
         }
 
-        $this->assertEquals($object2, $data['calendardata']);
-        $this->assertEquals('random-id', $data['uri']);
+        self::assertEquals($object2, $data['calendardata']);
+        self::assertEquals('random-id', $data['uri']);
     }
 
     /**
@@ -603,7 +603,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->deleteCalendarObject($returnedId, 'random-id');
 
         $data = $backend->getCalendarObject($returnedId, 'random-id');
-        $this->assertNull($data);
+        self::assertNull($data);
     }
 
     /**
@@ -639,7 +639,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
         ], $abstract->calendarQuery([1, 1], $filters));
     }
 
@@ -691,7 +691,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'todo',
         ], $backend->calendarQuery([1, 1], $filters));
     }
@@ -726,7 +726,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
         ], $backend->calendarQuery([1, 1], $filters));
     }
 
@@ -745,8 +745,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         ];
 
         $result = $backend->calendarQuery([1, 1], $filters);
-        $this->assertTrue(in_array('todo', $result));
-        $this->assertTrue(in_array('event', $result));
+        self::assertTrue(in_array('todo', $result));
+        self::assertTrue(in_array('event', $result));
     }
 
     public function testCalendarQueryTimeRange()
@@ -775,7 +775,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event2',
         ], $backend->calendarQuery([1, 1], $filters));
     }
@@ -806,7 +806,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event2',
         ], $backend->calendarQuery([1, 1], $filters));
     }
@@ -836,7 +836,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event2',
         ], $backend->calendarQuery([1, 1], $filters));
     }
@@ -866,7 +866,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event',
         ], $backend->calendarQuery([1, 1], $filters));
     }
@@ -895,8 +895,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         ];
 
         $result = $backend->calendarQuery([1, 1], $filters);
-        $this->assertTrue(in_array('event', $result));
-        $this->assertTrue(in_array('event2', $result));
+        self::assertTrue(in_array('event', $result));
+        self::assertTrue(in_array('event2', $result));
     }
 
     public function testGetChanges()
@@ -909,7 +909,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         );
         $result = $backend->getChangesForCalendar($id, null, 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 1,
             'modified' => [],
             'deleted' => [],
@@ -928,7 +928,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $result = $backend->getChangesForCalendar($id, $currentToken, 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 6,
             'modified' => ['todo1.ics'],
             'deleted' => ['todo2.ics'],
@@ -937,7 +937,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $result = $backend->getChangesForCalendar($id, null, 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 6,
             'modified' => [],
             'deleted' => [],
@@ -953,7 +953,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
 
         // according to RFC6578 Section 3.6, the result including syncToken must correpsond to one time (syncToken=8 here)
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 8,
             'modified' => [],
             'deleted' => [],
@@ -965,7 +965,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 9,
             'modified' => [],
             'deleted' => [],
@@ -1013,9 +1013,9 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         unset($expected['{http://calendarserver.org/ns/}source']);
         $expected['source'] = 'http://example.org/cal.ics';
 
-        $this->assertEquals(1, count($subs));
+        self::assertEquals(1, count($subs));
         foreach ($expected as $k => $v) {
-            $this->assertEquals($subs[0][$k], $expected[$k]);
+            self::assertEquals($subs[0][$k], $expected[$k]);
         }
     }
 
@@ -1053,7 +1053,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->updateSubscription(1, $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $subs = $backend->getSubscriptionsForUser('principals/user1');
 
@@ -1065,9 +1065,9 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         unset($expected['{http://calendarserver.org/ns/}source']);
         $expected['source'] = 'http://example.org/cal2.ics';
 
-        $this->assertEquals(1, count($subs));
+        self::assertEquals(1, count($subs));
         foreach ($expected as $k => $v) {
-            $this->assertEquals($subs[0][$k], $expected[$k]);
+            self::assertEquals($subs[0][$k], $expected[$k]);
         }
     }
 
@@ -1095,7 +1095,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->updateSubscription(1, $propPatch);
         $propPatch->commit();
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}unknown' => 403,
             '{DAV:}displayname' => 424,
             '{http://calendarserver.org/ns/}source' => 424,
@@ -1125,7 +1125,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $backend->deleteSubscription(1);
 
         $subs = $backend->getSubscriptionsForUser('principals/user1');
-        $this->assertEquals(0, count($subs));
+        self::assertEquals(0, count($subs));
     }
 
     public function testSchedulingMethods()
@@ -1165,39 +1165,39 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
         foreach ($expected as $k => $v) {
-            $this->assertArrayHasKey($k, $result);
+            self::assertArrayHasKey($k, $result);
             if (is_resource($result[$k])) {
                 $result[$k] = stream_get_contents($result[$k]);
             }
-            $this->assertEquals($v, $result[$k]);
+            self::assertEquals($v, $result[$k]);
         }
 
         $resultResource = $backend->getSchedulingObject('principals/user1', 'schedule1-resource.ics');
         foreach ($expected as $k => $v) {
-            $this->assertArrayHasKey($k, $result);
+            self::assertArrayHasKey($k, $result);
             if (is_resource($result[$k])) {
                 $result[$k] = stream_get_contents($result[$k]);
             }
-            $this->assertEquals($v, $result[$k]);
+            self::assertEquals($v, $result[$k]);
         }
 
         $backend->deleteSchedulingObject('principals/user1', 'schedule1-resource.ics');
 
         $results = $backend->getSchedulingObjects('principals/user1');
 
-        $this->assertEquals(1, count($results));
+        self::assertEquals(1, count($results));
         $result = $results[0];
         foreach ($expected as $k => $v) {
             if (is_resource($result[$k])) {
                 $result[$k] = stream_get_contents($result[$k]);
             }
-            $this->assertEquals($v, $result[$k]);
+            self::assertEquals($v, $result[$k]);
         }
 
         $backend->deleteSchedulingObject('principals/user1', 'schedule1.ics');
         $result = $backend->getSchedulingObject('principals/user1', 'schedule1.ics');
 
-        $this->assertNull($result);
+        self::assertNull($result);
     }
 
     public function testGetInvites()
@@ -1218,7 +1218,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ]),
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -1281,7 +1281,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 ],
             ]),
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
 
         // Checking calendar_instances too
         $expectedCalendar = [
@@ -1296,7 +1296,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         foreach ($expectedCalendar as $k => $v) {
-            $this->assertEquals(
+            self::assertEquals(
                 $v,
                 $calendars[0][$k],
                 'Key '.$k.' in calendars array did not have the expected value.'
@@ -1329,7 +1329,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 ],
             ]),
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
 
         // Removing an invite
         $backend->updateInvites(
@@ -1346,7 +1346,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $expected = [
             $ownerSharee,
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
 
         // Preventing the owner share from being removed
         $backend->updateInvites(
@@ -1368,7 +1368,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
             ]),
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -1430,7 +1430,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 ],
             ]),
         ];
-        $this->assertEqualsCanonicalizing($expected, $result);
+        self::assertEqualsCanonicalizing($expected, $result);
     }
 
     /**
@@ -1477,7 +1477,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $calendars = $backend->getCalendarsForUser('principals/user2');
 
         foreach ($expectedCalendar as $k => $v) {
-            $this->assertEquals(
+            self::assertEquals(
                 $v,
                 $calendars[0][$k],
                 'Key '.$k.' in calendars array did not have the expected value.'
@@ -1487,7 +1487,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         // Removing the shared calendar.
         $backend->deleteCalendar($calendars[0]['id']);
 
-        $this->assertEquals(
+        self::assertEquals(
             [],
             $backend->getCalendarsForUser('principals/user2')
         );
@@ -1501,7 +1501,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
             ]),
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testSetPublishStatus()

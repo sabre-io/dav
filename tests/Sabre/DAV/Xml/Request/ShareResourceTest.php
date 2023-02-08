@@ -44,7 +44,7 @@ XML;
             '{DAV:}share-resource' => 'Sabre\\DAV\\Xml\\Request\\ShareResource',
         ]);
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             'Sabre\\DAV\\Xml\\Request\\ShareResource',
             $result['value']
         );
@@ -66,7 +66,7 @@ XML;
         $expected[2]->href = 'mailto:wilfredo@example.com';
         $expected[2]->access = Plugin::ACCESS_NOACCESS;
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $result['value']->sharees
         );

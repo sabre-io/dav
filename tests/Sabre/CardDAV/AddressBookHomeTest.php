@@ -25,7 +25,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testGetName()
     {
-        $this->assertEquals('user1', $this->s->getName());
+        self::assertEquals('user1', $this->s->getName());
     }
 
     public function testSetName()
@@ -42,7 +42,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testGetLastModified()
     {
-        $this->assertNull($this->s->getLastModified());
+        self::assertNull($this->s->getLastModified());
     }
 
     public function testCreateFile()
@@ -60,8 +60,8 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $child = $this->s->getChild('book1');
-        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBook', $child);
-        $this->assertEquals('book1', $child->getName());
+        self::assertInstanceOf('Sabre\\CardDAV\\AddressBook', $child);
+        self::assertEquals('book1', $child->getName());
     }
 
     public function testGetChild404()
@@ -73,9 +73,9 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     public function testGetChildren()
     {
         $children = $this->s->getChildren();
-        $this->assertEquals(2, count($children));
-        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBook', $children[0]);
-        $this->assertEquals('book1', $children[0]->getName());
+        self::assertEquals(2, count($children));
+        self::assertInstanceOf('Sabre\\CardDAV\\AddressBook', $children[0]);
+        self::assertEquals('book1', $children[0]->getName());
     }
 
     public function testCreateExtendedCollection()
@@ -86,7 +86,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
         ];
         $this->s->createExtendedCollection('book2', new MkCol($resourceType, ['{DAV:}displayname' => 'a-book 2']));
 
-        $this->assertEquals([
+        self::assertEquals([
             'id' => 'book2',
             'uri' => 'book2',
             '{DAV:}displayname' => 'a-book 2',
@@ -105,9 +105,9 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testACLMethods()
     {
-        $this->assertEquals('principals/user1', $this->s->getOwner());
-        $this->assertNull($this->s->getGroup());
-        $this->assertEquals([
+        self::assertEquals('principals/user1', $this->s->getOwner());
+        self::assertNull($this->s->getGroup());
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}all',
                 'principal' => '{DAV:}owner',
@@ -124,7 +124,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegeSet()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->s->getSupportedPrivilegeSet()
         );
     }

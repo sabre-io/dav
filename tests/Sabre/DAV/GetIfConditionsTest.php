@@ -13,7 +13,7 @@ class GetIfConditionsTest extends AbstractServer
         $request = new HTTP\Request('GET', '/foo');
 
         $conditions = $this->server->getIfConditions($request);
-        $this->assertEquals([], $conditions);
+        self::assertEquals([], $conditions);
     }
 
     public function testLockToken()
@@ -34,7 +34,7 @@ class GetIfConditionsTest extends AbstractServer
             ],
         ];
 
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function testNotLockToken()
@@ -57,7 +57,7 @@ class GetIfConditionsTest extends AbstractServer
                 ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function testLockTokenUrl()
@@ -79,7 +79,7 @@ class GetIfConditionsTest extends AbstractServer
                 ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function test2LockTokens()
@@ -107,7 +107,7 @@ class GetIfConditionsTest extends AbstractServer
                 ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function test2UriLockTokens()
@@ -140,7 +140,7 @@ class GetIfConditionsTest extends AbstractServer
                 ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function test2UriMultiLockTokens()
@@ -178,7 +178,7 @@ class GetIfConditionsTest extends AbstractServer
                 ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function testEtag()
@@ -201,7 +201,7 @@ class GetIfConditionsTest extends AbstractServer
                  ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function test2Etags()
@@ -229,7 +229,7 @@ class GetIfConditionsTest extends AbstractServer
                  ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 
     public function testComplexIf()
@@ -284,6 +284,6 @@ class GetIfConditionsTest extends AbstractServer
                  ],
             ],
         ];
-        $this->assertEquals($compare, $conditions);
+        self::assertEquals($compare, $conditions);
     }
 }

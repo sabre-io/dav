@@ -12,13 +12,13 @@ class NodeTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $node = new File(__FILE__);
-        $this->assertEquals('NodeTest.php', $node->getName());
+        self::assertEquals('NodeTest.php', $node->getName());
     }
 
     public function testConstructOverrideName()
     {
         $node = new File(__FILE__, 'foo.txt');
-        $this->assertEquals('foo.txt', $node->getName());
+        self::assertEquals('foo.txt', $node->getName());
     }
 
     public function testOverrideNameSetName()

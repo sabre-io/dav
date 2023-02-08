@@ -9,6 +9,6 @@ class CorePluginTest extends \PHPUnit\Framework\TestCase
     public function testGetInfo()
     {
         $corePlugin = new CorePlugin();
-        $this->assertEquals('core', $corePlugin->getPluginInfo()['name']);
+        self::assertEquals('core', $corePlugin->getPluginInfo()['name']);
     }
 }

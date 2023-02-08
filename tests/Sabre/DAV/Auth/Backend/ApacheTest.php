@@ -11,7 +11,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $backend = new Apache();
-        $this->assertInstanceOf('Sabre\DAV\Auth\Backend\Apache', $backend);
+        self::assertInstanceOf('Sabre\DAV\Auth\Backend\Apache', $backend);
     }
 
     public function testNoHeader()
@@ -20,7 +20,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
         $backend = new Apache();
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -35,7 +35,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
         $backend = new Apache();
 
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
@@ -51,7 +51,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
         $backend = new Apache();
 
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
@@ -65,7 +65,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
         $backend = new Apache();
         $backend->challenge($request, $response);
 
-        $this->assertNull(
+        self::assertNull(
             $response->getHeader('WWW-Authenticate')
         );
     }

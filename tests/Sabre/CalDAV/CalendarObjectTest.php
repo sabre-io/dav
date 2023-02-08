@@ -21,7 +21,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         $this->backend = TestUtil::getBackend();
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(2, count($calendars));
+        self::assertEquals(2, count($calendars));
         $this->calendar = new Calendar($this->backend, $calendars[0]);
     }
 
@@ -34,12 +34,12 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testSetup()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
-        $this->assertIsString($children[0]->getName());
-        $this->assertIsString($children[0]->get());
-        $this->assertIsString($children[0]->getETag());
-        $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
+        self::assertIsString($children[0]->getName());
+        self::assertIsString($children[0]->get());
+        self::assertIsString($children[0]->getETag());
+        self::assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
     }
 
     public function testInvalidArg1()
@@ -68,11 +68,11 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testPut()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
         $newData = TestUtil::getTestCalendarData();
 
         $children[0]->put($newData);
-        $this->assertEquals($newData, $children[0]->get());
+        self::assertEquals($newData, $children[0]->get());
     }
 
     /**
@@ -81,14 +81,14 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testPutStream()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
         $newData = TestUtil::getTestCalendarData();
 
         $stream = fopen('php://temp', 'r+');
         fwrite($stream, $newData);
         rewind($stream);
         $children[0]->put($stream);
-        $this->assertEquals($newData, $children[0]->get());
+        self::assertEquals($newData, $children[0]->get());
     }
 
     /**
@@ -97,13 +97,13 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testDelete()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $obj->delete();
 
         $children2 = $this->calendar->getChildren();
-        $this->assertEquals(count($children) - 1, count($children2));
+        self::assertEquals(count($children) - 1, count($children2));
     }
 
     /**
@@ -112,12 +112,12 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testGetLastModified()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        $this->assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
+        self::assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
     }
 
     /**
@@ -126,30 +126,30 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testGetSize()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
         $size = $obj->getSize();
-        $this->assertIsInt($size);
+        self::assertIsInt($size);
     }
 
     public function testGetOwner()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
-        $this->assertEquals('principals/user1', $obj->getOwner());
+        self::assertEquals('principals/user1', $obj->getOwner());
     }
 
     public function testGetGroup()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
-        $this->assertNull($obj->getGroup());
+        self::assertNull($obj->getGroup());
     }
 
     public function testGetACL()
@@ -183,10 +183,10 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         ];
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
-        $this->assertEquals($expected, $obj->getACL());
+        self::assertEquals($expected, $obj->getACL());
     }
 
     public function testDefaultACL()
@@ -210,14 +210,14 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
                 'protected' => true,
             ],
         ];
-        $this->assertEquals($expected, $calendarObject->getACL());
+        self::assertEquals($expected, $calendarObject->getACL());
     }
 
     public function testSetACL()
     {
         $this->expectException('Sabre\DAV\Exception\Forbidden');
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
         $obj->setACL([]);
@@ -226,7 +226,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     public function testGet()
     {
         $children = $this->calendar->getChildren();
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
 
         $obj = $children[0];
 
@@ -263,7 +263,7 @@ SEQUENCE:2
 END:VEVENT
 END:VCALENDAR';
 
-        $this->assertEquals($expected, $obj->get());
+        self::assertEquals($expected, $obj->get());
     }
 
     public function testGetRefetch()
@@ -278,7 +278,7 @@ END:VCALENDAR';
         ]);
         $obj = new CalendarObject($backend, ['id' => 1], ['uri' => 'foo']);
 
-        $this->assertEquals('foo', $obj->get());
+        self::assertEquals('foo', $obj->get());
     }
 
     public function testGetEtag1()
@@ -293,7 +293,7 @@ END:VCALENDAR';
         $backend = new Backend\Mock([], []);
         $obj = new CalendarObject($backend, [], $objectInfo);
 
-        $this->assertEquals('bar', $obj->getETag());
+        self::assertEquals('bar', $obj->getETag());
     }
 
     public function testGetEtag2()
@@ -307,7 +307,7 @@ END:VCALENDAR';
         $backend = new Backend\Mock([], []);
         $obj = new CalendarObject($backend, [], $objectInfo);
 
-        $this->assertEquals('"'.md5('foo').'"', $obj->getETag());
+        self::assertEquals('"'.md5('foo').'"', $obj->getETag());
     }
 
     public function testGetSupportedPrivilegesSet()
@@ -320,7 +320,7 @@ END:VCALENDAR';
 
         $backend = new Backend\Mock([], []);
         $obj = new CalendarObject($backend, [], $objectInfo);
-        $this->assertNull($obj->getSupportedPrivilegeSet());
+        self::assertNull($obj->getSupportedPrivilegeSet());
     }
 
     public function testGetSize1()
@@ -333,7 +333,7 @@ END:VCALENDAR';
 
         $backend = new Backend\Mock([], []);
         $obj = new CalendarObject($backend, [], $objectInfo);
-        $this->assertEquals(3, $obj->getSize());
+        self::assertEquals(3, $obj->getSize());
     }
 
     public function testGetSize2()
@@ -346,6 +346,6 @@ END:VCALENDAR';
 
         $backend = new Backend\Mock([], []);
         $obj = new CalendarObject($backend, [], $objectInfo);
-        $this->assertEquals(4, $obj->getSize());
+        self::assertEquals(4, $obj->getSize());
     }
 }

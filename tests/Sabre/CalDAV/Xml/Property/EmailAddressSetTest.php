@@ -16,7 +16,7 @@ class EmailAddressSetTest extends XmlTest
     public function testSimple()
     {
         $eas = new EmailAddressSet(['foo@example.org']);
-        $this->assertEquals(['foo@example.org'], $eas->getValue());
+        self::assertEquals(['foo@example.org'], $eas->getValue());
     }
 
     /**
@@ -30,7 +30,7 @@ class EmailAddressSetTest extends XmlTest
             '{DAV:}root' => $property,
         ]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cs="'.\Sabre\CalDAV\Plugin::NS_CALENDARSERVER.'">
 <cs:email-address>foo@example.org</cs:email-address>

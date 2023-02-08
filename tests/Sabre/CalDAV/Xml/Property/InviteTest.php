@@ -20,8 +20,8 @@ class InviteTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $invite = new Invite([]);
-        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $invite);
-        $this->assertEquals([], $invite->getValue());
+        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\Invite', $invite);
+        self::assertEquals([], $invite->getValue());
     }
 
     /**
@@ -64,7 +64,7 @@ class InviteTest extends DAV\Xml\XmlTest
 
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cs:organizer>

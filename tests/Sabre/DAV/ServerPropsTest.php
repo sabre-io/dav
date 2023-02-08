@@ -44,9 +44,9 @@ class ServerPropsTest extends AbstractServer
     public function testPropFindEmptyBody()
     {
         $this->sendRequest('');
-        $this->assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->status);
 
-        $this->assertEquals([
+        self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Type' => ['application/xml; charset=utf-8'],
                 'DAV' => ['1, 3, extended-mkcol, 2'],
@@ -59,10 +59,10 @@ class ServerPropsTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/', (string) $data, 'href element should have been /');
+        self::assertEquals('/', (string) $data, 'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
-        $this->assertEquals(1, count($data));
+        self::assertEquals(1, count($data));
     }
 
     public function testPropFindEmptyBodyDepth1Custom()
@@ -73,9 +73,9 @@ class ServerPropsTest extends AbstractServer
         });
 
         $this->sendRequest('', '/', ['Depth' => 1]);
-        $this->assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->status);
 
-        $this->assertEquals([
+        self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Type' => ['application/xml; charset=utf-8'],
                 'DAV' => ['1, 3, extended-mkcol, 2'],
@@ -88,19 +88,19 @@ class ServerPropsTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:ishidden');
-        $this->assertEquals(5, count($data), 'Response should contain 5 elements');
+        self::assertEquals(5, count($data), 'Response should contain 5 elements');
 
         foreach ($data as $prop) {
-            $this->assertEquals('1', $prop[0]);
+            self::assertEquals('1', $prop[0]);
         }
     }
 
     public function testPropFindEmptyBodyFile()
     {
         $this->sendRequest('', '/test2.txt', []);
-        $this->assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->status);
 
-        $this->assertEquals([
+        self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Type' => ['application/xml; charset=utf-8'],
                 'DAV' => ['1, 3, extended-mkcol, 2'],
@@ -113,10 +113,10 @@ class ServerPropsTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/test2.txt', (string) $data, 'href element should have been /test2.txt');
+        self::assertEquals('/test2.txt', (string) $data, 'href element should have been /test2.txt');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength');
-        $this->assertEquals(1, count($data));
+        self::assertEquals(1, count($data));
     }
 
     public function testSupportedLocks()
@@ -134,22 +134,22 @@ class ServerPropsTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
-        $this->assertEquals(2, count($data), 'We expected two \'d:lockentry\' tags');
+        self::assertEquals(2, count($data), 'We expected two \'d:lockentry\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope');
-        $this->assertEquals(2, count($data), 'We expected two \'d:lockscope\' tags');
+        self::assertEquals(2, count($data), 'We expected two \'d:lockscope\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype');
-        $this->assertEquals(2, count($data), 'We expected two \'d:locktype\' tags');
+        self::assertEquals(2, count($data), 'We expected two \'d:locktype\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:shared');
-        $this->assertEquals(1, count($data), 'We expected a \'d:shared\' tag');
+        self::assertEquals(1, count($data), 'We expected a \'d:shared\' tag');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:exclusive');
-        $this->assertEquals(1, count($data), 'We expected a \'d:exclusive\' tag');
+        self::assertEquals(1, count($data), 'We expected a \'d:exclusive\' tag');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
-        $this->assertEquals(2, count($data), 'We expected two \'d:write\' tags');
+        self::assertEquals(2, count($data), 'We expected two \'d:write\' tags');
     }
 
     public function testLockDiscovery()
@@ -167,7 +167,7 @@ class ServerPropsTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
-        $this->assertEquals(1, count($data), 'We expected a \'d:lockdiscovery\' tag');
+        self::assertEquals(1, count($data), 'We expected a \'d:lockdiscovery\' tag');
     }
 
     public function testUnknownProperty()
@@ -192,12 +192,12 @@ class ServerPropsTest extends AbstractServer
             '/d:multistatus/d:response/d:propstat/d:prop/d:macaroni',
         ];
         foreach ($pathTests as $test) {
-            $this->assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
+            self::assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(1, count($val), $body);
-        $this->assertEquals('HTTP/1.1 404 Not Found', (string) $val[0]);
+        self::assertEquals(1, count($val), $body);
+        self::assertEquals('HTTP/1.1 404 Not Found', (string) $val[0]);
     }
 
     public function testParsePropPatchRequest()
@@ -211,7 +211,7 @@ class ServerPropsTest extends AbstractServer
 </d:propertyupdate>';
 
         $result = $this->server->xml->parse($body);
-        $this->assertEquals([
+        self::assertEquals([
             '{http://sabredav.org/NS/test}someprop' => 'somevalue',
             '{http://sabredav.org/NS/test}someprop2' => null,
             '{http://sabredav.org/NS/test}someprop3' => null,

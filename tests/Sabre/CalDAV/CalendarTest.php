@@ -27,7 +27,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $this->backend = TestUtil::getBackend();
 
         $this->calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(2, count($this->calendars));
+        self::assertEquals(2, count($this->calendars));
         $this->calendar = new Calendar($this->backend, $this->calendars[0]);
     }
 
@@ -38,7 +38,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
 
     public function testSimple()
     {
-        $this->assertEquals($this->calendars[0]['uri'], $this->calendar->getName());
+        self::assertEquals($this->calendars[0]['uri'], $this->calendar->getName());
     }
 
     /**
@@ -53,10 +53,10 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $result = $this->calendar->propPatch($propPatch);
         $result = $propPatch->commit();
 
-        $this->assertEquals(true, $result);
+        self::assertEquals(true, $result);
 
         $calendars2 = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals('NewName', $calendars2[0]['{DAV:}displayname']);
+        self::assertEquals('NewName', $calendars2[0]['{DAV:}displayname']);
     }
 
     /**
@@ -71,10 +71,10 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $result = $this->calendar->getProperties($question);
 
         foreach ($question as $q) {
-            $this->assertArrayHasKey($q, $result);
+            self::assertArrayHasKey($q, $result);
         }
 
-        $this->assertEquals(['VEVENT', 'VTODO'], $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
+        self::assertEquals(['VEVENT', 'VTODO'], $result['{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set']->getValue());
     }
 
     /**
@@ -92,9 +92,9 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
     public function testGetChildren()
     {
         $children = $this->calendar->getChildren();
-        $this->assertEquals(1, count($children));
+        self::assertEquals(1, count($children));
 
-        $this->assertTrue($children[0] instanceof CalendarObject);
+        self::assertTrue($children[0] instanceof CalendarObject);
     }
 
     /**
@@ -102,10 +102,10 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
      */
     public function testChildExists()
     {
-        $this->assertFalse($this->calendar->childExists('foo'));
+        self::assertFalse($this->calendar->childExists('foo'));
 
         $children = $this->calendar->getChildren();
-        $this->assertTrue($this->calendar->childExists($children[0]->getName()));
+        self::assertTrue($this->calendar->childExists($children[0]->getName()));
     }
 
     public function testCreateDirectory()
@@ -122,7 +122,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
 
     public function testGetLastModified()
     {
-        $this->assertNull($this->calendar->getLastModified());
+        self::assertNull($this->calendar->getLastModified());
     }
 
     public function testCreateFile()
@@ -134,7 +134,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $this->calendar->createFile('hello', $file);
 
         $file = $this->calendar->getChild('hello');
-        $this->assertTrue($file instanceof CalendarObject);
+        self::assertTrue($file instanceof CalendarObject);
     }
 
     public function testCreateFileNoSupportedComponents()
@@ -147,7 +147,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $calendar->createFile('hello', $file);
 
         $file = $calendar->getChild('hello');
-        $this->assertTrue($file instanceof CalendarObject);
+        self::assertTrue($file instanceof CalendarObject);
     }
 
     public function testDelete()
@@ -155,17 +155,17 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
         $this->calendar->delete();
 
         $calendars = $this->backend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(1, count($calendars));
+        self::assertEquals(1, count($calendars));
     }
 
     public function testGetOwner()
     {
-        $this->assertEquals('principals/user1', $this->calendar->getOwner());
+        self::assertEquals('principals/user1', $this->calendar->getOwner());
     }
 
     public function testGetGroup()
     {
-        $this->assertNull($this->calendar->getGroup());
+        self::assertNull($this->calendar->getGroup());
     }
 
     public function testGetACL()
@@ -202,7 +202,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
                 'protected' => true,
             ],
         ];
-        $this->assertEquals($expected, $this->calendar->getACL());
+        self::assertEquals($expected, $this->calendar->getACL());
     }
 
     public function testSetACL()
@@ -213,17 +213,17 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSyncToken()
     {
-        $this->assertNull($this->calendar->getSyncToken());
+        self::assertNull($this->calendar->getSyncToken());
     }
 
     public function testGetSyncTokenNoSyncSupport()
     {
         $calendar = new Calendar(new Backend\Mock([], []), []);
-        $this->assertNull($calendar->getSyncToken());
+        self::assertNull($calendar->getSyncToken());
     }
 
     public function testGetChanges()
     {
-        $this->assertNull($this->calendar->getChanges(1, 1));
+        self::assertNull($this->calendar->getChanges(1, 1));
     }
 }

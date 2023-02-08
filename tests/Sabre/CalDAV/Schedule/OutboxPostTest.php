@@ -21,7 +21,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
             'HTTP_CONTENT_TYPE' => 'text/calendar',
         ]);
 
-        $this->assertHTTPStatus(501, $req);
+        self::assertHTTPStatus(501, $req);
     }
 
     public function testPostPassThruNotTextCalendar()
@@ -31,7 +31,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
             'REQUEST_URI' => '/calendars/user1/outbox',
         ]);
 
-        $this->assertHTTPStatus(501, $req);
+        self::assertHTTPStatus(501, $req);
     }
 
     public function testPostPassThruNoOutBox()
@@ -42,7 +42,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
             'HTTP_CONTENT_TYPE' => 'text/calendar',
         ]);
 
-        $this->assertHTTPStatus(501, $req);
+        self::assertHTTPStatus(501, $req);
     }
 
     public function testInvalidIcalBody()
@@ -56,7 +56,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
         ]);
         $req->setBody('foo');
 
-        $this->assertHTTPStatus(400, $req);
+        self::assertHTTPStatus(400, $req);
     }
 
     public function testNoVEVENT()
@@ -78,7 +78,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
 
         $req->setBody(implode("\r\n", $body));
 
-        $this->assertHTTPStatus(400, $req);
+        self::assertHTTPStatus(400, $req);
     }
 
     public function testNoMETHOD()
@@ -100,7 +100,7 @@ class OutboxPostTest extends \Sabre\DAVServerTest
 
         $req->setBody(implode("\r\n", $body));
 
-        $this->assertHTTPStatus(400, $req);
+        self::assertHTTPStatus(400, $req);
     }
 
     public function testUnsupportedMethod()
@@ -123,6 +123,6 @@ class OutboxPostTest extends \Sabre\DAVServerTest
 
         $req->setBody(implode("\r\n", $body));
 
-        $this->assertHTTPStatus(501, $req);
+        self::assertHTTPStatus(501, $req);
     }
 }

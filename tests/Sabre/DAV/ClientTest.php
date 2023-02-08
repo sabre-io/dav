@@ -20,7 +20,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
-        $this->assertInstanceOf('Sabre\DAV\ClientMock', $client);
+        self::assertInstanceOf('Sabre\DAV\ClientMock', $client);
     }
 
     public function testConstructNoBaseUri()
@@ -37,8 +37,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'password' => 'bar',
         ]);
 
-        $this->assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
-        $this->assertEquals(CURLAUTH_BASIC | CURLAUTH_DIGEST, $client->curlSettings[CURLOPT_HTTPAUTH]);
+        self::assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
+        self::assertEquals(CURLAUTH_BASIC | CURLAUTH_DIGEST, $client->curlSettings[CURLOPT_HTTPAUTH]);
     }
 
     public function testBasicAuth()
@@ -50,8 +50,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'authType' => Client::AUTH_BASIC,
         ]);
 
-        $this->assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
-        $this->assertEquals(CURLAUTH_BASIC, $client->curlSettings[CURLOPT_HTTPAUTH]);
+        self::assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
+        self::assertEquals(CURLAUTH_BASIC, $client->curlSettings[CURLOPT_HTTPAUTH]);
     }
 
     public function testDigestAuth()
@@ -63,8 +63,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'authType' => Client::AUTH_DIGEST,
         ]);
 
-        $this->assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
-        $this->assertEquals(CURLAUTH_DIGEST, $client->curlSettings[CURLOPT_HTTPAUTH]);
+        self::assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
+        self::assertEquals(CURLAUTH_DIGEST, $client->curlSettings[CURLOPT_HTTPAUTH]);
     }
 
     public function testNTLMAuth()
@@ -76,8 +76,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'authType' => Client::AUTH_NTLM,
         ]);
 
-        $this->assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
-        $this->assertEquals(CURLAUTH_NTLM, $client->curlSettings[CURLOPT_HTTPAUTH]);
+        self::assertEquals('foo:bar', $client->curlSettings[CURLOPT_USERPWD]);
+        self::assertEquals(CURLAUTH_NTLM, $client->curlSettings[CURLOPT_HTTPAUTH]);
     }
 
     public function testProxy()
@@ -87,7 +87,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'proxy' => 'localhost:8888',
         ]);
 
-        $this->assertEquals('localhost:8888', $client->curlSettings[CURLOPT_PROXY]);
+        self::assertEquals('localhost:8888', $client->curlSettings[CURLOPT_PROXY]);
     }
 
     public function testEncoding()
@@ -97,7 +97,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             'encoding' => Client::ENCODING_IDENTITY | Client::ENCODING_GZIP | Client::ENCODING_DEFLATE,
         ]);
 
-        $this->assertEquals('identity,deflate,gzip', $client->curlSettings[CURLOPT_ENCODING]);
+        self::assertEquals('identity,deflate,gzip', $client->curlSettings[CURLOPT_ENCODING]);
     }
 
     public function testPropFind()
@@ -124,12 +124,12 @@ XML;
         $client->response = new Response(207, [], $responseBody);
         $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
 
-        $this->assertEquals(['{DAV:}displayname' => 'bar'], $result);
+        self::assertEquals(['{DAV:}displayname' => 'bar'], $result);
 
         $request = $client->request;
-        $this->assertEquals('PROPFIND', $request->getMethod());
-        $this->assertEquals('/foo', $request->getUrl());
-        $this->assertEquals([
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/foo', $request->getUrl());
+        self::assertEquals([
             'Depth' => ['0'],
             'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
@@ -170,16 +170,16 @@ XML;
         $client->response = new Response(207, [], $responseBody);
         $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir'], 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             '/foo' => [
             '{DAV:}displayname' => 'bar',
             ],
         ], $result);
 
         $request = $client->request;
-        $this->assertEquals('PROPFIND', $request->getMethod());
-        $this->assertEquals('/foo', $request->getUrl());
-        $this->assertEquals([
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/foo', $request->getUrl());
+        self::assertEquals([
             'Depth' => ['1'],
             'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
@@ -208,11 +208,11 @@ XML;
 
         $client->response = new Response(207, [], $responseBody);
         $result = $client->propPatch('foo', ['{DAV:}displayname' => 'hi', '{urn:zim}gir' => null]);
-        $this->assertTrue($result);
+        self::assertTrue($result);
         $request = $client->request;
-        $this->assertEquals('PROPPATCH', $request->getMethod());
-        $this->assertEquals('/foo', $request->getUrl());
-        $this->assertEquals([
+        self::assertEquals('PROPPATCH', $request->getMethod());
+        self::assertEquals('/foo', $request->getUrl());
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $request->getHeaders());
     }
@@ -271,15 +271,15 @@ XML;
         ]);
         $result = $client->options();
 
-        $this->assertEquals(
+        self::assertEquals(
             ['calendar-access', 'extended-mkcol'],
             $result
         );
 
         $request = $client->request;
-        $this->assertEquals('OPTIONS', $request->getMethod());
-        $this->assertEquals('/', $request->getUrl());
-        $this->assertEquals([
+        self::assertEquals('OPTIONS', $request->getMethod());
+        self::assertEquals('/', $request->getUrl());
+        self::assertEquals([
         ], $request->getHeaders());
     }
 }

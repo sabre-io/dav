@@ -47,7 +47,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdateAddressBookInvalidProp()
@@ -61,7 +61,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->backend->updateAddressBook(1, $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertFalse($result);
+        self::assertFalse($result);
 
         $result = $this->backend->getAddressBooksForUser('principals/user1');
 
@@ -77,7 +77,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdateAddressBookNoProps()
@@ -87,7 +87,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $this->backend->updateAddressBook(1, $propPatch);
         $result = $propPatch->commit();
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $result = $this->backend->getAddressBooksForUser('principals/user1');
 
@@ -103,7 +103,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdateAddressBookSuccess()
@@ -116,7 +116,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $this->backend->updateAddressBook(1, $propPatch);
         $result = $propPatch->commit();
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $result = $this->backend->getAddressBooksForUser('principals/user1');
 
@@ -132,14 +132,14 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testDeleteAddressBook()
     {
         $this->backend->deleteAddressBook(1);
 
-        $this->assertEquals([], $this->backend->getAddressBooksForUser('principals/user1'));
+        self::assertEquals([], $this->backend->getAddressBooksForUser('principals/user1'));
     }
 
     public function testCreateAddressBookUnsupportedProp()
@@ -178,7 +178,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $result = $this->backend->getAddressBooksForUser('principals/user1');
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testGetCards()
@@ -195,7 +195,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testGetCard()
@@ -215,7 +215,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             $result['carddata'] = stream_get_contents($result['carddata']);
         }
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -224,14 +224,14 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testCreateCard()
     {
         $result = $this->backend->createCard(1, 'card2', 'data2');
-        $this->assertEquals('"'.md5('data2').'"', $result);
+        self::assertEquals('"'.md5('data2').'"', $result);
         $result = $this->backend->getCard(1, 'card2');
-        $this->assertEquals(2, $result['id']);
-        $this->assertEquals('card2', $result['uri']);
+        self::assertEquals(2, $result['id']);
+        self::assertEquals('card2', $result['uri']);
         if (is_resource($result['carddata'])) {
             $result['carddata'] = stream_get_contents($result['carddata']);
         }
-        $this->assertEquals('data2', $result['carddata']);
+        self::assertEquals('data2', $result['carddata']);
     }
 
     /**
@@ -271,7 +271,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
                 switch ($k) {
                     case 'lastmodified':
-                        $this->assertIsInt($actual);
+                        self::assertIsInt($actual);
                         break;
                     case 'carddata':
                         if (is_resource($actual)) {
@@ -279,7 +279,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                         }
                         // no break intended.
                     default:
-                        $this->assertEquals($expected, $actual);
+                        self::assertEquals($expected, $actual);
                         break;
                 }
             }
@@ -292,14 +292,14 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testUpdateCard()
     {
         $result = $this->backend->updateCard(1, 'card1', 'newdata');
-        $this->assertEquals('"'.md5('newdata').'"', $result);
+        self::assertEquals('"'.md5('newdata').'"', $result);
 
         $result = $this->backend->getCard(1, 'card1');
-        $this->assertEquals(1, $result['id']);
+        self::assertEquals(1, $result['id']);
         if (is_resource($result['carddata'])) {
             $result['carddata'] = stream_get_contents($result['carddata']);
         }
-        $this->assertEquals('newdata', $result['carddata']);
+        self::assertEquals('newdata', $result['carddata']);
     }
 
     /**
@@ -309,7 +309,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     {
         $this->backend->deleteCard(1, 'card1');
         $result = $this->backend->getCard(1, 'card1');
-        $this->assertFalse($result);
+        self::assertFalse($result);
     }
 
     public function testGetChanges()
@@ -322,7 +322,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         );
         $result = $backend->getChangesForAddressBook($id, null, 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 1,
             'added' => [],
             'modified' => [],
@@ -341,7 +341,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $result = $backend->getChangesForAddressBook($id, $currentToken, 1);
 
-        $this->assertEquals([
+        self::assertEquals([
             'syncToken' => 6,
             'modified' => ['card1.ics'],
             'deleted' => ['card2.ics'],

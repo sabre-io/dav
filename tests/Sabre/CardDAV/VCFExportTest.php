@@ -40,9 +40,9 @@ class VCFExportTest extends \Sabre\DAVServerTest
     public function testSimple()
     {
         $plugin = $this->server->getPlugin('vcf-export');
-        $this->assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $plugin);
+        self::assertInstanceOf('Sabre\\CardDAV\\VCFExportPlugin', $plugin);
 
-        $this->assertEquals(
+        self::assertEquals(
             'vcf-export',
             $plugin->getPluginInfo()['name']
         );
@@ -57,7 +57,7 @@ class VCFExportTest extends \Sabre\DAVServerTest
         ]);
 
         $response = $this->request($request);
-        $this->assertEquals(200, $response->status, $response->getBodyAsString());
+        self::assertEquals(200, $response->status, $response->getBodyAsString());
 
         $expected = 'BEGIN:VCARD
 FN:Person1
@@ -75,7 +75,7 @@ END:VCARD
         // We actually expected windows line endings
         $expected = str_replace("\n", "\r\n", $expected);
 
-        $this->assertEquals($expected, $response->getBodyAsString());
+        self::assertEquals($expected, $response->getBodyAsString());
     }
 
     public function testBrowserIntegration()
@@ -84,7 +84,7 @@ END:VCARD
         $actions = '';
         $addressbook = new AddressBook($this->carddavBackend, []);
         $this->server->emit('browserButtonActions', ['/foo', $addressbook, &$actions]);
-        $this->assertStringContainsString('/foo?export', $actions);
+        self::assertStringContainsString('/foo?export', $actions);
     }
 
     public function testContentDisposition()
@@ -95,8 +95,8 @@ END:VCARD
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
-        $this->assertEquals(
+        self::assertEquals('text/directory', $response->getHeader('Content-Type'));
+        self::assertEquals(
             'attachment; filename="book1-'.date('Y-m-d').'.vcf"',
             $response->getHeader('Content-Disposition')
         );
@@ -121,8 +121,8 @@ END:VCARD
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/directory', $response->getHeader('Content-Type'));
-        $this->assertEquals(
+        self::assertEquals('text/directory', $response->getHeader('Content-Type'));
+        self::assertEquals(
             'attachment; filename="book-b_adchars-'.date('Y-m-d').'.vcf"',
             $response->getHeader('Content-Disposition')
         );

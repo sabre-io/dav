@@ -58,6 +58,6 @@ HI;
             'time-range' => null,
         ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input, $filters));
+        self::assertTrue($validator->validate($input, $filters));
     }
 }

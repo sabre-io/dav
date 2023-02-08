@@ -12,7 +12,7 @@ class SupportedCalendarDataTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $sccs = new SupportedCalendarData();
-        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\SupportedCalendarData', $sccs);
+        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\SupportedCalendarData', $sccs);
     }
 
     /**
@@ -25,7 +25,7 @@ class SupportedCalendarDataTest extends DAV\Xml\XmlTest
 
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'">
 <cal:calendar-data content-type="text/calendar" version="2.0"/>

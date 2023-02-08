@@ -41,7 +41,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testGetDoesntExist()
@@ -49,7 +49,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('GET');
         $this->server->httpRequest->setUrl('/foo');
 
-        $this->assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testHEAD()
@@ -57,7 +57,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('HEAD');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:HEAD', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:HEAD', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testOPTIONS()
@@ -65,7 +65,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('OPTIONS');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:OPTIONS', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:OPTIONS', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testPUT()
@@ -73,7 +73,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('PUT');
         $this->server->httpRequest->setUrl('/testdir/file1.txt');
 
-        $this->assertTrue($this->server->emit('beforeMethod:PUT', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:PUT', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testPROPPATCH()
@@ -81,7 +81,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('PROPPATCH');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:PROPPATCH', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:PROPPATCH', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testCOPY()
@@ -89,7 +89,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('COPY');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:COPY', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:COPY', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testMOVE()
@@ -97,7 +97,7 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('MOVE');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:MOVE', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:MOVE', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testLOCK()
@@ -105,16 +105,16 @@ class AllowAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setMethod('LOCK');
         $this->server->httpRequest->setUrl('/testdir');
 
-        $this->assertTrue($this->server->emit('beforeMethod:LOCK', [$this->server->httpRequest, $this->server->httpResponse]));
+        self::assertTrue($this->server->emit('beforeMethod:LOCK', [$this->server->httpRequest, $this->server->httpResponse]));
     }
 
     public function testBeforeBind()
     {
-        $this->assertTrue($this->server->emit('beforeBind', ['testdir/file']));
+        self::assertTrue($this->server->emit('beforeBind', ['testdir/file']));
     }
 
     public function testBeforeUnbind()
     {
-        $this->assertTrue($this->server->emit('beforeUnbind', ['testdir']));
+        self::assertTrue($this->server->emit('beforeUnbind', ['testdir']));
     }
 }

@@ -66,9 +66,9 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
     public function testSimple()
     {
-        $this->assertEquals([], $this->plugin->getFeatures());
-        $this->assertEquals('notifications', $this->plugin->getPluginName());
-        $this->assertEquals(
+        self::assertEquals([], $this->plugin->getFeatures());
+        self::assertEquals('notifications', $this->plugin->getPluginName());
+        self::assertEquals(
             'notifications',
             $this->plugin->getPluginInfo()['name']
         );
@@ -83,13 +83,13 @@ class PluginTest extends \PHPUnit\Framework\TestCase
             '{'.Plugin::NS_CALENDARSERVER.'}notification-URL',
         ]);
 
-        $this->assertArrayHasKey(0, $props);
-        $this->assertArrayHasKey(200, $props[0]);
+        self::assertArrayHasKey(0, $props);
+        self::assertArrayHasKey(200, $props[0]);
 
-        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}notification-URL', $props[0][200]);
+        self::assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}notification-URL', $props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER.'}notification-URL'];
-        $this->assertTrue($prop instanceof DAV\Xml\Property\Href);
-        $this->assertEquals('calendars/admin/notifications/', $prop->getHref());
+        self::assertTrue($prop instanceof DAV\Xml\Property\Href);
+        self::assertEquals('calendars/admin/notifications/', $prop->getHref());
     }
 
     public function testNotificationProperties()
@@ -105,7 +105,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         $this->plugin->propFind($propFind, $notification);
 
-        $this->assertEquals(
+        self::assertEquals(
             $notification->getNotificationType(),
             $propFind->get('{'.Plugin::NS_CALENDARSERVER.'}notificationtype')
         );
@@ -130,8 +130,8 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         $caldav->httpGet($server->httpRequest, $server->httpResponse);
 
-        $this->assertEquals(200, $httpResponse->status);
-        $this->assertEquals([
+        self::assertEquals(200, $httpResponse->status);
+        self::assertEquals([
             'Content-Type' => ['application/xml'],
             'ETag' => ['"1"'],
         ], $httpResponse->getHeaders());
@@ -143,7 +143,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 </cs:notification>
 ';
 
-        $this->assertXmlStringEqualsXmlString($expected, $httpResponse->getBodyAsString());
+        self::assertXmlStringEqualsXmlString($expected, $httpResponse->getBodyAsString());
     }
 
     public function testGETPassthrough()
@@ -156,6 +156,6 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         $server->addPlugin($caldav);
 
-        $this->assertNull($caldav->httpGet(new HTTP\Request('GET', '/foozz'), $server->httpResponse));
+        self::assertNull($caldav->httpGet(new HTTP\Request('GET', '/foozz'), $server->httpResponse));
     }
 }

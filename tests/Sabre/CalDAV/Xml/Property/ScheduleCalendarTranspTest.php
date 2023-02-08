@@ -18,7 +18,7 @@ class ScheduleCalendarTranspTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $prop = new ScheduleCalendarTransp(ScheduleCalendarTransp::OPAQUE);
-        $this->assertEquals(
+        self::assertEquals(
             ScheduleCalendarTransp::OPAQUE,
             $prop->getValue()
         );
@@ -38,7 +38,7 @@ class ScheduleCalendarTranspTest extends DAV\Xml\XmlTest
         $property = new ScheduleCalendarTransp(ScheduleCalendarTransp::OPAQUE);
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cal:opaque />
@@ -54,7 +54,7 @@ class ScheduleCalendarTranspTest extends DAV\Xml\XmlTest
         $property = new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT);
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cal:transparent />
@@ -79,7 +79,7 @@ XML;
             ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\ScheduleCalendarTransp']
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             new ScheduleCalendarTransp(ScheduleCalendarTransp::TRANSPARENT),
             $result['value']
         );
@@ -102,7 +102,7 @@ XML;
             ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\ScheduleCalendarTransp']
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             new ScheduleCalendarTransp(ScheduleCalendarTransp::OPAQUE),
             $result['value']
         );

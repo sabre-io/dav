@@ -11,7 +11,7 @@ class AclRestrictionsTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $prop = new AclRestrictions();
-        $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\AclRestrictions', $prop);
+        self::assertInstanceOf('Sabre\DAVACL\Xml\Property\AclRestrictions', $prop);
     }
 
     public function testSerialize()
@@ -22,6 +22,6 @@ class AclRestrictionsTest extends \PHPUnit\Framework\TestCase
         $expected = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"><d:grant-only/><d:no-invert/></d:root>';
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 }

@@ -12,19 +12,19 @@ class LocalHrefTest extends XmlTest
     public function testConstruct()
     {
         $href = new LocalHref('path');
-        $this->assertEquals('path', $href->getHref());
+        self::assertEquals('path', $href->getHref());
     }
 
     public function testSerialize()
     {
         $href = new LocalHref('path');
-        $this->assertEquals('path', $href->getHref());
+        self::assertEquals('path', $href->getHref());
 
         $this->contextUri = '/bla/';
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ', $xml);
@@ -33,13 +33,13 @@ class LocalHrefTest extends XmlTest
     public function testSerializeSpace()
     {
         $href = new LocalHref('path alsopath');
-        $this->assertEquals('path%20alsopath', $href->getHref());
+        self::assertEquals('path%20alsopath', $href->getHref());
 
         $this->contextUri = '/bla/';
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path%20alsopath</d:href></d:anything>
 ', $xml);
@@ -62,6 +62,6 @@ class LocalHrefTest extends XmlTest
             '<a href="/foo/bar">/foo/bar</a><br />'.
             '<a href="/base/foo/bar">/base/foo/bar</a><br />'.
             '<a href="http://example.org/bar">http://example.org/bar</a>';
-        $this->assertEquals($expected, $href->toHtml($html));
+        self::assertEquals($expected, $href->toHtml($html));
     }
 }

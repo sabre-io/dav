@@ -9,7 +9,7 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
     public function testStatus()
     {
         $e = new Exception();
-        $this->assertEquals(500, $e->getHTTPCode());
+        self::assertEquals(500, $e->getHTTPCode());
     }
 
     public function testExceptionStatuses()
@@ -21,7 +21,7 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
 
         foreach ($c as $class => $status) {
             $obj = new $class();
-            $this->assertEquals($status, $obj->getHTTPCode());
+            self::assertEquals($status, $obj->getHTTPCode());
         }
     }
 }

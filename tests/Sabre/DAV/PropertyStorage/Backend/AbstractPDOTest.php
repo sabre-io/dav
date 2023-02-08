@@ -32,7 +32,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}displayname']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals('Directory', $propFind->get('{DAV:}displayname'));
+        self::assertEquals('Directory', $propFind->get('{DAV:}displayname'));
     }
 
     public function testPropFindNothingToDo()
@@ -43,7 +43,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind->set('{DAV:}displayname', 'foo');
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals('foo', $propFind->get('{DAV:}displayname'));
+        self::assertEquals('foo', $propFind->get('{DAV:}displayname'));
     }
 
     /**
@@ -60,7 +60,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}displayname']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals('bar', $propFind->get('{DAV:}displayname'));
+        self::assertEquals('bar', $propFind->get('{DAV:}displayname'));
     }
 
     /**
@@ -79,7 +79,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}complex']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals($complex, $propFind->get('{DAV:}complex'));
+        self::assertEquals($complex, $propFind->get('{DAV:}complex'));
     }
 
     /**
@@ -98,7 +98,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}custom']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals($custom, $propFind->get('{DAV:}custom'));
+        self::assertEquals($custom, $propFind->get('{DAV:}custom'));
     }
 
     /**
@@ -115,7 +115,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}displayname']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+        self::assertEquals(null, $propFind->get('{DAV:}displayname'));
     }
 
     /**
@@ -129,7 +129,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir', ['{DAV:}displayname']);
         $backend->propFind('dir', $propFind);
 
-        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+        self::assertEquals(null, $propFind->get('{DAV:}displayname'));
     }
 
     /**
@@ -148,22 +148,22 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         // Old 'dir'
         $propFind = new PropFind('dir', ['{DAV:}displayname']);
         $backend->propFind('dir', $propFind);
-        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+        self::assertEquals(null, $propFind->get('{DAV:}displayname'));
 
         // Old 'dir/child'
         $propFind = new PropFind('dir/child', ['{DAV:}displayname']);
         $backend->propFind('dir/child', $propFind);
-        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+        self::assertEquals(null, $propFind->get('{DAV:}displayname'));
 
         // New 'dir2'
         $propFind = new PropFind('dir2', ['{DAV:}displayname']);
         $backend->propFind('dir2', $propFind);
-        $this->assertEquals('Directory', $propFind->get('{DAV:}displayname'));
+        self::assertEquals('Directory', $propFind->get('{DAV:}displayname'));
 
         // New 'dir2/child'
         $propFind = new PropFind('dir2/child', ['{DAV:}displayname']);
         $backend->propFind('dir2/child', $propFind);
-        $this->assertEquals('child', $propFind->get('{DAV:}displayname'));
+        self::assertEquals('child', $propFind->get('{DAV:}displayname'));
     }
 
     /**
@@ -180,6 +180,6 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('dir/child', ['{DAV:}displayname']);
         $backend->propFind('dir/child', $propFind);
 
-        $this->assertEquals(null, $propFind->get('{DAV:}displayname'));
+        self::assertEquals(null, $propFind->get('{DAV:}displayname'));
     }
 }

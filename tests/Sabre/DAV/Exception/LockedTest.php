@@ -34,7 +34,7 @@ class LockedTest extends \PHPUnit\Framework\TestCase
 </d:root>
 ';
 
-        $this->assertEquals($expected, $output);
+        self::assertEquals($expected, $output);
     }
 
     public function testSerializeAmpersand()
@@ -62,6 +62,6 @@ class LockedTest extends \PHPUnit\Framework\TestCase
 </d:root>
 ';
 
-        $this->assertEquals($expected, $output);
+        self::assertEquals($expected, $output);
     }
 }

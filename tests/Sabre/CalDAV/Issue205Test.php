@@ -81,8 +81,8 @@ END:VCALENDAR
 
         $response = $this->request($request);
 
-        $this->assertFalse(strpos($response->getBodyAsString(), '<s:exception>Exception</s:exception>'), 'Exception occurred: '.$response->getBodyAsString());
-        $this->assertFalse(strpos($response->getBodyAsString(), 'Unknown or bad format'), 'DateTime unknown format Exception: '.$response->getBodyAsString());
+        self::assertFalse(strpos($response->getBodyAsString(), '<s:exception>Exception</s:exception>'), 'Exception occurred: '.$response->getBodyAsString());
+        self::assertFalse(strpos($response->getBodyAsString(), 'Unknown or bad format'), 'DateTime unknown format Exception: '.$response->getBodyAsString());
 
         // Everts super awesome xml parser.
         $body = substr(
@@ -94,6 +94,6 @@ END:VCALENDAR
 
         $vObject = VObject\Reader::read($body);
 
-        $this->assertEquals(1, count($vObject->VEVENT));
+        self::assertEquals(1, count($vObject->VEVENT));
     }
 }

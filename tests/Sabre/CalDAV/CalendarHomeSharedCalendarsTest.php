@@ -40,14 +40,14 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit\Framework\TestCase
     public function testSimple()
     {
         $instance = $this->getInstance();
-        $this->assertEquals('user1', $instance->getName());
+        self::assertEquals('user1', $instance->getName());
     }
 
     public function testGetChildren()
     {
         $instance = $this->getInstance();
         $children = $instance->getChildren();
-        $this->assertEquals(3, count($children));
+        self::assertEquals(3, count($children));
 
         // Testing if we got all the objects back.
         $sharedCalendars = 0;
@@ -62,14 +62,14 @@ class CalendarHomeSharedCalendarsTest extends \PHPUnit\Framework\TestCase
                 $hasNotifications = true;
             }
         }
-        $this->assertEquals(2, $sharedCalendars);
-        $this->assertTrue($hasNotifications);
+        self::assertEquals(2, $sharedCalendars);
+        self::assertTrue($hasNotifications);
     }
 
     public function testShareReply()
     {
         $instance = $this->getInstance();
         $result = $instance->shareReply('uri', DAV\Sharing\Plugin::INVITE_DECLINED, 'curi', '1');
-        $this->assertNull($result);
+        self::assertNull($result);
     }
 }

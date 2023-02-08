@@ -11,7 +11,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('foo', ['{DAV:}displayname']);
         $propFind->handle('{DAV:}displayname', 'foobar');
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => ['{DAV:}displayname' => 'foobar'],
             404 => [],
         ], $propFind->getResultForMultiStatus());
@@ -22,7 +22,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('foo', ['{DAV:}displayname']);
         $propFind->handle('{DAV:}displayname', function () { return 'foobar'; });
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => ['{DAV:}displayname' => 'foobar'],
             404 => [],
         ], $propFind->getResultForMultiStatus());
@@ -32,7 +32,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
     {
         $propFind = new PropFind('foo', ['{DAV:}displayname'], 0, PropFind::ALLPROPS);
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => [],
         ], $propFind->getResultForMultiStatus());
     }
@@ -42,7 +42,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('foo', ['{DAV:}displayname']);
         $propFind->set('{DAV:}displayname', 'bar');
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => ['{DAV:}displayname' => 'bar'],
             404 => [],
         ], $propFind->getResultForMultiStatus());
@@ -53,7 +53,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
         $propFind = new PropFind('foo', ['{DAV:}displayname'], 0, PropFind::ALLPROPS);
         $propFind->set('{DAV:}customproperty', 'bar');
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => ['{DAV:}customproperty' => 'bar'],
         ], $propFind->getResultForMultiStatus());
     }
@@ -64,7 +64,7 @@ class PropFindTest extends \PHPUnit\Framework\TestCase
         $propFind->set('{DAV:}displayname', 'bar');
         $propFind->set('{DAV:}displayname', null);
 
-        $this->assertEquals([
+        self::assertEquals([
             200 => [],
             404 => ['{DAV:}displayname' => null],
         ], $propFind->getResultForMultiStatus());

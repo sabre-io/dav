@@ -18,8 +18,8 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
     {
         $notification = new InviteReply($notification);
 
-        $this->assertEquals('foo', $notification->getId());
-        $this->assertEquals('"1"', $notification->getETag());
+        self::assertEquals('foo', $notification->getId());
+        self::assertEquals('"1"', $notification->getETag());
 
         $simpleExpected = '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<cs:root xmlns:cs="http://calendarserver.org/ns/"><cs:invite-reply/></cs:root>';
 
@@ -33,7 +33,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
         $writer->write($notification);
         $writer->endElement();
 
-        $this->assertEquals($simpleExpected, $writer->outputMemory());
+        self::assertEquals($simpleExpected, $writer->outputMemory());
 
         $writer = new Writer();
         $writer->contextUri = '/';
@@ -47,7 +47,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
         $notification->xmlSerializeFull($writer);
         $writer->endElement();
 
-        $this->assertXmlStringEqualsXmlString($expected, $writer->outputMemory());
+        self::assertXmlStringEqualsXmlString($expected, $writer->outputMemory());
     }
 
     public function dataProvider()

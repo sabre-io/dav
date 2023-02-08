@@ -24,19 +24,19 @@ class ProxyReadTest extends \PHPUnit\Framework\TestCase
     public function testGetName()
     {
         $i = $this->getInstance();
-        $this->assertEquals('calendar-proxy-read', $i->getName());
+        self::assertEquals('calendar-proxy-read', $i->getName());
     }
 
     public function testGetDisplayName()
     {
         $i = $this->getInstance();
-        $this->assertEquals('calendar-proxy-read', $i->getDisplayName());
+        self::assertEquals('calendar-proxy-read', $i->getDisplayName());
     }
 
     public function testGetLastModified()
     {
         $i = $this->getInstance();
-        $this->assertNull($i->getLastModified());
+        self::assertNull($i->getLastModified());
     }
 
     public function testDelete()
@@ -56,25 +56,25 @@ class ProxyReadTest extends \PHPUnit\Framework\TestCase
     public function testGetAlternateUriSet()
     {
         $i = $this->getInstance();
-        $this->assertEquals([], $i->getAlternateUriSet());
+        self::assertEquals([], $i->getAlternateUriSet());
     }
 
     public function testGetPrincipalUri()
     {
         $i = $this->getInstance();
-        $this->assertEquals('principal/user/calendar-proxy-read', $i->getPrincipalUrl());
+        self::assertEquals('principal/user/calendar-proxy-read', $i->getPrincipalUrl());
     }
 
     public function testGetGroupMemberSet()
     {
         $i = $this->getInstance();
-        $this->assertEquals([], $i->getGroupMemberSet());
+        self::assertEquals([], $i->getGroupMemberSet());
     }
 
     public function testGetGroupMembership()
     {
         $i = $this->getInstance();
-        $this->assertEquals([], $i->getGroupMembership());
+        self::assertEquals([], $i->getGroupMembership());
     }
 
     public function testSetGroupMemberSet()
@@ -86,6 +86,6 @@ class ProxyReadTest extends \PHPUnit\Framework\TestCase
             $i->getPrincipalUrl() => ['principals/foo'],
         ];
 
-        $this->assertEquals($expected, $this->backend->groupMembers);
+        self::assertEquals($expected, $this->backend->groupMembers);
     }
 }

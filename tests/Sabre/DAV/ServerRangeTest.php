@@ -46,7 +46,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [4],
@@ -56,8 +56,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             ],
             $response->getHeaders()
         );
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('st c', $response->getBodyAsString());
     }
 
     /**
@@ -68,7 +68,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=2-']);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [11],
@@ -79,8 +79,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st contents', $response->getBodyAsString());
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('st contents', $response->getBodyAsString());
     }
 
     /**
@@ -91,7 +91,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=-8']);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [8],
@@ -102,8 +102,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('contents', $response->getBodyAsString());
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('contents', $response->getBodyAsString());
     }
 
     /**
@@ -114,7 +114,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=100-200']);
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->getStatus());
+        self::assertEquals(416, $response->getStatus());
     }
 
     /**
@@ -125,7 +125,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=8-4']);
         $response = $this->request($request);
 
-        $this->assertEquals(416, $response->getStatus());
+        self::assertEquals(416, $response->getStatus());
     }
 
     public function testNonSeekableStream()
@@ -133,8 +133,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         $request = new HTTP\Request('GET', '/files/no-seeking.txt', ['Range' => 'bytes=2-5']);
         $response = $this->request($request);
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals([
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [4],
@@ -145,7 +145,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals('st c', $response->getBodyAsString());
+        self::assertEquals('st c', $response->getBodyAsString());
     }
 
     /**
@@ -159,7 +159,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [4],
@@ -170,8 +170,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('st c', $response->getBodyAsString());
     }
 
     /**
@@ -185,7 +185,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
@@ -195,8 +195,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('Test contents', $response->getBodyAsString());
+        self::assertEquals(200, $response->getStatus());
+        self::assertEquals('Test contents', $response->getBodyAsString());
     }
 
     /**
@@ -210,7 +210,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [4],
@@ -221,8 +221,8 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(206, $response->getStatus());
-        $this->assertEquals('st c', $response->getBodyAsString());
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('st c', $response->getBodyAsString());
     }
 
     /**
@@ -236,7 +236,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
         ]);
         $response = $this->request($request);
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
@@ -246,7 +246,7 @@ class ServerRangeTest extends \Sabre\DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('Test contents', $response->getBodyAsString());
+        self::assertEquals(200, $response->getStatus());
+        self::assertEquals('Test contents', $response->getBodyAsString());
     }
 }

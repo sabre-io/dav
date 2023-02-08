@@ -41,10 +41,10 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
                 'privilege' => '{DAV:}all',
             ],
         ]);
-        $this->assertTrue($plugin instanceof Plugin);
+        self::assertTrue($plugin instanceof Plugin);
 
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
+        self::assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
         return $fakeServer;
     }
@@ -73,8 +73,8 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->status, 'Incorrect status code received. Full body: '.$server->httpResponse->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, 'Incorrect status code received. Full body: '.$server->httpResponse->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -104,7 +104,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response: '.$server->httpResponse->getBodyAsString());
         }
     }
 
@@ -134,8 +134,8 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->status, 'Incorrect response status received. Full response body: '.$server->httpResponse->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status, 'Incorrect response status received. Full response body: '.$server->httpResponse->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -167,7 +167,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).' Full response body: '.$server->httpResponse->getBodyAsString());
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).' Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
 
@@ -197,8 +197,8 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->status);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -230,7 +230,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result));
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result));
         }
     }
 
@@ -263,8 +263,8 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(207, $server->httpResponse->status);
-        $this->assertEquals([
+        self::assertEquals(207, $server->httpResponse->status);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -302,7 +302,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result));
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result));
         }
     }
 }

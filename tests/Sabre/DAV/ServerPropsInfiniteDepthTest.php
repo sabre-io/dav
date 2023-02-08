@@ -49,9 +49,9 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $this->sendRequest('');
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: '.$bodyAsString);
 
-        $this->assertEquals([
+        self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Type' => ['application/xml; charset=utf-8'],
                 'DAV' => ['1, 3, extended-mkcol, 2'],
@@ -65,11 +65,11 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         list($data) = $xml->xpath('/d:multistatus/d:response/d:href');
-        $this->assertEquals('/', (string) $data, 'href element should have been /');
+        self::assertEquals('/', (string) $data, 'href element should have been /');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:resourcetype');
         // 8 resources are to be returned: /, col, col/col, col/col/test.txt, dir, dir/child.txt, test.txt and test2.txt
-        $this->assertEquals(8, count($data));
+        self::assertEquals(8, count($data));
     }
 
     public function testSupportedLocks()
@@ -84,29 +84,29 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $this->sendRequest($xml);
 
         $body = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->getStatus(), $body);
+        self::assertEquals(207, $this->response->getStatus(), $body);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $body);
         $xml = simplexml_load_string($body);
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry');
-        $this->assertEquals(16, count($data), 'We expected sixteen \'d:lockentry\' tags');
+        self::assertEquals(16, count($data), 'We expected sixteen \'d:lockentry\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope');
-        $this->assertEquals(16, count($data), 'We expected sixteen \'d:lockscope\' tags');
+        self::assertEquals(16, count($data), 'We expected sixteen \'d:lockscope\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype');
-        $this->assertEquals(16, count($data), 'We expected sixteen \'d:locktype\' tags');
+        self::assertEquals(16, count($data), 'We expected sixteen \'d:locktype\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:shared');
-        $this->assertEquals(8, count($data), 'We expected eight \'d:shared\' tags');
+        self::assertEquals(8, count($data), 'We expected eight \'d:shared\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:lockscope/d:exclusive');
-        $this->assertEquals(8, count($data), 'We expected eight \'d:exclusive\' tags');
+        self::assertEquals(8, count($data), 'We expected eight \'d:exclusive\' tags');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:supportedlock/d:lockentry/d:locktype/d:write');
-        $this->assertEquals(16, count($data), 'We expected sixteen \'d:write\' tags');
+        self::assertEquals(16, count($data), 'We expected sixteen \'d:write\' tags');
     }
 
     public function testLockDiscovery()
@@ -124,7 +124,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $xml->registerXPathNamespace('d', 'urn:DAV');
 
         $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:lockdiscovery');
-        $this->assertEquals(8, count($data), 'We expected eight \'d:lockdiscovery\' tags');
+        self::assertEquals(8, count($data), 'We expected eight \'d:lockdiscovery\' tags');
     }
 
     public function testUnknownProperty()
@@ -149,12 +149,12 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
             '/d:multistatus/d:response/d:propstat/d:prop/d:macaroni',
         ];
         foreach ($pathTests as $test) {
-            $this->assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
+            self::assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(8, count($val), $body);
-        $this->assertEquals('HTTP/1.1 404 Not Found', (string) $val[0]);
+        self::assertEquals(8, count($val), $body);
+        self::assertEquals('HTTP/1.1 404 Not Found', (string) $val[0]);
     }
 
     public function testFilesThatAreSiblingsOfDirectoriesShouldBeReportedAsFiles()
@@ -183,7 +183,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         $hrefPaths = [];
 
         foreach ($pathTests as $test) {
-            $this->assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
+            self::assertTrue(true == count($xml->xpath($test)), 'We expected the '.$test.' element to appear in the response, we got: '.$body);
 
             if ('/d:multistatus/d:response/d:href' === $test) {
                 foreach ($xml->xpath($test) as $thing) {
@@ -195,9 +195,9 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
                 foreach ($xml->xpath($test) as $thing) {
                     /* @var \SimpleXMLElement $thing */
                     if ('.txt' !== substr($hrefPaths[$count], -4)) {
-                        $this->assertEquals('<d:resourcetype><d:collection/></d:resourcetype>', $thing->asXML(), 'Path '.$hrefPaths[$count].' is not reported as a directory');
+                        self::assertEquals('<d:resourcetype><d:collection/></d:resourcetype>', $thing->asXML(), 'Path '.$hrefPaths[$count].' is not reported as a directory');
                     } else {
-                        $this->assertEquals('<d:resourcetype/>', $thing->asXML(), 'Path '.$hrefPaths[$count].' is not reported as a file');
+                        self::assertEquals('<d:resourcetype/>', $thing->asXML(), 'Path '.$hrefPaths[$count].' is not reported as a file');
                     }
 
                     ++$count;
@@ -206,7 +206,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
         }
 
         $val = $xml->xpath('/d:multistatus/d:response/d:propstat/d:status');
-        $this->assertEquals(8, count($val), $body);
-        $this->assertEquals('HTTP/1.1 200 OK', (string) $val[0]);
+        self::assertEquals(8, count($val), $body);
+        self::assertEquals('HTTP/1.1 200 OK', (string) $val[0]);
     }
 }

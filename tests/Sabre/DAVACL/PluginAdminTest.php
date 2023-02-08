@@ -44,7 +44,7 @@ class PluginAdminTest extends \PHPUnit\Framework\TestCase
 
         $this->server->exec();
 
-        $this->assertEquals(403, $response->status);
+        self::assertEquals(403, $response->status);
     }
 
     /**
@@ -71,6 +71,6 @@ class PluginAdminTest extends \PHPUnit\Framework\TestCase
 
         $this->server->exec();
 
-        $this->assertEquals(200, $response->status);
+        self::assertEquals(200, $response->status);
     }
 }

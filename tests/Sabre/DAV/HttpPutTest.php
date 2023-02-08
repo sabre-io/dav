@@ -35,14 +35,14 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus(), 'Incorrect status code received. Full response body:'.$response->getBodyAsString());
+        self::assertEquals(201, $response->getStatus(), 'Incorrect status code received. Full response body:'.$response->getBodyAsString());
 
-        $this->assertEquals(
+        self::assertEquals(
             'hello',
             $this->server->tree->getNodeForPath('file2')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -63,14 +63,14 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(204, $response->getStatus());
+        self::assertEquals(204, $response->getStatus());
 
-        $this->assertEquals(
+        self::assertEquals(
             'bar',
             $this->server->tree->getNodeForPath('file1')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -96,14 +96,14 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(204, $response->getStatus());
+        self::assertEquals(204, $response->getStatus());
 
-        $this->assertEquals(
+        self::assertEquals(
             'hello',
             $this->server->tree->getNodeForPath('file1')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -129,14 +129,14 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(204, $response->status);
+        self::assertEquals(204, $response->status);
 
-        $this->assertEquals(
+        self::assertEquals(
             'hello',
             $this->server->tree->getNodeForPath('file1')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -161,7 +161,7 @@ class HttpPutTest extends DAVServerTest
         );
 
         $response = $this->request($request);
-        $this->assertEquals(400, $response->getStatus());
+        self::assertEquals(400, $response->getStatus());
     }
 
     /**
@@ -180,14 +180,14 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus());
+        self::assertEquals(201, $response->getStatus());
 
-        $this->assertEquals(
+        self::assertEquals(
             'hello',
             $this->server->tree->getNodeForPath('file2')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -213,7 +213,7 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(412, $response->getStatus());
+        self::assertEquals(412, $response->getStatus());
     }
 
     /**
@@ -233,7 +233,7 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(412, $response->getStatus());
+        self::assertEquals(412, $response->getStatus());
     }
 
     /**
@@ -251,7 +251,7 @@ class HttpPutTest extends DAVServerTest
         );
 
         $response = $this->request($request);
-        $this->assertEquals(409, $response->getStatus());
+        self::assertEquals(409, $response->getStatus());
     }
 
     /**
@@ -269,7 +269,7 @@ class HttpPutTest extends DAVServerTest
         );
 
         $response = $this->request($request);
-        $this->assertEquals(409, $response->getStatus());
+        self::assertEquals(409, $response->getStatus());
     }
 
     /**
@@ -289,14 +289,14 @@ class HttpPutTest extends DAVServerTest
         );
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->getStatus());
+        self::assertEquals(201, $response->getStatus());
 
-        $this->assertEquals(
+        self::assertEquals(
             'hello',
             $this->server->tree->getNodeForPath('file2')->get()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Length' => ['0'],
@@ -322,7 +322,7 @@ class HttpPutTest extends DAVServerTest
 
         $response = $this->request($request);
 
-        $this->assertEquals(403, $response->getStatus());
+        self::assertEquals(403, $response->getStatus());
     }
 
     /**
@@ -341,13 +341,13 @@ class HttpPutTest extends DAVServerTest
         $request = new HTTP\Request('PUT', '/file2', [], 'hello');
         $response = $this->request($request);
 
-        $this->assertEquals(418, $response->getStatus(), 'Incorrect status code received. Full response body: '.$response->getBodyAsString());
+        self::assertEquals(418, $response->getStatus(), 'Incorrect status code received. Full response body: '.$response->getBodyAsString());
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->server->tree->nodeExists('file2')
         );
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
         ], $response->getHeaders());
     }

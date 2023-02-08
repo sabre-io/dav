@@ -20,7 +20,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
         $expected = [
             '{DAV:}foo' => 403,
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdatePropertiesProtected()
@@ -42,7 +42,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}getetag' => 403,
             '{DAV:}foo' => 424,
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdatePropertiesEventFail()
@@ -65,7 +65,7 @@ class ServerUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}foo' => 404,
             '{DAV:}foo2' => 424,
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testUpdatePropertiesEventSuccess()
@@ -92,6 +92,6 @@ class ServerUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}foo' => 200,
             '{DAV:}foo2' => 201,
         ];
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }

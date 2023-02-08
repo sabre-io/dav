@@ -23,8 +23,8 @@ XML;
 
         $result = $this->parse($xml);
 
-        $this->assertEquals(PrincipalMatchReport::PRINCIPAL_PROPERTY, $result['value']->type);
-        $this->assertEquals('{DAV:}owner', $result['value']->principalProperty);
+        self::assertEquals(PrincipalMatchReport::PRINCIPAL_PROPERTY, $result['value']->type);
+        self::assertEquals('{DAV:}owner', $result['value']->principalProperty);
     }
 
     public function testDeserializeSelf()
@@ -41,8 +41,8 @@ XML;
 
         $result = $this->parse($xml);
 
-        $this->assertEquals(PrincipalMatchReport::SELF, $result['value']->type);
-        $this->assertNull($result['value']->principalProperty);
-        $this->assertEquals(['{DAV:}foo'], $result['value']->properties);
+        self::assertEquals(PrincipalMatchReport::SELF, $result['value']->type);
+        self::assertNull($result['value']->principalProperty);
+        self::assertEquals(['{DAV:}foo'], $result['value']->properties);
     }
 }

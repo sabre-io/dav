@@ -11,10 +11,10 @@ class SupportedMethodSetTest extends XmlTest
     public function testSimple()
     {
         $cus = new SupportedMethodSet(['GET', 'PUT']);
-        $this->assertEquals(['GET', 'PUT'], $cus->getValue());
+        self::assertEquals(['GET', 'PUT'], $cus->getValue());
 
-        $this->assertTrue($cus->has('GET'));
-        $this->assertFalse($cus->has('HEAD'));
+        self::assertTrue($cus->has('GET'));
+        self::assertFalse($cus->has('HEAD'));
     }
 
     public function testSerialize()
@@ -28,7 +28,7 @@ class SupportedMethodSetTest extends XmlTest
     <d:supported-method name="PUT"/>
 </d:foo>';
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testSerializeHtml()
@@ -38,6 +38,6 @@ class SupportedMethodSetTest extends XmlTest
             new \Sabre\DAV\Browser\HtmlOutputHelper('/', [])
         );
 
-        $this->assertEquals('GET, PUT', $result);
+        self::assertEquals('GET, PUT', $result);
     }
 }

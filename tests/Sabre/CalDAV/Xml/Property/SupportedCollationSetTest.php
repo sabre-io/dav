@@ -12,7 +12,7 @@ class SupportedCollationSetTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $scs = new SupportedCollationSet();
-        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\SupportedCollationSet', $scs);
+        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\SupportedCollationSet', $scs);
     }
 
     /**
@@ -25,7 +25,7 @@ class SupportedCollationSetTest extends DAV\Xml\XmlTest
         $this->namespaceMap[CalDAV\Plugin::NS_CALDAV] = 'cal';
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'">
 <cal:supported-collation>i;ascii-casemap</cal:supported-collation>

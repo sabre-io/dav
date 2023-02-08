@@ -12,7 +12,7 @@ class AllowedSharingModesTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $sccs = new AllowedSharingModes(true, true);
-        $this->assertInstanceOf('Sabre\CalDAV\Xml\Property\AllowedSharingModes', $sccs);
+        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\AllowedSharingModes', $sccs);
     }
 
     /**
@@ -26,7 +26,7 @@ class AllowedSharingModesTest extends DAV\Xml\XmlTest
         $this->namespaceMap[CalDAV\Plugin::NS_CALENDARSERVER] = 'cs';
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
   <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
     <cs:can-be-shared/>

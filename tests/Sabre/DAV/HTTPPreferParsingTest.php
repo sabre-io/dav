@@ -17,7 +17,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected,
             $server->getHTTPPrefer()
         );
@@ -25,7 +25,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
 
     public function testParseSimple()
     {
-        $this->assertParseResult(
+        self::assertParseResult(
             'return-asynch',
             [
                 'respond-async' => true,
@@ -38,7 +38,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
 
     public function testParseValue()
     {
-        $this->assertParseResult(
+        self::assertParseResult(
             'wait=10',
             [
                 'respond-async' => false,
@@ -51,7 +51,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
 
     public function testParseMultiple()
     {
-        $this->assertParseResult(
+        self::assertParseResult(
             'return-minimal, strict,lenient',
             [
                 'respond-async' => false,
@@ -64,7 +64,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
 
     public function testParseWeirdValue()
     {
-        $this->assertParseResult(
+        self::assertParseResult(
             'BOOOH',
             [
                 'respond-async' => false,
@@ -85,7 +85,7 @@ class HTTPPreferParsingTest extends \Sabre\DAVServerTest
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals([
+        self::assertEquals([
             'respond-async' => false,
             'return' => 'minimal',
             'handling' => null,
@@ -116,10 +116,10 @@ BLA
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->getStatus(), $body);
+        self::assertEquals(207, $response->getStatus(), $body);
 
-        $this->assertTrue(false !== strpos($body, 'resourcetype'), $body);
-        $this->assertTrue(false === strpos($body, 'something'), $body);
+        self::assertTrue(false !== strpos($body, 'resourcetype'), $body);
+        self::assertTrue(false === strpos($body, 'something'), $body);
     }
 
     public function testproppatchMinimal()
@@ -145,8 +145,8 @@ BLA
 
         $response = $this->request($request);
 
-        $this->assertEquals('', $response->getBodyAsString(), 'Expected empty body: '.$response->getBodyAsString());
-        $this->assertEquals(204, $response->status);
+        self::assertEquals('', $response->getBodyAsString(), 'Expected empty body: '.$response->getBodyAsString());
+        self::assertEquals(204, $response->status);
     }
 
     public function testproppatchMinimalError()
@@ -168,8 +168,8 @@ BLA
 
         $body = $response->getBodyAsString();
 
-        $this->assertEquals(207, $response->status);
-        $this->assertTrue(false !== strpos($body, 'something'));
-        $this->assertTrue(false !== strpos($body, '403 Forbidden'), $body);
+        self::assertEquals(207, $response->status);
+        self::assertTrue(false !== strpos($body, 'something'));
+        self::assertTrue(false !== strpos($body, '403 Forbidden'), $body);
     }
 }

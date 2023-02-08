@@ -18,7 +18,7 @@ class SupportedCalendarComponentSetTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $prop = new SupportedCalendarComponentSet(['VEVENT']);
-        $this->assertEquals(
+        self::assertEquals(
             ['VEVENT'],
             $prop->getValue()
         );
@@ -27,7 +27,7 @@ class SupportedCalendarComponentSetTest extends DAV\Xml\XmlTest
     public function testMultiple()
     {
         $prop = new SupportedCalendarComponentSet(['VEVENT', 'VTODO']);
-        $this->assertEquals(
+        self::assertEquals(
             ['VEVENT', 'VTODO'],
             $prop->getValue()
         );
@@ -42,7 +42,7 @@ class SupportedCalendarComponentSetTest extends DAV\Xml\XmlTest
         $property = new SupportedCalendarComponentSet(['VEVENT', 'VTODO']);
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cal:comp name="VEVENT"/>
@@ -69,7 +69,7 @@ XML;
             ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet']
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             new SupportedCalendarComponentSet(['VEVENT', 'VTODO']),
             $result['value']
         );

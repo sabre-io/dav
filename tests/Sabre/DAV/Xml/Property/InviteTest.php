@@ -71,6 +71,6 @@ class InviteTest extends XmlTest
 </d:root>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 }

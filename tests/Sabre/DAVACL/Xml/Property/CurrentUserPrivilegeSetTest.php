@@ -30,7 +30,7 @@ class CurrentUserPrivilegeSetTest extends \PHPUnit\Framework\TestCase
 </d:root>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testUnserialize()
@@ -48,9 +48,9 @@ XML;
 ';
 
         $result = $this->parse($source);
-        $this->assertTrue($result->has('{DAV:}read'));
-        $this->assertTrue($result->has('{DAV:}write-properties'));
-        $this->assertFalse($result->has('{DAV:}bind'));
+        self::assertTrue($result->has('{DAV:}read'));
+        self::assertTrue($result->has('{DAV:}write-properties'));
+        self::assertFalse($result->has('{DAV:}bind'));
     }
 
     public function parse($xml)
@@ -77,6 +77,6 @@ XML;
             '<span title="{DAV:}read">d:read</span>, '.
             '<span title="{DAV:}write">d:write</span>';
 
-        $this->assertEquals($expected, $prop->toHtml($html));
+        self::assertEquals($expected, $prop->toHtml($html));
     }
 }

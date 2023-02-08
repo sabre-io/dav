@@ -46,9 +46,9 @@ XML;
         $request = new Request('MKCOL', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        self::assertEquals(201, $response->getStatus());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
-        $this->assertSubscription($subscriptions[0]);
+        self::assertSubscription($subscriptions[0]);
     }
 
     /**
@@ -89,12 +89,12 @@ XML;
         $request = new Request('MKCALENDAR', '/calendars/user1/subscription1', $headers, $body);
 
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus());
+        self::assertEquals(201, $response->getStatus());
         $subscriptions = $this->caldavBackend->getSubscriptionsForUser('principals/user1');
-        $this->assertSubscription($subscriptions[0]);
+        self::assertSubscription($subscriptions[0]);
 
         // Also seeing if it works when calling this as a PROPFIND.
-        $this->assertEquals([
+        self::assertEquals([
                 '{http://calendarserver.org/ns/}subscribed-strip-alarms' => '',
             ],
             $this->server->getProperties('calendars/user1/subscription1', ['{http://calendarserver.org/ns/}subscribed-strip-alarms'])
@@ -103,17 +103,17 @@ XML;
 
     public function assertSubscription($subscription)
     {
-        $this->assertEquals('', $subscription['{http://calendarserver.org/ns/}subscribed-strip-attachments']);
-        $this->assertEquals('', $subscription['{http://calendarserver.org/ns/}subscribed-strip-todos']);
-        $this->assertEquals('#1C4587FF', $subscription['{http://apple.com/ns/ical/}calendar-color']);
-        $this->assertEquals('Jewish holidays', $subscription['{DAV:}displayname']);
-        $this->assertEquals('Foo', $subscription['{urn:ietf:params:xml:ns:caldav}calendar-description']);
-        $this->assertEquals('19', $subscription['{http://apple.com/ns/ical/}calendar-order']);
-        $this->assertEquals('webcal://www.example.org/', $subscription['{http://calendarserver.org/ns/}source']->getHref());
-        $this->assertEquals('P1W', $subscription['{http://apple.com/ns/ical/}refreshrate']);
-        $this->assertEquals('subscription1', $subscription['uri']);
-        $this->assertEquals('principals/user1', $subscription['principaluri']);
-        $this->assertEquals('webcal://www.example.org/', $subscription['source']);
-        $this->assertEquals(['principals/user1', 1], $subscription['id']);
+        self::assertEquals('', $subscription['{http://calendarserver.org/ns/}subscribed-strip-attachments']);
+        self::assertEquals('', $subscription['{http://calendarserver.org/ns/}subscribed-strip-todos']);
+        self::assertEquals('#1C4587FF', $subscription['{http://apple.com/ns/ical/}calendar-color']);
+        self::assertEquals('Jewish holidays', $subscription['{DAV:}displayname']);
+        self::assertEquals('Foo', $subscription['{urn:ietf:params:xml:ns:caldav}calendar-description']);
+        self::assertEquals('19', $subscription['{http://apple.com/ns/ical/}calendar-order']);
+        self::assertEquals('webcal://www.example.org/', $subscription['{http://calendarserver.org/ns/}source']->getHref());
+        self::assertEquals('P1W', $subscription['{http://apple.com/ns/ical/}refreshrate']);
+        self::assertEquals('subscription1', $subscription['uri']);
+        self::assertEquals('principals/user1', $subscription['principaluri']);
+        self::assertEquals('webcal://www.example.org/', $subscription['source']);
+        self::assertEquals(['principals/user1', 1], $subscription['id']);
     }
 }

@@ -47,7 +47,7 @@ class SharedCalendarTest extends \PHPUnit\Framework\TestCase
         $sharee->access = Sharing\Plugin::ACCESS_READ;
         $sharee->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
 
-        $this->assertEquals(
+        self::assertEquals(
             [$sharee],
             $this->getInstance()->getInvites()
         );
@@ -55,7 +55,7 @@ class SharedCalendarTest extends \PHPUnit\Framework\TestCase
 
     public function testGetOwner()
     {
-        $this->assertEquals('principals/sharee', $this->getInstance()->getOwner());
+        self::assertEquals('principals/sharee', $this->getInstance()->getOwner());
     }
 
     public function testGetACL()
@@ -103,7 +103,7 @@ class SharedCalendarTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $this->getInstance()->getACL());
+        self::assertEquals($expected, $this->getInstance()->getACL());
     }
 
     public function testGetChildACL()
@@ -136,7 +136,7 @@ class SharedCalendarTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $this->getInstance()->getChildACL());
+        self::assertEquals($expected, $this->getInstance()->getChildACL());
     }
 
     public function testUpdateInvites()
@@ -160,13 +160,13 @@ class SharedCalendarTest extends \PHPUnit\Framework\TestCase
             clone $newSharees[0],
         ];
         $expected[0]->inviteStatus = Sharing\Plugin::INVITE_NORESPONSE;
-        $this->assertEquals($expected, $instance->getInvites());
+        self::assertEquals($expected, $instance->getInvites());
     }
 
     public function testPublish()
     {
         $instance = $this->getInstance();
-        $this->assertNull($instance->setPublishStatus(true));
-        $this->assertNull($instance->setPublishStatus(false));
+        self::assertNull($instance->setPublishStatus(true));
+        self::assertNull($instance->setPublishStatus(false));
     }
 }

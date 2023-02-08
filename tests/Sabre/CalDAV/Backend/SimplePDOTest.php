@@ -48,7 +48,7 @@ SQL
     public function testConstruct()
     {
         $backend = new SimplePDO($this->pdo);
-        $this->assertTrue($backend instanceof SimplePDO);
+        self::assertTrue($backend instanceof SimplePDO);
     }
 
     /**
@@ -58,7 +58,7 @@ SQL
     {
         $backend = new SimplePDO($this->pdo);
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals([], $calendars);
+        self::assertEquals([], $calendars);
     }
 
     /**
@@ -78,12 +78,12 @@ SQL
             'uri' => 'somerandomid',
         ];
 
-        $this->assertIsArray($calendars);
-        $this->assertEquals(1, count($calendars));
+        self::assertIsArray($calendars);
+        self::assertEquals(1, count($calendars));
 
         foreach ($elementCheck as $name => $value) {
-            $this->assertArrayHasKey($name, $calendars[0]);
-            $this->assertEquals($value, $calendars[0][$name]);
+            self::assertArrayHasKey($name, $calendars[0]);
+            self::assertEquals($value, $calendars[0][$name]);
         }
     }
 
@@ -107,7 +107,7 @@ SQL
         $result = $propPatch->commit();
 
         // Verifying the result of the update
-        $this->assertFalse($result);
+        self::assertFalse($result);
     }
 
     /**
@@ -124,7 +124,7 @@ SQL
         $backend->deleteCalendar($returnedId);
 
         $calendars = $backend->getCalendarsForUser('principals/user2');
-        $this->assertEquals([], $calendars);
+        self::assertEquals([], $calendars);
     }
 
     public function testCreateCalendarObject()
@@ -137,7 +137,7 @@ SQL
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
         $result = $this->pdo->query('SELECT calendardata FROM simple_calendarobjects WHERE uri = "random-id"');
-        $this->assertEquals([
+        self::assertEquals([
             'calendardata' => $object,
         ], $result->fetch(\PDO::FETCH_ASSOC));
     }
@@ -174,9 +174,9 @@ SQL
         foreach ($check as $index => $props) {
             foreach ($props as $key => $value) {
                 if ('lastmodified' !== $key) {
-                    $this->assertEquals($value, $result[$index][$key]);
+                    self::assertEquals($value, $result[$index][$key]);
                 } else {
-                    $this->assertTrue(isset($result[$index][$key]));
+                    self::assertTrue(isset($result[$index][$key]));
                 }
             }
         }
@@ -195,11 +195,11 @@ SQL
 
         $data = $backend->getCalendarObjects($returnedId);
 
-        $this->assertEquals(1, count($data));
+        self::assertEquals(1, count($data));
         $data = $data[0];
 
-        $this->assertEquals('random-id', $data['uri']);
-        $this->assertEquals(strlen($object), $data['size']);
+        self::assertEquals('random-id', $data['uri']);
+        self::assertEquals(strlen($object), $data['size']);
     }
 
     /**
@@ -213,10 +213,10 @@ SQL
         $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nDTSTART;VALUE=DATE:20120101\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
         $backend->createCalendarObject($returnedId, 'random-id', $object);
 
-        $this->assertNull(
+        self::assertNull(
             $backend->getCalendarObjectByUID('principals/user2', 'bar')
         );
-        $this->assertEquals(
+        self::assertEquals(
             'somerandomid/random-id',
             $backend->getCalendarObjectByUID('principals/user2', 'foo')
         );
@@ -237,8 +237,8 @@ SQL
 
         $data = $backend->getCalendarObject($returnedId, 'random-id');
 
-        $this->assertEquals($object2, $data['calendardata']);
-        $this->assertEquals('random-id', $data['uri']);
+        self::assertEquals($object2, $data['calendardata']);
+        self::assertEquals('random-id', $data['uri']);
     }
 
     /**
@@ -254,7 +254,7 @@ SQL
         $backend->deleteCalendarObject($returnedId, 'random-id');
 
         $data = $backend->getCalendarObject($returnedId, 'random-id');
-        $this->assertNull($data);
+        self::assertNull($data);
     }
 
     public function testCalendarQueryNoResult()
@@ -276,7 +276,7 @@ SQL
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
         ], $abstract->calendarQuery(1, $filters));
     }
 
@@ -302,7 +302,7 @@ SQL
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'todo',
         ], $backend->calendarQuery(1, $filters));
     }
@@ -337,7 +337,7 @@ SQL
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
         ], $backend->calendarQuery(1, $filters));
     }
 
@@ -356,8 +356,8 @@ SQL
         ];
 
         $result = $backend->calendarQuery(1, $filters);
-        $this->assertTrue(in_array('todo', $result));
-        $this->assertTrue(in_array('event', $result));
+        self::assertTrue(in_array('todo', $result));
+        self::assertTrue(in_array('event', $result));
     }
 
     public function testCalendarQueryTimeRange()
@@ -386,7 +386,7 @@ SQL
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event2',
         ], $backend->calendarQuery(1, $filters));
     }
@@ -417,7 +417,7 @@ SQL
             'time-range' => null,
         ];
 
-        $this->assertEquals([
+        self::assertEquals([
             'event2',
         ], $backend->calendarQuery(1, $filters));
     }

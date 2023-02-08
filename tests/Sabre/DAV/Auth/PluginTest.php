@@ -13,10 +13,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
     {
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock());
-        $this->assertTrue($plugin instanceof Plugin);
+        self::assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('auth'));
-        $this->assertIsArray($plugin->getPluginInfo());
+        self::assertEquals($plugin, $fakeServer->getPlugin('auth'));
+        self::assertIsArray($plugin->getPluginInfo());
     }
 
     /**
@@ -27,7 +27,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $plugin = new Plugin(new Backend\Mock());
         $fakeServer->addPlugin($plugin);
-        $this->assertTrue(
+        self::assertTrue(
             $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()])
         );
     }
@@ -59,10 +59,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $plugin = new Plugin($backend);
         $plugin->autoRequireLogin = false;
         $fakeServer->addPlugin($plugin);
-        $this->assertTrue(
+        self::assertTrue(
             $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()])
         );
-        $this->assertEquals(1, count($plugin->getLoginFailedReasons()));
+        self::assertEquals(1, count($plugin->getLoginFailedReasons()));
     }
 
     /**
@@ -82,7 +82,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $fakeServer->addPlugin($plugin);
         $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
 
-        $this->assertEquals('principals/admin', $plugin->getCurrentPrincipal());
+        self::assertEquals('principals/admin', $plugin->getCurrentPrincipal());
     }
 
     /**
@@ -122,6 +122,6 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $plugin = new Plugin(new Backend\Mock());
         $fakeServer->addPlugin($plugin);
         $fakeServer->emit('beforeMethod:GET', [new HTTP\Request('GET', '/'), new HTTP\Response()]);
-        $this->assertEquals('principals/admin', $plugin->getCurrentPrincipal());
+        self::assertEquals('principals/admin', $plugin->getCurrentPrincipal());
     }
 }

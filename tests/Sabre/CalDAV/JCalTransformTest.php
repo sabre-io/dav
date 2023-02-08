@@ -40,13 +40,13 @@ class JCalTransformTest extends \Sabre\DAVServerTest
         $response = $this->request($request);
 
         $body = $response->getBodyAsString();
-        $this->assertEquals(200, $response->getStatus(), 'Incorrect status code: '.$body);
+        self::assertEquals(200, $response->getStatus(), 'Incorrect status code: '.$body);
 
         $response = json_decode($body, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
             $this->fail('Json decoding error: '.json_last_error_msg());
         }
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'vcalendar',
                 [],
@@ -80,12 +80,12 @@ XML;
         $response = $this->request($request);
 
         $bodyAsString = $response->getBodyAsString();
-        $this->assertEquals(207, $response->getStatus(), 'Full rsponse: '.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Full rsponse: '.$bodyAsString);
 
         $multiStatus = $this->server->xml->parse($bodyAsString);
 
         $responses = $multiStatus->getResponses();
-        $this->assertEquals(1, count($responses));
+        self::assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
 
@@ -93,7 +93,7 @@ XML;
         if (json_last_error()) {
             $this->fail('Json decoding error: '.json_last_error_msg().'. Full response: '.$response);
         }
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'vcalendar',
                 [],
@@ -131,20 +131,20 @@ XML;
         $response = $this->request($request);
 
         $bodyAsString = $response->getBodyAsString();
-        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$bodyAsString);
 
         $multiStatus = $this->server->xml->parse($bodyAsString);
 
         $responses = $multiStatus->getResponses();
 
-        $this->assertEquals(1, count($responses));
+        self::assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
         $response = json_decode($response, true);
         if (json_last_error()) {
             $this->fail('Json decoding error: '.json_last_error_msg());
         }
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'vcalendar',
                 [],
@@ -182,20 +182,20 @@ XML;
         $response = $this->request($request);
 
         $bodyAsString = $response->getBodyAsString();
-        $this->assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Invalid response code. Full body: '.$bodyAsString);
 
         $multiStatus = $this->server->xml->parse($bodyAsString);
 
         $responses = $multiStatus->getResponses();
 
-        $this->assertEquals(1, count($responses));
+        self::assertEquals(1, count($responses));
 
         $response = $responses[0]->getResponseProperties()[200]['{urn:ietf:params:xml:ns:caldav}calendar-data'];
         $response = json_decode($response, true);
         if (json_last_error()) {
             $this->fail('Json decoding error: '.json_last_error_msg());
         }
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'vcalendar',
                 [],
@@ -246,7 +246,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $input
         );

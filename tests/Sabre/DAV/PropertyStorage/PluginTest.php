@@ -24,7 +24,7 @@ class PluginTest extends \Sabre\DAVServerTest
 
     public function testGetInfo()
     {
-        $this->assertArrayHasKey(
+        self::assertArrayHasKey(
             'name',
             $this->plugin->getPluginInfo()
         );
@@ -33,7 +33,7 @@ class PluginTest extends \Sabre\DAVServerTest
     public function testSetProperty()
     {
         $this->server->updateProperties('', ['{DAV:}displayname' => 'hi']);
-        $this->assertEquals([
+        self::assertEquals([
             '' => [
                 '{DAV:}displayname' => 'hi',
             ],
@@ -48,7 +48,7 @@ class PluginTest extends \Sabre\DAVServerTest
         $this->testSetProperty();
         $result = $this->server->getProperties('', ['{DAV:}displayname']);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}displayname' => 'hi',
         ], $result);
     }
@@ -60,7 +60,7 @@ class PluginTest extends \Sabre\DAVServerTest
     {
         $this->testSetProperty();
         $this->server->emit('afterUnbind', ['']);
-        $this->assertEquals([], $this->backend->data);
+        self::assertEquals([], $this->backend->data);
     }
 
     public function testMove()
@@ -69,18 +69,18 @@ class PluginTest extends \Sabre\DAVServerTest
         $this->server->updateProperties('files/source', ['{DAV:}displayname' => 'hi']);
 
         $request = new \Sabre\HTTP\Request('MOVE', '/files/source', ['Destination' => '/files/dest']);
-        $this->assertHTTPStatus(201, $request);
+        self::assertHTTPStatus(201, $request);
 
         $result = $this->server->getProperties('/files/dest', ['{DAV:}displayname']);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}displayname' => 'hi',
         ], $result);
 
         $this->server->tree->getNodeForPath('files')->createFile('source');
         $result = $this->server->getProperties('/files/source', ['{DAV:}displayname']);
 
-        $this->assertEquals([], $result);
+        self::assertEquals([], $result);
     }
 
     /**
@@ -93,7 +93,7 @@ class PluginTest extends \Sabre\DAVServerTest
         };
 
         $this->server->updateProperties('', ['{DAV:}displayname' => 'hi']);
-        $this->assertEquals([], $this->backend->data);
+        self::assertEquals([], $this->backend->data);
     }
 
     /**
@@ -104,6 +104,6 @@ class PluginTest extends \Sabre\DAVServerTest
         $this->testSetPropertyInFilteredPath();
         $result = $this->server->getProperties('', ['{DAV:}displayname']);
 
-        $this->assertEquals([], $result);
+        self::assertEquals([], $result);
     }
 }

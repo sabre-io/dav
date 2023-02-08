@@ -18,7 +18,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
         $vcal = VObject\Reader::read($vcal);
-        $this->assertFalse($validator->validate($vcal, ['name' => 'VFOO']));
+        self::assertFalse($validator->validate($vcal, ['name' => 'VFOO']));
     }
 
     /**
@@ -45,10 +45,10 @@ ICS;
 
         switch ($outcome) {
             case 0:
-                $this->assertFalse($validator->validate($vObject, $filters));
+                self::assertFalse($validator->validate($vObject, $filters));
                 break;
             case 1:
-                $this->assertTrue($validator->validate($vObject, $filters));
+                self::assertTrue($validator->validate($vObject, $filters));
                 break;
             case -1:
                 try {
@@ -57,10 +57,10 @@ ICS;
                 } catch (\Exception $e) {
                     // We need to test something to be valid for phpunit strict
                     // mode.
-                    $this->assertTrue(true);
+                    self::assertTrue(true);
                 } catch (\Throwable $e) {
                     // PHP7
-                    $this->assertTrue(true);
+                    self::assertTrue(true);
                 }
                 break;
         }

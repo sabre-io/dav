@@ -14,7 +14,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit\Framework\TestCase
         $prop = new SupportedPrivilegeSet([
             'privilege' => '{DAV:}all',
         ]);
-        $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\SupportedPrivilegeSet', $prop);
+        self::assertInstanceOf('Sabre\DAVACL\Xml\Property\SupportedPrivilegeSet', $prop);
     }
 
     /**
@@ -26,7 +26,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit\Framework\TestCase
 
         $xml = (new DAV\Server())->xml->write('{DAV:}supported-privilege-set', $prop);
 
-        $this->assertXmlStringEqualsXmlString('
+        self::assertXmlStringEqualsXmlString('
 <d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
   <d:supported-privilege>
     <d:privilege>
@@ -50,7 +50,7 @@ class SupportedPrivilegeSetTest extends \PHPUnit\Framework\TestCase
 
         $xml = (new DAV\Server())->xml->write('{DAV:}supported-privilege-set', $prop);
 
-        $this->assertXmlStringEqualsXmlString('
+        self::assertXmlStringEqualsXmlString('
 <d:supported-privilege-set xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
  <d:supported-privilege>
   <d:privilege>
@@ -94,6 +94,6 @@ class SupportedPrivilegeSetTest extends \PHPUnit\Framework\TestCase
 
 HTML;
 
-        $this->assertEquals($expected, $prop->toHtml($html));
+        self::assertEquals($expected, $prop->toHtml($html));
     }
 }

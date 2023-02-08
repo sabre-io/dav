@@ -36,7 +36,7 @@ class CardTest extends \PHPUnit\Framework\TestCase
     public function testGet()
     {
         $result = $this->card->get();
-        $this->assertEquals('card', $result);
+        self::assertEquals('card', $result);
     }
 
     public function testGet2()
@@ -54,7 +54,7 @@ class CardTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $result = $this->card->get();
-        $this->assertEquals("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD", $result);
+        self::assertEquals("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD", $result);
     }
 
     /**
@@ -67,23 +67,23 @@ class CardTest extends \PHPUnit\Framework\TestCase
         rewind($file);
         $this->card->put($file);
         $result = $this->card->get();
-        $this->assertEquals('newdata', $result);
+        self::assertEquals('newdata', $result);
     }
 
     public function testDelete()
     {
         $this->card->delete();
-        $this->assertEquals(1, count($this->backend->cards['foo']));
+        self::assertEquals(1, count($this->backend->cards['foo']));
     }
 
     public function testGetContentType()
     {
-        $this->assertEquals('text/vcard; charset=utf-8', $this->card->getContentType());
+        self::assertEquals('text/vcard; charset=utf-8', $this->card->getContentType());
     }
 
     public function testGetETag()
     {
-        $this->assertEquals('"'.md5('card').'"', $this->card->getETag());
+        self::assertEquals('"'.md5('card').'"', $this->card->getETag());
     }
 
     public function testGetETag2()
@@ -102,18 +102,18 @@ class CardTest extends \PHPUnit\Framework\TestCase
                 'etag' => '"blabla"',
             ]
         );
-        $this->assertEquals('"blabla"', $card->getETag());
+        self::assertEquals('"blabla"', $card->getETag());
     }
 
     public function testGetLastModified()
     {
-        $this->assertEquals(null, $this->card->getLastModified());
+        self::assertEquals(null, $this->card->getLastModified());
     }
 
     public function testGetSize()
     {
-        $this->assertEquals(4, $this->card->getSize());
-        $this->assertEquals(4, $this->card->getSize());
+        self::assertEquals(4, $this->card->getSize());
+        self::assertEquals(4, $this->card->getSize());
     }
 
     public function testGetSize2()
@@ -132,14 +132,14 @@ class CardTest extends \PHPUnit\Framework\TestCase
                 'size' => 4,
             ]
         );
-        $this->assertEquals(4, $card->getSize());
+        self::assertEquals(4, $card->getSize());
     }
 
     public function testACLMethods()
     {
-        $this->assertEquals('principals/user1', $this->card->getOwner());
-        $this->assertNull($this->card->getGroup());
-        $this->assertEquals([
+        self::assertEquals('principals/user1', $this->card->getOwner());
+        self::assertNull($this->card->getGroup());
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}all',
                 'principal' => 'principals/user1',
@@ -170,7 +170,7 @@ class CardTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}read',
                 'principal' => 'principals/user1',
@@ -187,7 +187,7 @@ class CardTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegeSet()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->card->getSupportedPrivilegeSet()
         );
     }

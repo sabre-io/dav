@@ -38,7 +38,7 @@ abstract class XmlTest extends \PHPUnit\Framework\TestCase
     public function assertParsedValue($expected, $xml, array $elementMap = [])
     {
         $result = $this->parse($xml, $elementMap);
-        $this->assertEquals($expected, $result['value']);
+        self::assertEquals($expected, $result['value']);
     }
 
     public function cleanUp()

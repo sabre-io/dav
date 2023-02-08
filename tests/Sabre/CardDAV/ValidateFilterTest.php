@@ -17,9 +17,9 @@ class ValidateFilterTest extends AbstractPluginTest
     public function testFilter($input, $filters, $test, $result, $message = '')
     {
         if ($result) {
-            $this->assertTrue($this->plugin->validateFilters($input, $filters, $test), $message);
+            self::assertTrue($this->plugin->validateFilters($input, $filters, $test), $message);
         } else {
-            $this->assertFalse($this->plugin->validateFilters($input, $filters, $test), $message);
+            self::assertFalse($this->plugin->validateFilters($input, $filters, $test), $message);
         }
     }
 

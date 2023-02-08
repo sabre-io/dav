@@ -32,8 +32,8 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $server->sapi = new HTTP\SapiMock();
         $server->exec();
 
-        $this->assertEquals(201, $server->httpResponse->getStatus(), 'Full response body:'.$response1->getBodyAsString());
-        $this->assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
+        self::assertEquals(201, $server->httpResponse->getStatus(), 'Full response body:'.$response1->getBodyAsString());
+        self::assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
         $lockToken = $server->httpResponse->getHeader('Lock-Token');
 
         //sleep(10);
@@ -44,8 +44,8 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $server->httpResponse = $response2;
         $server->exec();
 
-        $this->assertEquals(201, $server->httpResponse->status);
-        $this->assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
+        self::assertEquals(201, $server->httpResponse->status);
+        self::assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
 
         //sleep(10);
 
@@ -54,7 +54,7 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $server->httpResponse = $response3;
         $server->exec();
 
-        $this->assertEquals(204, $server->httpResponse->status);
+        self::assertEquals(204, $server->httpResponse->status);
     }
 
     public function getLockRequest()

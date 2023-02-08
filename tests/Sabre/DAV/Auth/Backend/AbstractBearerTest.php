@@ -15,7 +15,7 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase
 
         $backend = new AbstractBearerMock();
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -29,7 +29,7 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase
 
         $backend = new AbstractBearerMock();
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -42,7 +42,7 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractBearerMock();
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/username'],
             $backend->check($request, $response)
         );
@@ -57,7 +57,7 @@ class AbstractBearerTest extends \PHPUnit\Framework\TestCase
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertEquals(
+        self::assertEquals(
             'Bearer realm="writing unittests on a saturday night"',
             $response->getHeader('WWW-Authenticate')
         );

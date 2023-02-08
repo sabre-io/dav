@@ -14,7 +14,7 @@ class DirectoryTest extends \PHPUnit\Framework\TestCase
     public function testCreate()
     {
         $dir = $this->create();
-        $this->assertEquals(basename(SABRE_TEMPDIR), $dir->getName());
+        self::assertEquals(basename(SABRE_TEMPDIR), $dir->getName());
     }
 
     public function testChildExistDot()

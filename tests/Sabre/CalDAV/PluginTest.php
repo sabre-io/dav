@@ -103,9 +103,9 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
     public function testSimple()
     {
-        $this->assertEquals(['MKCALENDAR'], $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
-        $this->assertEquals(['calendar-access', 'calendar-proxy'], $this->plugin->getFeatures());
-        $this->assertEquals(
+        self::assertEquals(['MKCALENDAR'], $this->plugin->getHTTPMethods('calendars/user1/randomnewcalendar'));
+        self::assertEquals(['calendar-access', 'calendar-proxy'], $this->plugin->getFeatures());
+        self::assertEquals(
             'caldav',
             $this->plugin->getPluginInfo()['name']
         );
@@ -118,14 +118,14 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:'.$this->response->getBodyAsString());
+        self::assertEquals(501, $this->response->status, 'Incorrect status returned. Full response body:'.$this->response->getBodyAsString());
     }
 
     public function testGetWithoutContentType()
     {
         $request = new HTTP\Request('GET', '/');
         $this->plugin->httpAfterGet($request, $this->response);
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     public function testReportPassThrough()
@@ -136,7 +136,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(415, $this->response->status);
+        self::assertEquals(415, $this->response->status);
     }
 
     public function testMkCalendarBadLocation()
@@ -185,7 +185,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(403, $this->response->status);
+        self::assertEquals(403, $this->response->status);
     }
 
     public function testMkCalendarNoParentNode()
@@ -234,7 +234,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(409, $this->response->status);
+        self::assertEquals(409, $this->response->status);
     }
 
     public function testMkCalendarExistingCalendar()
@@ -286,7 +286,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(405, $this->response->status);
+        self::assertEquals(405, $this->response->status);
     }
 
     public function testMkCalendarSucceed()
@@ -336,10 +336,10 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(3, count($calendars));
+        self::assertEquals(3, count($calendars));
 
         $newCalendar = null;
         foreach ($calendars as $calendar) {
@@ -349,7 +349,7 @@ END:VCALENDAR';
             }
         }
 
-        $this->assertIsArray($newCalendar);
+        self::assertIsArray($newCalendar);
 
         $keys = [
             'uri' => 'NEWCALENDAR',
@@ -361,16 +361,16 @@ END:VCALENDAR';
         ];
 
         foreach ($keys as $key => $value) {
-            $this->assertArrayHasKey($key, $newCalendar);
+            self::assertArrayHasKey($key, $newCalendar);
 
             if (is_null($value)) {
                 continue;
             }
-            $this->assertEquals($value, $newCalendar[$key]);
+            self::assertEquals($value, $newCalendar[$key]);
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
-        $this->assertEquals(['VEVENT'], $newCalendar[$sccs]->getValue());
+        self::assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
+        self::assertEquals(['VEVENT'], $newCalendar[$sccs]->getValue());
     }
 
     public function testMkCalendarEmptyBodySucceed()
@@ -381,10 +381,10 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(201, $this->response->status, 'Invalid response code received. Full response body: '.$this->response->getBodyAsString());
 
         $calendars = $this->caldavBackend->getCalendarsForUser('principals/user1');
-        $this->assertEquals(3, count($calendars));
+        self::assertEquals(3, count($calendars));
 
         $newCalendar = null;
         foreach ($calendars as $calendar) {
@@ -394,7 +394,7 @@ END:VCALENDAR';
             }
         }
 
-        $this->assertIsArray($newCalendar);
+        self::assertIsArray($newCalendar);
 
         $keys = [
             'uri' => 'NEWCALENDAR',
@@ -403,16 +403,16 @@ END:VCALENDAR';
         ];
 
         foreach ($keys as $key => $value) {
-            $this->assertArrayHasKey($key, $newCalendar);
+            self::assertArrayHasKey($key, $newCalendar);
 
             if (is_null($value)) {
                 continue;
             }
-            $this->assertEquals($value, $newCalendar[$key]);
+            self::assertEquals($value, $newCalendar[$key]);
         }
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
-        $this->assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
-        $this->assertEquals(['VEVENT', 'VTODO'], $newCalendar[$sccs]->getValue());
+        self::assertTrue($newCalendar[$sccs] instanceof Xml\Property\SupportedCalendarComponentSet);
+        self::assertEquals(['VEVENT', 'VTODO'], $newCalendar[$sccs]->getValue());
     }
 
     public function testMkCalendarBadXml()
@@ -424,7 +424,7 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status);
+        self::assertEquals(400, $this->response->status);
     }
 
     public function testPrincipalProperties()
@@ -440,28 +440,28 @@ END:VCALENDAR';
             '{'.Plugin::NS_CALENDARSERVER.'}email-address-set',
         ]);
 
-        $this->assertArrayHasKey(0, $props);
-        $this->assertArrayHasKey(200, $props[0]);
+        self::assertArrayHasKey(0, $props);
+        self::assertArrayHasKey(200, $props[0]);
 
-        $this->assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set', $props[0][200]);
+        self::assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set', $props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
-        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals('calendars/user1/', $prop->getHref());
+        self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
+        self::assertEquals('calendars/user1/', $prop->getHref());
 
-        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
+        self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
-        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(['principals/admin/'], $prop->getHrefs());
+        self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
+        self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
-        $this->assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
+        self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
-        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
-        $this->assertEquals(['principals/admin/'], $prop->getHrefs());
+        self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $prop);
+        self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
-        $this->assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}email-address-set', $props[0][200]);
+        self::assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}email-address-set', $props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER.'}email-address-set'];
-        $this->assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\EmailAddressSet', $prop);
-        $this->assertEquals(['user1.sabredav@sabredav.org'], $prop->getValue());
+        self::assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\EmailAddressSet', $prop);
+        self::assertEquals(['user1.sabredav@sabredav.org'], $prop->getValue());
     }
 
     public function testSupportedReportSetPropertyNonCalendar()
@@ -470,20 +470,20 @@ END:VCALENDAR';
             '{DAV:}supported-report-set',
         ]);
 
-        $this->assertArrayHasKey(0, $props);
-        $this->assertArrayHasKey(200, $props[0]);
-        $this->assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
+        self::assertArrayHasKey(0, $props);
+        self::assertArrayHasKey(200, $props[0]);
+        self::assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
+        self::assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = [
             '{DAV:}expand-property',
             '{DAV:}principal-match',
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set',
         ];
-        $this->assertEquals($value, $prop->getValue());
+        self::assertEquals($value, $prop->getValue());
     }
 
     /**
@@ -495,13 +495,13 @@ END:VCALENDAR';
             '{DAV:}supported-report-set',
         ]);
 
-        $this->assertArrayHasKey(0, $props);
-        $this->assertArrayHasKey(200, $props[0]);
-        $this->assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
+        self::assertArrayHasKey(0, $props);
+        self::assertArrayHasKey(200, $props[0]);
+        self::assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
+        self::assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = [
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
@@ -511,7 +511,7 @@ END:VCALENDAR';
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set',
         ];
-        $this->assertEquals($value, $prop->getValue());
+        self::assertEquals($value, $prop->getValue());
     }
 
     public function testSupportedReportSetUserCalendars()
@@ -522,13 +522,13 @@ END:VCALENDAR';
             '{DAV:}supported-report-set',
         ]);
 
-        $this->assertArrayHasKey(0, $props);
-        $this->assertArrayHasKey(200, $props[0]);
-        $this->assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
+        self::assertArrayHasKey(0, $props);
+        self::assertArrayHasKey(200, $props[0]);
+        self::assertArrayHasKey('{DAV:}supported-report-set', $props[0][200]);
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        $this->assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
+        self::assertInstanceOf('\\Sabre\\DAV\\Xml\\Property\\SupportedReportSet', $prop);
         $value = [
             '{DAV:}sync-collection',
             '{DAV:}expand-property',
@@ -536,7 +536,7 @@ END:VCALENDAR';
             '{DAV:}principal-property-search',
             '{DAV:}principal-search-property-set',
         ];
-        $this->assertEquals($value, $prop->getValue());
+        self::assertEquals($value, $prop->getValue());
     }
 
     /**
@@ -560,7 +560,7 @@ END:VCALENDAR';
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body');
+        self::assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body');
 
         $expectedIcal = TestUtil::getTestCalendarData();
 
@@ -580,7 +580,7 @@ END:VCALENDAR';
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
+        self::assertXmlStringEqualsXmlString($expected, $this->response->getBodyAsString());
     }
 
     /**
@@ -607,7 +607,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Invalid HTTP status received. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -633,7 +633,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     /**
@@ -665,7 +665,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -691,7 +691,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     /**
@@ -727,7 +727,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -753,7 +753,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     /**
@@ -786,7 +786,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -816,7 +816,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -833,7 +833,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     /**
@@ -856,7 +856,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Received an unexpected status. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -888,7 +888,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
@@ -914,7 +914,7 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     /**
@@ -943,7 +943,7 @@ XML;
         $this->server->exec();
 
         $bodyAsString = $this->server->httpResponse->getBodyAsString();
-        $this->assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->status, 'Received an unexpected status. Full response body: '.$bodyAsString);
 
         $expected = <<<XML
 <?xml version="1.0"?>
@@ -960,16 +960,16 @@ XML;
 </d:multistatus>
 XML;
 
-        $this->assertXmlStringEqualsXmlString($expected, $bodyAsString);
+        self::assertXmlStringEqualsXmlString($expected, $bodyAsString);
     }
 
     public function testHTMLActionsPanel()
     {
         $output = '';
         $r = $this->server->emit('onHTMLActionsPanel', [$this->server->tree->getNodeForPath('calendars/user1'), &$output]);
-        $this->assertFalse($r);
+        self::assertFalse($r);
 
-        $this->assertTrue((bool) strpos($output, 'Display name'));
+        self::assertTrue((bool) strpos($output, 'Display name'));
     }
 
     /**
@@ -995,7 +995,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -1021,7 +1021,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -1047,7 +1047,7 @@ XML;
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(400, $this->response->status, 'Invalid HTTP status received. Full response body: '.$this->response->getBodyAsString());
     }
 
     /**
@@ -1062,7 +1062,7 @@ XML;
             $ns.'supported-collation-set',
         ]);
 
-        $this->assertEquals([
+        self::assertEquals([
             $ns.'max-resource-size' => 10000000,
             $ns.'supported-calendar-data' => new Xml\Property\SupportedCalendarData(),
             $ns.'supported-collation-set' => new Xml\Property\SupportedCollationSet(),

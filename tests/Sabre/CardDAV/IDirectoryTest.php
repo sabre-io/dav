@@ -19,7 +19,7 @@ class IDirectoryTest extends \PHPUnit\Framework\TestCase
         $server->addPlugin($plugin);
 
         $props = $server->getProperties('directory', ['{DAV:}resourcetype']);
-        $this->assertTrue($props['{DAV:}resourcetype']->is('{'.Plugin::NS_CARDDAV.'}directory'));
+        self::assertTrue($props['{DAV:}resourcetype']->is('{'.Plugin::NS_CARDDAV.'}directory'));
     }
 }
 

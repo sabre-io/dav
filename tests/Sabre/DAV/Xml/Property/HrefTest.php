@@ -12,19 +12,19 @@ class HrefTest extends XmlTest
     public function testConstruct()
     {
         $href = new Href('path');
-        $this->assertEquals('path', $href->getHref());
+        self::assertEquals('path', $href->getHref());
     }
 
     public function testSerialize()
     {
         $href = new Href('path');
-        $this->assertEquals('path', $href->getHref());
+        self::assertEquals('path', $href->getHref());
 
         $this->contextUri = '/bla/';
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ', $xml);
@@ -40,9 +40,9 @@ class HrefTest extends XmlTest
 
         $href = $result['value'];
 
-        $this->assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $href);
+        self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $href);
 
-        $this->assertEquals('/bla/path', $href->getHref());
+        self::assertEquals('/bla/path', $href->getHref());
     }
 
     public function testUnserializeIncompatible()
@@ -52,7 +52,7 @@ class HrefTest extends XmlTest
 ';
         $result = $this->parse($xml, ['{DAV:}anything' => 'Sabre\\DAV\\Xml\\Property\\Href']);
         $href = $result['value'];
-        $this->assertNull($href);
+        self::assertNull($href);
     }
 
     public function testUnserializeEmpty()
@@ -62,7 +62,7 @@ class HrefTest extends XmlTest
 ';
         $result = $this->parse($xml, ['{DAV:}anything' => 'Sabre\\DAV\\Xml\\Property\\Href']);
         $href = $result['value'];
-        $this->assertNull($href);
+        self::assertNull($href);
     }
 
     /**
@@ -71,11 +71,11 @@ class HrefTest extends XmlTest
     public function testSerializeEntity()
     {
         $href = new Href('http://example.org/?a&b');
-        $this->assertEquals('http://example.org/?a&b', $href->getHref());
+        self::assertEquals('http://example.org/?a&b', $href->getHref());
 
         $xml = $this->write(['{DAV:}anything' => $href]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>http://example.org/?a&amp;b</d:href></d:anything>
 ', $xml);
@@ -98,6 +98,6 @@ class HrefTest extends XmlTest
             '<a href="/foo/bar">/foo/bar</a><br />'.
             '<a href="/base/foo/bar">/base/foo/bar</a><br />'.
             '<a href="http://example.org/bar">http://example.org/bar</a>';
-        $this->assertEquals($expected, $href->toHtml($html));
+        self::assertEquals($expected, $href->toHtml($html));
     }
 }

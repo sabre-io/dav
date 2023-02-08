@@ -62,12 +62,12 @@ ICS;
     public function testSetup()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
-        $this->assertIsString($children[0]->getName());
-        $this->assertIsString($children[0]->get());
-        $this->assertIsString($children[0]->getETag());
-        $this->assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
+        self::assertIsString($children[0]->getName());
+        self::assertIsString($children[0]->get());
+        self::assertIsString($children[0]->getETag());
+        self::assertEquals('text/calendar; charset=utf-8', $children[0]->getContentType());
     }
 
     public function testInvalidArg1()
@@ -95,7 +95,7 @@ ICS;
     {
         $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $children[0]->put('');
     }
@@ -106,13 +106,13 @@ ICS;
     public function testDelete()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
         $obj->delete();
 
         $children2 = $this->inbox->getChildren();
-        $this->assertEquals(count($children) - 1, count($children2));
+        self::assertEquals(count($children) - 1, count($children2));
     }
 
     /**
@@ -121,12 +121,12 @@ ICS;
     public function testGetLastModified()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        $this->assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
+        self::assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
     }
 
     /**
@@ -135,30 +135,30 @@ ICS;
     public function testGetSize()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
 
         $size = $obj->getSize();
-        $this->assertIsInt($size);
+        self::assertIsInt($size);
     }
 
     public function testGetOwner()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
-        $this->assertEquals('principals/user1', $obj->getOwner());
+        self::assertEquals('principals/user1', $obj->getOwner());
     }
 
     public function testGetGroup()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
-        $this->assertNull($obj->getGroup());
+        self::assertNull($obj->getGroup());
     }
 
     public function testGetACL()
@@ -182,10 +182,10 @@ ICS;
         ];
 
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
-        $this->assertEquals($expected, $obj->getACL());
+        self::assertEquals($expected, $obj->getACL());
     }
 
     public function testDefaultACL()
@@ -209,14 +209,14 @@ ICS;
                 'protected' => true,
             ],
         ];
-        $this->assertEquals($expected, $calendarObject->getACL());
+        self::assertEquals($expected, $calendarObject->getACL());
     }
 
     public function testSetACL()
     {
         $this->expectException('Sabre\DAV\Exception\Forbidden');
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
         $obj->setACL([]);
@@ -225,11 +225,11 @@ ICS;
     public function testGet()
     {
         $children = $this->inbox->getChildren();
-        $this->assertTrue($children[0] instanceof SchedulingObject);
+        self::assertTrue($children[0] instanceof SchedulingObject);
 
         $obj = $children[0];
 
-        $this->assertEquals($this->data, $obj->get());
+        self::assertEquals($this->data, $obj->get());
     }
 
     public function testGetRefetch()
@@ -243,7 +243,7 @@ ICS;
             'principaluri' => 'principals/user1',
         ]);
 
-        $this->assertEquals('foo', $obj->get());
+        self::assertEquals('foo', $obj->get());
     }
 
     public function testGetEtag1()
@@ -258,7 +258,7 @@ ICS;
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
 
-        $this->assertEquals('bar', $obj->getETag());
+        self::assertEquals('bar', $obj->getETag());
     }
 
     public function testGetEtag2()
@@ -272,7 +272,7 @@ ICS;
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
 
-        $this->assertEquals('"'.md5('foo').'"', $obj->getETag());
+        self::assertEquals('"'.md5('foo').'"', $obj->getETag());
     }
 
     public function testGetSupportedPrivilegesSet()
@@ -285,7 +285,7 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertNull($obj->getSupportedPrivilegeSet());
+        self::assertNull($obj->getSupportedPrivilegeSet());
     }
 
     public function testGetSize1()
@@ -298,7 +298,7 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertEquals(3, $obj->getSize());
+        self::assertEquals(3, $obj->getSize());
     }
 
     public function testGetSize2()
@@ -311,7 +311,7 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertEquals(4, $obj->getSize());
+        self::assertEquals(4, $obj->getSize());
     }
 
     public function testGetContentType()
@@ -323,7 +323,7 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertEquals('text/calendar; charset=utf-8', $obj->getContentType());
+        self::assertEquals('text/calendar; charset=utf-8', $obj->getContentType());
     }
 
     public function testGetContentType2()
@@ -336,7 +336,7 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertEquals('text/calendar; charset=utf-8; component=VEVENT', $obj->getContentType());
+        self::assertEquals('text/calendar; charset=utf-8; component=VEVENT', $obj->getContentType());
     }
 
     public function testGetACL2()
@@ -349,6 +349,6 @@ ICS;
 
         $backend = new Backend\MockScheduling([], []);
         $obj = new SchedulingObject($backend, $objectInfo);
-        $this->assertEquals([], $obj->getACL());
+        self::assertEquals([], $obj->getACL());
     }
 }

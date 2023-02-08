@@ -16,7 +16,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $file = new File();
-        $this->assertTrue($file instanceof File);
+        self::assertTrue($file instanceof File);
     }
 
     public function testLoadFileBroken()
@@ -32,7 +32,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $file = new File();
         $file->loadFile(SABRE_TEMPDIR.'/backend');
 
-        $this->assertFalse($file->getDigestHash('realm', 'blabla'));
-        $this->assertEquals(md5('user:realm:password'), $file->getDigestHash('realm', 'user'));
+        self::assertFalse($file->getDigestHash('realm', 'blabla'));
+        self::assertEquals(md5('user:realm:password'), $file->getDigestHash('realm', 'user'));
     }
 }

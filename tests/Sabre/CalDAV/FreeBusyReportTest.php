@@ -101,11 +101,11 @@ XML;
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
         $this->plugin->report($rootElem, $report, null);
 
-        $this->assertEquals(200, $this->server->httpResponse->status);
-        $this->assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
-        $this->assertTrue(false !== strpos($this->server->httpResponse->body, 'BEGIN:VFREEBUSY'));
-        $this->assertTrue(false !== strpos($this->server->httpResponse->body, '20111005T120000Z/20111005T130000Z'));
-        $this->assertTrue(false !== strpos($this->server->httpResponse->body, '20111006T100000Z/20111006T110000Z'));
+        self::assertEquals(200, $this->server->httpResponse->status);
+        self::assertEquals('text/calendar', $this->server->httpResponse->getHeader('Content-Type'));
+        self::assertTrue(false !== strpos($this->server->httpResponse->body, 'BEGIN:VFREEBUSY'));
+        self::assertTrue(false !== strpos($this->server->httpResponse->body, '20111005T120000Z/20111005T130000Z'));
+        self::assertTrue(false !== strpos($this->server->httpResponse->body, '20111006T100000Z/20111006T110000Z'));
     }
 
     public function testFreeBusyReportNoTimeRange()

@@ -111,6 +111,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
                     'hiberfil.sys',
                     'pagefile.sys',
                     'swapfile.sys',
+                    'PerfLogs',
+                    'System Volume Information',
                 ], true)) {
                     continue;
                 }

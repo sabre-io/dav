@@ -100,8 +100,22 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
             \FilesystemIterator::CURRENT_AS_SELF
           | \FilesystemIterator::SKIP_DOTS
         );
+        $isWindows = (PHP_OS === 'WINNT');
         foreach ($iterator as $entry) {
-
+            if ($isWindows) {
+                // Hack to allow mounting C:\ on Windows 10
+                // These files exist, but fails file_exists() for some reason, which causes
+                // an exception in $this->getChild().
+                $pathname = $entry->getPathname();
+                if (in_array($pathname, [
+                    'C:\\DumpStack.log.tmp',
+                    'C:\\hiberfil.sys',
+                    'C:\\pagefile.sys',
+                    'C:\\swapfile.sys',
+                ], true)) {
+                    continue;
+                }
+            }            
             $nodes[] = $this->getChild($entry->getFilename());
 
         }

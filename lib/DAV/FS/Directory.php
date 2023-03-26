@@ -106,8 +106,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
                 // Hack to allow mounting C:\ on Windows 10
                 // These files exist, but fails file_exists() for some reason, which causes
                 // an exception in $this->getChild().
-                $pathname = $entry->getPathname();
-                if (in_array($pathname, [
+                if (in_array($entry->getPathname(), [
                     'C:\\DumpStack.log.tmp',
                     'C:\\hiberfil.sys',
                     'C:\\pagefile.sys',

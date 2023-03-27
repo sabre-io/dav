@@ -73,7 +73,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
 
         $path = $this->path . '/' . $name;
 
-        if (!file_exists($path)) throw new DAV\Exception\NotFound('File with name ' . $path . ' could not be located');
+        if (!$this->real_file_exists($path)) throw new DAV\Exception\NotFound('File with name ' . $path . ' could not be located');
 
         if (is_dir($path)) {
 
@@ -118,7 +118,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
     function childExists($name) {
 
         $path = $this->path . '/' . $name;
-        return file_exists($path);
+        return $this->real_file_exists($path);
 
     }
 
@@ -146,6 +146,36 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota {
             disk_free_space($absolute)
         ];
 
+    }
+    
+     /**
+     * Checks whether a file or directory exists
+     * php's native file_exists() has a quirk where it returns false for
+     * files that "exists but is not accessible".
+     * one example is C:\pagefile.sys
+     * 
+     * @param string $path
+     * @return bool
+     */
+    private static function real_file_exists($path)
+    {
+        if (file_exists($path)) {
+            return true;
+        }
+        $dir = dirname($path);
+        $basename = basename($path);
+        $res = opendir($dir);
+        if (!$res) {
+            return false;
+        }
+        while (($file = readdir($res)) !== false) {
+            if ($file === $basename) {
+                closedir($res);
+                return true;
+            }
+        }
+        closedir($res);
+        return false;
     }
 
 }

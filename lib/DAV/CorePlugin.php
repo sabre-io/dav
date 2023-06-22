@@ -117,7 +117,7 @@ class CorePlugin extends ServerPlugin
 
         $response->addHeaders($httpHeaders);
 
-        // this function now only checks, if the range string correctly formatted
+        // this function now only checks, if the range string is correctly formatted
         // and returns it (or null if it isn't or it doesn't exist)
         // processing of the ranges will then be done further below
         $rangeString = $this->server->getHTTPRange();
@@ -199,7 +199,7 @@ class CorePlugin extends ServerPlugin
                     }
                 }
 
-                // if there is only one range, write it into the reponse body
+                // if there is only one range, write it into the response body
                 // otherwise, write multipart header info first before writing the data
                 if (1 === count($ranges)) {
                     $rangeLength = $end - $start + 1;

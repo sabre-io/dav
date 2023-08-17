@@ -41,6 +41,16 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         self::assertEquals(CURLAUTH_BASIC | CURLAUTH_DIGEST, $client->curlSettings[CURLOPT_HTTPAUTH]);
     }
 
+    public function testBearerTokenAuthorization()
+    {
+        $client = new ClientMock([
+            'baseUri' => '/',
+            'accessToken' => 'myBearerToken',
+        ]);
+
+        self::assertEquals(['Authorization: Bearer myBearerToken'], $client->curlSettings[CURLOPT_HTTPHEADER]);
+    }
+
     public function testBasicAuth()
     {
         $client = new ClientMock([

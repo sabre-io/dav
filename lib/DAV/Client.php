@@ -102,6 +102,7 @@ class Client extends HTTP\Client
      *   * baseUri
      *   * userName (optional)
      *   * password (optional)
+     *   * accessToken (optional)
      *   * proxy (optional)
      *   * authType (optional)
      *   * encoding (optional)
@@ -110,6 +111,8 @@ class Client extends HTTP\Client
      *  and self::AUTH_NTLM. If you know which authentication method will be
      *  used, it's recommended to set it, as it will save a great deal of
      *  requests to 'discover' this information.
+     *
+     *  supports bearer token authorization if an access token is provided
      *
      *  Encoding is a bitmap with one of the ENCODING constants.
      */
@@ -123,12 +126,8 @@ class Client extends HTTP\Client
 
         $this->baseUri = $settings['baseUri'];
 
-        if (isset($settings['accessToken'])){
-            $token = $settings['accessToken'];
-            $header = array(
-                "Authorization: Bearer $token"
-            );
-            $this->addCurlSetting(CURLOPT_HTTPHEADER, $header);
+        if (isset($settings['accessToken'])) {
+            $this->addCurlSetting(CURLOPT_HTTPHEADER, ["Authorization: Bearer {$settings['accessToken']}"]);
         }
 
         if (isset($settings['proxy'])) {

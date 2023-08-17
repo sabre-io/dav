@@ -123,6 +123,14 @@ class Client extends HTTP\Client
 
         $this->baseUri = $settings['baseUri'];
 
+        if (isset($settings['accessToken'])){
+            $token = $settings['accessToken'];
+            $header = array(
+                "Authorization: Bearer $token"
+            );
+            $this->addCurlSetting(CURLOPT_HTTPHEADER, $header);
+        }
+
         if (isset($settings['proxy'])) {
             $this->addCurlSetting(CURLOPT_PROXY, $settings['proxy']);
         }

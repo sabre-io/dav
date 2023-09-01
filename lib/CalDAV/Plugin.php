@@ -467,7 +467,8 @@ class Plugin extends DAV\ServerPlugin
                 }
                 // Destroy circular references so PHP will garbage collect the
                 // object.
-                $vObject->destroy();
+                if (method_exists($vObject,'destroy'))
+ 	               $vObject->destroy();
             }
 
             $propertyList[] = $objProps;
@@ -515,7 +516,8 @@ class Plugin extends DAV\ServerPlugin
 
                 // Destroy circular references so PHP will garbage collect the
                 // object.
-                $vtimezoneObj->destroy();
+                if (method_exists($vtimezoneObj,'destroy'))
+                	$vtimezoneObj->destroy();
             } else {
                 // Defaulting to UTC.
                 $calendarTimeZone = new DateTimeZone('UTC');
@@ -573,7 +575,8 @@ class Plugin extends DAV\ServerPlugin
                 }
                 // Destroy circular references so PHP will garbage collect the
                 // object.
-                $vObject->destroy();
+                if (method_exists($vObject,'destroy'))
+                	$vObject->destroy();
             }
         }
 
@@ -616,7 +619,8 @@ class Plugin extends DAV\ServerPlugin
 
                     // Destroy circular references so PHP will garbage collect the
                     // object.
-                    $vObject->destroy();
+                    if (method_exists($vObject, 'destroy'))
+	                    $vObject->destroy();
                 }
                 $result[] = $properties;
             }
@@ -658,7 +662,8 @@ class Plugin extends DAV\ServerPlugin
             $vtimezoneObj = VObject\Reader::read($calendarProps[$tzProp]);
             $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
             // Destroy circular references so PHP will garbage collect the object.
-            $vtimezoneObj->destroy();
+            if (method_exists($vtimezoneObj,'destroy'))
+            	$vtimezoneObj->destroy();
         } else {
             $calendarTimeZone = new DateTimeZone('UTC');
         }
@@ -909,7 +914,8 @@ class Plugin extends DAV\ServerPlugin
         }
 
         // Destroy circular references so PHP will garbage collect the object.
-        $vobj->destroy();
+        if (method_exists($vobj,'destroy'))
+        	$vobj->destroy();
     }
 
     /**
@@ -983,7 +989,8 @@ class Plugin extends DAV\ServerPlugin
         $response->setBody($jsonBody);
 
         // Destroy circular references so PHP will garbage collect the object.
-        $vobj->destroy();
+        if (method_exists($vobj,'destroy'))
+        	$vobj->destroy();
 
         $response->setHeader('Content-Type', 'application/calendar+json');
         $response->setHeader('Content-Length', strlen($jsonBody));

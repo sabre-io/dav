@@ -384,7 +384,8 @@ class Plugin extends DAV\ServerPlugin
         }
 
         // Destroy circular references to PHP will GC the object.
-        $vobj->destroy();
+        if (method_exists($vobj,'destroy'))
+        	$vobj->destroy();
     }
 
     /**
@@ -527,20 +528,23 @@ class Plugin extends DAV\ServerPlugin
             // or not this filter succeeds.
             if ('anyof' === $test && $success) {
                 // Destroy circular references to PHP will GC the object.
-                $vcard->destroy();
+		        if (method_exists($vcard,'destroy'))
+        	    	$vcard->destroy();
 
                 return true;
             }
             if ('allof' === $test && !$success) {
                 // Destroy circular references to PHP will GC the object.
-                $vcard->destroy();
+		        if (method_exists($vcard,'destroy'))
+            		$vcard->destroy();
 
                 return false;
             }
         } // foreach
 
         // Destroy circular references to PHP will GC the object.
-        $vcard->destroy();
+		if (method_exists($vcard,'destroy'))
+        	$vcard->destroy();
 
         // If we got all the way here, it means we haven't been able to
         // determine early if the test failed or not.
@@ -844,8 +848,9 @@ class Plugin extends DAV\ServerPlugin
             }
         } finally {
             // Destroy circular references to PHP will GC the object.
-            $input->destroy();
-            if (!is_null($output)) {
+			if (method_exists($input,'destroy'))
+        		$input->destroy();
+            if (!is_null($output) && method_exists($output, 'destroy')) {
                 $output->destroy();
             }
         }

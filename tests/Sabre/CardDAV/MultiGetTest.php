@@ -96,4 +96,50 @@ class MultiGetTest extends AbstractPluginTest
             ],
         ], $result);
     }
+
+    public function testMultiGetAddressObjectProperties()
+    {
+        $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI' => '/addressbooks/user1/book3',
+        ]);
+
+        $request->setBody(
+'<?xml version="1.0"?>
+<c:addressbook-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
+    <d:prop>
+      <d:getetag />
+      <c:address-data>
+          <c:prop name="FN"/>
+          <c:prop name="BDAY"/>
+      </c:address-data>
+    </d:prop>
+    <d:href>/addressbooks/user1/book3/card3</d:href>
+</c:addressbook-multiget>'
+            );
+
+        $response = new HTTP\ResponseMock();
+
+        $this->server->httpRequest = $request;
+        $this->server->httpResponse = $response;
+
+        $this->server->exec();
+
+        $bodyAsString = $response->getBodyAsString();
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+
+        // using the client for parsing
+        $client = new DAV\Client(['baseUri' => '/']);
+
+        $result = $client->parseMultiStatus($bodyAsString);
+
+        $this->assertEquals([
+            '/addressbooks/user1/book3/card3' => [
+                200 => [
+                    '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nFN:Test-Card\nEMAIL;TYPE=home:bar@example.org\nEND:VCARD").'"',
+                    '{urn:ietf:params:xml:ns:carddav}address-data' => "BEGIN:VCARD\r\nVERSION:3.0\r\nUID:12345\r\nFN:Test-Card\r\nEND:VCARD\r\n",
+                ],
+            ],
+        ], $result);
+    }
 }

@@ -112,12 +112,13 @@ class Response implements Element
      */
     public function xmlSerialize(Writer $writer)
     {
+        $empty = true;
+
         if ($status = $this->getHTTPStatus()) {
+            $empty = false;
             $writer->writeElement('{DAV:}status', 'HTTP/1.1 '.$status.' '.\Sabre\HTTP\Response::$statusCodes[$status]);
         }
         $writer->writeElement('{DAV:}href', $writer->contextUri.\Sabre\HTTP\encodePath($this->getHref()));
-
-        $empty = true;
 
         foreach ($this->getResponseProperties() as $status => $properties) {
             // Skipping empty lists

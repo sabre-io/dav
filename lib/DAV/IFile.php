@@ -50,6 +50,13 @@ interface IFile extends INode
     public function get();
 
     /**
+     * Returns a range of bytes withing the data.
+     *
+     * @return mixed
+     */
+    public function getRange(int $start, int $end);
+
+    /**
      * Returns the mime-type for a file.
      *
      * If null is returned, we'll assume application/octet-stream

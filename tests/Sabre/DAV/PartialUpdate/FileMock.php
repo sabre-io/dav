@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Sabre\DAV\PartialUpdate;
 
 use Sabre\DAV;
+use Sabre\DAV\CorePlugin;
+use Sabre\DAV\Exception\RequestedRangeNotSatisfiable;
 
 class FileMock implements IPatchSupport
 {
@@ -72,6 +74,14 @@ class FileMock implements IPatchSupport
     public function get()
     {
         return $this->data;
+    }
+
+    /**
+     * @throws RequestedRangeNotSatisfiable
+     */
+    public function getRange(int $start, int $end)
+    {
+        return CorePlugin::getRangeFromFile($this, $start);
     }
 
     public function getContentType()

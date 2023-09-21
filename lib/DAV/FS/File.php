@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Sabre\DAV\FS;
 
 use Sabre\DAV;
+use Sabre\DAV\CorePlugin;
+use Sabre\DAV\Exception\RequestedRangeNotSatisfiable;
 
 /**
  * File class.
@@ -34,6 +36,14 @@ class File extends Node implements DAV\IFile
     public function get()
     {
         return fopen($this->path, 'r');
+    }
+
+    /**
+     * @throws RequestedRangeNotSatisfiable
+     */
+    public function getRange(int $start, int $end)
+    {
+        return CorePlugin::getRangeFromFile($this, $start);
     }
 
     /**

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
+use Sabre\DAV\Exception\RequestedRangeNotSatisfiable;
+
 /**
  * File class.
  *
@@ -52,6 +54,14 @@ abstract class File extends Node implements IFile
     public function get()
     {
         throw new Exception\Forbidden('Permission denied to read this file');
+    }
+
+    /**
+     * @throws RequestedRangeNotSatisfiable
+     */
+    public function getRange(int $start, int $end)
+    {
+        return CorePlugin::getRangeFromFile($this, $start);
     }
 
     /**

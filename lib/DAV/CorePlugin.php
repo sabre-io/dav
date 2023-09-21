@@ -79,20 +79,6 @@ class CorePlugin extends ServerPlugin
             return;
         }
 
-        if ('HEAD' === $request->getHeader('X-Sabre-Original-Method')) {
-            $body = '';
-        } else {
-            $body = $node->get();
-
-            // Converting string into stream, if needed.
-            if (is_string($body)) {
-                $stream = fopen('php://temp', 'r+');
-                fwrite($stream, $body);
-                rewind($stream);
-                $body = $stream;
-            }
-        }
-
         /*
          * TODO: getetag, getlastmodified, getsize should also be used using
          * this method
@@ -173,24 +159,20 @@ class CorePlugin extends ServerPlugin
                 }
             }
 
-            // Streams may advertise themselves as seekable, but still not
-            // actually allow fseek.  We'll manually go forward in the stream
-            // if fseek failed.
-            if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
-                $consumeBlock = 8192;
-                for ($consumed = 0; $start - $consumed > 0;) {
-                    if (feof($body)) {
-                        throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$start.') exceeded the size of the entity ('.$consumed.')');
-                    }
-                    $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
-                }
-            }
+            $body = $node->getRange($start, $end);
 
             $response->setHeader('Content-Length', $end - $start + 1);
             $response->setHeader('Content-Range', 'bytes '.$start.'-'.$end.'/'.$nodeSize);
             $response->setStatus(206);
             $response->setBody($body);
         } else {
+            if ('HEAD' === $request->getHeader('X-Sabre-Original-Method')) {
+                $body = '';
+            } else {
+                $body = $node->get();
+                $body = self::convertingStringIntoStreamIfNeeded($body);
+            }
+
             if ($nodeSize) {
                 $response->setHeader('Content-Length', $nodeSize);
             }
@@ -903,5 +885,44 @@ class CorePlugin extends ServerPlugin
             'description' => 'The Core plugin provides a lot of the basic functionality required by WebDAV, such as a default implementation for all HTTP and WebDAV methods.',
             'link' => null,
         ];
+    }
+
+    /**
+     * @param string|resource $body
+     *
+     * @return false|resource
+     */
+    private static function convertingStringIntoStreamIfNeeded($body)
+    {
+        // Converting string into stream, if needed.
+        if (is_string($body)) {
+            $stream = fopen('php://temp', 'rb+');
+            fwrite($stream, $body);
+            rewind($stream);
+
+            return $stream;
+        }
+
+        return $body;
+    }
+
+    public static function getRangeFromFile(IFile $file, int $start)
+    {
+        $body = $file->get();
+        $body = self::convertingStringIntoStreamIfNeeded($body);
+        // Streams may advertise themselves as seekable, but still not
+        // actually allow fseek.  We'll manually go forward in the stream
+        // if fseek failed.
+        if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
+            $consumeBlock = 8192;
+            for ($consumed = 0; $start - $consumed > 0;) {
+                if (feof($body)) {
+                    throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$start.') exceeded the size of the entity ('.$consumed.')');
+                }
+                $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
+            }
+        }
+
+        return $body;
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Sabre\DAV\FSExt;
 
 use Sabre\DAV;
+use Sabre\DAV\CorePlugin;
+use Sabre\DAV\Exception\RequestedRangeNotSatisfiable;
 use Sabre\DAV\FS\Node;
 
 /**
@@ -65,18 +67,18 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
     {
         switch ($rangeType) {
             case 1:
-                $f = fopen($this->path, 'a');
+                $f = fopen($this->path, 'ab');
                 break;
             case 2:
-                $f = fopen($this->path, 'c');
+                $f = fopen($this->path, 'cb');
                 fseek($f, $offset);
                 break;
             case 3:
-                $f = fopen($this->path, 'c');
+                $f = fopen($this->path, 'cb');
                 fseek($f, $offset, SEEK_END);
                 break;
             default:
-                $f = fopen($this->path, 'a');
+                $f = fopen($this->path, 'ab');
                 break;
         }
         if (is_string($data)) {
@@ -97,7 +99,15 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      */
     public function get()
     {
-        return fopen($this->path, 'r');
+        return fopen($this->path, 'rb');
+    }
+
+    /**
+     * @throws RequestedRangeNotSatisfiable
+     */
+    public function getRange(int $start, int $end)
+    {
+        return CorePlugin::getRangeFromFile($this, $start);
     }
 
     /**

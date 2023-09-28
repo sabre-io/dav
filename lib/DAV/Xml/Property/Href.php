@@ -85,7 +85,7 @@ class Href implements Element, HtmlOutput
      *
      * If you are opening new elements, you must also close them again.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         foreach ($this->getHrefs() as $href) {
             $href = Uri\resolve($writer->contextUri, $href);

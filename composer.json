@@ -1,47 +1,51 @@
 {
-    "name": "sabre/dav",
-    "type": "library",
-    "description": "WebDAV Framework for PHP",
-    "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
-    "homepage": "http://sabre.io/",
+    "name" : "syncgw/sabre",
+    "type" : "library",
+    "description" : "WebDAV Framework for PHP",
+    "keywords" : ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
+    "homepage" : "http://sabre.io/",
     "license" : "BSD-3-Clause",
-    "authors": [
+    "authors" : [
         {
-            "name": "Evert Pot",
-            "email": "me@evertpot.com",
+            "name" : "Evert Pot",
+            "email" : "me@evertpot.com",
             "homepage" : "http://evertpot.com/",
             "role" : "Developer"
-        }
+        },
+        {
+			"name" : "Florian Daeumling",
+			"homepage" : "https://github.com/toteph42"
+		}
     ],
     "require": {
-        "php": "^7.1.0 || ^8.0",
-        "sabre/vobject": "^4.2.1",
+        "php" : "^7.1.0 || ^8.0",
+        "sabre/vobject" : "^4.2.1",
         "sabre/event" : "^5.0",
         "sabre/xml"  : "^2.0.1",
         "sabre/http" : "^5.0.5",
         "sabre/uri" : "^2.0",
-        "ext-dom": "*",
-        "ext-pcre": "*",
-        "ext-spl": "*",
-        "ext-simplexml": "*",
+        "ext-dom" : "*",
+        "ext-pcre" : "*",
+        "ext-spl" : "*",
+        "ext-simplexml" : "*",
         "ext-mbstring" : "*",
         "ext-ctype" : "*",
         "ext-date" : "*",
         "ext-iconv" : "*",
         "lib-libxml" : ">=2.7.0",
-        "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "ext-json": "*"
+        "psr/log" : "^1.0 || ^2.0 || ^3.0",
+        "ext-json" : "*"
     },
     "require-dev" : {
-        "friendsofphp/php-cs-fixer": "^2.19",
-        "phpstan/phpstan": "^0.12",
+        "friendsofphp/php-cs-fixer" : "^2.19",
+        "phpstan/phpstan" : "^0.12",
         "phpunit/phpunit" : "^7.5 || ^8.5 || ^9.6",
-        "monolog/monolog": "^1.27"
+        "monolog/monolog" : "^1.27"
     },
     "suggest" : {
         "ext-curl" : "*",
         "ext-pdo" : "*",
-        "ext-imap": "*"
+        "ext-imap" : "*"
     },
     "autoload": {
         "psr-4" : {

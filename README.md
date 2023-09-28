@@ -1,7 +1,10 @@
 ![sabre's logo](http://sabre.io/img/logo.png) sabre/dav
 =======================================================
 
-This is a fork which add check if destroy() function exists for all objects.
+This is a fork which_
+- add check if destroy() function exists for all objects.
+- fixes some variable declaration errors.
+- fixes some mismatching function declaration errors.
 
 Introduction
 ------------

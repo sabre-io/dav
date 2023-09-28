@@ -1,49 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
-	<buildpathentry kind="src" path="bin"/>
-	<buildpathentry kind="src" path="examples"/>
 	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-	<buildpathentry kind="src" path="lib/CalDAV">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
-	<buildpathentry kind="src" path="lib/CardDAV">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
-	<buildpathentry kind="src" path="lib/DAV">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
-	<buildpathentry kind="src" path="lib/DAVACL">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
-	<buildpathentry kind="src" path="tests/Sabre/CalDAV">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
-	<buildpathentry kind="src" path="tests/Sabre/CardDAV">
-		<attributes>
-			<attribute name="composer" value="source"/>
-		</attributes>
-	</buildpathentry>
 	<buildpathentry excluding="Xml/Property/" kind="src" path="tests/Sabre/DAV">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>
 	</buildpathentry>
-	<buildpathentry kind="src" path="tests/Sabre/DAV/Xml/Property">
+	<buildpathentry kind="src" path="tests/Sabre/HTTP">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>
 	</buildpathentry>
-	<buildpathentry kind="src" path="tests/Sabre/DAVACL">
+	<buildpathentry external="true" kind="lib" path="D:/www/syncgw/vendor/psr"/>
+	<buildpathentry kind="src" path="bin"/>
+	<buildpathentry kind="src" path="lib/DAVACL">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>
@@ -53,7 +23,39 @@
 			<attribute name="composer" value="source"/>
 		</attributes>
 	</buildpathentry>
-	<buildpathentry kind="src" path="tests/Sabre/HTTP">
+	<buildpathentry kind="src" path="lib/DAV">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry external="true" kind="lib" path="D:/www/syncgw/vendor/sabre"/>
+	<buildpathentry kind="src" path="examples"/>
+	<buildpathentry kind="src" path="tests/Sabre/CardDAV">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="tests/Sabre/DAVACL">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="tests/Sabre/CalDAV">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="tests/Sabre/DAV/Xml/Property">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="lib/CalDAV">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="lib/CardDAV">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\Uri;
 
 /**
  * Principals Collection.

@@ -14,7 +14,6 @@ use Sabre\DAV\Xml\Property\Href;
 use Sabre\DAVACL\Exception\NeedPrivileges;
 use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
-use Sabre\Uri;
 
 /**
  * SabreDAV ACL Plugin.

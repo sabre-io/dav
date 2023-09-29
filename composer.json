@@ -1,5 +1,5 @@
 {
-    "name" : "syncgw/sabre",
+    "name" : "syncgw/sabredav",
     "type" : "library",
     "description" : "WebDAV Framework for PHP",
     "keywords" : ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],

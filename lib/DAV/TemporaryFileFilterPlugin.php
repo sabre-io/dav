@@ -164,7 +164,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
     protected function isTempFile($path)
     {
         // We're only interested in the basename.
-        list(, $tempPath) = Uri\split($path);
+        list(, $tempPath) = \Sabre\Uri\split($path);
 
         if (null === $tempPath) {
             return false;

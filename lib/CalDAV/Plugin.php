@@ -75,7 +75,7 @@ class Plugin extends DAV\ServerPlugin
     {
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
-        list($parent, $name) = Uri\split($uri);
+        list($parent, $name) = \Sabre\Uri\split($uri);
 
         if ('' === $uri) {
             $parent = '';
@@ -380,7 +380,7 @@ class Plugin extends DAV\ServerPlugin
                 foreach ($membership as $group) {
                     $groupNode = $this->server->tree->getNodeForPath($group);
 
-                    $listItem = Uri\split($group)[0].'/';
+                    $listItem = \Sabre\Uri\split($group)[0].'/';
 
                     // If the node is either ap proxy-read or proxy-write
                     // group, we grab the parent principal and add it to the
@@ -441,7 +441,7 @@ class Plugin extends DAV\ServerPlugin
                 if ($report->expand) {
                     // We're expanding, and for that we need to figure out the
                     // calendar's timezone.
-                    list($calendarPath) = Uri\split($uri);
+                    list($calendarPath) = \Sabre\Uri\split($uri);
                     if (!isset($timeZones[$calendarPath])) {
                         // Checking the calendar-timezone property.
                         $tzProp = '{'.self::NS_CALDAV.'}calendar-timezone';
@@ -728,7 +728,7 @@ class Plugin extends DAV\ServerPlugin
         // We're onyl interested in ICalendarObject nodes that are inside of a
         // real calendar. This is to avoid triggering validation and scheduling
         // for non-calendars (such as an inbox).
-        list($parent) = Uri\split($path);
+        list($parent) = \Sabre\Uri\split($path);
         $parentNode = $this->server->tree->getNodeForPath($parent);
 
         if (!$parentNode instanceof ICalendar) {
@@ -818,7 +818,7 @@ class Plugin extends DAV\ServerPlugin
         $sCCS = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';
 
         // Get the Supported Components for the target calendar
-        list($parentPath) = Uri\split($path);
+        list($parentPath) = \Sabre\Uri\split($path);
         $calendarProperties = $this->server->getProperties($parentPath, [$sCCS]);
 
         if (isset($calendarProperties[$sCCS])) {

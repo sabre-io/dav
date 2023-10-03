@@ -83,7 +83,7 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
             ],
         ];
 
-        list(, $principalBaseName) = Uri\split($owner);
+        list(, $principalBaseName) = \Sabre\Uri\split($owner);
 
         $path = $this->storagePath.'/'.$principalBaseName;
 

@@ -624,7 +624,7 @@ ICS;
      */
     public function putPath($path, $data)
     {
-        list($parent, $base) = Uri\split($path);
+        list($parent, $base) = \Sabre\Uri\split($path);
         $parentNode = $this->server->tree->getNodeForPath($parent);
 
         /*

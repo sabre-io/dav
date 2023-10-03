@@ -102,7 +102,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
 
         while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
             // Checking if the principal is in the prefix
-            list($rowPrefix) = Uri\split($row['uri']);
+            list($rowPrefix) = \Sabre\Uri\split($row['uri']);
             if ($rowPrefix !== $prefixPath) {
                 continue;
             }
@@ -265,7 +265,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
         $principals = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             // Checking if the principal is in the prefix
-            list($rowPrefix) = Uri\split($row['uri']);
+            list($rowPrefix) = \Sabre\Uri\split($row['uri']);
             if ($rowPrefix !== $prefixPath) {
                 continue;
             }
@@ -314,7 +314,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 // Checking if the principal is in the prefix
-                list($rowPrefix) = Uri\split($row['uri']);
+                list($rowPrefix) = \Sabre\Uri\split($row['uri']);
                 if ($rowPrefix !== $principalPrefix) {
                     continue;
                 }
@@ -323,7 +323,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
                 break; //Stop on first match
             }
         } else {
-            $pathParts = Uri\split($uriParts['path']); // We can do this since $uriParts['path'] is not null
+            $pathParts = \Sabre\Uri\split($uriParts['path']); // We can do this since $uriParts['path'] is not null
 
             if (2 === count($pathParts) && $pathParts[0] === $principalPrefix) {
                 // Checking that this uri exists

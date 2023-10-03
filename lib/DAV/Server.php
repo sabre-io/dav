@@ -738,7 +738,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
         else {
             throw new Exception\BadRequest('The HTTP Overwrite header should be either T or F');
         }
-        list($destinationDir) = Uri\split($destination);
+        list($destinationDir) = \Sabre\Uri\split($destination);
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
@@ -1069,7 +1069,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function createFile($uri, $data, &$etag = null)
     {
-        list($dir, $name) = Uri\split($uri);
+        list($dir, $name) = \Sabre\Uri\split($uri);
 
         if (!$this->emit('beforeBind', [$uri])) {
             return false;
@@ -1162,7 +1162,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function createCollection($uri, MkCol $mkCol)
     {
-        list($parentUri, $newName) = Uri\split($uri);
+        list($parentUri, $newName) = \Sabre\Uri\split($uri);
 
         // Making sure the parent exists
         try {

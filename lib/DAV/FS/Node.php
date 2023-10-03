@@ -59,7 +59,7 @@ abstract class Node implements INode
             return $this->overrideName;
         }
 
-        list(, $name) = Uri\split($this->path);
+        list(, $name) = \Sabre\Uri\split($this->path);
 
         return $name;
     }
@@ -75,8 +75,8 @@ abstract class Node implements INode
             throw new Forbidden('This node cannot be renamed');
         }
 
-        list($parentPath) = Uri\split($this->path);
-        list(, $newName) = Uri\split($name);
+        list($parentPath) = \Sabre\Uri\split($this->path);
+        list(, $newName) = \Sabre\Uri\split($name);
 
         $newPath = $parentPath.'/'.$newName;
         rename($this->path, $newPath);

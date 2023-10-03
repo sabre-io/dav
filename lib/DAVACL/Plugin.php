@@ -894,7 +894,7 @@ class Plugin extends DAV\ServerPlugin
      */
     public function beforeBind($uri)
     {
-        list($parentUri) = Uri\split($uri);
+        list($parentUri) = \Sabre\Uri\split($uri);
         $this->checkPrivileges($parentUri, '{DAV:}bind');
     }
 
@@ -908,7 +908,7 @@ class Plugin extends DAV\ServerPlugin
      */
     public function beforeUnbind($uri)
     {
-        list($parentUri) = Uri\split($uri);
+        list($parentUri) = \Sabre\Uri\split($uri);
         $this->checkPrivileges($parentUri, '{DAV:}unbind', self::R_RECURSIVEPARENTS);
     }
 

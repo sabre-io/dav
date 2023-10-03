@@ -63,7 +63,7 @@ class Tree
         }
 
         // Attempting to fetch its parent
-        list($parentName, $baseName) = Uri\split($path);
+        list($parentName, $baseName) = \Sabre\Uri\split($path);
 
         // If there was no parent, we must simply ask it from the root node.
         if ('' === $parentName) {
@@ -101,7 +101,7 @@ class Tree
                 return true;
             }
 
-            list($parent, $base) = Uri\split($path);
+            list($parent, $base) = \Sabre\Uri\split($path);
 
             $parentNode = $this->getNodeForPath($parent);
             if (!$parentNode instanceof ICollection) {
@@ -125,7 +125,7 @@ class Tree
         $sourceNode = $this->getNodeForPath($sourcePath);
 
         // grab the dirname and basename components
-        list($destinationDir, $destinationName) = Uri\split($destinationPath);
+        list($destinationDir, $destinationName) = \Sabre\Uri\split($destinationPath);
 
         $destinationParent = $this->getNodeForPath($destinationDir);
         // Check if the target can handle the copy itself. If not, we do it ourselves.
@@ -144,8 +144,8 @@ class Tree
      */
     public function move($sourcePath, $destinationPath)
     {
-        list($sourceDir) = Uri\split($sourcePath);
-        list($destinationDir, $destinationName) = Uri\split($destinationPath);
+        list($sourceDir) = \Sabre\Uri\split($sourcePath);
+        list($destinationDir, $destinationName) = \Sabre\Uri\split($destinationPath);
 
         if ($sourceDir === $destinationDir) {
             // If this is a 'local' rename, it means we can just trigger a rename.
@@ -178,7 +178,7 @@ class Tree
         $node = $this->getNodeForPath($path);
         $node->delete();
 
-        list($parent) = Uri\split($path);
+        list($parent) = \Sabre\Uri\split($path);
         $this->markDirty($parent);
     }
 
@@ -252,7 +252,7 @@ class Tree
         // Finding common parents
         $parents = [];
         foreach ($paths as $path) {
-            list($parent, $node) = Uri\split($path);
+            list($parent, $node) = \Sabre\Uri\split($path);
             if (!isset($parents[$parent])) {
                 $parents[$parent] = [$node];
             } else {

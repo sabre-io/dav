@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sabre\DAV;
 
 use Sabre\HTTP;
-use Sabre\Uri;
 
 /**
  * SabreDAV DAV client.

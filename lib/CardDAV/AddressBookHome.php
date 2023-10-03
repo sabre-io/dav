@@ -54,7 +54,7 @@ class AddressBookHome extends DAV\Collection implements DAV\IExtendedCollection,
      */
     public function getName()
     {
-        list(, $name) = Uri\split($this->principalUri);
+        list(, $name) = \Sabre\Uri\split($this->principalUri);
 
         return $name;
     }

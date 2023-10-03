@@ -130,7 +130,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
     public function getName()
     {
         $uri = $this->principalProperties['uri'];
-        list(, $name) = Uri\split($uri);
+        list(, $name) = \Sabre\Uri\split($uri);
 
         return $name;
     }

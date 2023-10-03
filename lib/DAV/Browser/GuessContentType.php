@@ -65,7 +65,7 @@ class GuessContentType extends DAV\ServerPlugin
     public function propFind(PropFind $propFind, INode $node)
     {
         $propFind->handle('{DAV:}getcontenttype', function () use ($propFind) {
-            list(, $fileName) = Uri\split($propFind->getPath());
+            list(, $fileName) = \Sabre\Uri\split($propFind->getPath());
 
             return $this->getContentType($fileName);
         });

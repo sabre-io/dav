@@ -58,7 +58,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
      */
     public function getName()
     {
-        list(, $name) = Uri\split($this->principalInfo['uri']);
+        list(, $name) = \Sabre\Uri\split($this->principalInfo['uri']);
 
         return $name;
     }

@@ -176,7 +176,7 @@ class Plugin extends DAV\ServerPlugin
                 case 'mkcol':
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         // Using basename() because we won't allow slashes
-                        list(, $folderName) = Uri\split(trim($postVars['name']));
+                        list(, $folderName) = \Sabre\Uri\split(trim($postVars['name']));
 
                         if (isset($postVars['resourceType'])) {
                             $resourceType = explode(',', $postVars['resourceType']);
@@ -216,13 +216,13 @@ class Plugin extends DAV\ServerPlugin
                         break;
                     }
 
-                    list(, $newName) = Uri\split(trim($file['name']));
+                    list(, $newName) = \Sabre\Uri\split(trim($file['name']));
                     if (isset($postVars['name']) && trim($postVars['name'])) {
                         $newName = trim($postVars['name']);
                     }
 
                     // Making sure we only have a 'basename' component
-                    list(, $newName) = Uri\split($newName);
+                    list(, $newName) = \Sabre\Uri\split($newName);
 
                     if (is_uploaded_file($file['tmp_name'])) {
                         $this->server->createFile($uri.'/'.$newName, fopen($file['tmp_name'], 'r'));
@@ -276,7 +276,7 @@ class Plugin extends DAV\ServerPlugin
             foreach ($subNodes as $subPath => $subProps) {
                 $subNode = $this->server->tree->getNodeForPath($subPath);
                 $fullPath = $this->server->getBaseUri().HTTP\encodePath($subPath);
-                list(, $displayPath) = Uri\split($subPath);
+                list(, $displayPath) = \Sabre\Uri\split($subPath);
 
                 $subNodes[$subPath]['subNode'] = $subNode;
                 $subNodes[$subPath]['fullPath'] = $fullPath;
@@ -445,7 +445,7 @@ HTML;
 
         // If the path is empty, there's no parent.
         if ($path) {
-            list($parentUri) = Uri\split($path);
+            list($parentUri) = \Sabre\Uri\split($path);
             $fullPath = $this->server->getBaseUri().HTTP\encodePath($parentUri);
             $html .= '<a href="'.$fullPath.'" class="btn">⇤ Go to parent</a>';
         } else {

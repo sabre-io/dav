@@ -76,7 +76,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      */
     public function getName()
     {
-        list(, $name) = Uri\split($this->principalPrefix);
+        list(, $name) = \Sabre\Uri\split($this->principalPrefix);
 
         return $name;
     }
@@ -147,7 +147,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
         $r = [];
 
         foreach ($result as $row) {
-            list(, $r[]) = Uri\split($row);
+            list(, $r[]) = \Sabre\Uri\split($row);
         }
 
         return $r;

@@ -208,7 +208,7 @@ class Plugin extends DAV\ServerPlugin
      */
     protected function getAddressbookHomeForPrincipal($principal)
     {
-        list(, $principalId) = Uri\split($principal);
+        list(, $principalId) = \Sabre\Uri\split($principal);
 
         return self::ADDRESSBOOK_ROOT.'/'.$principalId;
     }

@@ -38,3 +38,16 @@ docs/api
 docs/wikidocs
 
 .php_cs.cache
+
+# Composer
+/composer.lock
+
+# Git
+/.gitignore
+
+# Eclipse
+/.settings/
+/.editorconfig
+/.project
+/.buildpath
+/.externalToolBuilders

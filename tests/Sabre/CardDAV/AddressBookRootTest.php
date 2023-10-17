@@ -13,7 +13,7 @@ class AddressBookRootTest extends \PHPUnit\Framework\TestCase
         $pBackend = new DAVACL\PrincipalBackend\Mock();
         $cBackend = new Backend\Mock();
         $root = new AddressBookRoot($pBackend, $cBackend);
-        $this->assertEquals('addressbooks', $root->getName());
+        self::assertEquals('addressbooks', $root->getName());
     }
 
     public function testGetChildForPrincipal()
@@ -23,9 +23,9 @@ class AddressBookRootTest extends \PHPUnit\Framework\TestCase
         $root = new AddressBookRoot($pBackend, $cBackend);
 
         $children = $root->getChildren();
-        $this->assertEquals(3, count($children));
+        self::assertEquals(3, count($children));
 
-        $this->assertInstanceOf('Sabre\\CardDAV\\AddressBookHome', $children[0]);
-        $this->assertEquals('user1', $children[0]->getName());
+        self::assertInstanceOf('Sabre\\CardDAV\\AddressBookHome', $children[0]);
+        self::assertEquals('user1', $children[0]->getName());
     }
 }

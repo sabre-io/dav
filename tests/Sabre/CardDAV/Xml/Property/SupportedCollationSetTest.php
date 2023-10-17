@@ -12,7 +12,7 @@ class SupportedCollationSetTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $property = new SupportedCollationSet();
-        $this->assertInstanceOf('Sabre\CardDAV\Xml\Property\SupportedCollationSet', $property);
+        self::assertInstanceOf('Sabre\CardDAV\Xml\Property\SupportedCollationSet', $property);
     }
 
     /**
@@ -25,7 +25,7 @@ class SupportedCollationSetTest extends DAV\Xml\XmlTest
         $this->namespaceMap[CardDAV\Plugin::NS_CARDDAV] = 'card';
         $xml = $this->write(['{DAV:}root' => $property]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:card="'.CardDAV\Plugin::NS_CARDDAV.'" xmlns:d="DAV:">'.
 '<card:supported-collation>i;ascii-casemap</card:supported-collation>'.

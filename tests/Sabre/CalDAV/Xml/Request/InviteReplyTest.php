@@ -29,7 +29,7 @@ XML;
         $result = $this->parse($xml);
         $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', DAV\Sharing\Plugin::INVITE_ACCEPTED);
 
-        $this->assertEquals(
+        self::assertEquals(
             $inviteReply,
             $result['value']
         );
@@ -51,7 +51,7 @@ XML;
         $result = $this->parse($xml);
         $inviteReply = new InviteReply('/principal/1', '/calendar/1', 'blabla', 'Summary', DAV\Sharing\Plugin::INVITE_DECLINED);
 
-        $this->assertEquals(
+        self::assertEquals(
             $inviteReply,
             $result['value']
         );

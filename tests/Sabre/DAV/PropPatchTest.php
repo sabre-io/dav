@@ -13,7 +13,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         $this->propPatch = new PropPatch([
             '{DAV:}displayname' => 'foo',
         ]);
-        $this->assertEquals(['{DAV:}displayname' => 'foo'], $this->propPatch->getMutations());
+        self::assertEquals(['{DAV:}displayname' => 'foo'], $this->propPatch->getMutations());
     }
 
     public function testHandleSingleSuccess()
@@ -22,16 +22,16 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $this->propPatch->handle('{DAV:}displayname', function ($value) use (&$hasRan) {
             $hasRan = true;
-            $this->assertEquals('foo', $value);
+            self::assertEquals('foo', $value);
 
             return true;
         });
 
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 200], $result);
+        self::assertEquals(['{DAV:}displayname' => 200], $result);
 
-        $this->assertTrue($hasRan);
+        self::assertTrue($hasRan);
     }
 
     public function testHandleSingleFail()
@@ -40,16 +40,16 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $this->propPatch->handle('{DAV:}displayname', function ($value) use (&$hasRan) {
             $hasRan = true;
-            $this->assertEquals('foo', $value);
+            self::assertEquals('foo', $value);
 
             return false;
         });
 
-        $this->assertFalse($this->propPatch->commit());
+        self::assertFalse($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 403], $result);
+        self::assertEquals(['{DAV:}displayname' => 403], $result);
 
-        $this->assertTrue($hasRan);
+        self::assertTrue($hasRan);
     }
 
     public function testHandleSingleCustomResult()
@@ -58,16 +58,16 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $this->propPatch->handle('{DAV:}displayname', function ($value) use (&$hasRan) {
             $hasRan = true;
-            $this->assertEquals('foo', $value);
+            self::assertEquals('foo', $value);
 
             return 201;
         });
 
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 201], $result);
+        self::assertEquals(['{DAV:}displayname' => 201], $result);
 
-        $this->assertTrue($hasRan);
+        self::assertTrue($hasRan);
     }
 
     public function testHandleSingleDeleteSuccess()
@@ -77,16 +77,16 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         $this->propPatch = new PropPatch(['{DAV:}displayname' => null]);
         $this->propPatch->handle('{DAV:}displayname', function ($value) use (&$hasRan) {
             $hasRan = true;
-            $this->assertNull($value);
+            self::assertNull($value);
 
             return true;
         });
 
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 204], $result);
+        self::assertEquals(['{DAV:}displayname' => 204], $result);
 
-        $this->assertTrue($hasRan);
+        self::assertTrue($hasRan);
     }
 
     public function testHandleNothing()
@@ -97,7 +97,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
             $hasRan = true;
         });
 
-        $this->assertFalse($hasRan);
+        self::assertFalse($hasRan);
     }
 
     /**
@@ -109,16 +109,16 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $this->propPatch->handleRemaining(function ($mutations) use (&$hasRan) {
             $hasRan = true;
-            $this->assertEquals(['{DAV:}displayname' => 'foo'], $mutations);
+            self::assertEquals(['{DAV:}displayname' => 'foo'], $mutations);
 
             return true;
         });
 
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 200], $result);
+        self::assertEquals(['{DAV:}displayname' => 200], $result);
 
-        $this->assertTrue($hasRan);
+        self::assertTrue($hasRan);
     }
 
     public function testHandleRemainingNothingToDo()
@@ -130,38 +130,38 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
             $hasRan = true;
         });
 
-        $this->assertFalse($hasRan);
+        self::assertFalse($hasRan);
     }
 
     public function testSetResultCode()
     {
         $this->propPatch->setResultCode('{DAV:}displayname', 201);
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 201], $result);
+        self::assertEquals(['{DAV:}displayname' => 201], $result);
     }
 
     public function testSetResultCodeFail()
     {
         $this->propPatch->setResultCode('{DAV:}displayname', 402);
-        $this->assertFalse($this->propPatch->commit());
+        self::assertFalse($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 402], $result);
+        self::assertEquals(['{DAV:}displayname' => 402], $result);
     }
 
     public function testSetRemainingResultCode()
     {
         $this->propPatch->setRemainingResultCode(204);
-        $this->assertTrue($this->propPatch->commit());
+        self::assertTrue($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 204], $result);
+        self::assertEquals(['{DAV:}displayname' => 204], $result);
     }
 
     public function testCommitNoHandler()
     {
-        $this->assertFalse($this->propPatch->commit());
+        self::assertFalse($this->propPatch->commit());
         $result = $this->propPatch->getResult();
-        $this->assertEquals(['{DAV:}displayname' => 403], $result);
+        self::assertEquals(['{DAV:}displayname' => 403], $result);
     }
 
     public function testHandlerNotCalled()
@@ -176,7 +176,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         $this->propPatch->commit();
 
         // The handler is not supposed to have ran
-        $this->assertFalse($hasRan);
+        self::assertFalse($hasRan);
     }
 
     public function testDependencyFail()
@@ -201,12 +201,12 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         });
 
         $result = $propPatch->commit();
-        $this->assertTrue($calledA);
-        $this->assertFalse($calledB);
+        self::assertTrue($calledA);
+        self::assertFalse($calledB);
 
-        $this->assertFalse($result);
+        self::assertFalse($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}a' => 403,
             '{DAV:}b' => 424,
         ], $propPatch->getResult());
@@ -237,7 +237,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $propPatch->handle(['{DAV:}a', '{DAV:}b', '{DAV:}c'], function ($properties) use (&$calledA) {
             $calledA = true;
-            $this->assertEquals([
+            self::assertEquals([
                 '{DAV:}a' => 'foo',
                 '{DAV:}b' => 'bar',
                 '{DAV:}c' => null,
@@ -246,10 +246,10 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
             return true;
         });
         $result = $propPatch->commit();
-        $this->assertTrue($calledA);
-        $this->assertTrue($result);
+        self::assertTrue($calledA);
+        self::assertTrue($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}a' => 200,
             '{DAV:}b' => 200,
             '{DAV:}c' => 204,
@@ -268,7 +268,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $propPatch->handle(['{DAV:}a', '{DAV:}b', '{DAV:}c'], function ($properties) use (&$calledA) {
             $calledA = true;
-            $this->assertEquals([
+            self::assertEquals([
                 '{DAV:}a' => 'foo',
                 '{DAV:}b' => 'bar',
                 '{DAV:}c' => null,
@@ -277,10 +277,10 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
             return false;
         });
         $result = $propPatch->commit();
-        $this->assertTrue($calledA);
-        $this->assertFalse($result);
+        self::assertTrue($calledA);
+        self::assertFalse($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}a' => 403,
             '{DAV:}b' => 403,
             '{DAV:}c' => 403,
@@ -299,7 +299,7 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
 
         $propPatch->handle(['{DAV:}a', '{DAV:}b', '{DAV:}c'], function ($properties) use (&$calledA) {
             $calledA = true;
-            $this->assertEquals([
+            self::assertEquals([
                 '{DAV:}a' => 'foo',
                 '{DAV:}b' => 'bar',
                 '{DAV:}c' => null,
@@ -311,10 +311,10 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
             ];
         });
         $result = $propPatch->commit();
-        $this->assertTrue($calledA);
-        $this->assertFalse($result);
+        self::assertTrue($calledA);
+        self::assertFalse($result);
 
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}a' => 201,
             '{DAV:}b' => 204,
             '{DAV:}c' => 500,

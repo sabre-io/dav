@@ -19,7 +19,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
      */
     public function testTextMatch($haystack, $needle, $collation, $matchType, $result)
     {
-        $this->assertEquals($result, StringUtil::textMatch($haystack, $needle, $collation, $matchType));
+        self::assertEquals($result, StringUtil::textMatch($haystack, $needle, $collation, $matchType));
     }
 
     public function dataset()
@@ -89,7 +89,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         $inputString = 'harkema';
         $outputString = 'harkema';
 
-        $this->assertEquals(
+        self::assertEquals(
             $outputString,
             StringUtil::ensureUTF8($inputString)
         );
@@ -100,7 +100,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         $inputString = "m\xfcnster";
         $outputString = 'münster';
 
-        $this->assertEquals(
+        self::assertEquals(
             $outputString,
             StringUtil::ensureUTF8($inputString)
         );
@@ -111,7 +111,7 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
         $inputString = "m\xc3\xbcnster";
         $outputString = 'münster';
 
-        $this->assertEquals(
+        self::assertEquals(
             $outputString,
             StringUtil::ensureUTF8($inputString)
         );

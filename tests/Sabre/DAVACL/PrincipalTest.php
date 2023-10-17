@@ -12,7 +12,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertTrue($principal instanceof Principal);
+        self::assertTrue($principal instanceof Principal);
     }
 
     public function testConstructNoUri()
@@ -26,20 +26,20 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals('admin', $principal->getName());
+        self::assertEquals('admin', $principal->getName());
     }
 
     public function testGetDisplayName()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals('admin', $principal->getDisplayname());
+        self::assertEquals('admin', $principal->getDisplayname());
 
         $principal = new Principal($principalBackend, [
             'uri' => 'principals/admin',
             '{DAV:}displayname' => 'Mr. Admin',
         ]);
-        $this->assertEquals('Mr. Admin', $principal->getDisplayname());
+        self::assertEquals('Mr. Admin', $principal->getDisplayname());
     }
 
     public function testGetProperties()
@@ -60,12 +60,12 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $props = $principal->getProperties($keys);
 
         foreach ($keys as $key) {
-            $this->assertArrayHasKey($key, $props);
+            self::assertArrayHasKey($key, $props);
         }
 
-        $this->assertEquals('Mr. Admin', $props['{DAV:}displayname']);
+        self::assertEquals('Mr. Admin', $props['{DAV:}displayname']);
 
-        $this->assertEquals('admin@example.org', $props['{http://sabredav.org/ns}email-address']);
+        self::assertEquals('admin@example.org', $props['{http://sabredav.org/ns}email-address']);
     }
 
     public function testUpdateProperties()
@@ -77,14 +77,14 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
         $result = $principal->propPatch($propPatch);
         $result = $propPatch->commit();
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     public function testGetPrincipalUrl()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals('principals/admin', $principal->getPrincipalUrl());
+        self::assertEquals('principals/admin', $principal->getPrincipalUrl());
     }
 
     public function testGetAlternateUriSet()
@@ -108,7 +108,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
             'mailto:admin@example.org',
         ];
 
-        $this->assertEquals($expected, $principal->getAlternateUriSet());
+        self::assertEquals($expected, $principal->getAlternateUriSet());
     }
 
     public function testGetAlternateUriSetEmpty()
@@ -120,21 +120,21 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
         $expected = [];
 
-        $this->assertEquals($expected, $principal->getAlternateUriSet());
+        self::assertEquals($expected, $principal->getAlternateUriSet());
     }
 
     public function testGetGroupMemberSet()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals([], $principal->getGroupMemberSet());
+        self::assertEquals([], $principal->getGroupMemberSet());
     }
 
     public function testGetGroupMembership()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals([], $principal->getGroupMembership());
+        self::assertEquals([], $principal->getGroupMembership());
     }
 
     public function testSetGroupMemberSet()
@@ -143,7 +143,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
         $principal->setGroupMemberSet(['principals/foo']);
 
-        $this->assertEquals([
+        self::assertEquals([
             'principals/admin' => ['principals/foo'],
         ], $principalBackend->groupMembers);
     }
@@ -152,21 +152,21 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals('principals/admin', $principal->getOwner());
+        self::assertEquals('principals/admin', $principal->getOwner());
     }
 
     public function testGetGroup()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertNull($principal->getGroup());
+        self::assertNull($principal->getGroup());
     }
 
     public function testGetACl()
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}all',
                 'principal' => '{DAV:}owner',
@@ -187,6 +187,6 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     {
         $principalBackend = new PrincipalBackend\Mock();
         $principal = new Principal($principalBackend, ['uri' => 'principals/admin']);
-        $this->assertNull($principal->getSupportedPrivilegeSet());
+        self::assertNull($principal->getSupportedPrivilegeSet());
     }
 }

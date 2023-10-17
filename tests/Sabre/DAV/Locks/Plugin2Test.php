@@ -43,9 +43,9 @@ class Plugin2Test extends \Sabre\DAVServerTest
             $body
         );
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus(), $response->getBodyAsString());
+        self::assertEquals(201, $response->getStatus(), $response->getBodyAsString());
 
-        $this->assertEquals(
+        self::assertEquals(
             1,
             count($this->locksBackend->getLocks('file.txt', true))
         );
@@ -58,9 +58,9 @@ class Plugin2Test extends \Sabre\DAVServerTest
             ]
         );
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus(), $response->getBodyAsString());
+        self::assertEquals(204, $response->getStatus(), $response->getBodyAsString());
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             count($this->locksBackend->getLocks('file.txt', true))
         );

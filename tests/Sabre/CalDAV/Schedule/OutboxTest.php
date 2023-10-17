@@ -11,12 +11,12 @@ class OutboxTest extends \PHPUnit\Framework\TestCase
     public function testSetup()
     {
         $outbox = new Outbox('principals/user1');
-        $this->assertEquals('outbox', $outbox->getName());
-        $this->assertEquals([], $outbox->getChildren());
-        $this->assertEquals('principals/user1', $outbox->getOwner());
-        $this->assertEquals(null, $outbox->getGroup());
+        self::assertEquals('outbox', $outbox->getName());
+        self::assertEquals([], $outbox->getChildren());
+        self::assertEquals('principals/user1', $outbox->getOwner());
+        self::assertEquals(null, $outbox->getGroup());
 
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'privilege' => '{'.CalDAV\Plugin::NS_CALDAV.'}schedule-send',
                 'principal' => 'principals/user1',

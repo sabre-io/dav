@@ -24,7 +24,7 @@ class LockDiscoveryTest extends XmlTest
 
         $xml = $this->write(['{DAV:}root' => $prop]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>
@@ -61,7 +61,7 @@ class LockDiscoveryTest extends XmlTest
 
         $xml = $this->write(['{DAV:}root' => $prop]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>
@@ -98,7 +98,7 @@ class LockDiscoveryTest extends XmlTest
 
         $xml = $this->write(['{DAV:}root' => $prop]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
             '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>
@@ -146,7 +146,7 @@ class LockDiscoveryTest extends XmlTest
 
         $xml = $this->write(['{DAV:}root' => $prop]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
             '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:activelock>

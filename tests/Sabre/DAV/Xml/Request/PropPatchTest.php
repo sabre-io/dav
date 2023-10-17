@@ -45,7 +45,7 @@ class PropPatchTest extends XmlTest
 </d:propertyupdate>
 XML;
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
             $expected,
             $result
         );

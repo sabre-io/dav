@@ -32,14 +32,14 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testGetName()
     {
-        $this->assertEquals('book1', $this->ab->getName());
+        self::assertEquals('book1', $this->ab->getName());
     }
 
     public function testGetChild()
     {
         $card = $this->ab->getChild('card1');
-        $this->assertInstanceOf('Sabre\\CardDAV\\Card', $card);
-        $this->assertEquals('card1', $card->getName());
+        self::assertInstanceOf('Sabre\\CardDAV\\Card', $card);
+        self::assertEquals('card1', $card->getName());
     }
 
     public function testGetChildNotFound()
@@ -51,10 +51,10 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
     public function testGetChildren()
     {
         $cards = $this->ab->getChildren();
-        $this->assertEquals(2, count($cards));
+        self::assertEquals(2, count($cards));
 
-        $this->assertEquals('card1', $cards[0]->getName());
-        $this->assertEquals('card2', $cards[1]->getName());
+        self::assertEquals('card1', $cards[0]->getName());
+        self::assertEquals('card2', $cards[1]->getName());
     }
 
     public function testCreateDirectory()
@@ -70,13 +70,13 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
         rewind($file);
         $this->ab->createFile('card2', $file);
 
-        $this->assertEquals('foo', $this->backend->cards['foo']['card2']);
+        self::assertEquals('foo', $this->backend->cards['foo']['card2']);
     }
 
     public function testDelete()
     {
         $this->ab->delete();
-        $this->assertEquals(1, count($this->backend->addressBooks));
+        self::assertEquals(1, count($this->backend->addressBooks));
     }
 
     public function testSetName()
@@ -87,7 +87,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testGetLastModified()
     {
-        $this->assertNull($this->ab->getLastModified());
+        self::assertNull($this->ab->getLastModified());
     }
 
     public function testUpdateProperties()
@@ -96,24 +96,24 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
             '{DAV:}displayname' => 'barrr',
         ]);
         $this->ab->propPatch($propPatch);
-        $this->assertTrue($propPatch->commit());
+        self::assertTrue($propPatch->commit());
 
-        $this->assertEquals('barrr', $this->backend->addressBooks[0]['{DAV:}displayname']);
+        self::assertEquals('barrr', $this->backend->addressBooks[0]['{DAV:}displayname']);
     }
 
     public function testGetProperties()
     {
         $props = $this->ab->getProperties(['{DAV:}displayname']);
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}displayname' => 'd-name',
         ], $props);
     }
 
     public function testACLMethods()
     {
-        $this->assertEquals('principals/user1', $this->ab->getOwner());
-        $this->assertNull($this->ab->getGroup());
-        $this->assertEquals([
+        self::assertEquals('principals/user1', $this->ab->getOwner());
+        self::assertNull($this->ab->getGroup());
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}all',
                 'principal' => '{DAV:}owner',
@@ -130,19 +130,19 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegeSet()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->ab->getSupportedPrivilegeSet()
         );
     }
 
     public function testGetSyncTokenNoSyncSupport()
     {
-        $this->assertNull($this->ab->getSyncToken());
+        self::assertNull($this->ab->getSyncToken());
     }
 
     public function testGetChangesNoSyncSupport()
     {
-        $this->assertNull($this->ab->getChanges(1, null));
+        self::assertNull($this->ab->getChanges(1, null));
     }
 
     public function testGetSyncToken()
@@ -154,7 +154,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
             $this->getPDO()
         );
         $ab = new AddressBook($backend, ['id' => 1, '{DAV:}sync-token' => 2]);
-        $this->assertEquals(2, $ab->getSyncToken());
+        self::assertEquals(2, $ab->getSyncToken());
     }
 
     public function testGetSyncToken2()
@@ -166,6 +166,6 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
             $this->getPDO()
         );
         $ab = new AddressBook($backend, ['id' => 1, '{http://sabredav.org/ns}sync-token' => 2]);
-        $this->assertEquals(2, $ab->getSyncToken());
+        self::assertEquals(2, $ab->getSyncToken());
     }
 }

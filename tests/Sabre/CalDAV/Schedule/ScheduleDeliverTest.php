@@ -49,7 +49,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver(null, $newObject);
-        $this->assertItemsInInbox('user2', 1);
+        self::assertItemsInInbox('user2', 1);
 
         $expected = <<<ICS
 BEGIN:VCALENDAR
@@ -64,7 +64,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -86,7 +86,7 @@ ICS;
 
         $this->calendarObjectUri = '/calendars/user1/object.ics';
         $this->deliver(null, $newObject);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testNewInviteSchedulingDisabled()
@@ -103,7 +103,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver(null, $newObject, true);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testUpdatedInvite()
@@ -130,7 +130,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver($oldObject, $newObject);
-        $this->assertItemsInInbox('user2', 1);
+        self::assertItemsInInbox('user2', 1);
 
         $expected = <<<ICS
 BEGIN:VCALENDAR
@@ -145,7 +145,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -174,7 +174,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver($oldObject, $newObject, true);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testUpdatedInviteWrongPath()
@@ -201,7 +201,7 @@ ICS;
 
         $this->calendarObjectUri = '/calendars/user1/inbox/foo.ics';
         $this->deliver($oldObject, $newObject);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testDeletedInvite()
@@ -220,7 +220,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver($oldObject, $newObject);
-        $this->assertItemsInInbox('user2', 1);
+        self::assertItemsInInbox('user2', 1);
     }
 
     public function testDeletedInviteSchedulingDisabled()
@@ -239,7 +239,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver($oldObject, $newObject, true);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     /**
@@ -264,7 +264,7 @@ END:VCALENDAR
 ICS;
 
         $this->deliver($oldObject, $newObject, false, 'MOVE');
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testDeletedInviteWrongUrl()
@@ -284,7 +284,7 @@ ICS;
 
         $this->calendarObjectUri = '/calendars/user1/inbox/foo.ics';
         $this->deliver($oldObject, $newObject);
-        $this->assertItemsInInbox('user2', 0);
+        self::assertItemsInInbox('user2', 0);
     }
 
     public function testReply()
@@ -318,8 +318,8 @@ ICS;
         $this->putPath('calendars/user2/cal/foo.ics', $oldObject);
 
         $this->deliver($oldObject, $newObject);
-        $this->assertItemsInInbox('user2', 1);
-        $this->assertItemsInInbox('user1', 0);
+        self::assertItemsInInbox('user2', 1);
+        self::assertItemsInInbox('user1', 0);
 
         $expected = <<<ICS
 BEGIN:VCALENDAR
@@ -336,7 +336,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -370,7 +370,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -407,7 +407,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -444,7 +444,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -481,7 +481,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -516,7 +516,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -553,7 +553,7 @@ END:VEVENT
 END:VCALENDAR
 ICS;
 
-        $this->assertVObjectEqualsVObject(
+        self::assertVObjectEqualsVObject(
             $expected,
             $newObject
         );
@@ -639,6 +639,6 @@ ICS;
     public function assertItemsInInbox($user, $count)
     {
         $inboxNode = $this->server->tree->getNodeForPath('calendars/'.$user.'/inbox');
-        $this->assertEquals($count, count($inboxNode->getChildren()));
+        self::assertEquals($count, count($inboxNode->getChildren()));
     }
 }

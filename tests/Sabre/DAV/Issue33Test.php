@@ -30,9 +30,9 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
 
         $info = $server->getCopyAndMoveInfo($request);
 
-        $this->assertEquals('%C3%A0fo%C3%B3', urlencode($info['destination']));
-        $this->assertFalse($info['destinationExists']);
-        $this->assertFalse($info['destinationNode']);
+        self::assertEquals('%C3%A0fo%C3%B3', urlencode($info['destination']));
+        self::assertFalse($info['destinationExists']);
+        self::assertFalse($info['destinationNode']);
     }
 
     public function testTreeMove()
@@ -46,7 +46,7 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
         $tree->move('bar', urldecode('%C3%A0fo%C3%B3'));
 
         $node = $tree->getNodeForPath(urldecode('%C3%A0fo%C3%B3'));
-        $this->assertEquals(urldecode('%C3%A0fo%C3%B3'), $node->getName());
+        self::assertEquals(urldecode('%C3%A0fo%C3%B3'), $node->getName());
     }
 
     public function testDirName()
@@ -54,7 +54,7 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
         $dirname1 = 'bar';
         $dirname2 = urlencode('%C3%A0fo%C3%B3');
 
-        $this->assertTrue(dirname($dirname1) == dirname($dirname2));
+        self::assertTrue(dirname($dirname1) == dirname($dirname2));
     }
 
     /**
@@ -88,6 +88,6 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
         $server->sapi = new HTTP\SapiMock();
         $server->exec();
 
-        $this->assertTrue(file_exists(SABRE_TEMPDIR.'/issue33/'.urldecode('%C3%A0fo%C3%B3')));
+        self::assertTrue(file_exists(SABRE_TEMPDIR.'/issue33/'.urldecode('%C3%A0fo%C3%B3')));
     }
 }

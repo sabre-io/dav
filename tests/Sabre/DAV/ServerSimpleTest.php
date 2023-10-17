@@ -15,7 +15,7 @@ class ServerSimpleTest extends AbstractServer
         ];
 
         $server = new Server($nodes);
-        $this->assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
+        self::assertEquals($nodes[0], $server->tree->getNodeForPath('hello'));
     }
 
     public function testConstructInvalidArg()
@@ -30,7 +30,7 @@ class ServerSimpleTest extends AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'DAV' => ['1, 3, extended-mkcol'],
             'MS-Author-Via' => ['DAV'],
             'Allow' => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT'],
@@ -39,8 +39,8 @@ class ServerSimpleTest extends AbstractServer
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->getBodyAsString());
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testOptionsUnmapped()
@@ -50,7 +50,7 @@ class ServerSimpleTest extends AbstractServer
 
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'DAV' => ['1, 3, extended-mkcol'],
             'MS-Author-Via' => ['DAV'],
             'Allow' => ['OPTIONS, GET, HEAD, DELETE, PROPFIND, PUT, PROPPATCH, COPY, MOVE, REPORT, MKCOL'],
@@ -59,8 +59,8 @@ class ServerSimpleTest extends AbstractServer
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('', $this->response->getBodyAsString());
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals('', $this->response->getBodyAsString());
     }
 
     public function testNonExistantMethod()
@@ -74,12 +74,12 @@ class ServerSimpleTest extends AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->status);
     }
 
     public function testBaseUri()
@@ -92,11 +92,11 @@ class ServerSimpleTest extends AbstractServer
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->setBaseUri('/blabla/');
-        $this->assertEquals('/blabla/', $this->server->getBaseUri());
+        self::assertEquals('/blabla/', $this->server->getBaseUri());
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/octet-stream'],
             'Content-Length' => [13],
@@ -106,8 +106,8 @@ class ServerSimpleTest extends AbstractServer
             $this->response->getHeaders()
          );
 
-        $this->assertEquals(200, $this->response->status);
-        $this->assertEquals('Test contents', stream_get_contents($this->response->body));
+        self::assertEquals(200, $this->response->status);
+        self::assertEquals('Test contents', stream_get_contents($this->response->body));
     }
 
     public function testBaseUriAddSlash()
@@ -123,7 +123,7 @@ class ServerSimpleTest extends AbstractServer
         foreach ($tests as $test => $result) {
             $this->server->setBaseUri($test);
 
-            $this->assertEquals($result, $this->server->getBaseUri());
+            self::assertEquals($result, $this->server->getBaseUri());
         }
     }
 
@@ -140,24 +140,24 @@ class ServerSimpleTest extends AbstractServer
         $this->server->setBaseUri('/root/');
 
         foreach ($uris as $uri) {
-            $this->assertEquals('somepath', $this->server->calculateUri($uri));
+            self::assertEquals('somepath', $this->server->calculateUri($uri));
         }
 
         $this->server->setBaseUri('/root');
 
         foreach ($uris as $uri) {
-            $this->assertEquals('somepath', $this->server->calculateUri($uri));
+            self::assertEquals('somepath', $this->server->calculateUri($uri));
         }
 
-        $this->assertEquals('', $this->server->calculateUri('/root'));
+        self::assertEquals('', $this->server->calculateUri('/root'));
 
         $this->server->setBaseUri('/');
 
         foreach ($uris as $uri) {
-            $this->assertEquals('root/somepath', $this->server->calculateUri($uri));
+            self::assertEquals('root/somepath', $this->server->calculateUri($uri));
         }
 
-        $this->assertEquals('', $this->server->calculateUri(''));
+        self::assertEquals('', $this->server->calculateUri(''));
     }
 
     public function testCalculateUriSpecialChars()
@@ -171,19 +171,19 @@ class ServerSimpleTest extends AbstractServer
         $this->server->setBaseUri('/root/');
 
         foreach ($uris as $uri) {
-            $this->assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
+            self::assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
         }
 
         $this->server->setBaseUri('/root');
 
         foreach ($uris as $uri) {
-            $this->assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
+            self::assertEquals("\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
         }
 
         $this->server->setBaseUri('/');
 
         foreach ($uris as $uri) {
-            $this->assertEquals("root/\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
+            self::assertEquals("root/\xc3\xa0fo\xc3\xb3", $this->server->calculateUri($uri));
         }
     }
 
@@ -208,7 +208,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri());
+        self::assertEquals('/index.php/', $server->guessBaseUri());
     }
 
     /**
@@ -226,7 +226,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri());
+        self::assertEquals('/index.php/', $server->guessBaseUri());
     }
 
     /**
@@ -245,7 +245,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/some%20directory+mixed/index.php/', $server->guessBaseUri());
+        self::assertEquals('/some%20directory+mixed/index.php/', $server->guessBaseUri());
 
     }*/
 
@@ -261,7 +261,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri());
+        self::assertEquals('/index.php/', $server->guessBaseUri());
     }
 
     public function testGuessBaseUriNoPathInfo()
@@ -275,7 +275,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/', $server->guessBaseUri());
+        self::assertEquals('/', $server->guessBaseUri());
     }
 
     public function testGuessBaseUriNoPathInfo2()
@@ -284,7 +284,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/', $server->guessBaseUri());
+        self::assertEquals('/', $server->guessBaseUri());
     }
 
     /**
@@ -302,7 +302,7 @@ class ServerSimpleTest extends AbstractServer
         $server = new Server();
         $server->httpRequest = $httpRequest;
 
-        $this->assertEquals('/index.php/', $server->guessBaseUri());
+        self::assertEquals('/index.php/', $server->guessBaseUri());
     }
 
     /**
@@ -336,11 +336,11 @@ class ServerSimpleTest extends AbstractServer
         $this->server->on('beforeMethod:*', [$this, 'exceptionTrigger']);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        $this->assertEquals(500, $this->response->status);
+        self::assertEquals(500, $this->response->status);
     }
 
     public function exceptionTrigger($request, $response)
@@ -360,14 +360,14 @@ class ServerSimpleTest extends AbstractServer
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
             ],
             $this->response->getHeaders()
          );
 
-        $this->assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
+        self::assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function testReportIntercepted()
@@ -383,14 +383,14 @@ class ServerSimpleTest extends AbstractServer
         $this->server->on('report', [$this, 'reportHandler']);
         $this->server->exec();
 
-        $this->assertEquals([
+        self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'testheader' => ['testvalue'],
             ],
             $this->response->getHeaders()
         );
 
-        $this->assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
+        self::assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function reportHandler($reportName, $result, $path)
@@ -416,7 +416,7 @@ class ServerSimpleTest extends AbstractServer
             'dir/' => [],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     /**
@@ -428,6 +428,6 @@ class ServerSimpleTest extends AbstractServer
         $this->server->on('method:GET', function () { return false; }, 1);
         $this->server->httpRequest = new HTTP\Request('GET', '/');
         $this->server->exec();
-        $this->assertEquals(500, $this->response->getStatus());
+        self::assertEquals(500, $this->response->getStatus());
     }
 }

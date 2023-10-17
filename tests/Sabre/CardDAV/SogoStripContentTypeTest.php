@@ -26,7 +26,7 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest
     public function testDontStrip()
     {
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf', ['{DAV:}getcontenttype']);
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}getcontenttype' => 'text/vcard; charset=utf-8',
         ], $result);
     }
@@ -37,7 +37,7 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:10.0.2) Gecko/20120216 Thunderbird/10.0.2 Lightning/1.2.1',
         ]);
         $result = $this->server->getProperties('addressbooks/user1/book1/card1.vcf', ['{DAV:}getcontenttype']);
-        $this->assertEquals([
+        self::assertEquals([
             '{DAV:}getcontenttype' => 'text/x-vcard',
         ], $result);
     }
@@ -51,7 +51,7 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest
         $propFind = new PropFind('hello', ['{DAV:}getcontenttype']);
         $propFind->set('{DAV:}getcontenttype', 'text/plain');
         $this->carddavPlugin->propFindLate($propFind, new \Sabre\DAV\SimpleCollection('foo'));
-        $this->assertEquals('text/plain', $propFind->get('{DAV:}getcontenttype'));
+        self::assertEquals('text/plain', $propFind->get('{DAV:}getcontenttype'));
     }
 
     public function testStripWithoutGetContentType()
@@ -62,6 +62,6 @@ class SogoStripContentTypeTest extends \Sabre\DAVServerTest
 
         $propFind = new PropFind('hello', ['{DAV:}getcontenttype']);
         $this->carddavPlugin->propFindLate($propFind, new \Sabre\DAV\SimpleCollection('foo'));
-        $this->assertEquals(null, $propFind->get('{DAV:}getcontenttype')); // Property not present
+        self::assertEquals(null, $propFind->get('{DAV:}getcontenttype')); // Property not present
     }
 }

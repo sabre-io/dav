@@ -14,7 +14,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -30,7 +30,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -63,7 +63,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -80,7 +80,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -98,7 +98,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $response = new HTTP\Response();
 
         $backend = new AbstractDigestMock();
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/user'],
             $backend->check($request, $response)
         );
@@ -113,7 +113,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertStringStartsWith(
+        self::assertStringStartsWith(
             'Digest realm="writing unittests on a saturday night"',
             $response->getHeader('WWW-Authenticate')
         );

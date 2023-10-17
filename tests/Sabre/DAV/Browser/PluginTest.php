@@ -24,8 +24,8 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
-        $this->assertEquals(
+        self::assertEquals(200, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [DAV\Version::VERSION],
                 'Content-Type' => ['text/html; charset=utf-8'],
@@ -35,8 +35,8 @@ class PluginTest extends DAV\AbstractServer
         );
 
         $body = $this->response->getBodyAsString();
-        $this->assertTrue(false !== strpos($body, '<title>dir'), $body);
-        $this->assertTrue(false !== strpos($body, '<a href="/dir/child.txt">'));
+        self::assertTrue(false !== strpos($body, '<title>dir'), $body);
+        self::assertTrue(false !== strpos($body, '<a href="/dir/child.txt">'));
     }
 
     /**
@@ -49,8 +49,8 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
-        $this->assertEquals(
+        self::assertEquals(200, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [DAV\Version::VERSION],
                 'Content-Type' => ['text/html; charset=utf-8'],
@@ -60,8 +60,8 @@ class PluginTest extends DAV\AbstractServer
         );
 
         $body = $this->response->getBodyAsString();
-        $this->assertTrue(false !== strpos($body, '<title>dir'), $body);
-        $this->assertTrue(false !== strpos($body, '<a href="/dir/child.txt">'));
+        self::assertTrue(false !== strpos($body, '<title>dir'), $body);
+        self::assertTrue(false !== strpos($body, '<a href="/dir/child.txt">'));
     }
 
     public function testCollectionGetRoot()
@@ -70,8 +70,8 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->status, 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
-        $this->assertEquals(
+        self::assertEquals(200, $this->response->status, 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [DAV\Version::VERSION],
                 'Content-Type' => ['text/html; charset=utf-8'],
@@ -81,16 +81,16 @@ class PluginTest extends DAV\AbstractServer
         );
 
         $body = $this->response->getBodyAsString();
-        $this->assertTrue(false !== strpos($body, '<title>/'), $body);
-        $this->assertTrue(false !== strpos($body, '<a href="/dir/">'));
-        $this->assertTrue(false !== strpos($body, '<span class="btn disabled">'));
+        self::assertTrue(false !== strpos($body, '<title>/'), $body);
+        self::assertTrue(false !== strpos($body, '<a href="/dir/">'));
+        self::assertTrue(false !== strpos($body, '<span class="btn disabled">'));
     }
 
     public function testGETPassthru()
     {
         $request = new HTTP\Request('GET', '/random');
         $response = new HTTP\Response();
-        $this->assertNull(
+        self::assertNull(
             $this->plugin->httpGet($request, $response)
         );
     }
@@ -101,7 +101,7 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->status);
     }
 
     public function testPostNoContentType()
@@ -110,7 +110,7 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->status);
     }
 
     public function testPostNoSabreAction()
@@ -120,7 +120,7 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->status);
     }
 
     public function testPostMkCol()
@@ -140,13 +140,13 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(302, $this->response->status);
-        $this->assertEquals([
+        self::assertEquals(302, $this->response->status);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Location' => ['/'],
         ], $this->response->getHeaders());
 
-        $this->assertTrue(is_dir(SABRE_TEMPDIR.'/new_collection'));
+        self::assertTrue(is_dir(SABRE_TEMPDIR.'/new_collection'));
     }
 
     public function testGetAsset()
@@ -155,8 +155,8 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(200, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(200, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['image/vnd.microsoft.icon'],
             'Content-Length' => ['4286'],
@@ -171,7 +171,7 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
+        self::assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
     }
 
     public function testGetAssetEscapeBasePath()
@@ -180,6 +180,6 @@ class PluginTest extends DAV\AbstractServer
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        $this->assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
+        self::assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
     }
 }

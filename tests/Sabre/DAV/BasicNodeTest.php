@@ -23,19 +23,19 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
     public function testGetSize()
     {
         $file = new FileMock();
-        $this->assertEquals(0, $file->getSize());
+        self::assertEquals(0, $file->getSize());
     }
 
     public function testGetETag()
     {
         $file = new FileMock();
-        $this->assertNull($file->getETag());
+        self::assertNull($file->getETag());
     }
 
     public function testGetContentType()
     {
         $file = new FileMock();
-        $this->assertNull($file->getContentType());
+        self::assertNull($file->getContentType());
     }
 
     public function testDelete()
@@ -58,26 +58,26 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
         // checking if lastmod is within the range of a few seconds
         $lastMod = $file->getLastModified();
         $compareTime = ($lastMod + 1) - time();
-        $this->assertTrue($compareTime < 3);
+        self::assertTrue($compareTime < 3);
     }
 
     public function testGetChild()
     {
         $dir = new DirectoryMock();
         $file = $dir->getChild('mockfile');
-        $this->assertTrue($file instanceof FileMock);
+        self::assertTrue($file instanceof FileMock);
     }
 
     public function testChildExists()
     {
         $dir = new DirectoryMock();
-        $this->assertTrue($dir->childExists('mockfile'));
+        self::assertTrue($dir->childExists('mockfile'));
     }
 
     public function testChildExistsFalse()
     {
         $dir = new DirectoryMock();
-        $this->assertFalse($dir->childExists('mockfile2'));
+        self::assertFalse($dir->childExists('mockfile2'));
     }
 
     public function testGetChild404()

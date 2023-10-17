@@ -15,21 +15,21 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         $server->addPlugin($plugin);
 
-        $this->assertEquals(
+        self::assertEquals(
             '{http://calendarserver.org/ns/}subscribed',
             $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription']
         );
-        $this->assertEquals(
+        self::assertEquals(
             'Sabre\\DAV\\Xml\\Property\\Href',
             $server->xml->elementMap['{http://calendarserver.org/ns/}source']
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             ['calendarserver-subscribed'],
             $plugin->getFeatures()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'subscriptions',
             $plugin->getPluginInfo()['name']
         );
@@ -44,6 +44,6 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $plugin = new Plugin();
         $plugin->propFind($propFind, new \Sabre\DAV\SimpleCollection('hi'));
 
-        $this->assertFalse(is_null($propFind->get($propName)));
+        self::assertFalse(is_null($propFind->get($propName)));
     }
 }

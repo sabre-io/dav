@@ -12,7 +12,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $acl = new Acl([]);
-        $this->assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
+        self::assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
     }
 
     public function testSerializeEmpty()
@@ -23,7 +23,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
         $expected = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" />';
 
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testSerialize()
@@ -68,7 +68,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
   </d:ace>
 </d:root>
 ';
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testSerializeSpecialPrincipals()
@@ -125,7 +125,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
   </d:ace>
 </d:root>
 ';
-        $this->assertXmlStringEqualsXmlString($expected, $xml);
+        self::assertXmlStringEqualsXmlString($expected, $xml);
     }
 
     public function testUnserialize()
@@ -163,7 +163,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
         $result = $reader->parse();
         $result = $result['value'];
 
-        $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
+        self::assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
 
         $expected = [
             [
@@ -178,7 +178,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result->getPrivileges());
+        self::assertEquals($expected, $result->getPrivileges());
     }
 
     public function testUnserializeNoPrincipal()
@@ -242,7 +242,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
         $result = $reader->parse();
         $result = $result['value'];
 
-        $this->assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
+        self::assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
 
         $expected = [
             [
@@ -262,7 +262,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $result->getPrivileges());
+        self::assertEquals($expected, $result->getPrivileges());
     }
 
     public function testUnserializeDeny()
@@ -321,6 +321,6 @@ class ACLTest extends \PHPUnit\Framework\TestCase
             '<tr><td><span title="{DAV:}authenticated">d:authenticated</span></td><td><span title="{DAV:}write">d:write</span></td><td></td></tr>'.
             '</table>';
 
-        $this->assertEquals($expected, $acl->toHtml($html));
+        self::assertEquals($expected, $acl->toHtml($html));
     }
 }

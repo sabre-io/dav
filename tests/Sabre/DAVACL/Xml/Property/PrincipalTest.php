@@ -13,16 +13,16 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     public function testSimple()
     {
         $principal = new Principal(Principal::UNAUTHENTICATED);
-        $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
-        $this->assertNull($principal->getHref());
+        self::assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
+        self::assertNull($principal->getHref());
 
         $principal = new Principal(Principal::AUTHENTICATED);
-        $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
-        $this->assertNull($principal->getHref());
+        self::assertEquals(Principal::AUTHENTICATED, $principal->getType());
+        self::assertNull($principal->getHref());
 
         $principal = new Principal(Principal::HREF, 'admin');
-        $this->assertEquals(Principal::HREF, $principal->getType());
-        $this->assertEquals('admin/', $principal->getHref());
+        self::assertEquals(Principal::HREF, $principal->getType());
+        self::assertEquals('admin/', $principal->getHref());
     }
 
     /**
@@ -43,7 +43,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
         $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin);
 
-        $this->assertXmlStringEqualsXmlString('
+        self::assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:unauthenticated/>
 </d:principal>', $xml);
@@ -57,7 +57,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $prin = new Principal(Principal::AUTHENTICATED);
         $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin);
 
-        $this->assertXmlStringEqualsXmlString('
+        self::assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:authenticated/>
 </d:principal>', $xml);
@@ -71,7 +71,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
         $prin = new Principal(Principal::HREF, 'principals/admin');
         $xml = (new DAV\Server())->xml->write('{DAV:}principal', $prin, '/');
 
-        $this->assertXmlStringEqualsXmlString('
+        self::assertXmlStringEqualsXmlString('
 <d:principal xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns">
 <d:href>/principals/admin/</d:href>
 </d:principal>', $xml);
@@ -85,8 +85,8 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 '</d:principal>';
 
         $principal = $this->parse($xml);
-        $this->assertEquals(Principal::HREF, $principal->getType());
-        $this->assertEquals('/principals/admin/', $principal->getHref());
+        self::assertEquals(Principal::HREF, $principal->getType());
+        self::assertEquals('/principals/admin/', $principal->getHref());
     }
 
     public function testUnserializeAuthenticated()
@@ -97,7 +97,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 '</d:principal>';
 
         $principal = $this->parse($xml);
-        $this->assertEquals(Principal::AUTHENTICATED, $principal->getType());
+        self::assertEquals(Principal::AUTHENTICATED, $principal->getType());
     }
 
     public function testUnserializeUnauthenticated()
@@ -108,7 +108,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 '</d:principal>';
 
         $principal = $this->parse($xml);
-        $this->assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
+        self::assertEquals(Principal::UNAUTHENTICATED, $principal->getType());
     }
 
     public function testUnserializeUnknown()
@@ -140,7 +140,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     {
         $html = $principal->toHtml(new HtmlOutputHelper('/', []));
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
             $output,
             $html
         );

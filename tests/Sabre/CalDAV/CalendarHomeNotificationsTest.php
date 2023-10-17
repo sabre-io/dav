@@ -11,7 +11,7 @@ class CalendarHomeNotificationsTest extends \PHPUnit\Framework\TestCase
         $backend = new Backend\Mock();
         $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
 
-        $this->assertEquals(
+        self::assertEquals(
             [],
             $calendarHome->getChildren()
         );
@@ -31,7 +31,7 @@ class CalendarHomeNotificationsTest extends \PHPUnit\Framework\TestCase
         $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
 
         $result = $calendarHome->getChildren();
-        $this->assertEquals('notifications', $result[0]->getName());
+        self::assertEquals('notifications', $result[0]->getName());
     }
 
     public function testGetChild()
@@ -39,6 +39,6 @@ class CalendarHomeNotificationsTest extends \PHPUnit\Framework\TestCase
         $backend = new Backend\MockSharing();
         $calendarHome = new CalendarHome($backend, ['uri' => 'principals/user']);
         $result = $calendarHome->getChild('notifications');
-        $this->assertEquals('notifications', $result->getName());
+        self::assertEquals('notifications', $result->getName());
     }
 }

@@ -23,6 +23,6 @@ XML;
 
         $result = $this->parse($xml);
 
-        $this->assertEquals(['{DAV:}displayname'], $result['value']->properties);
+        self::assertEquals(['{DAV:}displayname'], $result['value']->properties);
     }
 }

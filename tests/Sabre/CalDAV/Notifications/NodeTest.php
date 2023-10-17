@@ -31,32 +31,32 @@ class NodeTest extends \PHPUnit\Framework\TestCase
     public function testGetId()
     {
         $node = $this->getInstance();
-        $this->assertEquals($this->systemStatus->getId().'.xml', $node->getName());
+        self::assertEquals($this->systemStatus->getId().'.xml', $node->getName());
     }
 
     public function testGetEtag()
     {
         $node = $this->getInstance();
-        $this->assertEquals('"1"', $node->getETag());
+        self::assertEquals('"1"', $node->getETag());
     }
 
     public function testGetNotificationType()
     {
         $node = $this->getInstance();
-        $this->assertEquals($this->systemStatus, $node->getNotificationType());
+        self::assertEquals($this->systemStatus, $node->getNotificationType());
     }
 
     public function testDelete()
     {
         $node = $this->getInstance();
         $node->delete();
-        $this->assertEquals([], $this->caldavBackend->getNotificationsForPrincipal('principals/user1'));
+        self::assertEquals([], $this->caldavBackend->getNotificationsForPrincipal('principals/user1'));
     }
 
     public function testGetGroup()
     {
         $node = $this->getInstance();
-        $this->assertNull($node->getGroup());
+        self::assertNull($node->getGroup());
     }
 
     public function testGetACL()
@@ -70,7 +70,7 @@ class NodeTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $node->getACL());
+        self::assertEquals($expected, $node->getACL());
     }
 
     public function testSetACL()
@@ -83,6 +83,6 @@ class NodeTest extends \PHPUnit\Framework\TestCase
     public function testGetSupportedPrivilegeSet()
     {
         $node = $this->getInstance();
-        $this->assertNull($node->getSupportedPrivilegeSet());
+        self::assertNull($node->getSupportedPrivilegeSet());
     }
 }

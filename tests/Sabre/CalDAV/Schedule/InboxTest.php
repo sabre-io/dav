@@ -14,12 +14,12 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             new CalDAV\Backend\MockScheduling(),
             'principals/user1'
         );
-        $this->assertEquals('inbox', $inbox->getName());
-        $this->assertEquals([], $inbox->getChildren());
-        $this->assertEquals('principals/user1', $inbox->getOwner());
-        $this->assertEquals(null, $inbox->getGroup());
+        self::assertEquals('inbox', $inbox->getName());
+        self::assertEquals([], $inbox->getChildren());
+        self::assertEquals('principals/user1', $inbox->getOwner());
+        self::assertEquals(null, $inbox->getGroup());
 
-        $this->assertEquals([
+        self::assertEquals([
             [
                 'privilege' => '{DAV:}read',
                 'principal' => '{DAV:}authenticated',
@@ -61,17 +61,17 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             'principals/user1'
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             count($inbox->getChildren())
         );
         $backend->createSchedulingObject('principals/user1', 'schedule1.ics', "BEGIN:VCALENDAR\r\nEND:VCALENDAR");
-        $this->assertEquals(
+        self::assertEquals(
             1,
             count($inbox->getChildren())
         );
-        $this->assertInstanceOf('Sabre\CalDAV\Schedule\SchedulingObject', $inbox->getChildren()[0]);
-        $this->assertEquals(
+        self::assertInstanceOf('Sabre\CalDAV\Schedule\SchedulingObject', $inbox->getChildren()[0]);
+        self::assertEquals(
             'schedule1.ics',
             $inbox->getChildren()[0]->getName()
         );
@@ -88,17 +88,17 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             'principals/user1'
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             count($inbox->getChildren())
         );
         $inbox->createFile('schedule1.ics', "BEGIN:VCALENDAR\r\nEND:VCALENDAR");
-        $this->assertEquals(
+        self::assertEquals(
             1,
             count($inbox->getChildren())
         );
-        $this->assertInstanceOf('Sabre\CalDAV\Schedule\SchedulingObject', $inbox->getChildren()[0]);
-        $this->assertEquals(
+        self::assertInstanceOf('Sabre\CalDAV\Schedule\SchedulingObject', $inbox->getChildren()[0]);
+        self::assertEquals(
             'schedule1.ics',
             $inbox->getChildren()[0]->getName()
         );
@@ -115,12 +115,12 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             'principals/user1'
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             0,
             count($inbox->getChildren())
         );
         $backend->createSchedulingObject('principals/user1', 'schedule1.ics', "BEGIN:VCALENDAR\r\nEND:VCALENDAR");
-        $this->assertEquals(
+        self::assertEquals(
             ['schedule1.ics'],
             $inbox->calendarQuery([
                 'name' => 'VCALENDAR',

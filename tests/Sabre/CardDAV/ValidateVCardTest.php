@@ -53,7 +53,7 @@ class ValidateVCardTest extends \PHPUnit\Framework\TestCase
             if ($realStatus !== $expectedStatus) {
                 $msg = 'Response body: '.$this->server->httpResponse->getBodyAsString();
             }
-            $this->assertEquals(
+            self::assertEquals(
                 $expectedStatus,
                 $realStatus,
                 $msg
@@ -72,7 +72,7 @@ class ValidateVCardTest extends \PHPUnit\Framework\TestCase
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status);
+        self::assertEquals(415, $response->status);
     }
 
     public function testCreateFileValid()
@@ -95,11 +95,11 @@ VCF;
         $response = $this->request($request, 201);
 
         // The custom Ew header should not be set
-        $this->assertNull(
+        self::assertNull(
             $response->getHeader('X-Sabre-Ew-Gross')
         );
         // Valid, non-auto-fixed responses should contain an ETag.
-        $this->assertTrue(
+        self::assertTrue(
             null !== $response->getHeader('ETag'),
             'We did not receive an etag'
         );
@@ -111,7 +111,7 @@ VCF;
             'etag' => '"'.md5($vcard).'"',
         ];
 
-        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
+        self::assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
     }
 
     /**
@@ -142,12 +142,12 @@ VCF;
         $response = $this->request($request, 201);
 
         // Auto-fixed vcards should NOT return an etag
-        $this->assertNull(
+        self::assertNull(
             $response->getHeader('ETag')
         );
 
         // We should have gotten an Ew header
-        $this->assertNotNull(
+        self::assertNotNull(
             $response->getHeader('X-Sabre-Ew-Gross')
         );
 
@@ -168,7 +168,7 @@ VCF;
             'etag' => '"'.md5($expectedVCard).'"',
         ];
 
-        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
+        self::assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
     }
 
     /**
@@ -222,7 +222,7 @@ VCF;
         $response = $this->request($request, 201);
 
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
-        $this->assertTrue(
+        self::assertTrue(
             false !== strpos($foo['carddata'], 'UID'),
             print_r($foo, true)
         );
@@ -238,10 +238,10 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
+        self::assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
 
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
-        $this->assertEquals("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n", $foo['carddata']);
+        self::assertEquals("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n", $foo['carddata']);
     }
 
     public function testCreateFileVCalendar()
@@ -254,7 +254,7 @@ VCF;
 
         $response = $this->request($request);
 
-        $this->assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
+        self::assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testUpdateFile()
@@ -288,6 +288,6 @@ VCF;
             'etag' => '"'.md5($body).'"',
         ];
 
-        $this->assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
+        self::assertEquals($expected, $this->cardBackend->getCard('addressbook1', 'blabla.vcf'));
     }
 }

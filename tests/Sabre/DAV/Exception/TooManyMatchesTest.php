@@ -30,6 +30,6 @@ class TooManyMatchesTest extends \PHPUnit\Framework\TestCase
 </d:root>
 ';
 
-        $this->assertEquals($expected, $output);
+        self::assertEquals($expected, $output);
     }
 }

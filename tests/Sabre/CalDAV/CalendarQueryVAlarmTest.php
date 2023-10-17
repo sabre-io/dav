@@ -55,7 +55,7 @@ class CalendarQueryVAlarmTest extends \PHPUnit\Framework\TestCase
         ];
 
         $validator = new CalendarQueryValidator();
-        $this->assertTrue($validator->validate($vcalendar, $filter));
+        self::assertTrue($validator->validate($vcalendar, $filter));
 
         $vcalendar = new VObject\Component\VCalendar();
 
@@ -71,7 +71,7 @@ class CalendarQueryVAlarmTest extends \PHPUnit\Framework\TestCase
 
         $vcalendar->add($vevent);
 
-        $this->assertFalse($validator->validate($vcalendar, $filter));
+        self::assertFalse($validator->validate($vcalendar, $filter));
     }
 
     public function testAlarmWayBefore()
@@ -116,6 +116,6 @@ class CalendarQueryVAlarmTest extends \PHPUnit\Framework\TestCase
         ];
 
         $validator = new CalendarQueryValidator();
-        $this->assertTrue($validator->validate($vcalendar, $filter));
+        self::assertTrue($validator->validate($vcalendar, $filter));
     }
 }

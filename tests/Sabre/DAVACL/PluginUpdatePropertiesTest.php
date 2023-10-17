@@ -25,7 +25,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}foo' => 403,
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testRemoveGroupMembers()
@@ -46,8 +46,8 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}group-member-set' => 204,
         ];
 
-        $this->assertEquals($expected, $result);
-        $this->assertEquals([], $tree[0]->getGroupMemberSet());
+        self::assertEquals($expected, $result);
+        self::assertEquals([], $tree[0]->getGroupMemberSet());
     }
 
     public function testSetGroupMembers()
@@ -68,8 +68,8 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}group-member-set' => 200,
         ];
 
-        $this->assertEquals($expected, $result);
-        $this->assertEquals(['bar', 'baz'], $tree[0]->getGroupMemberSet());
+        self::assertEquals($expected, $result);
+        self::assertEquals(['bar', 'baz'], $tree[0]->getGroupMemberSet());
     }
 
     public function testSetBadValue()
@@ -106,6 +106,6 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
             '{DAV:}group-member-set' => 403,
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 }

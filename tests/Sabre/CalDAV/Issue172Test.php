@@ -38,7 +38,7 @@ HI;
             'prop-filters' => [],
         ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input, $filters));
+        self::assertTrue($validator->validate($input, $filters));
     }
 
     // Pacific Standard Time, translates to America/Los_Angeles (GMT-8 in January)
@@ -86,7 +86,7 @@ HI;
             'prop-filters' => [],
         ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input, $filters));
+        self::assertTrue($validator->validate($input, $filters));
     }
 
     // X-LIC-LOCATION, translates to America/Los_Angeles (GMT-8 in January)
@@ -135,6 +135,6 @@ HI;
             'prop-filters' => [],
         ];
         $input = VObject\Reader::read($input);
-        $this->assertTrue($validator->validate($input, $filters));
+        self::assertTrue($validator->validate($input, $filters));
     }
 }

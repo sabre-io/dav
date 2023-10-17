@@ -64,9 +64,9 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->exec();
 
-        $this->assertEquals($httpStatus, $this->server->httpResponse->status, 'Incorrect http status received: '.$this->server->httpResponse->body);
+        self::assertEquals($httpStatus, $this->server->httpResponse->status, 'Incorrect http status received: '.$this->server->httpResponse->body);
         if (!is_null($endResult)) {
-            $this->assertEquals($endResult, file_get_contents(SABRE_TEMPDIR.'/foobar.txt'));
+            self::assertEquals($endResult, file_get_contents(SABRE_TEMPDIR.'/foobar.txt'));
         }
     }
 

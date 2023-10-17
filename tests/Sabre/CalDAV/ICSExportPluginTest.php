@@ -62,12 +62,12 @@ ICS
 
     public function testInit()
     {
-        $this->assertEquals(
+        self::assertEquals(
             $this->icsExportPlugin,
             $this->server->getPlugin('ics-export')
         );
-        $this->assertEquals($this->icsExportPlugin, $this->server->getPlugin('ics-export'));
-        $this->assertEquals('ics-export', $this->icsExportPlugin->getPluginInfo()['name']);
+        self::assertEquals($this->icsExportPlugin, $this->server->getPlugin('ics-export'));
+        self::assertEquals('ics-export', $this->icsExportPlugin->getPluginInfo()['name']);
     }
 
     public function testBeforeMethod()
@@ -79,20 +79,20 @@ ICS
 
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        self::assertEquals(200, $response->getStatus());
+        self::assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
         $obj = VObject\Reader::read($response->getBodyAsString());
 
-        $this->assertEquals(8, count($obj->children()));
-        $this->assertEquals(1, count($obj->VERSION));
-        $this->assertEquals(1, count($obj->CALSCALE));
-        $this->assertEquals(1, count($obj->PRODID));
-        $this->assertTrue(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
-        $this->assertEquals(1, count($obj->VTIMEZONE));
-        $this->assertEquals(1, count($obj->VEVENT));
-        $this->assertEquals('Hello!', $obj->{'X-WR-CALNAME'});
-        $this->assertEquals('#AA0000FF', $obj->{'X-APPLE-CALENDAR-COLOR'});
+        self::assertEquals(8, count($obj->children()));
+        self::assertEquals(1, count($obj->VERSION));
+        self::assertEquals(1, count($obj->CALSCALE));
+        self::assertEquals(1, count($obj->PRODID));
+        self::assertTrue(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
+        self::assertEquals(1, count($obj->VTIMEZONE));
+        self::assertEquals(1, count($obj->VEVENT));
+        self::assertEquals('Hello!', $obj->{'X-WR-CALNAME'});
+        self::assertEquals('#AA0000FF', $obj->{'X-APPLE-CALENDAR-COLOR'});
     }
 
     public function testBeforeMethodNoVersion()
@@ -105,18 +105,18 @@ ICS
         $response = $this->request($request);
         DAV\Server::$exposeVersion = true;
 
-        $this->assertEquals(200, $response->getStatus());
-        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        self::assertEquals(200, $response->getStatus());
+        self::assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
         $obj = VObject\Reader::read($response->getBodyAsString());
 
-        $this->assertEquals(8, count($obj->children()));
-        $this->assertEquals(1, count($obj->VERSION));
-        $this->assertEquals(1, count($obj->CALSCALE));
-        $this->assertEquals(1, count($obj->PRODID));
-        $this->assertFalse(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
-        $this->assertEquals(1, count($obj->VTIMEZONE));
-        $this->assertEquals(1, count($obj->VEVENT));
+        self::assertEquals(8, count($obj->children()));
+        self::assertEquals(1, count($obj->VERSION));
+        self::assertEquals(1, count($obj->CALSCALE));
+        self::assertEquals(1, count($obj->PRODID));
+        self::assertFalse(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
+        self::assertEquals(1, count($obj->VTIMEZONE));
+        self::assertEquals(1, count($obj->VEVENT));
     }
 
     public function testBeforeMethodNoExport()
@@ -126,7 +126,7 @@ ICS
             '/calendars/admin/UUID-123467'
         );
         $response = new HTTP\Response();
-        $this->assertNull($this->icsExportPlugin->httpGet($request, $response));
+        self::assertNull($this->icsExportPlugin->httpGet($request, $response));
     }
 
     public function testACLIntegrationBlocked()
@@ -164,17 +164,17 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        self::assertEquals('text/calendar', $response->getHeader('Content-Type'));
 
         $obj = VObject\Reader::read($response->getBodyAsString());
 
-        $this->assertEquals(8, count($obj->children()));
-        $this->assertEquals(1, count($obj->VERSION));
-        $this->assertEquals(1, count($obj->CALSCALE));
-        $this->assertEquals(1, count($obj->PRODID));
-        $this->assertTrue(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
-        $this->assertEquals(1, count($obj->VTIMEZONE));
-        $this->assertEquals(1, count($obj->VEVENT));
+        self::assertEquals(8, count($obj->children()));
+        self::assertEquals(1, count($obj->VERSION));
+        self::assertEquals(1, count($obj->CALSCALE));
+        self::assertEquals(1, count($obj->PRODID));
+        self::assertTrue(false !== strpos((string) $obj->PRODID, DAV\Version::VERSION));
+        self::assertEquals(1, count($obj->VTIMEZONE));
+        self::assertEquals(1, count($obj->VEVENT));
     }
 
     public function testBadStartParam()
@@ -205,8 +205,8 @@ ICS
 
         $obj = VObject\Reader::read($response->getBody());
 
-        $this->assertNull($obj->VTIMEZONE);
-        $this->assertNull($obj->VEVENT);
+        self::assertNull($obj->VTIMEZONE);
+        self::assertNull($obj->VEVENT);
     }
 
     public function testExpandNoStart()
@@ -228,8 +228,8 @@ ICS
 
         $obj = VObject\Reader::read($response->getBody());
 
-        $this->assertNull($obj->VTIMEZONE);
-        $this->assertEquals(1, count($obj->VEVENT));
+        self::assertNull($obj->VTIMEZONE);
+        self::assertEquals(1, count($obj->VEVENT));
     }
 
     public function testJCal()
@@ -241,7 +241,7 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        self::assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
     }
 
     public function testJCalInUrl()
@@ -252,7 +252,7 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        self::assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
     }
 
     public function testNegotiateDefault()
@@ -264,7 +264,7 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        self::assertEquals('text/calendar', $response->getHeader('Content-Type'));
     }
 
     public function testFilterComponentVEVENT()
@@ -277,9 +277,9 @@ ICS
         $response = $this->request($request, 200);
 
         $obj = VObject\Reader::read($response->getBodyAsString());
-        $this->assertEquals(1, count($obj->VTIMEZONE));
-        $this->assertEquals(1, count($obj->VEVENT));
-        $this->assertNull($obj->VTODO);
+        self::assertEquals(1, count($obj->VTIMEZONE));
+        self::assertEquals(1, count($obj->VEVENT));
+        self::assertNull($obj->VTODO);
     }
 
     public function testFilterComponentVTODO()
@@ -293,9 +293,9 @@ ICS
 
         $obj = VObject\Reader::read($response->getBodyAsString());
 
-        $this->assertNull($obj->VTIMEZONE);
-        $this->assertNull($obj->VEVENT);
-        $this->assertEquals(1, count($obj->VTODO));
+        self::assertNull($obj->VTIMEZONE);
+        self::assertNull($obj->VEVENT);
+        self::assertEquals(1, count($obj->VTODO));
     }
 
     public function testFilterComponentBadComponent()
@@ -316,8 +316,8 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('text/calendar', $response->getHeader('Content-Type'));
-        $this->assertEquals(
+        self::assertEquals('text/calendar', $response->getHeader('Content-Type'));
+        self::assertEquals(
             'attachment; filename="UUID-123467-'.date('Y-m-d').'.ics"',
             $response->getHeader('Content-Disposition')
         );
@@ -332,8 +332,8 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
-        $this->assertEquals(
+        self::assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        self::assertEquals(
             'attachment; filename="UUID-123467-'.date('Y-m-d').'.json"',
             $response->getHeader('Content-Disposition')
         );
@@ -357,8 +357,8 @@ ICS
         );
 
         $response = $this->request($request, 200);
-        $this->assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
-        $this->assertEquals(
+        self::assertEquals('application/calendar+json', $response->getHeader('Content-Type'));
+        self::assertEquals(
             'attachment; filename="UUID-b_adchars-'.date('Y-m-d').'.json"',
             $response->getHeader('Content-Disposition')
         );

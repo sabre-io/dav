@@ -28,7 +28,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo);
-        $this->assertTrue($backend instanceof PDOBasicAuth);
+        self::assertTrue($backend instanceof PDOBasicAuth);
     }
 
     public function testCheckNoHeaders()
@@ -44,7 +44,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -67,7 +67,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -90,7 +90,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
 
-        $this->assertFalse(
+        self::assertFalse(
             $backend->check($request, $response)[0]
         );
     }
@@ -112,7 +112,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         ];
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/user'],
             $backend->check($request, $response)
         );
@@ -136,7 +136,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         ];
         $pdo = $this->getPDO();
         $backend = new PDOBasicAuth($pdo, $options);
-        $this->assertEquals(
+        self::assertEquals(
             [true, 'principals/prefix_user'],
             $backend->check($request, $response)
         );
@@ -152,7 +152,7 @@ abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
         $backend->setRealm('writing unittests on a saturday night');
         $backend->challenge($request, $response);
 
-        $this->assertEquals(
+        self::assertEquals(
             'Basic realm="writing unittests on a saturday night", charset="UTF-8"',
             $response->getHeader('WWW-Authenticate')
         );

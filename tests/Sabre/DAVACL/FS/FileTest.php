@@ -30,7 +30,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function testGetOwner()
     {
-        $this->assertEquals(
+        self::assertEquals(
             $this->owner,
             $this->sut->getOwner()
         );
@@ -38,14 +38,14 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function testGetGroup()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->sut->getGroup()
         );
     }
 
     public function testGetACL()
     {
-        $this->assertEquals(
+        self::assertEquals(
             $this->acl,
             $this->sut->getACL()
         );
@@ -59,7 +59,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegeSet()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->sut->getSupportedPrivilegeSet()
         );
     }

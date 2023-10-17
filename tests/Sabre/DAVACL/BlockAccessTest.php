@@ -51,7 +51,7 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
         $this->server->httpRequest->setUrl('/foo');
 
         $r = $this->server->emit('beforeMethod:GET', [$this->server->httpRequest, $this->server->httpResponse]);
-        $this->assertTrue($r);
+        self::assertTrue($r);
     }
 
     public function testHEAD()
@@ -148,7 +148,7 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $r = $this->server->emit('propFind', [$propFind, new DAV\SimpleCollection('testdir')]);
-        $this->assertTrue($r);
+        self::assertTrue($r);
 
         $expected = [
             200 => [],
@@ -161,7 +161,7 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($expected, $propFind->getResultForMultiStatus());
+        self::assertEquals($expected, $propFind->getResultForMultiStatus());
     }
 
     public function testBeforeGetPropertiesNoListing()
@@ -175,6 +175,6 @@ class BlockAccessTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $r = $this->server->emit('propFind', [$propFind, new DAV\SimpleCollection('testdir')]);
-        $this->assertFalse($r);
+        self::assertFalse($r);
     }
 }

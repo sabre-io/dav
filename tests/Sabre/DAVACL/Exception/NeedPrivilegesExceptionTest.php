@@ -41,7 +41,7 @@ class NeedPrivilegesExceptionTest extends \PHPUnit\Framework\TestCase
         $dxpath = new \DOMXPath($dom2);
         $dxpath->registerNamespace('d', 'DAV:');
         foreach ($xpaths as $xpath => $count) {
-            $this->assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : '.$xpath.', we could only find '.$dxpath->query($xpath)->length.' elements, while we expected '.$count);
+            self::assertEquals($count, $dxpath->query($xpath)->length, 'Looking for : '.$xpath.', we could only find '.$dxpath->query($xpath)->length.' elements, while we expected '.$count);
         }
     }
 }

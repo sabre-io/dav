@@ -22,9 +22,9 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
         $fakeServer->httpResponse = new HTTP\ResponseMock();
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
-        $this->assertTrue($plugin instanceof Plugin);
+        self::assertTrue($plugin instanceof Plugin);
         $fakeServer->addPlugin($plugin);
-        $this->assertEquals($plugin, $fakeServer->getPlugin('acl'));
+        self::assertEquals($plugin, $fakeServer->getPlugin('acl'));
 
         return $fakeServer;
     }
@@ -48,8 +48,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status);
-        $this->assertEquals([
+        self::assertEquals(400, $server->httpResponse->status);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -74,8 +74,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        $this->assertEquals(400, $server->httpResponse->status, $server->httpResponse->getBodyAsString());
-        $this->assertEquals([
+        self::assertEquals(400, $server->httpResponse->status, $server->httpResponse->getBodyAsString());
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -101,8 +101,8 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        $this->assertEquals(200, $server->httpResponse->status, $bodyAsString);
-        $this->assertEquals([
+        self::assertEquals(200, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $server->httpResponse->getHeaders());
@@ -129,7 +129,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
                 $count = $v2;
             }
 
-            $this->assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$bodyAsString);
+            self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$bodyAsString);
         }
     }
 }

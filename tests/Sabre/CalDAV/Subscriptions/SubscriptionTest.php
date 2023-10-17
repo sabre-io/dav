@@ -24,7 +24,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
         $id = $caldavBackend->createSubscription('principals/user1', 'uri', array_merge($info, $override));
         $subInfo = $caldavBackend->getSubscriptionsForUser('principals/user1');
 
-        $this->assertEquals(1, count($subInfo));
+        self::assertEquals(1, count($subInfo));
         $subscription = new Subscription($caldavBackend, $subInfo[0]);
 
         $this->backend = $caldavBackend;
@@ -36,11 +36,11 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
     {
         $sub = $this->getSub();
 
-        $this->assertEquals('uri', $sub->getName());
-        $this->assertEquals(date('2013-04-06 11:40:00'), $sub->getLastModified());
-        $this->assertEquals([], $sub->getChildren());
+        self::assertEquals('uri', $sub->getName());
+        self::assertEquals(date('2013-04-06 11:40:00'), $sub->getLastModified());
+        self::assertEquals([], $sub->getChildren());
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 '{DAV:}displayname' => 'displayname',
                 '{http://calendarserver.org/ns/}source' => new Href('http://example.org/src'),
@@ -48,8 +48,8 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
             $sub->getProperties(['{DAV:}displayname', '{http://calendarserver.org/ns/}source'])
         );
 
-        $this->assertEquals('principals/user1', $sub->getOwner());
-        $this->assertNull($sub->getGroup());
+        self::assertEquals('principals/user1', $sub->getOwner());
+        self::assertNull($sub->getGroup());
 
         $acl = [
             [
@@ -68,9 +68,9 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
                 'protected' => true,
             ],
         ];
-        $this->assertEquals($acl, $sub->getACL());
+        self::assertEquals($acl, $sub->getACL());
 
-        $this->assertNull($sub->getSupportedPrivilegeSet());
+        self::assertNull($sub->getSupportedPrivilegeSet());
     }
 
     public function testValues2()
@@ -79,7 +79,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
             'lastmodified' => null,
         ]);
 
-        $this->assertEquals(null, $sub->getLastModified());
+        self::assertEquals(null, $sub->getLastModified());
     }
 
     public function testSetACL()
@@ -94,7 +94,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
         $sub = $this->getSub();
         $sub->delete();
 
-        $this->assertEquals([], $this->backend->getSubscriptionsForUser('principals1/user1'));
+        self::assertEquals([], $this->backend->getSubscriptionsForUser('principals1/user1'));
     }
 
     public function testUpdateProperties()
@@ -104,9 +104,9 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
             '{DAV:}displayname' => 'foo',
         ]);
         $sub->propPatch($propPatch);
-        $this->assertTrue($propPatch->commit());
+        self::assertTrue($propPatch->commit());
 
-        $this->assertEquals(
+        self::assertEquals(
             'foo',
             $this->backend->getSubscriptionsForUser('principals/user1')[0]['{DAV:}displayname']
         );

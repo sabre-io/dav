@@ -13,7 +13,7 @@ class IMipPluginTest extends \PHPUnit\Framework\TestCase
     public function testGetPluginInfo()
     {
         $plugin = new IMipPlugin('system@example.com');
-        $this->assertEquals(
+        self::assertEquals(
             'imip',
             $plugin->getPluginInfo()['name']
         );
@@ -57,7 +57,7 @@ ICS;
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testDeliverReplyNoMailto()
@@ -85,7 +85,7 @@ ICS;
 
         $expected = [];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testDeliverRequest()
@@ -126,7 +126,7 @@ ICS;
             ],
         ];
 
-        $this->assertEquals($expected, $result);
+        self::assertEquals($expected, $result);
     }
 
     public function testDeliverCancel()
@@ -167,8 +167,8 @@ ICS;
             ],
         ];
 
-        $this->assertEquals($expected, $result);
-        $this->assertEquals('1.1', substr($message->scheduleStatus, 0, 3));
+        self::assertEquals($expected, $result);
+        self::assertEquals('1.1', substr($message->scheduleStatus, 0, 3));
     }
 
     public function schedule(Message $message)
@@ -207,8 +207,8 @@ ICS;
         $result = $this->schedule($message);
 
         $expected = [];
-        $this->assertEquals($expected, $result);
-        $this->assertSame('1', $message->getScheduleStatus()[0]);
+        self::assertEquals($expected, $result);
+        self::assertSame('1', $message->getScheduleStatus()[0]);
     }
 
     public function testRecipientNameIsEmail()
@@ -234,6 +234,6 @@ ICS;
 
         $result = $this->schedule($message);
 
-        $this->assertEquals('recipient@example.org', $result[0]['to']);
+        self::assertEquals('recipient@example.org', $result[0]['to']);
     }
 }

@@ -27,7 +27,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest
         $corePlugin = new CorePlugin();
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
-        $this->assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
+        self::assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
     }
 
     /**
@@ -58,7 +58,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest
         $corePlugin = $this->server->getPlugin('core');
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
-        $this->assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
+        self::assertEquals('hello', $propFind->get('{http://calendarserver.org/ns/}getctag'));
     }
 
     public function testNoData()
@@ -80,7 +80,7 @@ class SyncTokenPropertyTest extends \Sabre\DAVServerTest
         $corePlugin = $this->server->getPlugin('core');
         $corePlugin->propFindLate($propFind, new SimpleCollection('hi'));
 
-        $this->assertNull($propFind->get('{http://calendarserver.org/ns/}getctag'));
+        self::assertNull($propFind->get('{http://calendarserver.org/ns/}getctag'));
     }
 
     public function data()

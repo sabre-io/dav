@@ -41,7 +41,7 @@ XML;
             'time-range' => false,
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $calendarQueryReport,
             $result['value']
         );
@@ -207,7 +207,7 @@ XML;
             'time-range' => false,
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $calendarQueryReport,
             $result['value']
         );

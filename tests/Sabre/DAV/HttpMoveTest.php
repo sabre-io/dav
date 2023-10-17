@@ -33,8 +33,8 @@ class HttpMoveTest extends DAVServerTest
             'Destination' => '/file1',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(403, $response->getStatus());
-        $this->assertEquals('content1', $this->tree->getChild('file1')->get());
+        self::assertEquals(403, $response->getStatus());
+        self::assertEquals('content1', $this->tree->getChild('file1')->get());
     }
 
     public function testMove()
@@ -43,9 +43,9 @@ class HttpMoveTest extends DAVServerTest
             'Destination' => '/file3',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(201, $response->getStatus(), print_r($response, true));
-        $this->assertEquals('content1', $this->tree->getChild('file3')->get());
-        $this->assertFalse($this->tree->childExists('file1'));
+        self::assertEquals(201, $response->getStatus(), print_r($response, true));
+        self::assertEquals('content1', $this->tree->getChild('file3')->get());
+        self::assertFalse($this->tree->childExists('file1'));
     }
 
     public function testMoveToExisting()
@@ -54,9 +54,9 @@ class HttpMoveTest extends DAVServerTest
             'Destination' => '/file2',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus(), print_r($response, true));
-        $this->assertEquals('content1', $this->tree->getChild('file2')->get());
-        $this->assertFalse($this->tree->childExists('file1'));
+        self::assertEquals(204, $response->getStatus(), print_r($response, true));
+        self::assertEquals('content1', $this->tree->getChild('file2')->get());
+        self::assertFalse($this->tree->childExists('file1'));
     }
 
     public function testMoveToExistingOverwriteT()
@@ -66,9 +66,9 @@ class HttpMoveTest extends DAVServerTest
             'Overwrite' => 'T',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(204, $response->getStatus(), print_r($response, true));
-        $this->assertEquals('content1', $this->tree->getChild('file2')->get());
-        $this->assertFalse($this->tree->childExists('file1'));
+        self::assertEquals(204, $response->getStatus(), print_r($response, true));
+        self::assertEquals('content1', $this->tree->getChild('file2')->get());
+        self::assertFalse($this->tree->childExists('file1'));
     }
 
     public function testMoveToExistingOverwriteF()
@@ -78,11 +78,11 @@ class HttpMoveTest extends DAVServerTest
             'Overwrite' => 'F',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(412, $response->getStatus(), print_r($response, true));
-        $this->assertEquals('content1', $this->tree->getChild('file1')->get());
-        $this->assertEquals('content2', $this->tree->getChild('file2')->get());
-        $this->assertTrue($this->tree->childExists('file1'));
-        $this->assertTrue($this->tree->childExists('file2'));
+        self::assertEquals(412, $response->getStatus(), print_r($response, true));
+        self::assertEquals('content1', $this->tree->getChild('file1')->get());
+        self::assertEquals('content2', $this->tree->getChild('file2')->get());
+        self::assertTrue($this->tree->childExists('file1'));
+        self::assertTrue($this->tree->childExists('file2'));
     }
 
     /**
@@ -101,10 +101,10 @@ class HttpMoveTest extends DAVServerTest
             'Destination' => '/file2',
         ]);
         $response = $this->request($request);
-        $this->assertEquals(403, $response->getStatus(), print_r($response, true));
-        $this->assertEquals('content1', $this->tree->getChild('file1')->get());
-        $this->assertEquals('content2', $this->tree->getChild('file2')->get());
-        $this->assertTrue($this->tree->childExists('file1'));
-        $this->assertTrue($this->tree->childExists('file2'));
+        self::assertEquals(403, $response->getStatus(), print_r($response, true));
+        self::assertEquals('content1', $this->tree->getChild('file1')->get());
+        self::assertEquals('content2', $this->tree->getChild('file2')->get());
+        self::assertTrue($this->tree->childExists('file1'));
+        self::assertTrue($this->tree->childExists('file2'));
     }
 }

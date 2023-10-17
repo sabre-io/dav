@@ -35,7 +35,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testGetName()
     {
-        $this->assertEquals(
+        self::assertEquals(
             $this->name,
             $this->sut->getName()
         );
@@ -44,8 +44,8 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $child = $this->sut->getChild('user1');
-        $this->assertInstanceOf('Sabre\\DAVACL\\FS\\Collection', $child);
-        $this->assertEquals('user1', $child->getName());
+        self::assertInstanceOf('Sabre\\DAVACL\\FS\\Collection', $child);
+        self::assertEquals('user1', $child->getName());
 
         $owner = 'principals/user1';
         $acl = [
@@ -56,20 +56,20 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals($acl, $child->getACL());
-        $this->assertEquals($owner, $child->getOwner());
+        self::assertEquals($acl, $child->getACL());
+        self::assertEquals($owner, $child->getOwner());
     }
 
     public function testGetOwner()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->sut->getOwner()
         );
     }
 
     public function testGetGroup()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->sut->getGroup()
         );
     }
@@ -84,7 +84,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $acl,
             $this->sut->getACL()
         );
@@ -98,7 +98,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testGetSupportedPrivilegeSet()
     {
-        $this->assertNull(
+        self::assertNull(
             $this->sut->getSupportedPrivilegeSet()
         );
     }

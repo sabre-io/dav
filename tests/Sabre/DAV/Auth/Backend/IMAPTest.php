@@ -8,14 +8,14 @@ class IMAPTest extends \PHPUnit\Framework\TestCase
     {
         $mailbox = '{localhost:9993}';
         $imap = new IMAPMock($mailbox);
-        $this->assertTrue($imap->validateUserPass('username', 'password'));
+        self::assertTrue($imap->validateUserPass('username', 'password'));
     }
 
     public function testBadPassword()
     {
         $mailbox = '{localhost:9993}';
         $imap = new IMAPMock($mailbox);
-        $this->assertFalse($imap->validateUserPass('username', 'badpassword'));
+        self::assertFalse($imap->validateUserPass('username', 'badpassword'));
     }
 }
 

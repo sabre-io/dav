@@ -21,8 +21,8 @@ class ResponseTest extends DAV\Xml\XmlTest
 
         $property = new Response('uri', $innerProps);
 
-        $this->assertEquals('uri', $property->getHref());
-        $this->assertEquals($innerProps, $property->getResponseProperties());
+        self::assertEquals('uri', $property->getHref());
+        self::assertEquals($innerProps, $property->getResponseProperties());
     }
 
     /**
@@ -43,7 +43,7 @@ class ResponseTest extends DAV\Xml\XmlTest
 
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
@@ -82,7 +82,7 @@ class ResponseTest extends DAV\Xml\XmlTest
 
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertEquals(
+        self::assertEquals(
 '<d:root xmlns:d="DAV:">
  <d:response>
   <d:href>/uri</d:href>
@@ -113,7 +113,7 @@ class ResponseTest extends DAV\Xml\XmlTest
         $property = new Response('uri', $innerProps);
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
@@ -142,7 +142,7 @@ class ResponseTest extends DAV\Xml\XmlTest
         $property = new Response('uri', $innerProps);
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
@@ -196,7 +196,7 @@ class ResponseTest extends DAV\Xml\XmlTest
                 return 'world';
             },
         ]);
-        $this->assertEquals(
+        self::assertEquals(
             new Response('/uri', [
                 '200' => [
                     '{DAV:}foo' => 'world',
@@ -221,7 +221,7 @@ class ResponseTest extends DAV\Xml\XmlTest
 
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
@@ -254,7 +254,7 @@ class ResponseTest extends DAV\Xml\XmlTest
         $property = new Response('uri', $innerProps);
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
-        $this->assertXmlStringEqualsXmlString(
+        self::assertXmlStringEqualsXmlString(
 '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
@@ -292,7 +292,7 @@ class ResponseTest extends DAV\Xml\XmlTest
                 throw new \LogicException('This should never happen');
             },
         ]);
-        $this->assertEquals(
+        self::assertEquals(
             new Response('/uri', [
                 '404' => [
                     '{DAV:}foo' => null,
@@ -323,7 +323,7 @@ class ResponseTest extends DAV\Xml\XmlTest
         $result = $this->parse($xml, [
             '{DAV:}response' => Response::class,
         ]);
-        $this->assertEquals(
+        self::assertEquals(
             new Response('/uri', [
                 '404' => [
                     '{DAV:}foo' => null,

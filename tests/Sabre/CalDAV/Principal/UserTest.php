@@ -44,14 +44,14 @@ class UserTest extends \PHPUnit\Framework\TestCase
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-read');
-        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $child);
+        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $child);
     }
 
     public function testGetChildProxyWrite()
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-write');
-        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $child);
+        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $child);
     }
 
     public function testGetChildNotFound()
@@ -72,17 +72,17 @@ class UserTest extends \PHPUnit\Framework\TestCase
     {
         $u = $this->getInstance();
         $children = $u->getChildren();
-        $this->assertEquals(2, count($children));
-        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $children[0]);
-        $this->assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $children[1]);
+        self::assertEquals(2, count($children));
+        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $children[0]);
+        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $children[1]);
     }
 
     public function testChildExist()
     {
         $u = $this->getInstance();
-        $this->assertTrue($u->childExists('calendar-proxy-read'));
-        $this->assertTrue($u->childExists('calendar-proxy-write'));
-        $this->assertFalse($u->childExists('foo'));
+        self::assertTrue($u->childExists('calendar-proxy-read'));
+        self::assertTrue($u->childExists('calendar-proxy-write'));
+        self::assertFalse($u->childExists('foo'));
     }
 
     public function testGetACL()
@@ -106,6 +106,6 @@ class UserTest extends \PHPUnit\Framework\TestCase
         ];
 
         $u = $this->getInstance();
-        $this->assertEquals($expected, $u->getACL());
+        self::assertEquals($expected, $u->getACL());
     }
 }

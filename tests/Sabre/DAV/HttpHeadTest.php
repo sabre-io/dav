@@ -33,12 +33,12 @@ class HttpHeadTest extends DAVServerTest
         $request = new HTTP\Request('HEAD', '//file1');
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        self::assertEquals(200, $response->getStatus());
 
         // Removing Last-Modified because it keeps changing.
         $response->removeHeader('Last-Modified');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'X-Sabre-Version' => [Version::VERSION],
                 'Content-Type' => ['application/octet-stream'],
@@ -48,7 +48,7 @@ class HttpHeadTest extends DAVServerTest
             $response->getHeaders()
         );
 
-        $this->assertEquals('', $response->getBodyAsString());
+        self::assertEquals('', $response->getBodyAsString());
     }
 
     /**
@@ -61,7 +61,7 @@ class HttpHeadTest extends DAVServerTest
         $request = new HTTP\Request('HEAD', '/dir');
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        self::assertEquals(200, $response->getStatus());
     }
 
     /**
@@ -86,8 +86,8 @@ class HttpHeadTest extends DAVServerTest
         $request = new HTTP\Request('HEAD', '/file1', ['Authorization' => 'Basic '.base64_encode('user:pass')]);
         $response = $this->request($request);
 
-        $this->assertEquals(200, $response->getStatus());
+        self::assertEquals(200, $response->getStatus());
 
-        $this->assertEquals(1, $count, 'Auth was triggered twice :(');
+        self::assertEquals(1, $count, 'Auth was triggered twice :(');
     }
 }

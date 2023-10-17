@@ -4,7 +4,7 @@ namespace Sabre\CardDAV\Xml\Request;
 
 use Sabre\DAV\Xml\XmlTest;
 
-class AddressBookMultiGetTest extends XmlTest
+class AddressBookMultiGetReportTest extends XmlTest
 {
     protected $elementMap = [
         '{urn:ietf:params:xml:ns:carddav}addressbook-multiget' => 'Sabre\\CardDAV\\Xml\\Request\AddressBookMultiGetReport',
@@ -36,7 +36,7 @@ class AddressBookMultiGetTest extends XmlTest
         );
     }
 
-    public function providesAddressDataXml()
+    public function providesAddressDataXml(): array
     {
         $simpleXml = <<<XML
 <?xml version='1.0' encoding='UTF-8' ?>
@@ -83,7 +83,7 @@ XML;
         return [
             'address data with version' => [$simpleXml, [], '4.0'],
             'address data with inner all props' => [$allPropsXml, []],
-            'address data with mutliple props' => [$multiplePropsXml, ['VERSION', 'UID', 'NICKNAME', 'EMAIL', 'FN']],
+            'address data with multiple props' => [$multiplePropsXml, ['VERSION', 'UID', 'NICKNAME', 'EMAIL', 'FN']],
         ];
     }
 }

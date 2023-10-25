@@ -31,8 +31,11 @@ interface ICopyTarget extends ICollection
      * @param string $targetName new local file/collection name
      * @param string $sourcePath Full path to source node
      * @param INode  $sourceNode Source node itself
+     * @param string|int $depth How many level of children to copy.
+     *                          The value can be 'infinity' or a positiv number including zero.
+     *                          Zero means to only copy a shallow collection with props but without children.
      *
      * @return bool
      */
-    public function copyInto($targetName, $sourcePath, INode $sourceNode);
+    public function copyInto($targetName, $sourcePath, INode $sourceNode, $depth);
 }

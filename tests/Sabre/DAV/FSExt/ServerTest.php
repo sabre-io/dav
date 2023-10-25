@@ -234,7 +234,10 @@ class ServerTest extends DAV\AbstractServerTestCase
     {
         mkdir($this->tempDir.'/testcol');
 
-        $request = new HTTP\Request('COPY', '/test.txt', ['Destination' => '/testcol/test2.txt']);
+        $request = new HTTP\Request('COPY', '/test.txt', [
+            'Destination' => '/testcol/test2.txt',
+            'Depth' => 'infinity',
+        ]);
         $this->server->httpRequest = ($request);
         $this->server->exec();
 

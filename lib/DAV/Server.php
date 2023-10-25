@@ -725,10 +725,17 @@ class Server implements LoggerAwareInterface, EmitterInterface
             throw new Exception\BadRequest('The destination header was not supplied');
         }
         $destination = $this->calculateUri($request->getHeader('Destination'));
-        $overwrite = $request->getHeader('Overwrite');
-        if (!$overwrite) {
-            $overwrite = 'T';
+
+        // Depth of inifinty is valid for MOVE and COPY. If it is not set the RFC requires to act like it was 'infinity'.
+        $depth = strtolower($request->getHeader('Depth') ?? 'infinity');
+        if ($depth !== 'infinity' && is_numeric($depth)) {
+            $depth = (int)$depth;
+            if ($depth < 0) {
+                throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positiv number');
+            }
         }
+
+        $overwrite = $request->getHeader('Overwrite') ?? 'T';
         if ('T' == strtoupper($overwrite)) {
             $overwrite = true;
         } elseif ('F' == strtoupper($overwrite)) {
@@ -773,6 +780,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
         // These are the three relevant properties we need to return
         return [
+            'depth' => $depth,
             'destination' => $destination,
             'destinationExists' => (bool) $destinationNode,
             'destinationNode' => $destinationNode,

@@ -137,8 +137,11 @@ class Tree implements INodeByPath
      *
      * @param string $sourcePath      The source location
      * @param string $destinationPath The full destination path
+     * @param int|string $depth How much levle of children to copy.
+     *                          The value can be 'infinity' or a positiv integer, including zero.
+     *                          Zero means only copy the collection without children but with its properties.
      */
-    public function copy($sourcePath, $destinationPath)
+    public function copy($sourcePath, $destinationPath, $depth = 'infinity')
     {
         $sourceNode = $this->getNodeForPath($sourcePath);
 
@@ -147,8 +150,8 @@ class Tree implements INodeByPath
 
         $destinationParent = $this->getNodeForPath($destinationDir);
         // Check if the target can handle the copy itself. If not, we do it ourselves.
-        if (!$destinationParent instanceof ICopyTarget || !$destinationParent->copyInto($destinationName, $sourcePath, $sourceNode)) {
-            $this->copyNode($sourceNode, $destinationParent, $destinationName);
+        if (!$destinationParent instanceof ICopyTarget || !$destinationParent->copyInto($destinationName, $sourcePath, $sourceNode, $depth)) {
+            $this->copyNode($sourceNode, $destinationParent, $destinationName, $depth);
         }
 
         $this->markDirty($destinationDir);
@@ -178,7 +181,8 @@ class Tree implements INodeByPath
                 $moveSuccess = $newParentNode->moveInto($destinationName, $sourcePath, $sourceNode);
             }
             if (!$moveSuccess) {
-                $this->copy($sourcePath, $destinationPath);
+                // Move is a copy with depth = infinity and deleting the source afterwards
+                $this->copy($sourcePath, $destinationPath, 'infinity');
                 $this->getNodeForPath($sourcePath)->delete();
             }
         }
@@ -215,9 +219,13 @@ class Tree implements INodeByPath
             $basePath .= '/';
         }
 
-        foreach ($node->getChildren() as $child) {
-            $this->cache[$basePath.$child->getName()] = $child;
-            yield $child;
+        if ($node instanceof ICollection) {
+            foreach ($node->getChildren() as $child) {
+                $this->cache[$basePath.$child->getName()] = $child;
+                yield $child;
+            }
+        } else {
+            yield from [];
         }
     }
 
@@ -303,8 +311,9 @@ class Tree implements INodeByPath
      * copyNode.
      *
      * @param string $destinationName
+     * @param int|string $depth How many children of the node to copy
      */
-    protected function copyNode(INode $source, ICollection $destinationParent, $destinationName = null)
+    protected function copyNode(INode $source, ICollection $destinationParent, ?string $destinationName = null, $depth = 'infinity')
     {
         if ('' === (string) $destinationName) {
             $destinationName = $source->getName();
@@ -326,10 +335,16 @@ class Tree implements INodeByPath
             $destination = $destinationParent->getChild($destinationName);
         } elseif ($source instanceof ICollection) {
             $destinationParent->createDirectory($destinationName);
-
             $destination = $destinationParent->getChild($destinationName);
-            foreach ($source->getChildren() as $child) {
-                $this->copyNode($child, $destination);
+
+            // Copy children if depth is not zero
+            if ($depth !== 0) {
+                // Adjust next depth for children (keep 'infinity' or decrease)
+                $depth = $depth === 'infinity' ? 'infinity' : $depth - 1;
+                $destination = $destinationParent->getChild($destinationName);
+                foreach ($source->getChildren() as $child) {
+                    $this->copyNode($child, $destination, null, $depth);
+                }
             }
         }
         if ($source instanceof IProperties && $destination instanceof IProperties) {

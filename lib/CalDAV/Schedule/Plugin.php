@@ -968,7 +968,7 @@ class Plugin extends ServerPlugin
      *
      * @return bool
      */
-    private function scheduleReply(RequestInterface $request)
+    protected function scheduleReply(RequestInterface $request)
     {
         $scheduleReply = $request->getHeader('Schedule-Reply');
 

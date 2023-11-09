@@ -16,7 +16,7 @@ use Sabre\Uri;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class Tree
+class Tree implements INodeByPath
 {
     /**
      * The root node.

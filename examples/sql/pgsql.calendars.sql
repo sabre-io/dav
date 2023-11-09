@@ -53,8 +53,8 @@ CREATE UNIQUE INDEX calendarinstances_principaluri_uri
     ON calendarinstances USING btree (principaluri, uri);
 
 
-CREATE UNIQUE INDEX calendarinstances_principaluri_calendarid
-    ON calendarinstances USING btree (principaluri, calendarid);
+CREATE UNIQUE INDEX calendarinstances_calendarid_principaluri
+    ON calendarinstances USING btree (calendarid, principaluri);
 
 CREATE UNIQUE INDEX calendarinstances_calendarid_share_href
     ON calendarinstances USING btree (calendarid, share_href);

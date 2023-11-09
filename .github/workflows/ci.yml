@@ -109,7 +109,7 @@ jobs:
 
       - name: PHPUnit
         if: matrix.streaming == false
-        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml tests
         env:
           SABRE_MYSQLUSER: root
           SABRE_MYSQLPASS: root
@@ -118,7 +118,7 @@ jobs:
 
       - name: PHPUnit (with streaming)
         if: matrix.streaming == true
-        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --verbose --configuration tests/phpunit.xml --coverage-clover=coverage.xml tests
         env:
           SABRE_MYSQLUSER: root
           SABRE_MYSQLPASS: root

@@ -56,8 +56,8 @@ CREATE UNIQUE INDEX calendarinstances_principaluri_uri
 CREATE UNIQUE INDEX calendarinstances_principaluri_calendarid
     ON calendarinstances USING btree (principaluri, calendarid);
 
-CREATE UNIQUE INDEX calendarinstances_calendarid_share_href
-    ON calendarinstances USING btree (calendarid, share_href);
+CREATE UNIQUE INDEX calendarinstances_principaluri_share_href
+    ON calendarinstances USING btree (principaluri, share_href);
 
 CREATE TABLE calendarsubscriptions (
     id SERIAL NOT NULL,

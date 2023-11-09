@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class TemporaryFileFilterTest extends AbstractServer
+class TemporaryFileFilterTest extends AbstractServerTestCase
 {
     public function setup(): void
     {

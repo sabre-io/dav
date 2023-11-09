@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use Sabre\DAVServerTest;
+use Sabre\AbstractDAVServerTestCase;
 use Sabre\HTTP;
 
 /**
@@ -14,7 +14,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class HttpDeleteTest extends DAVServerTest
+class HttpDeleteTest extends AbstractDAVServerTestCase
 {
     /**
      * Sets up the DAV tree.

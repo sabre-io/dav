@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Request;
 
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\DAV\Xml\XmlTest;
 
-class ShareTest extends XmlTest
+class ShareTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{http://calendarserver.org/ns/}share' => 'Sabre\\CalDAV\\Xml\\Request\\Share',

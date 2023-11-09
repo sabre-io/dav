@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-class SyncTokenPropertyTest extends \Sabre\DAVServerTest
+class SyncTokenPropertyTest extends \Sabre\AbstractDAVServerTestCase
 {
     /**
      * The assumption in these tests is that a PROPFIND is going on, and to

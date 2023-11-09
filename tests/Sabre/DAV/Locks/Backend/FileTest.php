@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
-class FileTest extends AbstractTest
+class FileTest extends AbstractTestCase
 {
     public function getBackend()
     {

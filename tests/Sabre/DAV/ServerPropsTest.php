@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerPropsTest extends AbstractServer
+class ServerPropsTest extends AbstractServerTestCase
 {
     protected function getRootNode()
     {

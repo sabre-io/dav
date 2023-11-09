@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class PropFindTest extends XmlTest
+class PropFindTest extends AbstractXmlTestCase
 {
     public function testDeserializeProp()
     {

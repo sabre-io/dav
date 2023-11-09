@@ -7,7 +7,7 @@ namespace Sabre\CalDAV\Xml\Property;
 use Sabre\CalDAV;
 use Sabre\DAV;
 
-class SupportedCalendarComponentSetTest extends DAV\Xml\XmlTest
+class SupportedCalendarComponentSetTest extends DAV\Xml\AbstractXmlTestCase
 {
     public function setup(): void
     {

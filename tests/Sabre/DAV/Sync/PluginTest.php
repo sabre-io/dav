@@ -7,7 +7,7 @@ namespace Sabre\DAV\Sync;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginTest extends \Sabre\DAVServerTest
+class PluginTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $collection;
 

@@ -2,9 +2,9 @@
 
 namespace Sabre\CardDAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class AddressBookMultiGetReportTest extends XmlTest
+class AddressBookMultiGetReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{urn:ietf:params:xml:ns:carddav}addressbook-multiget' => 'Sabre\\CardDAV\\Xml\\Request\AddressBookMultiGetReport',

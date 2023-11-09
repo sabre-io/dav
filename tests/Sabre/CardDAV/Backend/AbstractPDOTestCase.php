@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Sabre\CardDAV\Backend;
 
+use PHPUnit\Framework\TestCase;
 use Sabre\CardDAV;
+use Sabre\DAV\DbTestHelperTrait;
 use Sabre\DAV\PropPatch;
 
-abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPDOTestCase extends TestCase
 {
-    use \Sabre\DAV\DbTestHelperTrait;
+    use DbTestHelperTrait;
 
     /**
      * @var CardDAV\Backend\PDO

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Browser\HtmlOutputHelper;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class HrefTest extends XmlTest
+class HrefTest extends AbstractXmlTestCase
 {
     public function testConstruct()
     {

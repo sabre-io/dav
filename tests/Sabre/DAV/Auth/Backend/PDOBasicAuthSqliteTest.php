@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
-class PDOBasicAuthSqliteTest extends AbstractPDOBasicAuthTest
+class PDOBasicAuthSqliteTest extends AbstractPDOBasicAuthTestCase
 {
     public $driver = 'sqlite';
 }

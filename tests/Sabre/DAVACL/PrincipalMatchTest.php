@@ -6,7 +6,7 @@ namespace Sabre\DAVACL;
 
 use Sabre\HTTP\Request;
 
-class PrincipalMatchTest extends \Sabre\DAVServerTest
+class PrincipalMatchTest extends \Sabre\AbstractDAVServerTestCase
 {
     public $setupACL = true;
     public $autoLogin = 'user1';

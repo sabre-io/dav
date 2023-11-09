@@ -14,7 +14,7 @@ use Sabre\VObject;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ExpandEventsDTSTARTandDTENDTest extends \Sabre\DAVServerTest
+class ExpandEventsDTSTARTandDTENDTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
 

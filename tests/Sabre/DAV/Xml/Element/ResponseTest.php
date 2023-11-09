@@ -6,7 +6,7 @@ namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV;
 
-class ResponseTest extends DAV\Xml\XmlTest
+class ResponseTest extends DAV\Xml\AbstractXmlTestCase
 {
     public function testSimple()
     {

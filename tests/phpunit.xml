@@ -6,9 +6,6 @@
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="sabre-http">
-      <directory>../vendor/sabre/http/tests/HTTP</directory>
-    </testsuite>
     <testsuite name="sabre-dav">
       <directory>Sabre/DAV</directory>
     </testsuite>

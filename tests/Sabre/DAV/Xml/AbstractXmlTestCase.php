@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml;
 
+use PHPUnit\Framework\TestCase;
 use Sabre\Xml\Reader;
 use Sabre\Xml\Writer;
 
-abstract class XmlTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractXmlTestCase extends TestCase
 {
     protected $elementMap = [];
     protected $namespaceMap = ['DAV:' => 'd'];

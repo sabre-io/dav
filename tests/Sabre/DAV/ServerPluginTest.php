@@ -6,10 +6,10 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerPluginTest extends AbstractServer
+class ServerPluginTest extends AbstractServerTestCase
 {
     /**
-     * @var Sabre\DAV\TestPlugin
+     * @var TestPlugin
      */
     protected $testPlugin;
 

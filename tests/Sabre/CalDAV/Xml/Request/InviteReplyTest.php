@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sabre\CalDAV\Xml\Request;
 
 use Sabre\DAV;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class InviteReplyTest extends XmlTest
+class InviteReplyTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{http://calendarserver.org/ns/}invite-reply' => 'Sabre\\CalDAV\\Xml\\Request\\InviteReply',

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
+use Sabre\AbstractDAVServerTestCase;
 use Sabre\HTTP;
 
-class HTTPPreferParsingTest extends \Sabre\DAVServerTest
+class HTTPPreferParsingTest extends AbstractDAVServerTestCase
 {
-    public function assertParseResult($input, $expected)
+    public static function assertParseResult($input, $expected)
     {
         $httpRequest = new HTTP\Request('GET', '/foo', [
             'Prefer' => $input,

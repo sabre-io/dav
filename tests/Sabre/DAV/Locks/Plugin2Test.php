@@ -6,7 +6,7 @@ namespace Sabre\DAV\Locks;
 
 use Sabre\HTTP\Request;
 
-class Plugin2Test extends \Sabre\DAVServerTest
+class Plugin2Test extends \Sabre\AbstractDAVServerTestCase
 {
     public $setupLocks = true;
 

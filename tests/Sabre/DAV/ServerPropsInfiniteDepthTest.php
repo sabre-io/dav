@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerPropsInfiniteDepthTest extends AbstractServer
+class ServerPropsInfiniteDepthTest extends AbstractServerTestCase
 {
     protected function getRootNode()
     {

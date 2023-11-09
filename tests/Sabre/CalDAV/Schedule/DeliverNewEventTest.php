@@ -7,7 +7,7 @@ namespace Sabre\CalDAV\Schedule;
 use Sabre\HTTP\Request;
 use Sabre\VObject;
 
-class DeliverNewEventTest extends \Sabre\DAVServerTest
+class DeliverNewEventTest extends \Sabre\AbstractDAVServerTestCase
 {
     public $setupCalDAV = true;
     public $setupCalDAVScheduling = true;

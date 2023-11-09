@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
-class PluginBasicTest extends \Sabre\DAVServerTest
+class PluginBasicTest extends \Sabre\AbstractDAVServerTestCase
 {
     public $setupCalDAV = true;
     public $setupCalDAVScheduling = true;

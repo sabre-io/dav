@@ -7,7 +7,7 @@ namespace Sabre\DAV\Locks;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginTest extends DAV\AbstractServer
+class PluginTest extends DAV\AbstractServerTestCase
 {
     /**
      * @var Plugin

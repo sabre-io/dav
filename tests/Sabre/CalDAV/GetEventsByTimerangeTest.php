@@ -13,7 +13,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class GetEventsByTimerangeTest extends \Sabre\DAVServerTest
+class GetEventsByTimerangeTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
 

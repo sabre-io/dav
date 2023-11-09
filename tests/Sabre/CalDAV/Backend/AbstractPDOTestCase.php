@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
+use DateTime;
+use PHPUnit\Framework\TestCase;
 use Sabre\CalDAV;
 use Sabre\DAV;
 use Sabre\DAV\PropPatch;
+use Sabre\DAV\Sharing\Plugin;
 use Sabre\DAV\Xml\Element\Sharee;
+use Sabre\DAV\Xml\Property\Href;
 
-abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPDOTestCase extends TestCase
 {
     use DAV\DbTestHelperTrait;
 
@@ -64,7 +68,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             '{DAV:}displayname' => 'Hello!',
             '{urn:ietf:params:xml:ns:caldav}calendar-description' => '',
             '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('transparent'),
-            'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
+            'share-access' => Plugin::ACCESS_SHAREDOWNER,
         ];
 
         self::assertIsArray($calendars);
@@ -765,8 +769,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new \DateTime('20120103'),
-                        'end' => new \DateTime('20120104'),
+                        'start' => new DateTime('20120103'),
+                        'end' => new DateTime('20120104'),
                     ],
                 ],
             ],
@@ -796,7 +800,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new \DateTime('20120102'),
+                        'start' => new DateTime('20120102'),
                         'end' => null,
                     ],
                 ],
@@ -827,7 +831,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new \DateTime('20120102'),
+                        'start' => new DateTime('20120102'),
                     ],
                 ],
             ],
@@ -857,7 +861,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'end' => new \DateTime('20120102'),
+                        'end' => new DateTime('20120102'),
                     ],
                 ],
             ],
@@ -991,7 +995,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testCreateSubscriptions()
     {
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal.ics'),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -1032,7 +1036,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testUpdateSubscriptions()
     {
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal.ics'),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -1046,7 +1050,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $newProps = [
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
         ];
 
         $propPatch = new DAV\PropPatch($newProps);
@@ -1074,7 +1078,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testUpdateSubscriptionsFail()
     {
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal.ics'),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -1088,7 +1092,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $propPatch = new DAV\PropPatch([
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
             '{DAV:}unknown' => 'foo',
         ]);
 
@@ -1105,7 +1109,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
     public function testDeleteSubscriptions()
     {
         $props = [
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal.ics'),
             '{DAV:}displayname' => 'cal',
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
@@ -1119,7 +1123,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
 
         $newProps = [
             '{DAV:}displayname' => 'new displayname',
-            '{http://calendarserver.org/ns/}source' => new \Sabre\DAV\Xml\Property\Href('http://example.org/cal2.ics'),
+            '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
         ];
 
         $backend->deleteSubscription(1);
@@ -1213,8 +1217,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'principals/user1',
                 'principal' => 'principals/user1',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'access' => Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => Plugin::INVITE_ACCEPTED,
             ]),
         ];
 
@@ -1250,8 +1254,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $ownerSharee = new Sharee([
             'href' => 'principals/user1',
             'principal' => 'principals/user1',
-            'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            'access' => Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => Plugin::INVITE_ACCEPTED,
         ]);
 
         // Add a new invite
@@ -1261,8 +1265,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 new Sharee([
                     'href' => 'mailto:user@example.org',
                     'principal' => 'principals/user2',
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'access' => Plugin::ACCESS_READ,
+                    'inviteStatus' => Plugin::INVITE_ACCEPTED,
                     'properties' => ['{DAV:}displayname' => 'User 2'],
                 ]),
             ]
@@ -1274,8 +1278,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'mailto:user@example.org',
                 'principal' => 'principals/user2',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'access' => Plugin::ACCESS_READ,
+                'inviteStatus' => Plugin::INVITE_ACCEPTED,
                 'properties' => [
                     '{DAV:}displayname' => 'User 2',
                 ],
@@ -1289,7 +1293,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'principaluri' => 'principals/user2',
             '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/1',
             '{http://sabredav.org/ns}sync-token' => '1',
-            'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+            'share-access' => Plugin::ACCESS_READ,
             'read-only' => true,
             'share-resource-uri' => '/ns/share/1',
         ];
@@ -1310,8 +1314,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 new Sharee([
                     'href' => 'mailto:user@example.org',
                     'principal' => 'principals/user2',
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
-                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'access' => Plugin::ACCESS_READWRITE,
+                    'inviteStatus' => Plugin::INVITE_ACCEPTED,
                 ]),
             ]
         );
@@ -1322,8 +1326,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'mailto:user@example.org',
                 'principal' => 'principals/user2',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'access' => Plugin::ACCESS_READWRITE,
+                'inviteStatus' => Plugin::INVITE_ACCEPTED,
                 'properties' => [
                     '{DAV:}displayname' => 'User 2',
                 ],
@@ -1337,7 +1341,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             [
                 new Sharee([
                     'href' => 'mailto:user@example.org',
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                    'access' => Plugin::ACCESS_NOACCESS,
                 ]),
             ]
         );
@@ -1354,7 +1358,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             [
                 new Sharee([
                     'href' => 'principals/user2',
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS,
+                    'access' => Plugin::ACCESS_NOACCESS,
                 ]),
             ]
         );
@@ -1364,8 +1368,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'principals/user1',
                 'principal' => 'principals/user1',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'access' => Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => Plugin::INVITE_ACCEPTED,
             ]),
         ];
         self::assertEquals($expected, $result);
@@ -1399,8 +1403,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $ownerSharee = new Sharee([
             'href' => 'principals/user1',
             'principal' => 'principals/user1',
-            'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            'access' => Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => Plugin::INVITE_ACCEPTED,
         ]);
 
         // Add a new invite
@@ -1410,8 +1414,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 new Sharee([
                     'href' => 'mailto:user@example.org',
                     'principal' => null,
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'access' => Plugin::ACCESS_READ,
+                    'inviteStatus' => Plugin::INVITE_ACCEPTED,
                     'properties' => ['{DAV:}displayname' => 'User 2'],
                 ]),
             ]
@@ -1423,8 +1427,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'mailto:user@example.org',
                 'principal' => null,
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_INVALID,
+                'access' => Plugin::ACCESS_READ,
+                'inviteStatus' => Plugin::INVITE_INVALID,
                 'properties' => [
                     '{DAV:}displayname' => 'User 2',
                 ],
@@ -1447,8 +1451,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
         $ownerSharee = new Sharee([
             'href' => 'principals/user1',
             'principal' => 'principals/user1',
-            'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-            'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+            'access' => Plugin::ACCESS_SHAREDOWNER,
+            'inviteStatus' => Plugin::INVITE_ACCEPTED,
         ]);
 
         // Add a new invite
@@ -1458,8 +1462,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
                 new Sharee([
                     'href' => 'mailto:user@example.org',
                     'principal' => 'principals/user2',
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                    'access' => Plugin::ACCESS_READ,
+                    'inviteStatus' => Plugin::INVITE_ACCEPTED,
                     'properties' => ['{DAV:}displayname' => 'User 2'],
                 ]),
             ]
@@ -1470,7 +1474,7 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             'principaluri' => 'principals/user2',
             '{http://calendarserver.org/ns/}getctag' => 'http://sabre.io/ns/sync/1',
             '{http://sabredav.org/ns}sync-token' => '1',
-            'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
+            'share-access' => Plugin::ACCESS_READ,
             'read-only' => true,
             'share-resource-uri' => '/ns/share/1',
         ];
@@ -1497,8 +1501,8 @@ abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
             new Sharee([
                 'href' => 'principals/user1',
                 'principal' => 'principals/user1',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED,
+                'access' => Plugin::ACCESS_SHAREDOWNER,
+                'inviteStatus' => Plugin::INVITE_ACCEPTED,
             ]),
         ];
         self::assertEquals($expected, $result);

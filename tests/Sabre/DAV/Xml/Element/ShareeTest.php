@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sabre\DAV\Xml\Element;
 
 use Sabre\DAV\Sharing\Plugin;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class ShareeTest extends XmlTest
+class ShareeTest extends AbstractXmlTestCase
 {
     public function testShareeUnknownPropertyInConstructor()
     {

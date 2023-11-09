@@ -9,7 +9,7 @@ use Sabre\DAVACL;
 use Sabre\HTTP;
 use Sabre\VObject;
 
-class ICSExportPluginTest extends \Sabre\DAVServerTest
+class ICSExportPluginTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
 

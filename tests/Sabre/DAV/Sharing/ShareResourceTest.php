@@ -8,7 +8,7 @@ use Sabre\DAV\Mock;
 use Sabre\DAV\Xml\Element\Sharee;
 use Sabre\HTTP\Request;
 
-class ShareResourceTest extends \Sabre\DAVServerTest
+class ShareResourceTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupSharing = true;
     protected $sharingNodeMock;

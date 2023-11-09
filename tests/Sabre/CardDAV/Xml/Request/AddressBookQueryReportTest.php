@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\CardDAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class AddressBookQueryReportTest extends XmlTest
+class AddressBookQueryReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{urn:ietf:params:xml:ns:carddav}addressbook-query' => 'Sabre\\CardDAV\\Xml\\Request\AddressBookQueryReport',

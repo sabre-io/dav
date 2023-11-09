@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\PropertyStorage;
 
-class PluginTest extends \Sabre\DAVServerTest
+class PluginTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $backend;
     protected $plugin;

@@ -14,7 +14,7 @@ use Sabre\HTTP;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ServerRangeTest extends \Sabre\DAVServerTest
+class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupFiles = true;
 

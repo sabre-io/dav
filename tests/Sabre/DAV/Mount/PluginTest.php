@@ -7,7 +7,7 @@ namespace Sabre\DAV\Mount;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginTest extends DAV\AbstractServer
+class PluginTest extends DAV\AbstractServerTestCase
 {
     public function setup(): void
     {

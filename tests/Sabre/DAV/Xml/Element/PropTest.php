@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Element;
 
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 use Sabre\DAV\Xml\Property\Complex;
 use Sabre\DAV\Xml\Property\Href;
-use Sabre\DAV\Xml\XmlTest;
 
-class PropTest extends XmlTest
+class PropTest extends AbstractXmlTestCase
 {
     public function testDeserializeSimple()
     {

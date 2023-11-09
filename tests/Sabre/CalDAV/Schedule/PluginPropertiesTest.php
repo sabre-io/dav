@@ -6,7 +6,7 @@ namespace Sabre\CalDAV\Schedule;
 
 use Sabre\DAV;
 
-class PluginPropertiesTest extends \Sabre\DAVServerTest
+class PluginPropertiesTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
     protected $setupCalDAVScheduling = true;

@@ -9,7 +9,7 @@ class FileTest extends AbstractTest
     public function getBackend()
     {
         \Sabre\TestUtil::clearTempDir();
-        $backend = new File(SABRE_TEMPDIR.'/lockdb');
+        $backend = new File(\Sabre\TestUtil::SABRE_TEMPDIR.'/lockdb');
 
         return $backend;
     }

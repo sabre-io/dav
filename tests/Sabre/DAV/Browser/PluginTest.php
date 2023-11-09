@@ -146,7 +146,7 @@ class PluginTest extends DAV\AbstractServer
             'Location' => ['/'],
         ], $this->response->getHeaders());
 
-        self::assertTrue(is_dir(SABRE_TEMPDIR.'/new_collection'));
+        self::assertTrue(is_dir(\Sabre\TestUtil::SABRE_TEMPDIR.'/new_collection'));
     }
 
     public function testGetAsset()

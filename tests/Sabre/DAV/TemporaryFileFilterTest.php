@@ -11,7 +11,7 @@ class TemporaryFileFilterTest extends AbstractServer
     public function setup(): void
     {
         parent::setUp();
-        $plugin = new TemporaryFileFilterPlugin(SABRE_TEMPDIR.'/tff');
+        $plugin = new TemporaryFileFilterPlugin(\Sabre\TestUtil::SABRE_TEMPDIR.'/tff');
         $this->server->addPlugin($plugin);
     }
 
@@ -26,7 +26,7 @@ class TemporaryFileFilterTest extends AbstractServer
         self::assertEquals(201, $this->response->status);
         self::assertEquals('0', $this->response->getHeader('Content-Length'));
 
-        self::assertEquals('Testing new file', file_get_contents(SABRE_TEMPDIR.'/testput.txt'));
+        self::assertEquals('Testing new file', file_get_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/testput.txt'));
     }
 
     public function testPutTemp()
@@ -43,7 +43,7 @@ class TemporaryFileFilterTest extends AbstractServer
             'X-Sabre-Temp' => ['true'],
         ], $this->response->getHeaders());
 
-        self::assertFalse(file_exists(SABRE_TEMPDIR.'/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
+        self::assertFalse(file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
     }
 
     public function testPutTempIfNoneMatch()
@@ -60,7 +60,7 @@ class TemporaryFileFilterTest extends AbstractServer
             'X-Sabre-Temp' => ['true'],
         ], $this->response->getHeaders());
 
-        self::assertFalse(file_exists(SABRE_TEMPDIR.'/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
+        self::assertFalse(file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'/._testput.txt'), '._testput.txt should not exist in the regular file structure.');
 
         $this->server->exec();
 
@@ -112,8 +112,8 @@ class TemporaryFileFilterTest extends AbstractServer
 
     public function testLockNonExistant()
     {
-        mkdir(SABRE_TEMPDIR.'/locksdir');
-        $locksBackend = new Locks\Backend\File(SABRE_TEMPDIR.'/locks');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/locksdir');
+        $locksBackend = new Locks\Backend\File(\Sabre\TestUtil::SABRE_TEMPDIR.'/locks');
         $locksPlugin = new Locks\Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
 
@@ -136,7 +136,7 @@ class TemporaryFileFilterTest extends AbstractServer
         self::assertTrue(1 === preg_match('/^<opaquelocktoken:(.*)>$/', $this->response->getHeader('Lock-Token')), 'We did not get a valid Locktoken back ('.$this->response->getHeader('Lock-Token').')');
         self::assertEquals('true', $this->response->getHeader('X-Sabre-Temp'));
 
-        self::assertFalse(file_exists(SABRE_TEMPDIR.'/._testlock.txt'), '._testlock.txt should not exist in the regular file structure.');
+        self::assertFalse(file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'/._testlock.txt'), '._testlock.txt should not exist in the regular file structure.');
     }
 
     public function testPutDelete()

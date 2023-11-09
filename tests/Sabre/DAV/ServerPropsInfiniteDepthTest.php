@@ -10,28 +10,28 @@ class ServerPropsInfiniteDepthTest extends AbstractServer
 {
     protected function getRootNode()
     {
-        return new FSExt\Directory(SABRE_TEMPDIR);
+        return new FSExt\Directory(\Sabre\TestUtil::SABRE_TEMPDIR);
     }
 
     public function setup(): void
     {
-        if (file_exists(SABRE_TEMPDIR.'../.sabredav')) {
-            unlink(SABRE_TEMPDIR.'../.sabredav');
+        if (file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'../.sabredav')) {
+            unlink(\Sabre\TestUtil::SABRE_TEMPDIR.'../.sabredav');
         }
         parent::setUp();
-        file_put_contents(SABRE_TEMPDIR.'/test2.txt', 'Test contents2');
-        mkdir(SABRE_TEMPDIR.'/col');
-        mkdir(SABRE_TEMPDIR.'/col/col');
-        file_put_contents(SABRE_TEMPDIR.'col/col/test.txt', 'Test contents');
-        $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(SABRE_TEMPDIR.'/.locksdb')));
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/test2.txt', 'Test contents2');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/col');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/col/col');
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'col/col/test.txt', 'Test contents');
+        $this->server->addPlugin(new Locks\Plugin(new Locks\Backend\File(\Sabre\TestUtil::SABRE_TEMPDIR.'/.locksdb')));
         $this->server->enablePropfindDepthInfinity = true;
     }
 
     public function teardown(): void
     {
         parent::tearDown();
-        if (file_exists(SABRE_TEMPDIR.'../.locksdb')) {
-            unlink(SABRE_TEMPDIR.'../.locksdb');
+        if (file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'../.locksdb')) {
+            unlink(\Sabre\TestUtil::SABRE_TEMPDIR.'../.locksdb');
         }
     }
 

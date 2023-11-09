@@ -27,9 +27,6 @@ class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
 
     public function setup(): void
     {
-        if (!SABRE_HASSQLITE) {
-            $this->markTestSkipped('SQLite driver is not available');
-        }
         $this->backend = new Backend\MockScheduling();
 
         $this->data = <<<ICS

@@ -77,11 +77,9 @@ class Complex extends XmlFragment
         $reader->read();
 
         if ($nonText) {
-            $new = new self($xml);
-
-            return $new;
-        } else {
-            return $text;
+            return new self($xml);
         }
+
+        return $text;
     }
 }

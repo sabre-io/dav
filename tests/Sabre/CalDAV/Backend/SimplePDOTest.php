@@ -13,15 +13,11 @@ class SimplePDOTest extends \PHPUnit\Framework\TestCase
 
     public function setup(): void
     {
-        if (!SABRE_HASSQLITE) {
-            $this->markTestSkipped('SQLite driver is not available');
+        if (file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'/testdb.sqlite')) {
+            unlink(\Sabre\TestUtil::SABRE_TEMPDIR.'/testdb.sqlite');
         }
 
-        if (file_exists(SABRE_TEMPDIR.'/testdb.sqlite')) {
-            unlink(SABRE_TEMPDIR.'/testdb.sqlite');
-        }
-
-        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/testdb.sqlite');
+        $pdo = new \PDO('sqlite:'.\Sabre\TestUtil::SABRE_TEMPDIR.'/testdb.sqlite');
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $pdo->exec(<<<SQL

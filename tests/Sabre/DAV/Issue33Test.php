@@ -37,8 +37,8 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
 
     public function testTreeMove()
     {
-        mkdir(SABRE_TEMPDIR.'/issue33');
-        $dir = new FS\Directory(SABRE_TEMPDIR.'/issue33');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33');
+        $dir = new FS\Directory(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33');
 
         $dir->createDirectory('bar');
 
@@ -73,8 +73,8 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
         $response = new HTTP\ResponseMock();
 
         // Server setup
-        mkdir(SABRE_TEMPDIR.'/issue33');
-        $dir = new FS\Directory(SABRE_TEMPDIR.'/issue33');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33');
+        $dir = new FS\Directory(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33');
 
         $dir->createDirectory('bar');
 
@@ -88,6 +88,6 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
         $server->sapi = new HTTP\SapiMock();
         $server->exec();
 
-        self::assertTrue(file_exists(SABRE_TEMPDIR.'/issue33/'.urldecode('%C3%A0fo%C3%B3')));
+        self::assertTrue(file_exists(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33/'.urldecode('%C3%A0fo%C3%B3')));
     }
 }

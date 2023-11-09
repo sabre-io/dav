@@ -17,7 +17,7 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
      * @var \Sabre\DAV\Server
      */
     protected $server;
-    protected $tempDir = SABRE_TEMPDIR;
+    protected $tempDir = \Sabre\TestUtil::SABRE_TEMPDIR;
 
     public function setup(): void
     {
@@ -26,20 +26,20 @@ abstract class AbstractServer extends \PHPUnit\Framework\TestCase
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->httpResponse = $this->response;
         $this->server->debugExceptions = true;
-        $this->deleteTree(SABRE_TEMPDIR, false);
-        file_put_contents(SABRE_TEMPDIR.'/test.txt', 'Test contents');
-        mkdir(SABRE_TEMPDIR.'/dir');
-        file_put_contents(SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
+        $this->deleteTree(\Sabre\TestUtil::SABRE_TEMPDIR, false);
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/test.txt', 'Test contents');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/dir');
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
     }
 
     public function teardown(): void
     {
-        $this->deleteTree(SABRE_TEMPDIR, false);
+        $this->deleteTree(\Sabre\TestUtil::SABRE_TEMPDIR, false);
     }
 
     protected function getRootNode()
     {
-        return new FS\Directory(SABRE_TEMPDIR);
+        return new FS\Directory(\Sabre\TestUtil::SABRE_TEMPDIR);
     }
 
     protected function getSanitizedBody()

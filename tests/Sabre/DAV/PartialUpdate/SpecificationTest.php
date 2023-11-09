@@ -21,7 +21,7 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
     public function setup(): void
     {
         $tree = [
-            new File(SABRE_TEMPDIR.'/foobar.txt'),
+            new File(\Sabre\TestUtil::SABRE_TEMPDIR.'/foobar.txt'),
         ];
         $server = new Server($tree);
         $server->debugExceptions = true;
@@ -66,7 +66,7 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals($httpStatus, $this->server->httpResponse->status, 'Incorrect http status received: '.$this->server->httpResponse->body);
         if (!is_null($endResult)) {
-            self::assertEquals($endResult, file_get_contents(SABRE_TEMPDIR.'/foobar.txt'));
+            self::assertEquals($endResult, file_get_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/foobar.txt'));
         }
     }
 

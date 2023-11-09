@@ -16,12 +16,12 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
 
     public function testLockEtc()
     {
-        mkdir(SABRE_TEMPDIR.'/mstest');
-        $tree = new DAV\FS\Directory(SABRE_TEMPDIR.'/mstest');
+        mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/mstest');
+        $tree = new DAV\FS\Directory(\Sabre\TestUtil::SABRE_TEMPDIR.'/mstest');
 
         $server = new DAV\Server($tree);
         $server->debugExceptions = true;
-        $locksBackend = new Backend\File(SABRE_TEMPDIR.'/locksdb');
+        $locksBackend = new Backend\File(\Sabre\TestUtil::SABRE_TEMPDIR.'/locksdb');
         $locksPlugin = new Plugin($locksBackend);
         $server->addPlugin($locksPlugin);
 

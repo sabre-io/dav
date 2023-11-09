@@ -8,6 +8,7 @@ class CollectionTest extends FileTest
 {
     public function setup(): void
     {
+        parent::setup();
         $this->path = SABRE_TEMPDIR;
         $this->sut = new Collection($this->path, $this->acl, $this->owner);
     }

@@ -2,3 +2,10 @@ parameters:
   level: 1
   bootstrapFiles:
     - tests/bootstrap.php
+  ignoreErrors:
+    -
+      message: '#Trying to mock an undefined method afterResponseCallback\(\) on class stdClass\.#'
+      path: tests/*
+includes:
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/phpstan/phpstan-phpunit/rules.neon

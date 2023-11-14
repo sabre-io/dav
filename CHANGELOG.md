@@ -4,8 +4,13 @@ ChangeLog
 4.5.0 (2023-11-14)
 -------------------------
 * #1488: fix: The WebDAV response element must only contain `propstat` OR `status` element(s) (@susnux)
-* #1446: declare addressDataProperties to avoid PHP 8.2 deprecation notice (@phi-davis)
+* #1481: docs: fix type definition for oldObject (@kesselb)
+* #1457: Fix PHPDoc to allow getChanges for sync to return null (@tcitworld)
+* #1446: declare addressDataProperties to avoid PHP 8.2 deprecation notice (@phil-davis)
+* #1432: Remove unused itipMessage property (@come-nc)
 * #1422: Align createFile signature with interface (@kesselb)
+* #1300: CalDAV/PropFilter: set empty array as default value for time-range (@simonspa)
+* #1060: Add INodeByPath interface to allow optimizing getNodeForPath (@icewind1991)
 
 4.4.0 (2022-06-27)
 -------------------------

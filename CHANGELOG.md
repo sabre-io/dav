@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-4.5.0 (2023-11-08)
+4.5.0 (2023-11-14)
 -------------------------
 * #1488: fix: The WebDAV response element must only contain `propstat` OR `status` element(s) (@susnux)
 * #1446: declare addressDataProperties to avoid PHP 8.2 deprecation notice (@phi-davis)

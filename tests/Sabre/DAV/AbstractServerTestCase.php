@@ -4,42 +4,45 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
+use PHPUnit\Framework\TestCase;
 use Sabre\HTTP;
+use Sabre\HTTP\ResponseMock;
+use Sabre\TestUtil;
 
-abstract class AbstractServer extends \PHPUnit\Framework\TestCase
+abstract class AbstractServerTestCase extends TestCase
 {
     /**
-     * @var \Sabre\HTTP\ResponseMock
+     * @var ResponseMock
      */
     protected $response;
     protected $request;
     /**
-     * @var \Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
-    protected $tempDir = SABRE_TEMPDIR;
+    protected $tempDir = TestUtil::SABRE_TEMPDIR;
 
     public function setup(): void
     {
-        $this->response = new HTTP\ResponseMock();
+        $this->response = new ResponseMock();
         $this->server = new Server($this->getRootNode());
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->httpResponse = $this->response;
         $this->server->debugExceptions = true;
-        $this->deleteTree(SABRE_TEMPDIR, false);
-        file_put_contents(SABRE_TEMPDIR.'/test.txt', 'Test contents');
-        mkdir(SABRE_TEMPDIR.'/dir');
-        file_put_contents(SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
+        $this->deleteTree(TestUtil::SABRE_TEMPDIR, false);
+        file_put_contents(TestUtil::SABRE_TEMPDIR.'/test.txt', 'Test contents');
+        mkdir(TestUtil::SABRE_TEMPDIR.'/dir');
+        file_put_contents(TestUtil::SABRE_TEMPDIR.'/dir/child.txt', 'Child contents');
     }
 
     public function teardown(): void
     {
-        $this->deleteTree(SABRE_TEMPDIR, false);
+        $this->deleteTree(TestUtil::SABRE_TEMPDIR, false);
     }
 
     protected function getRootNode()
     {
-        return new FS\Directory(SABRE_TEMPDIR);
+        return new FS\Directory(TestUtil::SABRE_TEMPDIR);
     }
 
     protected function getSanitizedBody()

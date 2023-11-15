@@ -6,15 +6,17 @@ namespace Sabre;
 
 class TestUtil
 {
+    public const SABRE_TEMPDIR = __DIR__.'/../temp/';
+
     /**
      * This function deletes all the contents of the temporary directory.
      */
-    public static function clearTempDir()
+    public static function clearTempDir(): void
     {
-        self::deleteTree(SABRE_TEMPDIR, false);
+        self::deleteTree(self::SABRE_TEMPDIR, false);
     }
 
-    private static function deleteTree($path, $deleteRoot = true)
+    private static function deleteTree($path, $deleteRoot = true): void
     {
         foreach (scandir($path) as $node) {
             if ('.' == $node || '..' == $node) {
@@ -30,37 +32,5 @@ class TestUtil
         if ($deleteRoot) {
             rmdir($path);
         }
-    }
-
-    public static function getMySQLDB()
-    {
-        try {
-            $pdo = new \PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
-            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-            return $pdo;
-        } catch (\PDOException $e) {
-            return null;
-        }
-    }
-
-    public static function getSQLiteDB()
-    {
-        $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/pdobackend');
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-        return $pdo;
-    }
-
-    public static function getPgSqlDB()
-    {
-        //try {
-        $pdo = new \PDO(SABRE_PGSQLDSN);
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
-        return $pdo;
-        //} catch (\PDOException $e) {
-        //    return null;
-        //}
     }
 }

@@ -6,14 +6,14 @@ namespace Sabre\DAV\Browser;
 
 use Sabre\DAV;
 
-class GuessContentTypeTest extends DAV\AbstractServer
+class GuessContentTypeTest extends DAV\AbstractServerTestCase
 {
     public function setUp(): void
     {
         parent::setUp();
         \Sabre\TestUtil::clearTempDir();
-        file_put_contents(SABRE_TEMPDIR.'/somefile.jpg', 'blabla');
-        file_put_contents(SABRE_TEMPDIR.'/somefile.hoi', 'blabla');
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/somefile.jpg', 'blabla');
+        file_put_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/somefile.hoi', 'blabla');
     }
 
     public function tearDown(): void

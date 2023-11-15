@@ -7,7 +7,7 @@ namespace Sabre\CalDAV;
 use Sabre\HTTP\Request;
 use Sabre\VObject;
 
-class JCalTransformTest extends \Sabre\DAVServerTest
+class JCalTransformTest extends \Sabre\AbstractDAVServerTestCase
 {
     use VObject\PHPUnitAssertions;
 

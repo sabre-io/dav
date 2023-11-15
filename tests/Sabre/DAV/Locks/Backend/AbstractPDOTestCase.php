@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
-abstract class PDOTest extends AbstractTest
+abstract class AbstractPDOTestCase extends AbstractTestCase
 {
     use \Sabre\DAV\DbTestHelperTrait;
 

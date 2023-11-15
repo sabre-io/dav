@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Sharing\Plugin;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class ShareAccessTest extends XmlTest
+class ShareAccessTest extends AbstractXmlTestCase
 {
     public function testSerialize()
     {

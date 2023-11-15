@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Auth\Backend;
 
+use PHPUnit\Framework\TestCase;
+use Sabre\DAV\DbTestHelperTrait;
 use Sabre\HTTP;
 
-abstract class AbstractPDOBasicAuthTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPDOBasicAuthTestCase extends TestCase
 {
-    use \Sabre\DAV\DbTestHelperTrait;
+    use DbTestHelperTrait;
 
     public function setup(): void
     {

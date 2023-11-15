@@ -8,7 +8,7 @@ use Sabre\HTTP\Request;
 use Sabre\Uri;
 use Sabre\VObject;
 
-class ScheduleDeliverTest extends \Sabre\DAVServerTest
+class ScheduleDeliverTest extends \Sabre\AbstractDAVServerTestCase
 {
     use VObject\PHPUnitAssertions;
 

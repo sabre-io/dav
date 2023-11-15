@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Request;
 
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 use Sabre\DAV\Xml\Property\Href;
-use Sabre\DAV\Xml\XmlTest;
 
-class PropPatchTest extends XmlTest
+class PropPatchTest extends AbstractXmlTestCase
 {
     public function testSerialize()
     {

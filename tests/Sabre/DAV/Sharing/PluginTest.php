@@ -7,7 +7,7 @@ namespace Sabre\DAV\Sharing;
 use Sabre\DAV\Mock;
 use Sabre\DAV\Xml\Property;
 
-class PluginTest extends \Sabre\DAVServerTest
+class PluginTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupSharing = true;
     protected $setupACL = true;

@@ -7,7 +7,7 @@ namespace Sabre\CardDAV\Xml\Property;
 use Sabre\CardDAV;
 use Sabre\DAV;
 
-class SupportedCollationSetTest extends DAV\Xml\XmlTest
+class SupportedCollationSetTest extends DAV\Xml\AbstractXmlTestCase
 {
     public function testSimple()
     {

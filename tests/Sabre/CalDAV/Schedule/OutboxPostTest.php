@@ -6,7 +6,7 @@ namespace Sabre\CalDAV\Schedule;
 
 use Sabre\HTTP;
 
-class OutboxPostTest extends \Sabre\DAVServerTest
+class OutboxPostTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
     protected $setupACL = true;

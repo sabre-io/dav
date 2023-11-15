@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerSimpleTest extends AbstractServer
+class ServerSimpleTest extends AbstractServerTestCase
 {
     public function testConstructArray()
     {

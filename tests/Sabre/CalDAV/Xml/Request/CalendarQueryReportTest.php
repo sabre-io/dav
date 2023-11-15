@@ -6,9 +6,9 @@ namespace Sabre\CalDAV\Xml\Request;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class CalendarQueryReportTest extends XmlTest
+class CalendarQueryReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{urn:ietf:params:xml:ns:caldav}calendar-query' => 'Sabre\\CalDAV\\Xml\\Request\CalendarQueryReport',

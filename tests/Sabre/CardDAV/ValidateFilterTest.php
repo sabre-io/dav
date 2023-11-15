@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
-class ValidateFilterTest extends AbstractPluginTest
+class ValidateFilterTest extends AbstractPluginTestCase
 {
     /**
      * @param string      $input

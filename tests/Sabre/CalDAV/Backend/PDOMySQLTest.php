@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-class PDOMySQLTest extends AbstractPDOTest
+class PDOMySQLTest extends AbstractPDOTestCase
 {
     public $driver = 'mysql';
 }

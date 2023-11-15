@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
-class PDOSqliteTest extends PDOTest
+class AbstractPDOSqliteTest extends AbstractPDOTestCase
 {
     public $driver = 'sqlite';
 }

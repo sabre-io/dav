@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Sabre;
 
+use PHPUnit\Framework\TestCase;
+use Sabre\CalDAV\SharingPlugin;
+use Sabre\DAV\Server;
+use Sabre\DAV\Sharing\Plugin;
 use Sabre\HTTP\Request;
 use Sabre\HTTP\Response;
 
@@ -17,7 +21,7 @@ use Sabre\HTTP\Response;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractDAVServerTestCase extends TestCase
 {
     protected $setupCalDAV = false;
     protected $setupCardDAV = false;
@@ -43,7 +47,7 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
     protected $carddavCards = [];
 
     /**
-     * @var \Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
     protected $tree = [];
@@ -70,7 +74,7 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
     protected $aclPlugin;
 
     /**
-     * @var \Sabre\CalDAV\SharingPlugin
+     * @var SharingPlugin
      */
     protected $caldavSharingPlugin;
 
@@ -99,7 +103,7 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
     /**
      * Sharing plugin.
      *
-     * @var \Sabre\DAV\Sharing\Plugin
+     * @var Plugin
      */
     protected $sharingPlugin;
 
@@ -190,10 +194,10 @@ abstract class DAVServerTest extends \PHPUnit\Framework\TestCase
      * the returned response. If it doesn't match, we'll immediately fail
      * the test.
      *
-     * @param array|\Sabre\HTTP\Request $request
-     * @param int                       $expectedStatus
+     * @param array|Request $request
+     * @param int           $expectedStatus
      *
-     * @return \Sabre\HTTP\Response
+     * @return Response
      */
     public function request($request, $expectedStatus = null)
     {

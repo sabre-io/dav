@@ -11,7 +11,7 @@ use Sabre\VObject;
  * This unittest is created to check if expand() works correctly with
  * floating times (using calendar-timezone information).
  */
-class ExpandEventsFloatingTimeTest extends \Sabre\DAVServerTest
+class ExpandEventsFloatingTimeTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
 

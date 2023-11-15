@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerEventsTest extends AbstractServer
+class ServerEventsTest extends AbstractServerTestCase
 {
     private $tempPath;
 

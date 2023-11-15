@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class SupportedMethodSetTest extends XmlTest
+class SupportedMethodSetTest extends AbstractXmlTestCase
 {
     public function testSimple()
     {

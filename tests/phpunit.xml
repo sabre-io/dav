@@ -1,41 +1,30 @@
 <?xml version="1.0"?>
-<phpunit
-  colors="true"
-  bootstrap="bootstrap.php"
-  convertErrorsToExceptions="true"
-  convertNoticesToExceptions="true"
-  convertWarningsToExceptions="true"
-  beStrictAboutTestsThatDoNotTestAnything="true"
-  beStrictAboutOutputDuringTests="true"
->
-
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="bootstrap.php" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" beStrictAboutTestsThatDoNotTestAnything="true" beStrictAboutOutputDuringTests="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">../lib/</directory>
+    </include>
+  </coverage>
   <testsuites>
-      <testsuite name="sabre-http">
-          <directory>../vendor/sabre/http/tests/HTTP</directory>
-      </testsuite>
-
-      <testsuite name="sabre-dav">
-          <directory>Sabre/DAV</directory>
-      </testsuite>
-      <testsuite name="sabre-davacl">
-          <directory>Sabre/DAVACL</directory>
-      </testsuite>
-      <testsuite name="sabre-caldav">
-          <directory>Sabre/CalDAV</directory>
-      </testsuite>
-      <testsuite name="sabre-carddav">
-          <directory>Sabre/CardDAV</directory>
-      </testsuite>
+    <testsuite name="sabre-dav">
+      <directory>Sabre/DAV</directory>
+    </testsuite>
+    <testsuite name="sabre-davacl">
+      <directory>Sabre/DAVACL</directory>
+    </testsuite>
+    <testsuite name="sabre-caldav">
+      <directory>Sabre/CalDAV</directory>
+    </testsuite>
+    <testsuite name="sabre-carddav">
+      <directory>Sabre/CardDAV</directory>
+    </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist addUncoveredFilesFromWhitelist="true">
-       <directory suffix=".php">../lib/</directory>
-    </whitelist>
-  </filter>
-
   <php>
     <env name="BASEURL" value="http://localhost:8000"/>
     <env name="SABRE_HTTP_TEST_GET_LARGE_CONTENT_MAX_PEAK_MEMORY_USAGE" value="80000000"/>
+    <env name="SABRE_PGSQLDSN" value="pgsql:host=localhost;dbname=sabredav_test;user=sabredav;password=sabredav"/>
+    <env name="SABRE_MYSQLDSN" value="mysql:host=127.0.0.1;dbname=sabredav_test"/>
+    <env name="SABRE_MYSQLUSER" value="sabredav"/>
+    <env name="SABRE_MYSQLPASS" value=""/>
   </php>
 </phpunit>

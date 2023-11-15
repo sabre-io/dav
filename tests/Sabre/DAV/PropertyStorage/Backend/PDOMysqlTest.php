@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\PropertyStorage\Backend;
 
-class PDOMysqlTest extends AbstractPDOTest
+class PDOMysqlTest extends AbstractPDOTestCase
 {
     public $driver = 'mysql';
 }

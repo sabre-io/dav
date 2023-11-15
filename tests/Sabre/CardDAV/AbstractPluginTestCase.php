@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace Sabre\CardDAV;
 
-use Sabre\DAV;
+use PHPUnit\Framework\TestCase;
+use Sabre\CardDAV\Backend\Mock;
+use Sabre\DAV\Server;
 use Sabre\DAVACL;
 use Sabre\HTTP;
 
-abstract class AbstractPluginTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPluginTestCase extends TestCase
 {
     /**
-     * @var Sabre\CardDAV\Plugin
+     * @var Plugin
      */
     protected $plugin;
     /**
-     * @var Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
     /**
-     * @var Sabre\CardDAV\Backend\Mock;
+     * @var Mock;
      */
     protected $backend;
 
@@ -35,7 +37,7 @@ abstract class AbstractPluginTest extends \PHPUnit\Framework\TestCase
 
         $this->plugin = new Plugin();
         $this->plugin->directories = ['directory'];
-        $this->server = new DAV\Server($tree);
+        $this->server = new Server($tree);
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->addPlugin($this->plugin);
         $this->server->debugExceptions = true;

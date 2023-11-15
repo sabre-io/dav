@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Xml\Property;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class EmailAddressSetTest extends XmlTest
+class EmailAddressSetTest extends AbstractXmlTestCase
 {
     protected $namespaceMap = [
         \Sabre\CalDAV\Plugin::NS_CALENDARSERVER => 'cs',

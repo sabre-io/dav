@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
+use Sabre\AbstractDAVServerTestCase;
 use Sabre\DAV;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\DAVServerTest;
 use Sabre\HTTP;
 
-class SharingPluginTest extends DAVServerTest
+class SharingPluginTest extends AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
     protected $setupCalDAVSharing = true;

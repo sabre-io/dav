@@ -14,25 +14,24 @@
         }
     ],
     "require": {
-        "php": "^7.1.0 || ^8.0",
-        "sabre/vobject": "^4.2.1",
-        "sabre/event" : "^5.0",
-        "sabre/xml"  : "^2.0.1",
-        "sabre/http" : "^5.0.5",
-        "sabre/uri" : "^2.0",
+        "php": "^7.4.0 || ^8.0",
+        "ext-ctype": "*",
+        "ext-date": "*",
         "ext-dom": "*",
+        "ext-iconv": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-spl": "*",
         "ext-simplexml": "*",
-        "ext-mbstring" : "*",
-        "ext-ctype" : "*",
-        "ext-date" : "*",
-        "ext-iconv" : "*",
-        "lib-libxml" : ">=2.7.0",
+        "ext-spl": "*",
+        "lib-libxml": ">=2.7.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "ext-json": "*"
+        "sabre/event": "^6.0",
+        "sabre/http": "^7.0",
+        "sabre/vobject": "^4.5"
     },
     "require-dev" : {
+        "ext-sqlite3": "*",
         "friendsofphp/php-cs-fixer": "^2.19",
         "monolog/monolog": "^1.27",
         "phpstan/phpstan": "^0.12 || ^1.0",
@@ -70,7 +69,7 @@
             "php-cs-fixer fix"
         ],
         "phpunit": [
-            "phpunit --configuration tests/phpunit.xml"
+            "phpunit --configuration tests/phpunit.xml tests"
         ],
         "test": [
             "composer phpstan",

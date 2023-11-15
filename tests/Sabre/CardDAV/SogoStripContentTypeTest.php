@@ -7,7 +7,7 @@ namespace Sabre\CardDAV;
 use Sabre\DAV\PropFind;
 use Sabre\HTTP;
 
-class SogoStripContentTypeTest extends \Sabre\DAVServerTest
+class SogoStripContentTypeTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCardDAV = true;
     protected $carddavAddressBooks = [

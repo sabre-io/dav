@@ -22,7 +22,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
     {
         $principalBackend = new PrincipalBackend();
 
-        $this->path = SABRE_TEMPDIR.'/home';
+        $this->path = \Sabre\TestUtil::SABRE_TEMPDIR.'/home';
 
         $this->sut = new HomeCollection($principalBackend, $this->path);
         $this->sut->collectionName = $this->name;

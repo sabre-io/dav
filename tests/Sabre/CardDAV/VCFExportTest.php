@@ -6,7 +6,7 @@ namespace Sabre\CardDAV;
 
 use Sabre\HTTP;
 
-class VCFExportTest extends \Sabre\DAVServerTest
+class VCFExportTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCardDAV = true;
     protected $autoLogin = 'user1';

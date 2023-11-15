@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\PropertyStorage\Backend;
 
+use PHPUnit\Framework\TestCase;
+use Sabre\DAV\DbTestHelperTrait;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
 use Sabre\DAV\Xml\Property\Complex;
 use Sabre\DAV\Xml\Property\Href;
 
-abstract class AbstractPDOTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractPDOTestCase extends TestCase
 {
-    use \Sabre\DAV\DbTestHelperTrait;
+    use DbTestHelperTrait;
 
     public function getBackend()
     {

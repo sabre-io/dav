@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Locks\Backend;
 
+use PHPUnit\Framework\TestCase;
 use Sabre\DAV;
 
-abstract class AbstractTest extends \PHPUnit\Framework\TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
      * @abstract

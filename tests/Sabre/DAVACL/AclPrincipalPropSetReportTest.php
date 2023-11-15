@@ -6,7 +6,7 @@ namespace Sabre\DAVACL;
 
 use Sabre\HTTP\Request;
 
-class AclPrincipalPropSetReportTest extends \Sabre\DAVServerTest
+class AclPrincipalPropSetReportTest extends \Sabre\AbstractDAVServerTestCase
 {
     public $setupACL = true;
     public $autoLogin = 'admin';

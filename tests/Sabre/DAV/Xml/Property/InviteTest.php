@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Sabre\DAV\Xml\Property;
 
 use Sabre\DAV\Sharing\Plugin;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 use Sabre\DAV\Xml\Element\Sharee;
-use Sabre\DAV\Xml\XmlTest;
 
-class InviteTest extends XmlTest
+class InviteTest extends AbstractXmlTestCase
 {
     public function testSerialize()
     {

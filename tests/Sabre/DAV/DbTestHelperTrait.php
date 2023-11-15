@@ -6,6 +6,7 @@ namespace Sabre\DAV;
 
 use PDO;
 use PDOException;
+use Sabre\TestUtil;
 
 class DbCache
 {
@@ -44,13 +45,16 @@ trait DbTestHelperTrait
         try {
             switch ($this->driver) {
                 case 'mysql':
-                    $pdo = new PDO(SABRE_MYSQLDSN, SABRE_MYSQLUSER, SABRE_MYSQLPASS);
+                    $dsn = getenv('SABRE_MYSQLDSN');
+                    $user = getenv('SABRE_MYSQLUSER');
+                    $pass = getenv('SABRE_MYSQLPASS');
+                    $pdo = new PDO($dsn, $user, $pass);
                     break;
                 case 'sqlite':
-                    $pdo = new \PDO('sqlite:'.SABRE_TEMPDIR.'/testdb');
+                    $pdo = new PDO('sqlite:'.TestUtil::SABRE_TEMPDIR.'/testdb');
                     break;
                 case 'pgsql':
-                    $pdo = new \PDO(SABRE_PGSQLDSN);
+                    $pdo = new PDO(getenv('SABRE_PGSQLDSN'));
                     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
                     preg_match('|([0-9\.]){5,}|', $version, $matches);
                     $version = $matches[0];
@@ -65,7 +69,7 @@ trait DbTestHelperTrait
                 $this->markTestSkipped($this->driver.' was not recognised');
             }
 
-            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             $this->markTestSkipped($this->driver.' was not enabled or not correctly configured. Error message: '.$e->getMessage());
         }
@@ -127,7 +131,7 @@ trait DbTestHelperTrait
             case 'sqlite':
                 // Recreating sqlite, just in case
                 unset(DbCache::$cache[$this->driver]);
-                unlink(SABRE_TEMPDIR.'/testdb');
+                unlink(TestUtil::SABRE_TEMPDIR.'/testdb');
         }
     }
 }

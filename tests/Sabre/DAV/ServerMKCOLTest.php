@@ -6,7 +6,7 @@ namespace Sabre\DAV;
 
 use Sabre\HTTP;
 
-class ServerMKCOLTest extends AbstractServer
+class ServerMKCOLTest extends AbstractServerTestCase
 {
     public function testMkcol()
     {

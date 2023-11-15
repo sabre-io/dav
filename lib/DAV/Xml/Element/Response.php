@@ -110,7 +110,7 @@ class Response implements Element
      * Important note 2: If you are writing any new elements, you are also
      * responsible for closing them.
      */
-    public function xmlSerialize(Writer $writer)
+    public function xmlSerialize(Writer $writer): void
     {
         /*
          * Accordingly to the RFC the element looks like:

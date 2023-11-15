@@ -6,7 +6,7 @@ namespace Sabre\CalDAV\Subscriptions;
 
 use Sabre\HTTP\Request;
 
-class CreateSubscriptionTest extends \Sabre\DAVServerTest
+class CreateSubscriptionTest extends \Sabre\AbstractDAVServerTestCase
 {
     protected $setupCalDAV = true;
     protected $setupCalDAVSubscriptions = true;

@@ -6,9 +6,9 @@ namespace Sabre\DAV\Xml\Property;
 
 use DateTime;
 use DateTimeZone;
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class LastModifiedTest extends XmlTest
+class LastModifiedTest extends AbstractXmlTestCase
 {
     public function testSerializeDateTime()
     {

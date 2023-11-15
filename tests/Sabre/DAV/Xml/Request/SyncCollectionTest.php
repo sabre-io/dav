@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Request;
 
-use Sabre\DAV\Xml\XmlTest;
+use Sabre\DAV\Xml\AbstractXmlTestCase;
 
-class SyncCollectionTest extends XmlTest
+class SyncCollectionTest extends AbstractXmlTestCase
 {
     public function testDeserializeProp()
     {

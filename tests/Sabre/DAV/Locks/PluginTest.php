@@ -7,7 +7,7 @@ namespace Sabre\DAV\Locks;
 use Sabre\DAV;
 use Sabre\HTTP;
 
-class PluginTest extends DAV\AbstractServer
+class PluginTest extends DAV\AbstractServerTestCase
 {
     /**
      * @var Plugin
@@ -17,7 +17,7 @@ class PluginTest extends DAV\AbstractServer
     public function setup(): void
     {
         parent::setUp();
-        $locksBackend = new Backend\File(SABRE_TEMPDIR.'/locksdb');
+        $locksBackend = new Backend\File(\Sabre\TestUtil::SABRE_TEMPDIR.'/locksdb');
         $locksPlugin = new Plugin($locksBackend);
         $this->server->addPlugin($locksPlugin);
         $this->locksPlugin = $locksPlugin;
@@ -853,10 +853,10 @@ class PluginTest extends DAV\AbstractServer
     public function testPutWithCorrectETag()
     {
         // We need an ETag-enabled file node.
-        $tree = new DAV\Tree(new DAV\FSExt\Directory(SABRE_TEMPDIR));
+        $tree = new DAV\Tree(new DAV\FSExt\Directory(\Sabre\TestUtil::SABRE_TEMPDIR));
         $this->server->tree = $tree;
 
-        $filename = SABRE_TEMPDIR.'/test.txt';
+        $filename = \Sabre\TestUtil::SABRE_TEMPDIR.'/test.txt';
         $etag = sha1(
             fileinode($filename).
             filesize($filename).

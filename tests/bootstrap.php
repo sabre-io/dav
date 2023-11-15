@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Sabre\DAV\Server;
+use Sabre\TestUtil;
+
 set_include_path(__DIR__.'/../lib/'.PATH_SEPARATOR.__DIR__.PATH_SEPARATOR.get_include_path());
 
 $autoLoader = include __DIR__.'/../vendor/autoload.php';
@@ -16,49 +19,11 @@ date_default_timezone_set('UTC');
 
 if ('TRUE' === getenv('RUN_TEST_WITH_STREAMING_PROPFIND')) {
     echo 'Running unit tests with \Sabre\DAV\Server::$streamMultiStatus = true';
-    \Sabre\DAV\Server::$streamMultiStatus = true;
+    Server::$streamMultiStatus = true;
 }
 
-// List of variables that can be set by the environment
-$environmentVars = [
-    'SABRE_MYSQLUSER',
-    'SABRE_MYSQLPASS',
-    'SABRE_MYSQLDSN',
-    'SABRE_PGSQLDSN',
-];
-foreach ($environmentVars as $var) {
-    if ($value = getenv($var)) {
-        define($var, $value);
-    }
-}
-
-$config = [
-    'SABRE_TEMPDIR' => dirname(__FILE__).'/temp/',
-    'SABRE_HASSQLITE' => in_array('sqlite', PDO::getAvailableDrivers()),
-    'SABRE_HASMYSQL' => in_array('mysql', PDO::getAvailableDrivers()),
-    'SABRE_HASPGSQL' => in_array('pgsql', PDO::getAvailableDrivers()),
-    'SABRE_MYSQLDSN' => 'mysql:host=127.0.0.1;dbname=sabredav_test',
-    'SABRE_MYSQLUSER' => 'sabredav',
-    'SABRE_MYSQLPASS' => '',
-    'SABRE_PGSQLDSN' => 'pgsql:host=localhost;dbname=sabredav_test;user=sabredav;password=sabredav',
-];
-
-if (file_exists(__DIR__.'/config.user.php')) {
-    $userConfig = [];
-    include __DIR__.'/config.user.php';
-    foreach ($userConfig as $key => $value) {
-        $config[$key] = $value;
-    }
-}
-
-foreach ($config as $key => $value) {
-    if (!defined($key)) {
-        define($key, $value);
-    }
-}
-
-if (!file_exists(SABRE_TEMPDIR)) {
-    mkdir(SABRE_TEMPDIR);
+if (!file_exists(TestUtil::SABRE_TEMPDIR)) {
+    mkdir(TestUtil::SABRE_TEMPDIR);
 }
 if (file_exists('.sabredav')) {
     unlink('.sabredav');

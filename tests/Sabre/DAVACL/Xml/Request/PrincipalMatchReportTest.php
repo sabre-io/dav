@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Sabre\DAVACL\Xml\Request;
 
-class PrincipalMatchReportTest extends \Sabre\DAV\Xml\XmlTest
+use Sabre\DAV\Xml\AbstractXmlTestCase;
+
+class PrincipalMatchReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
         '{DAV:}principal-match' => 'Sabre\DAVACL\Xml\Request\PrincipalMatchReport',

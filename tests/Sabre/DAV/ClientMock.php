@@ -13,7 +13,7 @@ class ClientMock extends Client
     public $response;
 
     public $url;
-    public $curlSettings;
+    public array $curlSettings;
 
     /**
      * Just making this method public.

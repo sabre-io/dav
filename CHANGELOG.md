@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.5.1 (2023-11-23)
+-------------------------
+* #1514: fix: restore autoPrefix property of Href (@phil-davis)
+
 4.5.0 (2023-11-14)
 -------------------------
 * #1488: fix: The WebDAV response element must only contain `propstat` OR `status` element(s) (@susnux)

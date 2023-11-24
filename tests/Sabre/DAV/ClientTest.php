@@ -296,19 +296,33 @@ XML;
       </d:prop>
       <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
+    </d:propstat>
   </d:response>
 </d:multistatus>
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{urn:zim}gir']);
+        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{DAV:}contentlength', '{urn:zim}gir']);
 
         self::assertEquals([
-            'properties' => [
-                '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-                '{DAV:}displayname' => 'Folder1',
+            [
+                'properties' => [
+                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                    '{DAV:}displayname' => 'Folder1',
+                ],
+                'status' => 200,
             ],
-            'status' => 200,
+            [
+                'properties' => [
+                    '{DAV:}contentlength' => null,
+                ],
+                'status' => 404,
+            ],
         ], $result);
 
         $request = $client->request;
@@ -410,42 +424,64 @@ XML;
 
         self::assertEquals([
             '/folder1' => [
-                'properties' => [
-                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-                    '{DAV:}displayname' => 'Folder1',
+                [
+                    'properties' => [
+                        '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                        '{DAV:}displayname' => 'Folder1',
+                    ],
+                    'status' => 200,
                 ],
-                'status' => 200,
+                 [
+                    'properties' => [
+                        '{DAV:}contentlength' => null,
+                    ],
+                    'status' => 404,
+                ],
             ],
             '/folder1/file1.txt' => [
-                'properties' => [
-                    '{DAV:}resourcetype' => null,
-                    '{DAV:}displayname' => 'File1',
-                    '{DAV:}contentlength' => 12,
+                [
+                    'properties' => [
+                        '{DAV:}resourcetype' => null,
+                        '{DAV:}displayname' => 'File1',
+                        '{DAV:}contentlength' => 12,
+                    ],
+                    'status' => 200,
                 ],
-                'status' => 200,
             ],
             '/folder1/file2.txt' => [
-                'properties' => [
-                    '{DAV:}resourcetype' => null,
-                    '{DAV:}displayname' => 'File2',
-                    '{DAV:}contentlength' => 27,
+                [
+                    'properties' => [
+                        '{DAV:}resourcetype' => null,
+                        '{DAV:}displayname' => 'File2',
+                        '{DAV:}contentlength' => 27,
+                    ],
+                    'status' => 403,
                 ],
-                'status' => 403,
             ],
             '/folder1/file3.txt' => [
-                'properties' => [
-                    '{DAV:}resourcetype' => null,
-                    '{DAV:}displayname' => 'File3',
-                    '{DAV:}contentlength' => 42,
+                [
+                    'properties' => [
+                        '{DAV:}resourcetype' => null,
+                        '{DAV:}displayname' => 'File3',
+                        '{DAV:}contentlength' => 42,
+                    ],
+                    'status' => 425,
                 ],
-                'status' => 425,
             ],
             '/folder1/subfolder' => [
-                'properties' => [
-                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-                    '{DAV:}displayname' => 'SubFolder',
+                [
+                    'properties' => [
+                        '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                        '{DAV:}displayname' => 'SubFolder',
+                    ],
+                    'status' => 200,
                 ],
-                'status' => 200,
+                [
+                    'properties' => [
+                        '{DAV:}contentlength' => null,
+                    ],
+                    'status' => 404,
+                ],
             ],
         ], $result);
 

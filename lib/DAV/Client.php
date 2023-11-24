@@ -243,16 +243,14 @@ class Client extends HTTP\Client
             reset($result);
             $resourceStatusList = current($result);
             reset($resourceStatusList);
-            // $resourceStatus = key($resourceStatusList);
-            return current($resourceStatusList);
+
+            return ['properties' => current($resourceStatusList), 'status' => key($resourceStatusList)];
         }
 
         $newResult = [];
         foreach ($result as $href => $statusList) {
             reset($statusList);
-            // $resourceStatus = key($statusList);
-            $resourceProperties = current($statusList);
-            $newResult[$href] = $resourceProperties;
+            $newResult[$href] = ['properties' => current($statusList), 'status' => key($statusList)];
         }
 
         return $newResult;

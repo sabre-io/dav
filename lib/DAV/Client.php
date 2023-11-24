@@ -237,20 +237,21 @@ class Client extends HTTP\Client
     public function propFindUnfiltered($url, array $properties, $depth = 0)
     {
         $result = $this->doPropFind($url, $properties, $depth);
+        $newResult = [];
 
         // If depth was 0, we only return the top item
         if (0 === $depth) {
             reset($result);
-            $resourceStatusList = current($result);
-            reset($resourceStatusList);
-
-            return ['properties' => current($resourceStatusList), 'status' => key($resourceStatusList)];
-        }
-
-        $newResult = [];
-        foreach ($result as $href => $statusList) {
-            reset($statusList);
-            $newResult[$href] = ['properties' => current($statusList), 'status' => key($statusList)];
+            $statusList = current($result);
+            foreach ($statusList as $statusCode => $associatedProperties) {
+                $newResult[] = ['properties' => $associatedProperties, 'status' => $statusCode];
+            }
+        } else {
+            foreach ($result as $href => $statusList) {
+                foreach ($statusList as $statusCode => $associatedProperties) {
+                    $newResult[$href][] = ['properties' => $associatedProperties, 'status' => $statusCode];
+                }
+            }
         }
 
         return $newResult;

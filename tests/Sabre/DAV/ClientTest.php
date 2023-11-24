@@ -346,6 +346,12 @@ XML;
       </d:prop>
       <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
+    </d:propstat>
   </d:response>
   <d:response>
     <d:href>/folder1/file1.txt</d:href>
@@ -353,6 +359,7 @@ XML;
       <d:prop>
         <d:resourcetype/>
         <d:displayname>File1</d:displayname>
+        <d:contentlength>12</d:contentlength>
       </d:prop>
       <d:status>HTTP/1.1 200 OK</d:status>
     </d:propstat>
@@ -363,6 +370,7 @@ XML;
       <d:prop>
         <d:resourcetype/>
         <d:displayname>File2</d:displayname>
+        <d:contentlength>27</d:contentlength>
       </d:prop>
       <d:status>HTTP/1.1 403 Forbidden</d:status>
     </d:propstat>
@@ -373,15 +381,32 @@ XML;
       <d:prop>
         <d:resourcetype/>
         <d:displayname>File3</d:displayname>
+        <d:contentlength>42</d:contentlength>
       </d:prop>
       <d:status>HTTP/1.1 425 Too Early</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/subfolder</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype><d:collection/></d:resourcetype>
+        <d:displayname>SubFolder</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
     </d:propstat>
   </d:response>
 </d:multistatus>
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{urn:zim}gir'], 1);
+        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{DAV:}contentlength', '{urn:zim}gir'], 1);
 
         self::assertEquals([
             '/folder1' => [
@@ -395,6 +420,7 @@ XML;
                 'properties' => [
                     '{DAV:}resourcetype' => null,
                     '{DAV:}displayname' => 'File1',
+                    '{DAV:}contentlength' => 12,
                 ],
                 'status' => 200,
             ],
@@ -402,6 +428,7 @@ XML;
                 'properties' => [
                     '{DAV:}resourcetype' => null,
                     '{DAV:}displayname' => 'File2',
+                    '{DAV:}contentlength' => 27,
                 ],
                 'status' => 403,
             ],
@@ -409,8 +436,16 @@ XML;
                 'properties' => [
                     '{DAV:}resourcetype' => null,
                     '{DAV:}displayname' => 'File3',
+                    '{DAV:}contentlength' => 42,
                 ],
                 'status' => 425,
+            ],
+            '/folder1/subfolder' => [
+                'properties' => [
+                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                    '{DAV:}displayname' => 'SubFolder',
+                ],
+                'status' => 200,
             ],
         ], $result);
 

@@ -304,8 +304,11 @@ XML;
         $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{urn:zim}gir']);
 
         self::assertEquals([
-            '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-            '{DAV:}displayname' => 'Folder1',
+            'properties' => [
+                '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                '{DAV:}displayname' => 'Folder1',
+            ],
+            'status' => 200,
         ], $result);
 
         $request = $client->request;
@@ -382,20 +385,32 @@ XML;
 
         self::assertEquals([
             '/folder1' => [
-                '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-                '{DAV:}displayname' => 'Folder1',
+                'properties' => [
+                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                    '{DAV:}displayname' => 'Folder1',
+                ],
+                'status' => 200,
             ],
             '/folder1/file1.txt' => [
-                '{DAV:}resourcetype' => null,
-                '{DAV:}displayname' => 'File1',
+                'properties' => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File1',
+                ],
+                'status' => 200,
             ],
             '/folder1/file2.txt' => [
-                '{DAV:}resourcetype' => null,
-                '{DAV:}displayname' => 'File2',
+                'properties' => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File2',
+                ],
+                'status' => 403,
             ],
             '/folder1/file3.txt' => [
-                '{DAV:}resourcetype' => null,
-                '{DAV:}displayname' => 'File3',
+                'properties' => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File3',
+                ],
+                'status' => 425,
             ],
         ], $result);
 

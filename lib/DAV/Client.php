@@ -174,7 +174,7 @@ class Client extends HTTP\Client
     }
 
     /**
-     * Does a PROPFIND request.
+     * Does a PROPFIND request with filtered response.
      *
      * The list of requested properties must be specified as an array, in clark
      * notation.
@@ -209,6 +209,50 @@ class Client extends HTTP\Client
         $newResult = [];
         foreach ($result as $href => $statusList) {
             $newResult[$href] = isset($statusList[200]) ? $statusList[200] : [];
+        }
+
+        return $newResult;
+    }
+
+    /**
+     * Does a PROPFIND request with unfiltered response.
+     *
+     * The list of requested properties must be specified as an array, in clark
+     * notation.
+     *
+     * The returned array will contain a list of filenames as keys, and
+     * properties as values.
+     *
+     * The properties array will contain the list of properties. All properties
+     * that are actually returned from the server are returned by this method.
+     *
+     * Depth should be either 0 or 1. A depth of 1 will cause a request to be
+     * made to the server to also return all child resources.
+     *
+     * @param string $url
+     * @param int    $depth
+     *
+     * @return array
+     */
+    public function propFindUnfiltered($url, array $properties, $depth = 0)
+    {
+        $result = $this->doPropFind($url, $properties, $depth);
+
+        // If depth was 0, we only return the top item
+        if (0 === $depth) {
+            reset($result);
+            $resourceStatusList = current($result);
+            reset($resourceStatusList);
+            // $resourceStatus = key($resourceStatusList);
+            return current($resourceStatusList);
+        }
+
+        $newResult = [];
+        foreach ($result as $href => $statusList) {
+            reset($statusList);
+            // $resourceStatus = key($statusList);
+            $resourceProperties = current($statusList);
+            $newResult[$href] = $resourceProperties;
         }
 
         return $newResult;

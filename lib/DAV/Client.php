@@ -242,19 +242,11 @@ class Client extends HTTP\Client
         // If depth was 0, we only return the top item
         if (0 === $depth) {
             reset($result);
-            $statusList = current($result);
-            foreach ($statusList as $statusCode => $associatedProperties) {
-                $newResult[] = ['properties' => $associatedProperties, 'status' => $statusCode];
-            }
-        } else {
-            foreach ($result as $href => $statusList) {
-                foreach ($statusList as $statusCode => $associatedProperties) {
-                    $newResult[$href][] = ['properties' => $associatedProperties, 'status' => $statusCode];
-                }
-            }
-        }
 
-        return $newResult;
+            return current($result);
+        } else {
+            return $result;
+        }
     }
 
     /**

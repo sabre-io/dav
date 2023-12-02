@@ -26,17 +26,15 @@ class IMipPlugin extends DAV\ServerPlugin
     /**
      * Email address used in From: header.
      *
+     * This should generally be some kind of no-reply
+     * email address that you own.
+     *
      * @var string
      */
     protected $senderEmail;
 
     /**
      * Creates the email handler.
-     *
-     * @param string $senderEmail. The 'senderEmail' is the email that shows up
-     *                             in the 'From:' address. This should
-     *                             generally be some kind of no-reply email
-     *                             address you own.
      */
     public function __construct($senderEmail)
     {

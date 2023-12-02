@@ -86,7 +86,7 @@ DTSTAMP:20100228T130202Z';
                 $calendarData .= "\nDTSTART;VALUE=DATETIME:20100223T060000\n";
                 break;
 
-            // No DTSTART, so intentionally broken
+                // No DTSTART, so intentionally broken
             case 'X':
                 $calendarData .= "\n";
                 break;

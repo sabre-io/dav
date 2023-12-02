@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
-use DateTimeZone;
 use Sabre\CalDAV\ICalendar;
 use Sabre\CalDAV\ICalendarObject;
 use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
@@ -61,7 +60,7 @@ class Plugin extends ServerPlugin
     /**
      * This is the official CalDAV namespace.
      */
-    const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
+    public const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
 
     /**
      * Reference to main Server object.
@@ -270,20 +269,20 @@ class Plugin extends ServerPlugin
             // old property to a different namespace.
             $availProp = '{'.self::NS_CALDAV.'}calendar-availability';
             $subPropFind = new PropFind(
-                 $propFind->getPath(),
-                 [$availProp]
-             );
+                $propFind->getPath(),
+                [$availProp]
+            );
 
             $this->server->getPropertiesByNode(
-                 $subPropFind,
-                 $node
-             );
+                $subPropFind,
+                $node
+            );
 
             $propFind->set(
-                 '{http://calendarserver.org/ns/}calendar-availability',
-                 $subPropFind->get($availProp),
-                 $subPropFind->getStatus($availProp)
-             );
+                '{http://calendarserver.org/ns/}calendar-availability',
+                $subPropFind->get($availProp),
+                $subPropFind->getStatus($availProp)
+            );
         });
     }
 
@@ -874,7 +873,7 @@ class Plugin extends ServerPlugin
 
         // Grabbing the calendar list
         $objects = [];
-        $calendarTimeZone = new DateTimeZone('UTC');
+        $calendarTimeZone = new \DateTimeZone('UTC');
 
         foreach ($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
             if (!$node instanceof ICalendar) {

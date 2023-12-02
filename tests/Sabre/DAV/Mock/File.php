@@ -25,10 +25,9 @@ class File extends DAV\File
     /**
      * Creates the object.
      *
-     * @param string     $name
-     * @param resource   $contents
-     * @param Collection $parent
-     * @param int        $lastModified
+     * @param string   $name
+     * @param resource $contents
+     * @param int      $lastModified
      */
     public function __construct($name, $contents, ?Collection $parent = null, $lastModified = -1)
     {
@@ -100,8 +99,6 @@ class File extends DAV\File
      * Returns the data.
      *
      * This method may either return a string or a readable stream resource
-     *
-     * @return mixed
      */
     public function get()
     {

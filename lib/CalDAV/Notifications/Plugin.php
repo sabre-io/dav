@@ -31,7 +31,7 @@ class Plugin extends ServerPlugin
     /**
      * This is the namespace for the proprietary calendarserver extensions.
      */
-    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
+    public const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
      * Reference to the main server object.

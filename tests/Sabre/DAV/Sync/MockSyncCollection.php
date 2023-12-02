@@ -20,7 +20,7 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
 {
     public $changeLog = [];
 
-    public $token = null;
+    public $token;
 
     /**
      * This method returns the current sync-token for this collection.
@@ -106,10 +106,10 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         if (is_null($syncToken)) {
             return [
                'added' => array_map(
-                    function ($item) {
-                        return $item->getName();
-                    }, $this->getChildren()
-                ),
+                   function ($item) {
+                       return $item->getName();
+                   }, $this->getChildren()
+               ),
                 'modified' => [],
                 'deleted' => [],
                 'syncToken' => $this->getSyncToken(),

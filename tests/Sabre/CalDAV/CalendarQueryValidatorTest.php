@@ -25,6 +25,7 @@ ICS;
      * @param string $icalObject
      * @param array  $filters
      * @param int    $outcome
+     *
      * @dataProvider provider
      */
     public function testValid($icalObject, $filters, $outcome)
@@ -814,7 +815,7 @@ yow;
             [$blob32, $filter20, 0],
 
             // Bug reported on mailing list, related to all-day events (87)
-            //array($blob33, $filter38, 1),
+            // array($blob33, $filter38, 1),
 
             // Event in timerange, but filtered alarm is in the far future (88).
             [$blob34, $filter39, 0],

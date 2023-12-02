@@ -26,12 +26,12 @@ class SupportedCollationSetTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => $property]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:card="'.CardDAV\Plugin::NS_CARDDAV.'" xmlns:d="DAV:">'.
-'<card:supported-collation>i;ascii-casemap</card:supported-collation>'.
-'<card:supported-collation>i;octet</card:supported-collation>'.
-'<card:supported-collation>i;unicode-casemap</card:supported-collation>'.
-'</d:root>
+            '<card:supported-collation>i;ascii-casemap</card:supported-collation>'.
+            '<card:supported-collation>i;octet</card:supported-collation>'.
+            '<card:supported-collation>i;unicode-casemap</card:supported-collation>'.
+            '</d:root>
 ', $xml);
     }
 }

@@ -38,12 +38,12 @@ class Mock extends AbstractBackend
         $locks = $this->getData();
 
         foreach ($locks as $lock) {
-            if ($lock->uri === $uri ||
-                //deep locks on parents
-                (0 != $lock->depth && 0 === strpos($uri, $lock->uri.'/')) ||
+            if ($lock->uri === $uri
+                // deep locks on parents
+                || (0 != $lock->depth && 0 === strpos($uri, $lock->uri.'/'))
 
                 // locks on children
-                ($returnChildLocks && (0 === strpos($lock->uri, $uri.'/')))) {
+                || ($returnChildLocks && (0 === strpos($lock->uri, $uri.'/')))) {
                 $newLocks[] = $lock;
             }
         }
@@ -76,8 +76,8 @@ class Mock extends AbstractBackend
 
         foreach ($locks as $k => $lock) {
             if (
-                ($lock->token == $lockInfo->token) ||
-                (time() > $lock->timeout + $lock->created)
+                ($lock->token == $lockInfo->token)
+                || (time() > $lock->timeout + $lock->created)
             ) {
                 unset($locks[$k]);
             }

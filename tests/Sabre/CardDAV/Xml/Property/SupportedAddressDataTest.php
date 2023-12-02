@@ -26,12 +26,12 @@ class SupportedAddressDataTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => $property]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:card="'.CardDAV\Plugin::NS_CARDDAV.'" xmlns:d="DAV:">'.
-'<card:address-data-type content-type="text/vcard" version="3.0"/>'.
-'<card:address-data-type content-type="text/vcard" version="4.0"/>'.
-'<card:address-data-type content-type="application/vcard+json" version="4.0"/>'.
-'</d:root>
+            '<card:address-data-type content-type="text/vcard" version="3.0"/>'.
+            '<card:address-data-type content-type="text/vcard" version="4.0"/>'.
+            '<card:address-data-type content-type="application/vcard+json" version="4.0"/>'.
+            '</d:root>
 ', $xml);
     }
 }

@@ -61,8 +61,6 @@ class File extends Node implements DAV\IFile
      * The ETag is an arbitrary string, but MUST be surrounded by double-quotes.
      *
      * Return null if the ETag can not effectively be determined
-     *
-     * @return mixed
      */
     public function getETag()
     {
@@ -77,8 +75,6 @@ class File extends Node implements DAV\IFile
      * Returns the mime-type for a file.
      *
      * If null is returned, we'll assume application/octet-stream
-     *
-     * @return mixed
      */
     public function getContentType()
     {

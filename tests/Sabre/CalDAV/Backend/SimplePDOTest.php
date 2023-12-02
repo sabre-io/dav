@@ -90,7 +90,7 @@ SQL
     {
         $backend = new SimplePDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([

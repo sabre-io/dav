@@ -134,6 +134,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @depends testSimple
+     *
      * @dataProvider htmlProvider
      */
     public function testToHtml($principal, $output)

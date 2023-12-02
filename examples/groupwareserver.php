@@ -78,7 +78,7 @@ if (isset($baseUri)) {
 
 // Logging
 $server->setLogger($logger);
-//$server->debugExceptions = true; //enable this to include the stacktrace in exception responses
+// $server->debugExceptions = true; //enable this to include the stacktrace in exception responses
 
 // Plugins
 $server->addPlugin(new \Sabre\DAV\Auth\Plugin($authBackend));

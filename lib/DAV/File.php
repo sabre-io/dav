@@ -46,8 +46,6 @@ abstract class File extends Node implements IFile
      * Returns the data.
      *
      * This method may either return a string or a readable stream resource
-     *
-     * @return mixed
      */
     public function get()
     {

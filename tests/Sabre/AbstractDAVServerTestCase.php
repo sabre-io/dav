@@ -116,7 +116,7 @@ abstract class AbstractDAVServerTestCase extends TestCase
      * If this string is set, we will automatically log in the user with this
      * name.
      */
-    protected $autoLogin = null;
+    protected $autoLogin;
 
     public function setup(): void
     {

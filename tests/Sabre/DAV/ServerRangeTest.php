@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use DateTime;
 use Sabre\HTTP;
 
 /**
@@ -29,14 +28,14 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
         $this->server->createFile('files/test.txt', 'Test contents');
 
         $this->lastModified = HTTP\toDate(
-            new DateTime('@'.$this->server->tree->getNodeForPath('files/test.txt')->getLastModified())
+            new \DateTime('@'.$this->server->tree->getNodeForPath('files/test.txt')->getLastModified())
         );
 
         $stream = popen('echo "Test contents"', 'r');
         $streamingFile = new Mock\StreamingFile(
-                'no-seeking.txt',
-                $stream
-            );
+            'no-seeking.txt',
+            $stream
+        );
         $streamingFile->setSize(12);
         $this->server->tree->getNodeForPath('files')->addNode($streamingFile);
     }

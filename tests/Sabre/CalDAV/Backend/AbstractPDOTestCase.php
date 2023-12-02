@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Sabre\CalDAV;
 use Sabre\DAV;
@@ -87,7 +86,7 @@ abstract class AbstractPDOTestCase extends TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -133,7 +132,7 @@ abstract class AbstractPDOTestCase extends TestCase
         $this->expectException('InvalidArgumentException');
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -152,7 +151,7 @@ abstract class AbstractPDOTestCase extends TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -211,7 +210,7 @@ abstract class AbstractPDOTestCase extends TestCase
         $this->expectException(\Sabre\DAV\Exception::class);
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', [
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => 'blabla',
         ]);
@@ -769,8 +768,8 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120103'),
-                        'end' => new DateTime('20120104'),
+                        'start' => new \DateTime('20120103'),
+                        'end' => new \DateTime('20120104'),
                     ],
                 ],
             ],
@@ -800,7 +799,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120102'),
+                        'start' => new \DateTime('20120102'),
                         'end' => null,
                     ],
                 ],
@@ -831,7 +830,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120102'),
+                        'start' => new \DateTime('20120102'),
                     ],
                 ],
             ],
@@ -861,7 +860,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'end' => new DateTime('20120102'),
+                        'end' => new \DateTime('20120102'),
                     ],
                 ],
             ],
@@ -1000,7 +999,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1041,7 +1040,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1083,7 +1082,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1114,7 +1113,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 

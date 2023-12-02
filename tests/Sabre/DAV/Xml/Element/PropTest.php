@@ -131,7 +131,7 @@ XML;
         $expected = [];
 
         $elementMap = [
-            '{DAV:}foo' => new \StdClass(),
+            '{DAV:}foo' => new \stdClass(),
         ];
 
         self::assertDecodeProp($input, $expected, $elementMap);

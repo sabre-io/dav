@@ -44,8 +44,6 @@ interface IFile extends INode
      * Returns the data.
      *
      * This method may either return a string or a readable stream resource
-     *
-     * @return mixed
      */
     public function get();
 

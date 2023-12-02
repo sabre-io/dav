@@ -44,7 +44,7 @@ class ServerPluginTest extends AbstractServerTestCase
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals([

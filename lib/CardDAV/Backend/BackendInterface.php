@@ -63,15 +63,11 @@ interface BackendInterface
      *
      * @param string $principalUri
      * @param string $url          just the 'basename' of the url
-     *
-     * @return mixed
      */
     public function createAddressBook($principalUri, $url, array $properties);
 
     /**
      * Deletes an entire addressbook and all its contents.
-     *
-     * @param mixed $addressBookId
      */
     public function deleteAddressBook($addressBookId);
 
@@ -91,8 +87,6 @@ interface BackendInterface
      * calculating them. If they are specified, you can also omit carddata.
      * This may speed up certain requests, especially with large cards.
      *
-     * @param mixed $addressbookId
-     *
      * @return array
      */
     public function getCards($addressbookId);
@@ -105,7 +99,6 @@ interface BackendInterface
      *
      * If the card does not exist, you must return false.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      *
      * @return array
@@ -119,8 +112,6 @@ interface BackendInterface
      * cards in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @param mixed $addressBookId
      *
      * @return array
      */
@@ -146,7 +137,6 @@ interface BackendInterface
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *
@@ -174,7 +164,6 @@ interface BackendInterface
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *
@@ -185,7 +174,6 @@ interface BackendInterface
     /**
      * Deletes a card.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      *
      * @return bool

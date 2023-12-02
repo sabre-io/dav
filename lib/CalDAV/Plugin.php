@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTimeZone;
 use Sabre\CalDAV\Xml\Request\CalendarMultiGetReport;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
@@ -33,18 +32,18 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This is the official CalDAV namespace.
      */
-    const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
+    public const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
 
     /**
      * This is the namespace for the proprietary calendarserver extensions.
      */
-    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
+    public const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
      * The hardcoded root for calendar objects. It is unfortunate
      * that we're stuck with it, but it will have to do for now.
      */
-    const CALENDAR_ROOT = 'calendars';
+    public const CALENDAR_ROOT = 'calendars';
 
     /**
      * Reference to server object.
@@ -240,8 +239,6 @@ class Plugin extends DAV\ServerPlugin
      * This functions handles REPORT requests specific to CalDAV.
      *
      * @param string $reportName
-     * @param mixed  $report
-     * @param mixed  $path
      *
      * @return bool|null
      */
@@ -453,7 +450,7 @@ class Plugin extends DAV\ServerPlugin
                             $timeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
                         } else {
                             // Defaulting to UTC.
-                            $timeZone = new DateTimeZone('UTC');
+                            $timeZone = new \DateTimeZone('UTC');
                         }
                         $timeZones[$calendarPath] = $timeZone;
                     }
@@ -518,7 +515,7 @@ class Plugin extends DAV\ServerPlugin
                 $vtimezoneObj->destroy();
             } else {
                 // Defaulting to UTC.
-                $calendarTimeZone = new DateTimeZone('UTC');
+                $calendarTimeZone = new \DateTimeZone('UTC');
             }
         }
 
@@ -601,7 +598,7 @@ class Plugin extends DAV\ServerPlugin
                 list($properties) =
                     $this->server->getPropertiesForPath($this->server->getRequestUri().'/'.$path, $report->properties);
 
-                if (($needsJson || $report->expand)) {
+                if ($needsJson || $report->expand) {
                     $vObject = VObject\Reader::read($properties[200]['{'.self::NS_CALDAV.'}calendar-data']);
 
                     if ($report->expand) {
@@ -660,7 +657,7 @@ class Plugin extends DAV\ServerPlugin
             // Destroy circular references so PHP will garbage collect the object.
             $vtimezoneObj->destroy();
         } else {
-            $calendarTimeZone = new DateTimeZone('UTC');
+            $calendarTimeZone = new \DateTimeZone('UTC');
         }
 
         // Doing a calendar-query first, to make sure we get the most

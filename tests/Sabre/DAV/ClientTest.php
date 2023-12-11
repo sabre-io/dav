@@ -185,6 +185,288 @@ XML;
         ], $request->getHeaders());
     }
 
+    /**
+     * A PROPFIND on a folder containing resources will filter out the meta-data
+     * for resources that have a status that is not 200.
+     * For example, resources that are "403" (access is forbidden to the user)
+     * or "425" (too early), the resource may have been recently uploaded and
+     * still has some processing happening in the server before being made
+     * available for regular access.
+     */
+    public function testPropFindMixedErrors()
+    {
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/folder1</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype><d:collection/></d:resourcetype>
+        <d:displayname>Folder1</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file1.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File1</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file2.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File2</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 403 Forbidden</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file3.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File3</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 425 Too Early</d:status>
+    </d:propstat>
+  </d:response>
+</d:multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propFind('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{urn:zim}gir'], 1);
+
+        self::assertEquals([
+            '/folder1' => [
+            '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+            '{DAV:}displayname' => 'Folder1',
+            ],
+            '/folder1/file1.txt' => [
+                '{DAV:}resourcetype' => null,
+                '{DAV:}displayname' => 'File1',
+            ],
+            '/folder1/file2.txt' => [],
+            '/folder1/file3.txt' => [],
+        ], $result);
+
+        $request = $client->request;
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/folder1', $request->getUrl());
+        self::assertEquals([
+            'Depth' => ['1'],
+            'Content-Type' => ['application/xml'],
+        ], $request->getHeaders());
+    }
+
+    /**
+     * An "unfiltered" PROPFIND on a folder containing resources will include the
+     * meta-data for resources that have a status that is not 200.
+     * For example, resources that are "403" (access is forbidden to the user)
+     * or "425" (too early), the resource may have been recently uploaded and
+     * still has some processing happening in the server before being made
+     * available for regular access.
+     */
+    public function testPropFindUnfilteredDepth0()
+    {
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/folder1</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype><d:collection/></d:resourcetype>
+        <d:displayname>Folder1</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
+    </d:propstat>
+  </d:response>
+</d:multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{DAV:}contentlength', '{urn:zim}gir']);
+
+        self::assertEquals([
+            200 => [
+                '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                '{DAV:}displayname' => 'Folder1',
+            ],
+            404 => [
+                '{DAV:}contentlength' => null,
+            ],
+        ], $result);
+
+        $request = $client->request;
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/folder1', $request->getUrl());
+        self::assertEquals([
+            'Depth' => ['0'],
+            'Content-Type' => ['application/xml'],
+        ], $request->getHeaders());
+    }
+
+    /**
+     * An "unfiltered" PROPFIND on a folder containing resources will include the
+     * meta-data for resources that have a status that is not 200.
+     * For example, resources that are "403" (access is forbidden to the user)
+     * or "425" (too early), the resource may have been recently uploaded and
+     * still has some processing happening in the server before being made
+     * available for regular access.
+     */
+    public function testPropFindUnfiltered()
+    {
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/folder1</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype><d:collection/></d:resourcetype>
+        <d:displayname>Folder1</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file1.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File1</d:displayname>
+        <d:contentlength>12</d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file2.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File2</d:displayname>
+        <d:contentlength>27</d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 403 Forbidden</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/file3.txt</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype/>
+        <d:displayname>File3</d:displayname>
+        <d:contentlength>42</d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 425 Too Early</d:status>
+    </d:propstat>
+  </d:response>
+  <d:response>
+    <d:href>/folder1/subfolder</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:resourcetype><d:collection/></d:resourcetype>
+        <d:displayname>SubFolder</d:displayname>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+    <d:propstat>
+      <d:prop>
+        <d:contentlength></d:contentlength>
+      </d:prop>
+      <d:status>HTTP/1.1 404 Not Found</d:status>
+    </d:propstat>
+  </d:response>
+</d:multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propFindUnfiltered('folder1', ['{DAV:}resourcetype', '{DAV:}displayname', '{DAV:}contentlength', '{urn:zim}gir'], 1);
+
+        self::assertEquals([
+            '/folder1' => [
+                200 => [
+                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                    '{DAV:}displayname' => 'Folder1',
+                ],
+                404 => [
+                    '{DAV:}contentlength' => null,
+                ],
+            ],
+            '/folder1/file1.txt' => [
+                200 => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File1',
+                    '{DAV:}contentlength' => 12,
+                ],
+            ],
+            '/folder1/file2.txt' => [
+                403 => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File2',
+                    '{DAV:}contentlength' => 27,
+                ],
+            ],
+            '/folder1/file3.txt' => [
+                425 => [
+                    '{DAV:}resourcetype' => null,
+                    '{DAV:}displayname' => 'File3',
+                    '{DAV:}contentlength' => 42,
+                ],
+            ],
+            '/folder1/subfolder' => [
+                200 => [
+                    '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                    '{DAV:}displayname' => 'SubFolder',
+                ],
+                404 => [
+                    '{DAV:}contentlength' => null,
+                ],
+            ],
+        ], $result);
+
+        $request = $client->request;
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/folder1', $request->getUrl());
+        self::assertEquals([
+            'Depth' => ['1'],
+            'Content-Type' => ['application/xml'],
+        ], $request->getHeaders());
+    }
+
     public function testPropPatch()
     {
         $client = new ClientMock([

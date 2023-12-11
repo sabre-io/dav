@@ -135,6 +135,41 @@ XML;
         ], $request->getHeaders());
     }
 
+    public function testPropFindWithIntegerUrl()
+    {
+        $client = new ClientMock([
+            'baseUri' => '/',
+        ]);
+
+        $responseBody = <<<XML
+<?xml version="1.0"?>
+<multistatus xmlns="DAV:">
+  <response>
+    <href>/123456</href>
+    <propstat>
+      <prop>
+        <displayname>bar</displayname>
+      </prop>
+      <status>HTTP/1.1 200 OK</status>
+    </propstat>
+  </response>
+</multistatus>
+XML;
+
+        $client->response = new Response(207, [], $responseBody);
+        $result = $client->propFind(123456, ['{DAV:}displayname', '{urn:zim}gir']);
+
+        self::assertEquals(['{DAV:}displayname' => 'bar'], $result);
+
+        $request = $client->request;
+        self::assertEquals('PROPFIND', $request->getMethod());
+        self::assertEquals('/123456', $request->getUrl());
+        self::assertEquals([
+            'Depth' => ['0'],
+            'Content-Type' => ['application/xml'],
+        ], $request->getHeaders());
+    }
+
     public function testPropFindError()
     {
         $this->expectException('Sabre\HTTP\ClientHttpException');
@@ -146,7 +181,19 @@ XML;
         $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir']);
     }
 
-    public function testPropFindDepth1()
+    public function depthProvider(): array
+    {
+        return [
+            ['1'],
+            [1],
+        ];
+    }
+
+    /**
+     * @param int|string $depth
+     * @dataProvider depthProvider
+     */
+    public function testPropFindDepth1($depth)
     {
         $client = new ClientMock([
             'baseUri' => '/',
@@ -168,7 +215,7 @@ XML;
 XML;
 
         $client->response = new Response(207, [], $responseBody);
-        $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir'], 1);
+        $result = $client->propFind('foo', ['{DAV:}displayname', '{urn:zim}gir'], $depth);
 
         self::assertEquals([
             '/foo' => [

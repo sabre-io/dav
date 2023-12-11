@@ -193,7 +193,7 @@ class Client extends HTTP\Client
      *
      * @param 1|0 $depth
      */
-    public function propFind(string $url, array $properties, int $depth = 0): array
+    public function propFind($url, array $properties, $depth = 0): array
     {
         $result = $this->doPropFind($url, $properties, $depth);
 
@@ -265,7 +265,7 @@ class Client extends HTTP\Client
      *
      * @param 1|0 $depth
      */
-    private function doPropFind(string $url, array $properties, int $depth = 0): array
+    private function doPropFind($url, array $properties, $depth = 0): array
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
@@ -441,7 +441,7 @@ class Client extends HTTP\Client
     {
         return Uri\resolve(
             $this->baseUri,
-            $url
+            (string) $url
         );
     }
 

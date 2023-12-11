@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+4.6.0 (2023-12-11)
+-------------------------
+* #1526: feat: add propFindUnfiltered public method to Client (@phil-davis)
+
 4.5.1 (2023-11-23)
 -------------------------
 * #1514: fix: restore autoPrefix property of Href (@phil-davis)

@@ -174,7 +174,7 @@ class Client extends HTTP\Client
     }
 
     /**
-     * Does a PROPFIND request with filtered response.
+     * Does a PROPFIND request with filtered response returning only available properties.
      *
      * The list of requested properties must be specified as an array, in clark
      * notation.
@@ -191,12 +191,9 @@ class Client extends HTTP\Client
      * Only properties that are actually returned from the server without error will be
      * returned, anything else is discarded.
      *
-     * @param string $url
-     * @param int    $depth
-     *
-     * @return array
+     * @param 1|0 $depth
      */
-    public function propFind($url, array $properties, $depth = 0)
+    public function propFind(string $url, array $properties, int $depth = 0): array
     {
         $result = $this->doPropFind($url, $properties, $depth);
 
@@ -235,12 +232,9 @@ class Client extends HTTP\Client
      *
      * All properties that are actually returned from the server are returned by this method.
      *
-     * @param string $url
-     * @param int    $depth
-     *
-     * @return array
+     * @param 1|0 $depth
      */
-    public function propFindUnfiltered($url, array $properties, $depth = 0)
+    public function propFindUnfiltered(string $url, array $properties, int $depth = 0): array
     {
         $result = $this->doPropFind($url, $properties, $depth);
 
@@ -269,12 +263,9 @@ class Client extends HTTP\Client
      * The multi-level array of status and properties is formatted the same as what is
      * documented for parseMultiStatus.
      *
-     * @param string $url
-     * @param int    $depth
-     *
-     * @return array
+     * @param 1|0 $depth
      */
-    private function doPropFind($url, array $properties, $depth = 0)
+    private function doPropFind(string $url, array $properties, int $depth = 0): array
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;

@@ -35,6 +35,8 @@ class IMipPlugin extends DAV\ServerPlugin
 
     /**
      * Creates the email handler.
+     *
+     * @param string $senderEmail
      */
     public function __construct($senderEmail)
     {

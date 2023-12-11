@@ -179,15 +179,17 @@ class Client extends HTTP\Client
      * The list of requested properties must be specified as an array, in clark
      * notation.
      *
-     * The returned array will contain a list of filenames as keys, and
-     * properties as values.
-     *
-     * The properties array will contain the list of properties. Only properties
-     * that are actually returned from the server (without error) will be
-     * returned, anything else is discarded.
-     *
      * Depth should be either 0 or 1. A depth of 1 will cause a request to be
      * made to the server to also return all child resources.
+     *
+     * For depth 0, just the array of properties for the resource is returned.
+     *
+     * For depth 1, the returned array will contain a list of resource names as keys,
+     * and an array of properties as values.
+     *
+     * The array of properties will contain the properties as keys with their values as the value.
+     * Only properties that are actually returned from the server without error will be
+     * returned, anything else is discarded.
      *
      * @param string $url
      * @param int    $depth
@@ -220,14 +222,18 @@ class Client extends HTTP\Client
      * The list of requested properties must be specified as an array, in clark
      * notation.
      *
-     * The returned array will contain a list of filenames as keys, and
-     * properties as values.
-     *
-     * The properties array will contain the list of properties. All properties
-     * that are actually returned from the server are returned by this method.
-     *
      * Depth should be either 0 or 1. A depth of 1 will cause a request to be
      * made to the server to also return all child resources.
+     *
+     * For depth 0, just the multi-level array of status and properties for the resource is returned.
+     *
+     * For depth 1, the returned array will contain a list of resources as keys and
+     * a multi-level array containing status and properties as value.
+     *
+     * The multi-level array of status and properties is formatted the same as what is
+     * documented for parseMultiStatus.
+     *
+     * All properties that are actually returned from the server are returned by this method.
      *
      * @param string $url
      * @param int    $depth
@@ -237,7 +243,6 @@ class Client extends HTTP\Client
     public function propFindUnfiltered($url, array $properties, $depth = 0)
     {
         $result = $this->doPropFind($url, $properties, $depth);
-        $newResult = [];
 
         // If depth was 0, we only return the top item
         if (0 === $depth) {
@@ -255,13 +260,14 @@ class Client extends HTTP\Client
      * The list of requested properties must be specified as an array, in clark
      * notation.
      *
-     * The returned array will contain a list of filenames as keys, and
-     * properties as values.
-     *
-     * The properties array will contain the list of properties.
-     *
      * Depth should be either 0 or 1. A depth of 1 will cause a request to be
      * made to the server to also return all child resources.
+     *
+     * The returned array will contain a list of resources as keys and
+     * a multi-level array containing status and properties as value.
+     *
+     * The multi-level array of status and properties is formatted the same as what is
+     * documented for parseMultiStatus.
      *
      * @param string $url
      * @param int    $depth
@@ -306,9 +312,7 @@ class Client extends HTTP\Client
             throw new HTTP\ClientHttpException($response);
         }
 
-        $result = $this->parseMultiStatus($response->getBodyAsString());
-
-        return $result;
+        return $this->parseMultiStatus($response->getBodyAsString());
     }
 
     /**

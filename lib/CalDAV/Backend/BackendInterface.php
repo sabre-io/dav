@@ -221,7 +221,7 @@ interface BackendInterface
      *
      * This default may well be good enough for personal use, and calendars
      * that aren't very large. But if you anticipate high usage, big calendars
-     * or high loads, you are strongly adviced to optimize certain paths.
+     * or high loads, you are strongly advised to optimize certain paths.
      *
      * The best way to do so is override this method and to optimize
      * specifically for 'common filters'.

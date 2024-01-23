@@ -44,7 +44,7 @@ class PDOBasicAuth extends AbstractBasic
      * Digest prefix:
      * if the backend you are using for is prefixing
      * your password hashes set this option to your prefix to
-     * cut it off before verfiying.
+     * cut it off before verifying.
      *
      * @var string
      */

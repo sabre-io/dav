@@ -62,7 +62,7 @@ class Mock implements BackendInterface
      * This method is called when a user could not be authenticated, and
      * authentication was required for the current request.
      *
-     * This gives you the oppurtunity to set authentication headers. The 401
+     * This gives you the opportunity to set authentication headers. The 401
      * status code will already be set.
      *
      * In this case of Basic Auth, this would for example mean that the

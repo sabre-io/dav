@@ -307,7 +307,7 @@ class HttpPutTest extends DAVServerTest
     }
 
     /**
-     * Same as the last one, but in this case we're mimicing a failed request.
+     * Same as the last one, but in this case we're mimicking a failed request.
      *
      * @depends testFinderPutSuccess
      */

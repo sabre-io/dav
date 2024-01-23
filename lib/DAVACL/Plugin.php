@@ -716,7 +716,7 @@ class Plugin extends DAV\ServerPlugin
      * @param array  $requestedProperties this is the list of properties to
      *                                    return for every match
      * @param string $collectionUri       the principal collection to search on.
-     *                                    If this is ommitted, the standard
+     *                                    If this is omitted, the standard
      *                                    principal collection-set will be used
      * @param string $test                "allof" to use AND to search the
      *                                    properties. 'anyof' for OR.

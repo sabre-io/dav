@@ -9,7 +9,7 @@ namespace Sabre\DAV;
  *
  * This interface adds a tiny bit of functionality to collections.
  *
- * Getting a node that is deep in the tree normally requires going trough each parent node
+ * Getting a node that is deep in the tree normally requires going through each parent node
  * which can cause a significant performance overhead.
  *
  * Implementing this interface allows solving this overhead by directly jumping to the target node.

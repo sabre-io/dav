@@ -913,7 +913,7 @@ class Plugin extends DAV\ServerPlugin
     }
 
     /**
-     * This method is triggered whenever a subsystem reqeuests the privileges
+     * This method is triggered whenever a subsystem requests the privileges
      * that are supported on a particular node.
      */
     public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)

@@ -956,7 +956,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
         $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
 
-        // according to RFC6578 Section 3.6, the result including syncToken must correpsond to one time (syncToken=8 here)
+        // according to RFC6578 Section 3.6, the result including syncToken must correspond to one time (syncToken=8 here)
         self::assertEquals([
             'syncToken' => 8,
             'modified' => [],

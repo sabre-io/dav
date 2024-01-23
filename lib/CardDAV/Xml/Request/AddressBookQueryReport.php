@@ -82,7 +82,7 @@ class AddressBookQueryReport implements XmlDeserializable
     public $test;
 
     /**
-     * The mimetype of the content that should be returend. Usually
+     * The mimetype of the content that should be returned. Usually
      * text/vcard.
      *
      * @var string

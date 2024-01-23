@@ -194,7 +194,7 @@ class Plugin extends ServerPlugin
     }
 
     /**
-     * This method is triggered whenever a subsystem reqeuests the privileges
+     * This method is triggered whenever a subsystem requests the privileges
      * hat are supported on a particular node.
      *
      * We need to add a number of privileges for scheduling purposes.

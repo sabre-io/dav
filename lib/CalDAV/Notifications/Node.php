@@ -70,7 +70,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL
     /**
      * Returns the etag for the notification.
      *
-     * The etag must be surrounded by litteral double-quotes.
+     * The etag must be surrounded by literal double-quotes.
      *
      * @return string
      */
@@ -101,7 +101,7 @@ class Node extends DAV\File implements INode, DAVACL\IACL
     /**
      * Returns the owner principal.
      *
-     * This must be a url to a principal, or null if there's no owner
+     * This must be an url to a principal, or null if there's no owner
      *
      * @return string|null
      */

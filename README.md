@@ -1,4 +1,4 @@
-![sabre's logo](http://sabre.io/img/logo.png) sabre/dav
+![sabre's logo](https://sabre.io/img/logo.png) sabre/dav
 =======================================================
 
 Introduction
@@ -8,7 +8,7 @@ sabre/dav is the most popular WebDAV framework for PHP. Use it to create WebDAV,
 
 Full documentation can be found on the website:
 
-http://sabre.io/
+https://sabre.io/
 
 
 Build status
@@ -29,8 +29,8 @@ Build status
 Documentation
 -------------
 
-* [Introduction](http://sabre.io/dav/).
-* [Installation](http://sabre.io/dav/install/).
+* [Introduction](https://sabre.io/dav/).
+* [Installation](https://sabre.io/dav/install/).
 
 
 Made at fruux

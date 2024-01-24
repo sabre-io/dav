@@ -3,13 +3,13 @@
     "type": "library",
     "description": "WebDAV Framework for PHP",
     "keywords": ["Framework", "WebDAV", "CalDAV", "CardDAV", "iCalendar"],
-    "homepage": "http://sabre.io/",
+    "homepage": "https://sabre.io/",
     "license" : "BSD-3-Clause",
     "authors": [
         {
             "name": "Evert Pot",
             "email": "me@evertpot.com",
-            "homepage" : "http://evertpot.com/",
+            "homepage" : "https://evertpot.com/",
             "role" : "Developer"
         }
     ],

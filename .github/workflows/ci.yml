@@ -126,5 +126,5 @@ jobs:
           SABRE_PGSQLDSN: "pgsql:host=127.0.0.1;port=5432;dbname=sabredav_test;user=postgres;password=postgres"
           RUN_TEST_WITH_STREAMING_PROPFIND: "true"
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: matrix.coverage != 'none'

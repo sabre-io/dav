@@ -117,13 +117,16 @@ class CorePlugin extends ServerPlugin
 
         $response->addHeaders($httpHeaders);
 
-        $range = $this->server->getHTTPRange();
+        // this function now only checks, if the range string is correctly formatted
+        // and returns it (or null if it isn't or it doesn't exist)
+        // processing of the ranges will then be done further below
+        $rangeHeaderValue = $this->server->getHTTPRangeHeaderValue();
         $ifRange = $request->getHeader('If-Range');
         $ignoreRangeHeader = false;
 
         // If ifRange is set, and range is specified, we first need to check
         // the precondition.
-        if ($nodeSize && $range && $ifRange) {
+        if ($nodeSize && $rangeHeaderValue && $ifRange) {
             // if IfRange is parsable as a date we'll treat it as a DateTime
             // otherwise, we must treat it as an etag.
             try {
@@ -149,47 +152,106 @@ class CorePlugin extends ServerPlugin
             }
         }
 
-        // We're only going to support HTTP ranges if the backend provided a filesize
-        if (!$ignoreRangeHeader && $nodeSize && $range) {
-            // Determining the exact byte offsets
-            if (!is_null($range[0])) {
+        $ranges = null;
+
+        if (!$ignoreRangeHeader && $nodeSize && $rangeHeaderValue) {
+            // preprocess the ranges now
+            // this involves removing invalid ranges and security checks
+            $ranges = $this->preprocessRanges($rangeHeaderValue, $nodeSize);
+        }
+
+        if (!$ignoreRangeHeader && $nodeSize && $ranges) {
+            // create a new stream for the partial responses
+            $rangeBody = fopen('php://temp', 'r+');
+
+            // create a boundary string that is being used as identifier for multipart ranges
+            $boundary = hash('md5', uniqid('', true));
+
+            // create a content length counter
+            $contentLength = 0;
+
+            // define the node's content type
+            $nodeContentType = $node->getContentType();
+
+            if (!$nodeContentType) {
+                $nodeContentType = 'application/octet-stream';
+            }
+
+            foreach ($ranges as $range) {
                 $start = $range[0];
-                $end = $range[1] ? $range[1] : $nodeSize - 1;
-                if ($start >= $nodeSize) {
-                    throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$range[0].') exceeded the size of the entity ('.$nodeSize.')');
-                }
-                if ($end < $start) {
-                    throw new Exception\RequestedRangeNotSatisfiable('The end offset ('.$range[1].') is lower than the start offset ('.$range[0].')');
-                }
-                if ($end >= $nodeSize) {
-                    $end = $nodeSize - 1;
-                }
-            } else {
-                $start = $nodeSize - $range[1];
-                $end = $nodeSize - 1;
+                $end = $range[1];
 
-                if ($start < 0) {
-                    $start = 0;
-                }
-            }
-
-            // Streams may advertise themselves as seekable, but still not
-            // actually allow fseek.  We'll manually go forward in the stream
-            // if fseek failed.
-            if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
-                $consumeBlock = 8192;
-                for ($consumed = 0; $start - $consumed > 0;) {
-                    if (feof($body)) {
-                        throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$start.') exceeded the size of the entity ('.$consumed.')');
+                // Streams may advertise themselves as seekable, but still not
+                // actually allow fseek.  We'll manually go forward in the stream
+                // if fseek failed.
+                if (!stream_get_meta_data($body)['seekable'] || -1 === fseek($body, $start, SEEK_SET)) {
+                    // don't allow multipart ranges for non-seekable streams
+                    // these streams are not rewindable, so they would have to be closed and opened for each range
+                    if (count($ranges) > 1) {
+                        throw new Exception\RequestedRangeNotSatisfiable('Multipart range requests are not allowed on a non-seekable resource.');
                     }
-                    $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
+                    $consumeBlock = 8192;
+                    for ($consumed = 0; $start - $consumed > 0;) {
+                        if (feof($body)) {
+                            throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$start.') exceeded the size of the entity ('.$consumed.')');
+                        }
+                        $consumed += strlen(fread($body, min($start - $consumed, $consumeBlock)));
+                    }
+                }
+
+                // if there is only one range, write it into the response body
+                // otherwise, write multipart header info first before writing the data
+                if (1 === count($ranges)) {
+                    $rangeLength = $end - $start + 1;
+                    $consumeBlock = 8192;
+
+                    // write body data into response body (max 8192 bytes per read cycle)
+                    while ($rangeLength > 0) {
+                        fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
+                        $rangeLength -= min($rangeLength, $consumeBlock);
+                    }
+
+                    // update content length
+                    $contentLength = $end - $start + 1;
+                } else {
+                    // define new boundary section and write to response body
+                    $boundarySection = '--'.$boundary."\nContent-Type: ".$nodeContentType."\nContent-Range: bytes ".$start.'-'.$end.'/'.$nodeSize."\n\n";
+                    fwrite($rangeBody, $boundarySection);
+
+                    // write body data into response body (max 8192 bytes per read cycle)
+                    $rangeLength = $end - $start + 1;
+                    $consumeBlock = 8192;
+                    while ($rangeLength > 0) {
+                        fwrite($rangeBody, fread($body, min($rangeLength, $consumeBlock)));
+                        $rangeLength -= min($rangeLength, $consumeBlock);
+                    }
+
+                    // write line breaks at the end of section
+                    fwrite($rangeBody, "\n\n");
+
+                    // update content length
+                    // +2 for double linebreak at the end of each section
+                    $contentLength += strlen($boundarySection) + ($end - $start + 1) + 2;
                 }
             }
 
-            $response->setHeader('Content-Length', $end - $start + 1);
-            $response->setHeader('Content-Range', 'bytes '.$start.'-'.$end.'/'.$nodeSize);
+            // rewind the range body after the loop
+            rewind($rangeBody);
+
+            if (1 === count($ranges)) {
+                // if only one range, content range header MUST be set (according to spec)
+                $response->setHeader('Content-Range', 'bytes '.$start.'-'.$end.'/'.$nodeSize);
+            } else {
+                // if multiple ranges, content range header MUST NOT be set (according to spec)
+                // content type header MUST be of type multipart/byteranges
+                // more specific types can be set in each body section header
+                $response->setHeader('Content-Type', 'multipart/byteranges; boundary='.$boundary);
+            }
+
+            $response->setHeader('Content-Length', $contentLength);
+
             $response->setStatus(206);
-            $response->setBody($body);
+            $response->setBody($rangeBody);
         } else {
             if ($nodeSize) {
                 $response->setHeader('Content-Length', $nodeSize);
@@ -197,8 +259,7 @@ class CorePlugin extends ServerPlugin
             $response->setStatus(200);
             $response->setBody($body);
         }
-        // Sending back false will interrupt the event chain and tell the server
-        // we've handled this method.
+
         return false;
     }
 
@@ -903,5 +964,161 @@ class CorePlugin extends ServerPlugin
             'description' => 'The Core plugin provides a lot of the basic functionality required by WebDAV, such as a default implementation for all HTTP and WebDAV methods.',
             'link' => null,
         ];
+    }
+
+    /**
+     * Returns the processed ranges of the previously parsed range header.
+     *
+     * Each range consists of 2 numbers
+     * The first number specifies the offset of the first byte in the range
+     * The second number specifies the offset of the last byte in the range
+     *
+     * If the second offset is null, it should be treated as the offset of the last byte of the entity
+     * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
+     *
+     * If multiple ranges are specified, they will be preprocessed to avoid DOS attacks
+     * Amount of ranges will be capped dependent on boundary size
+     * Overlapping ranges will be capped to 2 per request
+     * Ranges in descending order will be capped dependent on boundary size
+     *
+     * @throws Exception\PreconditionFailed           if ranges overlap or too many ranges are being requested
+     * @throws Exception\RequestedRangeNotSatisfiable if an invalid range is requested
+     *
+     * @return array|null
+     */
+    private function preprocessRanges($rangeString, $nodeSize)
+    {
+        // create an array of all ranges
+        // result example: [[0, 100], [200, 300]]
+        $ranges = explode(',', $rangeString);
+
+        // if an invalid range is encountered, its index will be saved in here
+        // invalid ranges will be removed after the for loop
+        // examples: start > end, '---200-300---', '-'
+        $rangesToRemove = [];
+
+        // loop over the array of ranges and do some basic checks and transforms
+        for ($i = 0; $i < count($ranges); ++$i) {
+            $ranges[$i] = explode('-', $ranges[$i]);
+
+            // mark invalid ranges for removal
+            // "---200-300---" would be considered a valid range by the regexp
+            if (2 !== count($ranges[$i])) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
+
+            // copy the ranges into temporary variables for comparisons
+            $start = $ranges[$i][0];
+            $end = $ranges[$i][1];
+
+            // if neither start nor end value is defined, mark range for removal
+            if ('' === $start && '' === $end) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
+
+            // if start > filesize, mark for removal
+            if ($start > $nodeSize) {
+                $rangesToRemove[] = $i;
+                continue;
+            }
+
+            // transform range parameters for special ranges immediately
+            // this will make security checks later in this function much simpler
+            if ('' === $start) {
+                $ranges[$i][0] = max($nodeSize - intval($end), 0);
+                $ranges[$i][1] = $nodeSize - 1;
+            } elseif ('' === $end || $end > ($nodeSize - 1)) {
+                $ranges[$i][0] = intval($start);
+                $ranges[$i][1] = $nodeSize - 1;
+            } else {
+                $ranges[$i][0] = intval($start);
+                $ranges[$i][1] = intval($end);
+            }
+
+            // if start > end, mark it for removal
+            if ($ranges[$i][0] > $ranges[$i][1]) {
+                $rangesToRemove[] = $i;
+            }
+        }
+
+        // remove invalid ranges
+        foreach ($rangesToRemove as $idx) {
+            unset($ranges[$idx]);
+        }
+
+        // if no ranges are left at this point, return
+        if (0 === count($ranges)) {
+            throw new Exception\RequestedRangeNotSatisfiable('None of the provided ranges satisfy the requirements. Check out RFC 7233 to learn how to form range requests.');
+        }
+
+        // rearrange the array keys
+        $ranges = array_values($ranges);
+
+        /**
+         * implement checks to prevent DOS attacks, according to rfc7233, 6.1.
+         */
+
+        // set up a sorted copy of the ranges array and define the boundary
+        $sortedRanges = $ranges;
+        sort($sortedRanges);
+
+        $minRangeBoundary = $sortedRanges[0][0];
+        $maxRangeBoundary = max(array_column($sortedRanges, 1));
+        $rangeBoundary = $maxRangeBoundary - $minRangeBoundary;
+
+        // check 1: limit the amount of ranges per request depending on range boundary
+        // accept  512 ranges per request
+        // rfc standard doesn't provide specification for the amount of ranges to be allowed per request
+        if (count($ranges) > 512) {
+            throw new Exception\RequestedRangeNotSatisfiable('Too many ranges in this request');
+        }
+
+        // check2: check for overlapping ranges and allow a maximum of 2
+        // compare each start value with either the previous end value
+        // or current max end range value, whichever is bigger
+        $overlapCounter = 0;
+        $maxEndValue = -1;
+
+        foreach ($sortedRanges as $range) {
+            // compare start value with the current maxEndValue
+            if ($range[0] <= $maxEndValue) {
+                ++$overlapCounter;
+
+                if ($overlapCounter > 2) {
+                    throw new Exception\RequestedRangeNotSatisfiable('Too many overlaps. Consider coalescing your overlapping ranges');
+                }
+            }
+
+            // check if this ranges end value is larger than maxEndValue and update
+            if ($range[1] > $maxEndValue) {
+                $maxEndValue = $range[1];
+            }
+        }
+
+        // check3: ranges should be requested in ascending order
+        // it can be useful to do occasional descending requests, i.e. if a necessary
+        // piece of information is located at the end of the file. however, if a range
+        // consists of many unordered ranges, it can be indicative of a deliberate attack
+        // limit descending ranges to 32 for boundaries < 1MB and 16 for boundaries larger than that
+        $descendingStartCounter = 0;
+
+        foreach ($ranges as $idx => $range) {
+            // skip the first range
+            if (0 === $idx) {
+                continue;
+            }
+
+            if ($range[0] < $ranges[$idx - 1][0]) {
+                ++$descendingStartCounter;
+            }
+        }
+
+        if ($descendingStartCounter > 16) {
+            throw new Exception\RequestedRangeNotSatisfiable('Too many unordered ranges in this request. Avoid listing ranges in descending order.');
+        }
+
+        return $ranges;
     }
 }

@@ -12,6 +12,7 @@ class InviteTest extends DAV\Xml\AbstractXmlTestCase
     /**
      * @param array  $notification
      * @param string $expected
+     *
      * @dataProvider dataProvider
      */
     public function testSerializers($notification, $expected)

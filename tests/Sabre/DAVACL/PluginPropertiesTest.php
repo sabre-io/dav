@@ -19,7 +19,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
                 'privilege' => '{DAV:}all',
             ],
         ]);
-        //Anyone can do anything
+        // Anyone can do anything
         $plugin->principalCollectionSet = [
             'principals1',
             'principals2',
@@ -237,8 +237,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([
@@ -271,8 +271,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([
@@ -306,8 +306,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([

@@ -197,6 +197,7 @@ class CorePlugin extends ServerPlugin
             $response->setStatus(200);
             $response->setBody($body);
         }
+
         // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;

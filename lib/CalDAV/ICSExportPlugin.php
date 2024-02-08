@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTime;
-use DateTimeZone;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\HTTP\RequestInterface;
@@ -74,11 +72,11 @@ class ICSExportPlugin extends DAV\ServerPlugin
     /**
      * Intercepts GET requests on calendar urls ending with ?export.
      *
+     * @return bool
+     *
      * @throws BadRequest
      * @throws DAV\Exception\NotFound
      * @throws VObject\InvalidDataException
-     *
-     * @return bool
      */
     public function httpGet(RequestInterface $request, ResponseInterface $response)
     {
@@ -113,13 +111,13 @@ class ICSExportPlugin extends DAV\ServerPlugin
             if (!ctype_digit($queryParams['start'])) {
                 throw new BadRequest('The start= parameter must contain a unix timestamp');
             }
-            $start = DateTime::createFromFormat('U', $queryParams['start']);
+            $start = \DateTime::createFromFormat('U', $queryParams['start']);
         }
         if (isset($queryParams['end'])) {
             if (!ctype_digit($queryParams['end'])) {
                 throw new BadRequest('The end= parameter must contain a unix timestamp');
             }
-            $end = DateTime::createFromFormat('U', $queryParams['end']);
+            $end = \DateTime::createFromFormat('U', $queryParams['end']);
         }
         if (isset($queryParams['expand']) && (bool) $queryParams['expand']) {
             if (!$start || !$end) {
@@ -161,13 +159,13 @@ class ICSExportPlugin extends DAV\ServerPlugin
     /**
      * This method is responsible for generating the actual, full response.
      *
-     * @param string        $path
-     * @param DateTime|null $start
-     * @param DateTime|null $end
-     * @param bool          $expand
-     * @param string        $componentType
-     * @param string        $format
-     * @param array         $properties
+     * @param string         $path
+     * @param \DateTime|null $start
+     * @param \DateTime|null $end
+     * @param bool           $expand
+     * @param string         $componentType
+     * @param string         $format
+     * @param array          $properties
      *
      * @throws DAV\Exception\NotFound
      * @throws VObject\InvalidDataException
@@ -243,7 +241,7 @@ class ICSExportPlugin extends DAV\ServerPlugin
                 unset($vtimezoneObj);
             } else {
                 // Defaulting to UTC.
-                $calendarTimeZone = new DateTimeZone('UTC');
+                $calendarTimeZone = new \DateTimeZone('UTC');
             }
 
             $mergedCalendar = $mergedCalendar->expand($start, $end, $calendarTimeZone);
@@ -315,7 +313,7 @@ class ICSExportPlugin extends DAV\ServerPlugin
                         $objects[] = clone $child;
                         break;
 
-                    // VTIMEZONE is special, because we need to filter out the duplicates
+                        // VTIMEZONE is special, because we need to filter out the duplicates
                     case 'VTIMEZONE':
                         // Naively just checking tzid.
                         if (in_array((string) $child->TZID, $collectedTimezones)) {

@@ -92,7 +92,6 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport
     /**
      * Updates the list of shares.
      *
-     * @param mixed                           $calendarId
      * @param \Sabre\DAV\Xml\Element\Sharee[] $sharees
      */
     public function updateInvites($calendarId, array $sharees)
@@ -140,8 +139,6 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport
      * and optionally:
      *   $properties
      *
-     * @param mixed $calendarId
-     *
      * @return \Sabre\DAV\Xml\Element\Sharee[]
      */
     public function getInvites($calendarId)
@@ -173,8 +170,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport
     /**
      * Publishes a calendar.
      *
-     * @param mixed $calendarId
-     * @param bool  $value
+     * @param bool $value
      */
     public function setPublishStatus($calendarId, $value)
     {

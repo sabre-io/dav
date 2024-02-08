@@ -12,6 +12,7 @@ class ValidateFilterTest extends AbstractPluginTestCase
      * @param string      $test
      * @param bool        $result
      * @param string|null $message
+     *
      * @dataProvider data
      */
     public function testFilter($input, $filters, $test, $result, $message = '')

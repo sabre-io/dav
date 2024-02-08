@@ -24,7 +24,7 @@ class MapGetToPropFindTest extends DAV\AbstractServerTestCase
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $request->setBody('');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals(207, $this->response->status, 'Incorrect status response received. Full response body: '.$this->response->getBodyAsString());
@@ -35,6 +35,6 @@ class MapGetToPropFindTest extends DAV\AbstractServerTestCase
             'Vary' => ['Brief,Prefer'],
             ],
             $this->response->getHeaders()
-         );
+        );
     }
 }

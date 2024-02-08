@@ -58,8 +58,6 @@ interface SubscriptionSupport extends BackendInterface
      *
      * @param string $principalUri
      * @param string $uri
-     *
-     * @return mixed
      */
     public function createSubscription($principalUri, $uri, array $properties);
 
@@ -75,15 +73,12 @@ interface SubscriptionSupport extends BackendInterface
      *
      * Read the PropPatch documentation for more info and examples.
      *
-     * @param mixed                $subscriptionId
      * @param \Sabre\DAV\PropPatch $propPatch
      */
     public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch);
 
     /**
      * Deletes a subscription.
-     *
-     * @param mixed $subscriptionId
      */
     public function deleteSubscription($subscriptionId);
 }

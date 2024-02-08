@@ -28,12 +28,12 @@ class Plugin extends DAV\ServerPlugin
     /**
      * Url to the addressbooks.
      */
-    const ADDRESSBOOK_ROOT = 'addressbooks';
+    public const ADDRESSBOOK_ROOT = 'addressbooks';
 
     /**
      * xml namespace for CardDAV elements.
      */
-    const NS_CARDDAV = 'urn:ietf:params:xml:ns:carddav';
+    public const NS_CARDDAV = 'urn:ietf:params:xml:ns:carddav';
 
     /**
      * Add urls to this property to have them automatically exposed as
@@ -177,7 +177,6 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string   $reportName
      * @param \DOMNode $dom
-     * @param mixed    $path
      *
      * @return bool
      */
@@ -579,7 +578,7 @@ class Plugin extends DAV\ServerPlugin
                     $success = true;
                 }
 
-                // If there's no text-match, we can just check for existence
+            // If there's no text-match, we can just check for existence
             } elseif (!$filter['text-match'] || !$isDefined) {
                 $success = $isDefined;
             } else {
@@ -786,7 +785,7 @@ class Plugin extends DAV\ServerPlugin
             case 'application/vcard+json':
                 return 'jcard';
 
-        // @codeCoverageIgnoreStart
+                // @codeCoverageIgnoreStart
         }
         // @codeCoverageIgnoreEnd
     }
@@ -796,7 +795,6 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string|resource $data
      * @param string          $target
-     * @param array           $propertiesFilter
      *
      * @return string
      */

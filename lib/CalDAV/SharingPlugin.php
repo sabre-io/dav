@@ -224,8 +224,8 @@ class SharingPlugin extends DAV\ServerPlugin
                 // Breaking the event chain
                 return false;
 
-            // The invite-reply document is sent when the user replies to an
-            // invitation of a calendar share.
+                // The invite-reply document is sent when the user replies to an
+                // invitation of a calendar share.
             case '{'.Plugin::NS_CALENDARSERVER.'}invite-reply':
                 // This only works on the calendar-home-root node.
                 if (!$node instanceof CalendarHome) {

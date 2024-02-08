@@ -35,7 +35,7 @@ php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
-    exit();
+    exit;
 }
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
@@ -110,7 +110,7 @@ CREATE TABLE calendarinstances (
     UNIQUE(calendarid, share_href)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 SQL
-        );
+            );
             $pdo->exec('
 INSERT INTO calendarinstances
     (
@@ -159,7 +159,7 @@ CREATE TABLE calendarinstances (
     UNIQUE (calendarid, share_href)
 );
 SQL
-        );
+            );
             $pdo->exec('
 INSERT INTO calendarinstances
     (
@@ -233,7 +233,7 @@ CREATE TABLE calendars (
     components VARBINARY(21)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL
-);
+            );
             break;
         case 'sqlite':
             $pdo->exec(<<<SQL
@@ -243,7 +243,7 @@ CREATE TABLE calendars (
     components text NOT NULL
 );
 SQL
-        );
+            );
             break;
     }
 

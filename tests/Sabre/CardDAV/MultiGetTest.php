@@ -17,7 +17,7 @@ class MultiGetTest extends AbstractPluginTestCase
         ]);
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -25,7 +25,7 @@ class MultiGetTest extends AbstractPluginTestCase
     </d:prop>
     <d:href>/addressbooks/user1/book1/card1</d:href>
 </c:addressbook-multiget>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 
@@ -60,7 +60,7 @@ class MultiGetTest extends AbstractPluginTestCase
         ]);
 
         $request->setBody(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <c:addressbook-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
     <d:prop>
       <d:getetag />
@@ -68,7 +68,7 @@ class MultiGetTest extends AbstractPluginTestCase
     </d:prop>
     <d:href>/addressbooks/user1/book1/card1</d:href>
 </c:addressbook-multiget>'
-            );
+        );
 
         $response = new HTTP\ResponseMock();
 

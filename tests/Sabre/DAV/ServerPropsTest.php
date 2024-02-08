@@ -53,7 +53,7 @@ class ServerPropsTest extends AbstractServerTestCase
                 'Vary' => ['Brief,Prefer'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
@@ -82,7 +82,7 @@ class ServerPropsTest extends AbstractServerTestCase
                 'Vary' => ['Brief,Prefer'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');
@@ -107,7 +107,7 @@ class ServerPropsTest extends AbstractServerTestCase
                 'Vary' => ['Brief,Prefer'],
             ],
             $this->response->getHeaders()
-         );
+        );
 
         $xml = $this->getSanitizedBodyAsXml();
         $xml->registerXPathNamespace('d', 'urn:DAV');

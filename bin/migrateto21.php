@@ -35,7 +35,7 @@ php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
-    exit();
+    exit;
 }
 
 // There's a bunch of places where the autoloader could be, so we'll try all of

@@ -31,7 +31,7 @@ class EmailAddressSetTest extends AbstractXmlTestCase
         ]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cs="'.\Sabre\CalDAV\Plugin::NS_CALENDARSERVER.'">
 <cs:email-address>foo@example.org</cs:email-address>
 </d:root>', $xml);

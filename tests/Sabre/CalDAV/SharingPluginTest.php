@@ -87,7 +87,7 @@ class SharingPluginTest extends AbstractDAVServerTestCase
         ]);
 
         self::assertInstanceOf('Sabre\\CalDAV\\Xml\\Property\\Invite', $props['{'.Plugin::NS_CALENDARSERVER.'}invite']);
-        //self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
+        // self::assertInstanceOf('Sabre\\DAV\\Xml\\Property\\Href', $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
     }
 
     public function testUpdateResourceType()

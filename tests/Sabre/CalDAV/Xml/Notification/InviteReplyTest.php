@@ -12,6 +12,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
     /**
      * @param array  $notification
      * @param string $expected
+     *
      * @dataProvider dataProvider
      */
     public function testSerializers($notification, $expected)

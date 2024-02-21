@@ -62,8 +62,20 @@ class Tree implements INodeByPath
             return $this->rootNode;
         }
 
-        $parts = explode('/', $path);
         $node = $this->rootNode;
+
+        // look for any cached parent and collect the parts below the parent
+        $parts = [];
+        $remainingPath = $path;
+        do {
+            list($remainingPath, $baseName) = Uri\split($remainingPath);
+            array_unshift($parts, $baseName);
+
+            if (isset($this->cache[$remainingPath])) {
+                $node = $this->cache[$remainingPath];
+                break;
+            }
+        } while ('' !== $remainingPath);
 
         while (count($parts)) {
             if (!($node instanceof ICollection)) {

@@ -12,6 +12,8 @@ class ServerEventsTest extends AbstractServer
 
     private $exception;
 
+    private $fileProperties;
+
     public function testAfterBindOfFile()
     {
         $this->server->on('afterBind', [$this, 'afterHandler']);
@@ -190,5 +192,40 @@ class ServerEventsTest extends AbstractServer
 
         // Fun fact, PHP 7.1 changes the order when sorting-by-callback.
         self::assertTrue($k >= 2 && $k <= 3);
+    }
+
+    public function multiStatusHandler(&$fileProperties)
+    {
+        $this->fileProperties = $fileProperties;
+        $fileProperties = array_slice($fileProperties, 0, 1);
+    }
+
+    public function testBeforeMultiStatus()
+    {
+        $this->server->on('beforeMultiStatus', [$this, 'multiStatusHandler']);
+
+        $response = $this->server->generateMultiStatus([
+            [
+                'href' => 'foo',
+                '200' => [
+                    'd:getcontentlength' => 10,
+                ],
+            ],
+            [
+                'href' => 'bar',
+                '200' => [
+                    'd:getcontentlength' => 11,
+                ],
+            ],
+        ]);
+
+        $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $response);
+        $xml = simplexml_load_string($body);
+        $xml->registerXPathNamespace('d', 'urn:DAV');
+
+        $data = $xml->xpath('/d:multistatus/d:response/d:propstat/d:prop/d:getcontentlength');
+        $this->assertCount(1, $data);
+
+        $this->assertCount(2, $this->fileProperties);
     }
 }

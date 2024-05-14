@@ -34,8 +34,8 @@
         "ext-sqlite3": "*",
         "friendsofphp/php-cs-fixer": "^2.19",
         "monolog/monolog": "^2.9",
-        "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-phpunit": "^1.3",
+        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan-phpunit": "^1.4",
         "phpunit/phpunit": "^9.6"
     },
     "suggest" : {

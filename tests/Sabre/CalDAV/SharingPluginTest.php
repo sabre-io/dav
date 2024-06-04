@@ -28,7 +28,7 @@ class SharingPluginTest extends AbstractDAVServerTestCase
                 'principaluri' => 'principals/user1',
                 'id' => 2,
                 'uri' => 'cal2',
-                'share-access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
+                'share-access' => DAV\Sharing\Plugin::ACCESS_READWRITE,
             ],
             [
                 'principaluri' => 'principals/user1',
@@ -187,8 +187,8 @@ RRR;
                     'properties' => [
                         '{DAV:}displayname' => 'Joe Shmoe',
                     ],
-                    'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READWRITE,
-                    'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                    'access' => DAV\Sharing\Plugin::ACCESS_READWRITE,
+                    'inviteStatus' => DAV\Sharing\Plugin::INVITE_NORESPONSE,
                     'comment' => '',
                 ]),
             ],

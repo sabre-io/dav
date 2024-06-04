@@ -79,7 +79,7 @@ echo "Upgrading 'propertystorage'\n";
 $addValueType = false;
 try {
     $result = $pdo->query('SELECT * FROM propertystorage LIMIT 1');
-    $row = $result->fetch(\PDO::FETCH_ASSOC);
+    $row = $result->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
         echo "No data in table. Going to re-create the table.\n";
@@ -146,7 +146,7 @@ echo "Migrating vcardurl\n";
 $result = $pdo->query('SELECT id, uri, vcardurl FROM principals WHERE vcardurl IS NOT NULL');
 $stmt1 = $pdo->prepare('INSERT INTO propertystorage (path, name, valuetype, value) VALUES (?, ?, 3, ?)');
 
-while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
     // Inserting the new record
     $stmt1->execute([
         'addressbooks/'.basename($row['uri']),

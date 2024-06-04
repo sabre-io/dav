@@ -59,17 +59,17 @@ abstract class AbstractDAVServerTestCase extends TestCase
     protected $propertyStorageBackend;
 
     /**
-     * @var \Sabre\CalDAV\Plugin
+     * @var CalDAV\Plugin
      */
     protected $caldavPlugin;
 
     /**
-     * @var \Sabre\CardDAV\Plugin
+     * @var CardDAV\Plugin
      */
     protected $carddavPlugin;
 
     /**
-     * @var \Sabre\DAVACL\Plugin
+     * @var DAVACL\Plugin
      */
     protected $aclPlugin;
 
@@ -91,12 +91,12 @@ abstract class AbstractDAVServerTestCase extends TestCase
     protected $caldavICSExportPlugin;
 
     /**
-     * @var \Sabre\DAV\Auth\Plugin
+     * @var DAV\Auth\Plugin
      */
     protected $authPlugin;
 
     /**
-     * @var \Sabre\DAV\Locks\Plugin
+     * @var DAV\Locks\Plugin
      */
     protected $locksPlugin;
 
@@ -128,7 +128,7 @@ abstract class AbstractDAVServerTestCase extends TestCase
         $this->setUpBackends();
         $this->setUpTree();
 
-        $this->server = new DAV\Server($this->tree);
+        $this->server = new Server($this->tree);
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->debugExceptions = true;
 
@@ -137,11 +137,11 @@ abstract class AbstractDAVServerTestCase extends TestCase
             $this->server->addPlugin($this->caldavPlugin);
         }
         if ($this->setupCalDAVSharing || $this->setupSharing) {
-            $this->sharingPlugin = new DAV\Sharing\Plugin();
+            $this->sharingPlugin = new Plugin();
             $this->server->addPlugin($this->sharingPlugin);
         }
         if ($this->setupCalDAVSharing) {
-            $this->caldavSharingPlugin = new CalDAV\SharingPlugin();
+            $this->caldavSharingPlugin = new SharingPlugin();
             $this->server->addPlugin($this->caldavSharingPlugin);
         }
         if ($this->setupCalDAVScheduling) {
@@ -301,7 +301,7 @@ abstract class AbstractDAVServerTestCase extends TestCase
         }
     }
 
-    public function assertHttpStatus($expectedStatus, HTTP\Request $req)
+    public function assertHttpStatus($expectedStatus, Request $req)
     {
         $resp = $this->request($req);
         self::assertEquals((int) $expectedStatus, (int) $resp->getStatus(), 'Incorrect HTTP status received: '.$resp->getStatus());

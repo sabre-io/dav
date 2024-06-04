@@ -82,7 +82,7 @@ class SyncCollectionReport implements XmlDeserializable
         $required = [
             '{DAV:}sync-token',
             '{DAV:}prop',
-            ];
+        ];
 
         foreach ($required as $elem) {
             if (!array_key_exists($elem, $elems)) {

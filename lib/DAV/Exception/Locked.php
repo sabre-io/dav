@@ -20,7 +20,7 @@ class Locked extends DAV\Exception
     /**
      * Lock information.
      *
-     * @var \Sabre\DAV\Locks\LockInfo
+     * @var DAV\Locks\LockInfo
      */
     protected $lock;
 

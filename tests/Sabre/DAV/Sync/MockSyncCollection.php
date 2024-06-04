@@ -105,11 +105,11 @@ class MockSyncCollection extends DAV\SimpleCollection implements ISyncCollection
         // This is an initial sync
         if (is_null($syncToken)) {
             return [
-               'added' => array_map(
-                   function ($item) {
-                       return $item->getName();
-                   }, $this->getChildren()
-               ),
+                'added' => array_map(
+                    function ($item) {
+                        return $item->getName();
+                    }, $this->getChildren()
+                ),
                 'modified' => [],
                 'deleted' => [],
                 'syncToken' => $this->getSyncToken(),

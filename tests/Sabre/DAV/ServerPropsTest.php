@@ -47,11 +47,11 @@ class ServerPropsTest extends AbstractServerTestCase
         self::assertEquals(207, $this->response->status);
 
         self::assertEquals([
-                'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type' => ['application/xml; charset=utf-8'],
-                'DAV' => ['1, 3, extended-mkcol, 2'],
-                'Vary' => ['Brief,Prefer'],
-            ],
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+            'DAV' => ['1, 3, extended-mkcol, 2'],
+            'Vary' => ['Brief,Prefer'],
+        ],
             $this->response->getHeaders()
         );
 
@@ -76,11 +76,11 @@ class ServerPropsTest extends AbstractServerTestCase
         self::assertEquals(207, $this->response->status);
 
         self::assertEquals([
-                'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type' => ['application/xml; charset=utf-8'],
-                'DAV' => ['1, 3, extended-mkcol, 2'],
-                'Vary' => ['Brief,Prefer'],
-            ],
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+            'DAV' => ['1, 3, extended-mkcol, 2'],
+            'Vary' => ['Brief,Prefer'],
+        ],
             $this->response->getHeaders()
         );
 
@@ -101,11 +101,11 @@ class ServerPropsTest extends AbstractServerTestCase
         self::assertEquals(207, $this->response->status);
 
         self::assertEquals([
-                'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type' => ['application/xml; charset=utf-8'],
-                'DAV' => ['1, 3, extended-mkcol, 2'],
-                'Vary' => ['Brief,Prefer'],
-            ],
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+            'DAV' => ['1, 3, extended-mkcol, 2'],
+            'Vary' => ['Brief,Prefer'],
+        ],
             $this->response->getHeaders()
         );
 

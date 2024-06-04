@@ -52,7 +52,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 2-5/13'],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
         self::assertEquals(206, $response->getStatus());
@@ -74,7 +74,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 2-12/13'],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -97,7 +97,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 5-12/13'],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -140,7 +140,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 2-5/12'],
             // 'ETag'            => ['"' . md5('Test contents') . '"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -165,7 +165,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 2-5/13'],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -190,7 +190,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Length' => [13],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -216,7 +216,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Range' => ['bytes 2-5/13'],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 
@@ -241,7 +241,7 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
             'Content-Length' => [13],
             'ETag' => ['"'.md5('Test contents').'"'],
             'Last-Modified' => [$this->lastModified],
-            ],
+        ],
             $response->getHeaders()
         );
 

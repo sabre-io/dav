@@ -28,7 +28,7 @@ class ServerTest extends DAV\AbstractServerTestCase
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\toDate(new \DateTime('@'.filemtime($filename)))],
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -48,7 +48,7 @@ class ServerTest extends DAV\AbstractServerTestCase
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\toDate(new \DateTime('@'.filemtime($this->tempDir.'/test.txt')))],
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -209,7 +209,7 @@ class ServerTest extends DAV\AbstractServerTestCase
 
         $tree = new DAV\Tree(new DAV\SimpleCollection('root', [
             new DAV\FS\Directory($this->tempDir.'/tree1'),
-            new DAV\FSExt\Directory($this->tempDir.'/tree2'),
+            new Directory($this->tempDir.'/tree2'),
         ]));
         $this->server->tree = $tree;
 

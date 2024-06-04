@@ -89,7 +89,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/user1');
         $authPlugin = new DAV\Auth\Plugin($authBackend);
-        $authPlugin->beforeMethod(new \Sabre\HTTP\Request('GET', '/'), new \Sabre\HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
@@ -514,7 +514,7 @@ END:VCALENDAR';
 
     public function testSupportedReportSetUserCalendars()
     {
-        $this->server->addPlugin(new \Sabre\DAV\Sync\Plugin());
+        $this->server->addPlugin(new DAV\Sync\Plugin());
 
         $props = $this->server->getPropertiesForPath('/calendars/user1', [
             '{DAV:}supported-report-set',

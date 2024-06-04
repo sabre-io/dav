@@ -559,7 +559,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      *
      * @return array
      */
@@ -591,7 +591,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      *
      * @return array
      */
@@ -929,7 +929,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @TODO really should be broken into multiple methods, or even a class.
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFind(DAV\PropFind $propFind, INode $node)
     {
         $path = $propFind->getPath();
 
@@ -1110,7 +1110,7 @@ class Plugin extends DAV\ServerPlugin
         $body = $request->getBodyAsString();
 
         if (!$body) {
-            throw new DAV\Exception\BadRequest('XML body expected in ACL request');
+            throw new BadRequest('XML body expected in ACL request');
         }
 
         $acl = $this->server->xml->expect('{DAV:}acl', $body);
@@ -1332,7 +1332,7 @@ class Plugin extends DAV\ServerPlugin
                     continue;
                 }
 
-                if (!$node[200][$propertyName] instanceof DAV\Xml\Property\Href) {
+                if (!$node[200][$propertyName] instanceof Href) {
                     continue;
                 }
 
@@ -1371,7 +1371,7 @@ class Plugin extends DAV\ServerPlugin
     {
         $httpDepth = $this->server->getHTTPDepth(0);
         if (0 !== $httpDepth) {
-            throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
+            throw new BadRequest('This report is only defined when Depth: 0');
         }
 
         $writer = $this->server->xml->getWriter();
@@ -1502,7 +1502,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output)
+    public function htmlActionsPanel(INode $node, &$output)
     {
         if (!$node instanceof PrincipalCollection) {
             return;

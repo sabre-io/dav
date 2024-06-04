@@ -198,7 +198,7 @@ SQL
 
                 // read-only is for backwards compatibility. Might go away in
                 // the future.
-                $calendar['read-only'] = \Sabre\DAV\Sharing\Plugin::ACCESS_READ === (int) $row['access'];
+                $calendar['read-only'] = DAV\Sharing\Plugin::ACCESS_READ === (int) $row['access'];
             }
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -341,7 +341,7 @@ SQL
         $stmt->execute([$instanceId]);
         $access = (int) $stmt->fetchColumn();
 
-        if (\Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER === $access) {
+        if (DAV\Sharing\Plugin::ACCESS_SHAREDOWNER === $access) {
             /**
              * If the user is the owner of the calendar, we delete all data and all
              * instances.
@@ -461,7 +461,7 @@ SQL
             'size' => (int) $row['size'],
             'calendardata' => $row['calendardata'],
             'component' => strtolower($row['componenttype']),
-         ];
+        ];
     }
 
     /**
@@ -619,7 +619,7 @@ SQL
             }
         }
         if (!$componentType) {
-            throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
+            throw new DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
         }
         if ('VEVENT' === $componentType) {
             $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
@@ -1234,7 +1234,7 @@ SQL;
             'lastmodified' => $row['lastmodified'],
             'etag' => '"'.$row['etag'].'"',
             'size' => (int) $row['size'],
-         ];
+        ];
     }
 
     /**
@@ -1348,7 +1348,7 @@ INSERT INTO '.$this->calendarInstancesTableName.'
     FROM '.$this->calendarInstancesTableName.' WHERE id = ?');
 
         foreach ($sharees as $sharee) {
-            if (\Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS === $sharee->access) {
+            if (DAV\Sharing\Plugin::ACCESS_NOACCESS === $sharee->access) {
                 // if access was set no NOACCESS, it means access for an
                 // existing sharee was removed.
                 $removeStmt->execute([$calendarId, $sharee->href]);
@@ -1358,11 +1358,11 @@ INSERT INTO '.$this->calendarInstancesTableName.'
             if (is_null($sharee->principal)) {
                 // If the server could not determine the principal automatically,
                 // we will mark the invite status as invalid.
-                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_INVALID;
+                $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_INVALID;
             } else {
                 // Because sabre/dav does not yet have an invitation system,
                 // every invite is automatically accepted for now.
-                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED;
+                $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_ACCEPTED;
             }
 
             foreach ($currentInvites as $oldSharee) {
@@ -1387,10 +1387,10 @@ INSERT INTO '.$this->calendarInstancesTableName.'
                 $calendarId,
                 $sharee->principal,
                 $sharee->access,
-                \Sabre\DAV\UUIDUtil::getUUID(),
+                DAV\UUIDUtil::getUUID(),
                 $sharee->href,
                 isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                $sharee->inviteStatus ?: \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                $sharee->inviteStatus ?: DAV\Sharing\Plugin::INVITE_NORESPONSE,
                 $instanceId,
             ]);
         }

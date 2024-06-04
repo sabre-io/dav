@@ -33,7 +33,7 @@ class MapGetToPropFindTest extends DAV\AbstractServerTestCase
             'Content-Type' => ['application/xml; charset=utf-8'],
             'DAV' => ['1, 3, extended-mkcol'],
             'Vary' => ['Brief,Prefer'],
-            ],
+        ],
             $this->response->getHeaders()
         );
     }

@@ -51,7 +51,7 @@ class Plugin extends DAV\ServerPlugin
     public $uninterestingProperties = [
         '{DAV:}supportedlock',
         '{DAV:}acl-restrictions',
-//        '{DAV:}supported-privilege-set',
+        //        '{DAV:}supported-privilege-set',
         '{DAV:}supported-method-set',
     ];
 

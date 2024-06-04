@@ -102,7 +102,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\toDate(new \DateTime('@'.filemtime($filename)))],
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -363,7 +363,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -386,7 +386,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'testheader' => ['testvalue'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 

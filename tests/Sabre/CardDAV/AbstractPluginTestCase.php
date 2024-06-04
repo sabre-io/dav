@@ -27,7 +27,7 @@ abstract class AbstractPluginTestCase extends TestCase
 
     public function setup(): void
     {
-        $this->backend = new Backend\Mock();
+        $this->backend = new Mock();
         $principalBackend = new DAVACL\PrincipalBackend\Mock();
 
         $tree = [

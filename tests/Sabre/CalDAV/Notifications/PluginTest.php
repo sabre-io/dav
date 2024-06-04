@@ -58,7 +58,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
-        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
+        $authPlugin->beforeMethod(new Request('GET', '/'), new HTTP\Response());
 
         $this->response = new HTTP\ResponseMock();
         $this->server->httpResponse = $this->response;
@@ -156,6 +156,6 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         $server->addPlugin($caldav);
 
-        self::assertNull($caldav->httpGet(new HTTP\Request('GET', '/foozz'), $server->httpResponse));
+        self::assertNull($caldav->httpGet(new Request('GET', '/foozz'), $server->httpResponse));
     }
 }

@@ -49,7 +49,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
                 200 => [
                     '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD").'"',
                 ],
-             ],
+            ],
             '/addressbooks/user1/book1/card2' => [
                 404 => [
                     '{DAV:}getetag' => null,
@@ -98,7 +98,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
                 200 => [
                     '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD").'"',
                 ],
-             ],
+            ],
         ], $result);
     }
 
@@ -181,7 +181,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
                 200 => [
                     '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD").'"',
                 ],
-             ],
+            ],
         ], $result);
     }
 
@@ -226,7 +226,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
                     '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD").'"',
                     '{urn:ietf:params:xml:ns:carddav}address-data' => '["vcard",[["version",{},"text","4.0"],["prodid",{},"text","-\/\/Sabre\/\/Sabre VObject '.$vobjVersion.'\/\/EN"],["uid",{},"text","12345"]]]',
                 ],
-             ],
+            ],
         ], $result);
     }
 
@@ -271,7 +271,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
                     '{DAV:}getetag' => '"'.md5("BEGIN:VCARD\nVERSION:3.0\nUID:12345\nEND:VCARD").'"',
                     '{urn:ietf:params:xml:ns:carddav}address-data' => "BEGIN:VCARD\r\nVERSION:4.0\r\nPRODID:-//Sabre//Sabre VObject $vobjVersion//EN\r\nUID:12345\r\nEND:VCARD\r\n",
                 ],
-             ],
+            ],
         ], $result);
     }
 

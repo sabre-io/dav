@@ -127,7 +127,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => 'opaquelocktoken:token1',
                         'etag' => '',
                     ],
-                 ],
+                ],
             ],
             [
                 'uri' => 'node2',
@@ -165,7 +165,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => 'opaquelocktoken:token2',
                         'etag' => '',
                     ],
-                 ],
+                ],
             ],
             [
                 'uri' => 'node2',
@@ -198,7 +198,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => '',
                         'etag' => '"etag1"',
                     ],
-                 ],
+                ],
             ],
         ];
         self::assertEquals($compare, $conditions);
@@ -226,7 +226,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => '',
                         'etag' => '"etag2"',
                     ],
-                 ],
+                ],
             ],
         ];
         self::assertEquals($compare, $conditions);
@@ -261,7 +261,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => '',
                         'etag' => '"etag2"',
                     ],
-                 ],
+                ],
             ],
             [
                 'uri' => 'node2',
@@ -281,7 +281,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
                         'token' => '',
                         'etag' => '"etag3"',
                     ],
-                 ],
+                ],
             ],
         ];
         self::assertEquals($compare, $conditions);

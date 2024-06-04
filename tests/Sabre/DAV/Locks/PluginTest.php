@@ -50,7 +50,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -266,7 +266,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -285,7 +285,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 
@@ -355,7 +355,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
-            ],
+        ],
             $this->server->httpResponse->getHeaders()
         );
     }
@@ -392,7 +392,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
-            ],
+        ],
             $this->server->httpResponse->getHeaders()
         );
     }

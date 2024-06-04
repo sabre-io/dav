@@ -1052,7 +1052,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
         ];
 
-        $propPatch = new DAV\PropPatch($newProps);
+        $propPatch = new PropPatch($newProps);
         $backend->updateSubscription(1, $propPatch);
         $result = $propPatch->commit();
 
@@ -1089,7 +1089,7 @@ abstract class AbstractPDOTestCase extends TestCase
         $backend = new PDO($this->pdo);
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
-        $propPatch = new DAV\PropPatch([
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
             '{DAV:}unknown' => 'foo',

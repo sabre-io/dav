@@ -212,7 +212,7 @@ class SimplePDO extends AbstractBackend
             'calendarid' => $calendarId,
             'size' => strlen($row['calendardata']),
             'calendardata' => $row['calendardata'],
-         ];
+        ];
     }
 
     /**

@@ -60,10 +60,10 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
     public function getLockRequest()
     {
         $request = HTTP\Sapi::createFromServerArray([
-           'REQUEST_METHOD' => 'LOCK',
-           'HTTP_CONTENT_TYPE' => 'application/xml',
-           'HTTP_TIMEOUT' => 'Second-3600',
-           'REQUEST_URI' => '/Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
+            'REQUEST_METHOD' => 'LOCK',
+            'HTTP_CONTENT_TYPE' => 'application/xml',
+            'HTTP_TIMEOUT' => 'Second-3600',
+            'REQUEST_URI' => '/Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
         ]);
 
         $request->setBody('<D:lockinfo xmlns:D="DAV:">
@@ -84,10 +84,10 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
     public function getLockRequest2()
     {
         $request = HTTP\Sapi::createFromServerArray([
-           'REQUEST_METHOD' => 'LOCK',
-           'HTTP_CONTENT_TYPE' => 'application/xml',
-           'HTTP_TIMEOUT' => 'Second-3600',
-           'REQUEST_URI' => '/~$Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
+            'REQUEST_METHOD' => 'LOCK',
+            'HTTP_CONTENT_TYPE' => 'application/xml',
+            'HTTP_TIMEOUT' => 'Second-3600',
+            'REQUEST_URI' => '/~$Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
         ]);
 
         $request->setBody('<D:lockinfo xmlns:D="DAV:">
@@ -108,9 +108,9 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
     public function getPutRequest($lockToken)
     {
         $request = HTTP\Sapi::createFromServerArray([
-           'REQUEST_METHOD' => 'PUT',
-           'REQUEST_URI' => '/Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
-           'HTTP_IF' => 'If: ('.$lockToken.')',
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/Nouveau%20Microsoft%20Office%20Excel%20Worksheet.xlsx',
+            'HTTP_IF' => 'If: ('.$lockToken.')',
         ]);
         $request->setBody('FAKE BODY');
 

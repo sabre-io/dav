@@ -53,7 +53,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
     /**
      * A reference to the main Server class.
      *
-     * @var \Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
 

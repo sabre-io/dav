@@ -51,7 +51,7 @@ XML;
                 ],
                 'access' => Plugin::ACCESS_READWRITE,
                 'comment' => 'Shared workspace',
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                'inviteStatus' => Plugin::INVITE_NORESPONSE,
             ]),
         ];
 

@@ -98,7 +98,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      *
      * @param string $name
      *
-     * @return \Sabre\CalDAV\ICalendarObject
+     * @return ICalendarObject
      */
     public function getChild($name)
     {

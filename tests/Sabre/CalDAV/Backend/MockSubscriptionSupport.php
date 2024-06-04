@@ -104,8 +104,6 @@ class MockSubscriptionSupport extends Mock implements SubscriptionSupport
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param \Sabre\DAV\PropPatch $propPatch
      */
     public function updateSubscription($subscriptionId, DAV\PropPatch $propPatch)
     {

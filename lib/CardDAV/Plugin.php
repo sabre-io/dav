@@ -119,8 +119,8 @@ class Plugin extends DAV\ServerPlugin
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof IAddressBook || $node instanceof ICard) {
             return [
-                 '{'.self::NS_CARDDAV.'}addressbook-multiget',
-                 '{'.self::NS_CARDDAV.'}addressbook-query',
+                '{'.self::NS_CARDDAV.'}addressbook-multiget',
+                '{'.self::NS_CARDDAV.'}addressbook-query',
             ];
         }
 

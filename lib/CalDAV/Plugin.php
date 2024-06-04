@@ -316,7 +316,7 @@ class Plugin extends DAV\ServerPlugin
      * resource are fetched. This allows us to add in any CalDAV specific
      * properties.
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFind(DAV\PropFind $propFind, INode $node)
     {
         $ns = '{'.self::NS_CALDAV.'}';
 
@@ -932,7 +932,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output)
+    public function htmlActionsPanel(INode $node, &$output)
     {
         if (!$node instanceof CalendarHome) {
             return;

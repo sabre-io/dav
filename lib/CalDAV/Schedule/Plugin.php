@@ -345,7 +345,7 @@ class Plugin extends ServerPlugin
     /**
      * This method is responsible for delivering the ITip message.
      */
-    public function deliver(ITip\Message $iTipMessage)
+    public function deliver(Message $iTipMessage)
     {
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {
@@ -403,7 +403,7 @@ class Plugin extends ServerPlugin
      * This handler attempts to look at local accounts to deliver the
      * scheduling object.
      */
-    public function scheduleLocalDelivery(ITip\Message $iTipMessage)
+    public function scheduleLocalDelivery(Message $iTipMessage)
     {
         $aclPlugin = $this->server->getPlugin('acl');
 
@@ -433,9 +433,9 @@ class Plugin extends ServerPlugin
             $principalUri,
             [
                 '{DAV:}principal-URL',
-                 $caldavNS.'calendar-home-set',
-                 $caldavNS.'schedule-inbox-URL',
-                 $caldavNS.'schedule-default-calendar-URL',
+                $caldavNS.'calendar-home-set',
+                $caldavNS.'schedule-inbox-URL',
+                $caldavNS.'schedule-default-calendar-URL',
                 '{http://sabredav.org/ns}email-address',
             ]
         );
@@ -689,7 +689,7 @@ class Plugin extends ServerPlugin
 
         // Parsing the request body
         try {
-            $vObject = VObject\Reader::read($request->getBody());
+            $vObject = Reader::read($request->getBody());
         } catch (VObject\ParseException $e) {
             throw new BadRequest('The request body must be a valid iCalendar object. Parse error: '.$e->getMessage());
         }
@@ -891,7 +891,7 @@ class Plugin extends ServerPlugin
             }
 
             if (isset($props[$ctz])) {
-                $vtimezoneObj = VObject\Reader::read($props[$ctz]);
+                $vtimezoneObj = Reader::read($props[$ctz]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
 
                 // Destroy circular references so PHP can garbage collect the object.
@@ -932,7 +932,7 @@ class Plugin extends ServerPlugin
             $caldavNS.'calendar-availability'
         );
 
-        $vcalendar = new VObject\Component\VCalendar();
+        $vcalendar = new VCalendar();
         $vcalendar->METHOD = 'REPLY';
 
         $generator = new VObject\FreeBusyGenerator();
@@ -943,7 +943,7 @@ class Plugin extends ServerPlugin
 
         if ($inboxProps) {
             $generator->setVAvailability(
-                VObject\Reader::read(
+                Reader::read(
                     $inboxProps[$caldavNS.'calendar-availability']
                 )
             );

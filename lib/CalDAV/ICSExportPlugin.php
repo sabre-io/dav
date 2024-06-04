@@ -49,14 +49,12 @@ class ICSExportPlugin extends DAV\ServerPlugin
     /**
      * Reference to Server class.
      *
-     * @var \Sabre\DAV\Server
+     * @var DAV\Server
      */
     protected $server;
 
     /**
      * Initializes the plugin and registers event handlers.
-     *
-     * @param \Sabre\DAV\Server $server
      */
     public function initialize(DAV\Server $server)
     {

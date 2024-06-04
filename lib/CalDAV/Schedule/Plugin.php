@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
-use DateTimeZone;
 use Sabre\CalDAV\ICalendar;
 use Sabre\CalDAV\ICalendarObject;
 use Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp;
@@ -60,7 +59,7 @@ class Plugin extends ServerPlugin
     /**
      * This is the official CalDAV namespace.
      */
-    const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
+    public const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
 
     /**
      * Reference to main Server object.
@@ -269,20 +268,20 @@ class Plugin extends ServerPlugin
             // old property to a different namespace.
             $availProp = '{'.self::NS_CALDAV.'}calendar-availability';
             $subPropFind = new PropFind(
-                 $propFind->getPath(),
-                 [$availProp]
-             );
+                $propFind->getPath(),
+                [$availProp]
+            );
 
             $this->server->getPropertiesByNode(
-                 $subPropFind,
-                 $node
-             );
+                $subPropFind,
+                $node
+            );
 
             $propFind->set(
-                 '{http://calendarserver.org/ns/}calendar-availability',
-                 $subPropFind->get($availProp),
-                 $subPropFind->getStatus($availProp)
-             );
+                '{http://calendarserver.org/ns/}calendar-availability',
+                $subPropFind->get($availProp),
+                $subPropFind->getStatus($availProp)
+            );
         });
     }
 
@@ -345,7 +344,7 @@ class Plugin extends ServerPlugin
     /**
      * This method is responsible for delivering the ITip message.
      */
-    public function deliver(ITip\Message $iTipMessage)
+    public function deliver(Message $iTipMessage)
     {
         $this->server->emit('schedule', [$iTipMessage]);
         if (!$iTipMessage->scheduleStatus) {
@@ -403,7 +402,7 @@ class Plugin extends ServerPlugin
      * This handler attempts to look at local accounts to deliver the
      * scheduling object.
      */
-    public function scheduleLocalDelivery(ITip\Message $iTipMessage)
+    public function scheduleLocalDelivery(Message $iTipMessage)
     {
         $aclPlugin = $this->server->getPlugin('acl');
 
@@ -433,9 +432,9 @@ class Plugin extends ServerPlugin
             $principalUri,
             [
                 '{DAV:}principal-URL',
-                 $caldavNS.'calendar-home-set',
-                 $caldavNS.'schedule-inbox-URL',
-                 $caldavNS.'schedule-default-calendar-URL',
+                $caldavNS.'calendar-home-set',
+                $caldavNS.'schedule-inbox-URL',
+                $caldavNS.'schedule-default-calendar-URL',
                 '{http://sabredav.org/ns}email-address',
             ]
         );
@@ -689,7 +688,7 @@ class Plugin extends ServerPlugin
 
         // Parsing the request body
         try {
-            $vObject = VObject\Reader::read($request->getBody());
+            $vObject = Reader::read($request->getBody());
         } catch (VObject\ParseException $e) {
             throw new BadRequest('The request body must be a valid iCalendar object. Parse error: '.$e->getMessage());
         }
@@ -873,7 +872,7 @@ class Plugin extends ServerPlugin
 
         // Grabbing the calendar list
         $objects = [];
-        $calendarTimeZone = new DateTimeZone('UTC');
+        $calendarTimeZone = new \DateTimeZone('UTC');
 
         foreach ($this->server->tree->getNodeForPath($homeSet)->getChildren() as $node) {
             if (!$node instanceof ICalendar) {
@@ -891,7 +890,7 @@ class Plugin extends ServerPlugin
             }
 
             if (isset($props[$ctz])) {
-                $vtimezoneObj = VObject\Reader::read($props[$ctz]);
+                $vtimezoneObj = Reader::read($props[$ctz]);
                 $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
 
                 // Destroy circular references so PHP can garbage collect the object.
@@ -932,7 +931,7 @@ class Plugin extends ServerPlugin
             $caldavNS.'calendar-availability'
         );
 
-        $vcalendar = new VObject\Component\VCalendar();
+        $vcalendar = new VCalendar();
         $vcalendar->METHOD = 'REPLY';
 
         $generator = new VObject\FreeBusyGenerator();
@@ -943,7 +942,7 @@ class Plugin extends ServerPlugin
 
         if ($inboxProps) {
             $generator->setVAvailability(
-                VObject\Reader::read(
+                Reader::read(
                     $inboxProps[$caldavNS.'calendar-availability']
                 )
             );

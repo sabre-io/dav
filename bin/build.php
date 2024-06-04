@@ -14,7 +14,7 @@ $tasks = [
     ],
     'init' => [],
     'composerupdate' => [],
- ];
+];
 
 $default = 'buildzip';
 

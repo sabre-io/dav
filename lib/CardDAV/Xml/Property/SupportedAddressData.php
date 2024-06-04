@@ -34,7 +34,7 @@ class SupportedAddressData implements XmlSerializable
     /**
      * Creates the property.
      */
-    public function __construct(array $supportedData = null)
+    public function __construct(?array $supportedData = null)
     {
         if (is_null($supportedData)) {
             $supportedData = [
@@ -70,7 +70,7 @@ class SupportedAddressData implements XmlSerializable
             $writer->writeAttributes([
                 'content-type' => $supported['contentType'],
                 'version' => $supported['version'],
-                ]);
+            ]);
             $writer->endElement(); // address-data-type
         }
     }

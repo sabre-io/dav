@@ -12,6 +12,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      * @param array  $notification
      * @param string $expected1
      * @param string $expected2
+     *
      * @dataProvider dataProvider
      */
     public function testSerializers($notification, $expected1, $expected2)

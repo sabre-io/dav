@@ -31,10 +31,9 @@ class Collection extends DAV\Collection
     /**
      * Creates the object.
      *
-     * @param string     $name
-     * @param Collection $parent
+     * @param string $name
      */
-    public function __construct($name, array $children = [], Collection $parent = null)
+    public function __construct($name, array $children = [], ?Collection $parent = null)
     {
         $this->name = $name;
         foreach ($children as $key => $value) {

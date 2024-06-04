@@ -28,7 +28,7 @@ class GetEventsByTimerangeTest extends \Sabre\AbstractDAVServerTestCase
 
     protected $caldavCalendarObjects = [
         1 => [
-           'event.ics' => [
+            'event.ics' => [
                 'calendardata' => 'BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT

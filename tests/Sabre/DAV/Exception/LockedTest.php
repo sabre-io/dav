@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Exception;
 
-use DOMDocument;
 use Sabre\DAV;
 
 class LockedTest extends \PHPUnit\Framework\TestCase
 {
     public function testSerialize()
     {
-        $dom = new DOMDocument('1.0');
+        $dom = new \DOMDocument('1.0');
         $dom->formatOutput = true;
         $root = $dom->createElement('d:root');
 
@@ -39,7 +38,7 @@ class LockedTest extends \PHPUnit\Framework\TestCase
 
     public function testSerializeAmpersand()
     {
-        $dom = new DOMDocument('1.0');
+        $dom = new \DOMDocument('1.0');
         $dom->formatOutput = true;
         $root = $dom->createElement('d:root');
 

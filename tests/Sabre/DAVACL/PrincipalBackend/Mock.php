@@ -9,7 +9,7 @@ class Mock extends AbstractBackend
     public $groupMembers = [];
     public $principals;
 
-    public function __construct(array $principals = null)
+    public function __construct(?array $principals = null)
     {
         $this->principals = $principals;
 

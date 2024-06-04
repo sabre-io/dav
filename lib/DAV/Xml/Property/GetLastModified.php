@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
-use DateTime;
-use DateTimeZone;
 use Sabre\HTTP;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
@@ -26,31 +24,31 @@ class GetLastModified implements Element
     /**
      * time.
      *
-     * @var DateTime
+     * @var \DateTime
      */
     public $time;
 
     /**
      * Constructor.
      *
-     * @param int|DateTime $time
+     * @param int|\DateTime $time
      */
     public function __construct($time)
     {
-        if ($time instanceof DateTime) {
+        if ($time instanceof \DateTime) {
             $this->time = clone $time;
         } else {
-            $this->time = new DateTime('@'.$time);
+            $this->time = new \DateTime('@'.$time);
         }
 
         // Setting timezone to UTC
-        $this->time->setTimezone(new DateTimeZone('UTC'));
+        $this->time->setTimezone(new \DateTimeZone('UTC'));
     }
 
     /**
      * getTime.
      *
-     * @return DateTime
+     * @return \DateTime
      */
     public function getTime()
     {
@@ -93,11 +91,9 @@ class GetLastModified implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
-        return new self(new DateTime($reader->parseInnerTree()));
+        return new self(new \DateTime($reader->parseInnerTree()));
     }
 }

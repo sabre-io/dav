@@ -12,8 +12,6 @@ class AddressBookMultiGetReportTest extends AbstractXmlTestCase
 
     /**
      * @dataProvider providesAddressDataXml
-     *
-     * @param $xml
      */
     public function testDeserialize($xml, $expectedProps, $expectedVersion = '3.0')
     {

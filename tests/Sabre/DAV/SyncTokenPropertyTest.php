@@ -12,7 +12,6 @@ class SyncTokenPropertyTest extends \Sabre\AbstractDAVServerTestCase
      * result.
      *
      * @param string $name
-     * @param mixed  $value
      *
      * @dataProvider data
      */
@@ -35,7 +34,6 @@ class SyncTokenPropertyTest extends \Sabre\AbstractDAVServerTestCase
      * fetch the items.
      *
      * @param string $name
-     * @param mixed  $value
      *
      * @dataProvider data
      */

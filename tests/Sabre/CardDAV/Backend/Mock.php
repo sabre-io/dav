@@ -123,8 +123,6 @@ class Mock extends AbstractBackend
      * calculating them. If they are specified, you can also omit carddata.
      * This may speed up certain requests, especially with large cards.
      *
-     * @param mixed $addressBookId
-     *
      * @return array
      */
     public function getCards($addressBookId)
@@ -157,7 +155,6 @@ class Mock extends AbstractBackend
      *
      * If the card does not exist, you must return false.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      *
      * @return array
@@ -198,7 +195,6 @@ class Mock extends AbstractBackend
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *
@@ -234,7 +230,6 @@ class Mock extends AbstractBackend
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *

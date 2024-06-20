@@ -69,6 +69,7 @@ class ServerEventsTest extends AbstractServerTestCase
         $this->server->createFile($oldPath, 'body');
         $request = new HTTP\Request('COPY', $oldPath, [
             'Destination' => $newPath,
+            'Depth' => 'infinity',
         ]);
         $this->server->httpRequest = $request;
 

@@ -34,7 +34,7 @@ class SupportedAddressData implements XmlSerializable
     /**
      * Creates the property.
      */
-    public function __construct(array $supportedData = null)
+    public function __construct(?array $supportedData = null)
     {
         if (is_null($supportedData)) {
             $supportedData = [

@@ -800,7 +800,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return string
      */
-    protected function convertVCard($data, $target, array $propertiesFilter = null)
+    protected function convertVCard($data, $target, ?array $propertiesFilter = null)
     {
         if (is_resource($data)) {
             $data = stream_get_contents($data);

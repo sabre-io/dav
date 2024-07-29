@@ -30,7 +30,7 @@ class File extends DAV\File
      * @param Collection $parent
      * @param int        $lastModified
      */
-    public function __construct($name, $contents, Collection $parent = null, $lastModified = -1)
+    public function __construct($name, $contents, ?Collection $parent = null, $lastModified = -1)
     {
         $this->name = $name;
         $this->put($contents);

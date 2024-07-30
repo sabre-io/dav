@@ -52,13 +52,13 @@ class ServerPropsInfiniteDepthTest extends AbstractServerTestCase
         self::assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: '.$bodyAsString);
 
         self::assertEquals([
-                'X-Sabre-Version' => [Version::VERSION],
-                'Content-Type' => ['application/xml; charset=utf-8'],
-                'DAV' => ['1, 3, extended-mkcol, 2'],
-                'Vary' => ['Brief,Prefer'],
-            ],
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/xml; charset=utf-8'],
+            'DAV' => ['1, 3, extended-mkcol, 2'],
+            'Vary' => ['Brief,Prefer'],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);

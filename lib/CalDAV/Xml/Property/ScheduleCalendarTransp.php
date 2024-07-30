@@ -28,8 +28,8 @@ use Sabre\Xml\Writer;
  */
 class ScheduleCalendarTransp implements Element
 {
-    const TRANSPARENT = 'transparent';
-    const OPAQUE = 'opaque';
+    public const TRANSPARENT = 'transparent';
+    public const OPAQUE = 'opaque';
 
     /**
      * value.
@@ -106,8 +106,6 @@ class ScheduleCalendarTransp implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {

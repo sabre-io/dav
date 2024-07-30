@@ -10,8 +10,6 @@ use Sabre\DAV;
 abstract class AbstractTestCase extends TestCase
 {
     /**
-     * @abstract
-     *
      * @return AbstractBackend
      */
     abstract public function getBackend();

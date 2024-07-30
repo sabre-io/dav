@@ -50,9 +50,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         self::assertEquals(400, $this->response->status);
     }
@@ -266,9 +266,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         self::assertEquals(400, $this->response->status);
     }
@@ -285,9 +285,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         self::assertEquals(409, $this->response->status, 'Got an incorrect status code. Full response body: '.$this->response->getBodyAsString());
     }
@@ -355,9 +355,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
-            ],
+        ],
             $this->server->httpResponse->getHeaders()
-         );
+        );
     }
 
     /**
@@ -392,9 +392,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Length' => ['0'],
-            ],
+        ],
             $this->server->httpResponse->getHeaders()
-         );
+        );
     }
 
     /**

@@ -29,7 +29,7 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
     public function testConstructBadParam()
     {
         $this->expectException('InvalidArgumentException');
-        new SimpleCollection('foo', [new \StdClass()]);
+        new SimpleCollection('foo', [new \stdClass()]);
     }
 
     public function testGetChildren()

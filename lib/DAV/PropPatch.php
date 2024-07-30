@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use UnexpectedValueException;
-
 /**
  * This class represents a set of properties that are going to be updated.
  *
@@ -267,7 +265,7 @@ class PropPatch
             }
         }
         if (!is_int($result)) {
-            throw new UnexpectedValueException('A callback sent to handle() did not return an int or a bool');
+            throw new \UnexpectedValueException('A callback sent to handle() did not return an int or a bool');
         }
         $this->result[$propertyName] = $result;
         if ($result >= 400) {
@@ -311,7 +309,7 @@ class PropPatch
                 $this->result[$propertyName] = 403;
             }
         } else {
-            throw new UnexpectedValueException('A callback sent to handle() did not return an array or a bool');
+            throw new \UnexpectedValueException('A callback sent to handle() did not return an array or a bool');
         }
     }
 

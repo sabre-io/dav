@@ -57,9 +57,9 @@ class Collection extends BaseCollection implements IACL
      *
      * @param string $name
      *
-     * @throws NotFound
-     *
      * @return \Sabre\DAV\INode
+     *
+     * @throws NotFound
      */
     public function getChild($name)
     {

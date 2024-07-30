@@ -237,7 +237,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
     {
         if (0 == count($searchProperties)) {
             return [];
-        }    //No criteria
+        }    // No criteria
 
         $query = 'SELECT uri FROM '.$this->tableName.' WHERE ';
         $values = [];
@@ -320,7 +320,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
                 }
 
                 $uri = $row['uri'];
-                break; //Stop on first match
+                break; // Stop on first match
             }
         } else {
             $pathParts = Uri\split($uriParts['path']); // We can do this since $uriParts['path'] is not null

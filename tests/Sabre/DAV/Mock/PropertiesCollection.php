@@ -45,6 +45,11 @@ class PropertiesCollection extends Collection implements IProperties
         $proppatch->handleRemaining(function ($updateProperties) {
             switch ($this->failMode) {
                 case 'updatepropsfalse': return false;
+                case 'updatepropstrue':
+                    foreach ($updateProperties as $k => $v) {
+                        $this->properties[$k] = $v;
+                    }
+                    return true;
                 case 'updatepropsarray':
                     $r = [];
                     foreach ($updateProperties as $k => $v) {
@@ -76,6 +81,10 @@ class PropertiesCollection extends Collection implements IProperties
      */
     public function getProperties($requestedProperties)
     {
+        if (count($requestedProperties) === 0) {
+            return $this->properties;
+        }
+
         $returnedProperties = [];
         foreach ($requestedProperties as $requestedProperty) {
             if (isset($this->properties[$requestedProperty])) {
@@ -85,5 +94,18 @@ class PropertiesCollection extends Collection implements IProperties
         }
 
         return $returnedProperties;
+    }
+
+    /**
+     * Creates a new subdirectory. (Override to ensure props are preserved)
+     *
+     * @param string $name
+     */
+    public function createDirectory($name)
+    {
+        $child = new self($name, []);
+        // keep same setting
+        $child->failMode = $this->failMode;
+        $this->children[] = $child;
     }
 }

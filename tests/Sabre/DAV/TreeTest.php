@@ -107,6 +107,23 @@ class TreeTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(INode::class, $tree->getNodeForPath('subtree/sub/1'));
         $this->assertInstanceOf(INode::class, $tree->getNodeForPath('subtree/2/3'));
     }
+
+    public function testGetNodeCacheParent()
+    {
+        $tree = new TreeMock();
+
+        /** @var TreeDirectoryTester $root */
+        $root = $tree->getNodeForPath('');
+        $root->createDirectory('new');
+        $parent = $tree->getNodeForPath('new');
+        $parent->createDirectory('child');
+
+        // make it so we can't create the 'new' folder again
+        unset($root->newDirectories['new']);
+
+        // we should still be able to query child items from the 'new' folder because it is cached in the tree
+        $this->assertInstanceOf(INode::class, $tree->getNodeForPath('new/child'));
+    }
 }
 
 class TreeMock extends Tree

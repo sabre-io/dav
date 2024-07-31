@@ -681,7 +681,7 @@ class Plugin extends DAV\ServerPlugin
             ],
             'prop-filters' => [],
             'is-not-defined' => false,
-            'time-range' => null,
+            'time-range' => [],
         ]);
 
         $objects = array_map(function ($url) use ($calendar) {

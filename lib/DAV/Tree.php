@@ -135,11 +135,11 @@ class Tree implements INodeByPath
     /**
      * Copies a file from path to another.
      *
-     * @param string $sourcePath      The source location
-     * @param string $destinationPath The full destination path
-     * @param int|string $depth How much levle of children to copy.
-     *                          The value can be 'infinity' or a positiv integer, including zero.
-     *                          Zero means only copy the collection without children but with its properties.
+     * @param string     $sourcePath      The source location
+     * @param string     $destinationPath The full destination path
+     * @param int|string $depth           How much levle of children to copy.
+     *                                    The value can be 'infinity' or a positiv integer, including zero.
+     *                                    Zero means only copy the collection without children but with its properties.
      */
     public function copy($sourcePath, $destinationPath, $depth = 'infinity')
     {
@@ -310,8 +310,8 @@ class Tree implements INodeByPath
     /**
      * copyNode.
      *
-     * @param string $destinationName
-     * @param int|string $depth How many children of the node to copy
+     * @param string     $destinationName
+     * @param int|string $depth           How many children of the node to copy
      */
     protected function copyNode(INode $source, ICollection $destinationParent, ?string $destinationName = null, $depth = 'infinity')
     {
@@ -338,9 +338,9 @@ class Tree implements INodeByPath
             $destination = $destinationParent->getChild($destinationName);
 
             // Copy children if depth is not zero
-            if ($depth !== 0) {
+            if (0 !== $depth) {
                 // Adjust next depth for children (keep 'infinity' or decrease)
-                $depth = $depth === 'infinity' ? 'infinity' : $depth - 1;
+                $depth = 'infinity' === $depth ? 'infinity' : $depth - 1;
                 $destination = $destinationParent->getChild($destinationName);
                 foreach ($source->getChildren() as $child) {
                     $this->copyNode($child, $destination, null, $depth);

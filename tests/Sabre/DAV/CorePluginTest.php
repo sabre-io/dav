@@ -16,7 +16,8 @@ class CorePluginTest extends \PHPUnit\Framework\TestCase
         self::assertEquals('core', $corePlugin->getPluginInfo()['name']);
     }
 
-    public function moveInvalidDepthHeaderProvider() {
+    public function moveInvalidDepthHeaderProvider()
+    {
         return [
             [0],
             [1],
@@ -24,10 +25,12 @@ class CorePluginTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * MOVE does only allow "infinity" every other header value is considered invalid
+     * MOVE does only allow "infinity" every other header value is considered invalid.
+     *
      * @dataProvider moveInvalidDepthHeaderProvider
      */
-    public function testMoveWithInvalidDepth($depthHeader) {
+    public function testMoveWithInvalidDepth($depthHeader)
+    {
         $request = new HTTP\Request('MOVE', '/path/');
         $response = new HTTP\Response();
 
@@ -45,9 +48,10 @@ class CorePluginTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * MOVE does only allow "infinity" every other header value is considered invalid
+     * MOVE does only allow "infinity" every other header value is considered invalid.
      */
-    public function testMoveSupportsDepth() {
+    public function testMoveSupportsDepth()
+    {
         $request = new HTTP\Request('MOVE', '/path/');
         $response = new HTTP\Response();
 

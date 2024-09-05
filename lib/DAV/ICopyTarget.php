@@ -28,12 +28,12 @@ interface ICopyTarget extends ICollection
      * is that the copy was successful.
      * If you return false, sabre/dav will handle the copy itself.
      *
-     * @param string $targetName new local file/collection name
-     * @param string $sourcePath Full path to source node
-     * @param INode  $sourceNode Source node itself
-     * @param string|int $depth How many level of children to copy.
-     *                          The value can be 'infinity' or a positiv number including zero.
-     *                          Zero means to only copy a shallow collection with props but without children.
+     * @param string     $targetName new local file/collection name
+     * @param string     $sourcePath Full path to source node
+     * @param INode      $sourceNode Source node itself
+     * @param string|int $depth      How many level of children to copy.
+     *                               The value can be 'infinity' or a positiv number including zero.
+     *                               Zero means to only copy a shallow collection with props but without children.
      *
      * @return bool
      */

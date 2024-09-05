@@ -728,10 +728,10 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
         // Depth of inifinty is valid for MOVE and COPY. If it is not set the RFC requires to act like it was 'infinity'.
         $depth = strtolower($request->getHeader('Depth') ?? 'infinity');
-        if ($depth !== 'infinity' && is_numeric($depth)) {
-            $depth = (int)$depth;
+        if ('infinity' !== $depth && is_numeric($depth)) {
+            $depth = (int) $depth;
             if ($depth < 0) {
-                throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positiv number');
+                throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positive number');
             }
         }
 

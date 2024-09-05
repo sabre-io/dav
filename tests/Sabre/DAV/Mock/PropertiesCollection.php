@@ -49,6 +49,7 @@ class PropertiesCollection extends Collection implements IProperties
                     foreach ($updateProperties as $k => $v) {
                         $this->properties[$k] = $v;
                     }
+
                     return true;
                 case 'updatepropsarray':
                     $r = [];
@@ -81,7 +82,7 @@ class PropertiesCollection extends Collection implements IProperties
      */
     public function getProperties($requestedProperties)
     {
-        if (count($requestedProperties) === 0) {
+        if (0 === count($requestedProperties)) {
             return $this->properties;
         }
 
@@ -97,7 +98,7 @@ class PropertiesCollection extends Collection implements IProperties
     }
 
     /**
-     * Creates a new subdirectory. (Override to ensure props are preserved)
+     * Creates a new subdirectory. (Override to ensure props are preserved).
      *
      * @param string $name
      */

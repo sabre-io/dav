@@ -32,7 +32,7 @@ class Locked extends DAV\Exception
      *
      * @param DAV\Locks\LockInfo $lock
      */
-    public function __construct(DAV\Locks\LockInfo $lock = null)
+    public function __construct(?DAV\Locks\LockInfo $lock = null)
     {
         parent::__construct();
 

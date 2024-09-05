@@ -58,7 +58,7 @@ class Plugin extends ServerPlugin
      *
      * @param Backend\BackendInterface $authBackend
      */
-    public function __construct(Backend\BackendInterface $authBackend = null)
+    public function __construct(?Backend\BackendInterface $authBackend = null)
     {
         if (!is_null($authBackend)) {
             $this->addBackend($authBackend);

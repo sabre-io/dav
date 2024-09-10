@@ -95,8 +95,8 @@ XML;
 
         // Also seeing if it works when calling this as a PROPFIND.
         self::assertEquals([
-                '{http://calendarserver.org/ns/}subscribed-strip-alarms' => '',
-            ],
+            '{http://calendarserver.org/ns/}subscribed-strip-alarms' => '',
+        ],
             $this->server->getProperties('calendars/user1/subscription1', ['{http://calendarserver.org/ns/}subscribed-strip-alarms'])
         );
     }

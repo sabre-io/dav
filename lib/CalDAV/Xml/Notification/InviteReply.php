@@ -164,7 +164,7 @@ class InviteReply implements NotificationInterface
 
         $writer->writeElement($cs.'hosturl', [
             '{DAV:}href' => $writer->contextUri.$this->hostUrl,
-            ]);
+        ]);
 
         if ($this->summary) {
             $writer->writeElement($cs.'summary', $this->summary);

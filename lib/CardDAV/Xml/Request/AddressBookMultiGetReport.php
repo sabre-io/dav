@@ -43,7 +43,7 @@ class AddressBookMultiGetReport implements XmlDeserializable
      *
      * @var string
      */
-    public $contentType = null;
+    public $contentType;
 
     /**
      * The version of vcard data that should be returned. Usually 3.0,
@@ -51,7 +51,7 @@ class AddressBookMultiGetReport implements XmlDeserializable
      *
      * @var string
      */
-    public $version = null;
+    public $version;
 
     /**
      * An array with requested vcard properties.
@@ -77,8 +77,6 @@ class AddressBookMultiGetReport implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {

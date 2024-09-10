@@ -21,9 +21,6 @@ bin/vobject
 bin/generate_vcards
 bin/phpdocmd
 
-# Assuming every .php file in the root is for testing
-/*.php
-
 # Other testing stuff
 /tmpdata
 /data
@@ -37,4 +34,4 @@ build.properties
 docs/api
 docs/wikidocs
 
-.php_cs.cache
+.php-cs-fixer.cache

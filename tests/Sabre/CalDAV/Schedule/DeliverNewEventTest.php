@@ -55,7 +55,7 @@ SEQUENCE:4
 END:VEVENT
 END:VCALENDAR
 ICS
-    );
+        );
 
         $messages = [];
         $this->server->on('schedule', function ($message) use (&$messages) {

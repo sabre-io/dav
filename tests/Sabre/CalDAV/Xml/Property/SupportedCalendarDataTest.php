@@ -26,7 +26,7 @@ class SupportedCalendarDataTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => $property]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'">
 <cal:calendar-data content-type="text/calendar" version="2.0"/>
 <cal:calendar-data content-type="application/calendar+json"/>

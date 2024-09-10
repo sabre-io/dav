@@ -67,9 +67,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota
      *
      * @param string $name
      *
-     * @throws DAV\Exception\NotFound
-     *
      * @return DAV\INode
+     *
+     * @throws DAV\Exception\NotFound
      */
     public function getChild($name)
     {

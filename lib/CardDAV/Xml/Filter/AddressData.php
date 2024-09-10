@@ -42,8 +42,6 @@ class AddressData implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
@@ -54,8 +52,8 @@ class AddressData implements XmlDeserializable
 
         $elems = (array) $reader->parseInnerTree();
         $elems = array_filter($elems, function ($element) {
-            return '{urn:ietf:params:xml:ns:carddav}prop' === $element['name'] &&
-                isset($element['attributes']['name']);
+            return '{urn:ietf:params:xml:ns:carddav}prop' === $element['name']
+                && isset($element['attributes']['name']);
         });
         $result['addressDataProperties'] = array_map(function ($element) {
             return $element['attributes']['name'];

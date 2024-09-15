@@ -258,7 +258,7 @@ class Plugin extends DAV\ServerPlugin
      */
     public function generateDirectoryIndex($path)
     {
-        $html = $this->generateHeader($path ? $path : '/', $path);
+        $html = $this->generateHeader($path ?: '/', $path);
 
         $node = $this->server->tree->getNodeForPath($path);
         if ($node instanceof DAV\ICollection) {

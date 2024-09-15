@@ -73,7 +73,7 @@ class PDO extends AbstractBackend implements SyncSupport
                 '{DAV:}displayname' => $row['displayname'],
                 '{'.CardDAV\Plugin::NS_CARDDAV.'}addressbook-description' => $row['description'],
                 '{http://calendarserver.org/ns/}getctag' => $row['synctoken'],
-                '{http://sabredav.org/ns}sync-token' => $row['synctoken'] ? $row['synctoken'] : '0',
+                '{http://sabredav.org/ns}sync-token' => $row['synctoken'] ?: '0',
             ];
         }
 

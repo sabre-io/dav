@@ -154,7 +154,7 @@ class CorePlugin extends ServerPlugin
             // Determining the exact byte offsets
             if (!is_null($range[0])) {
                 $start = $range[0];
-                $end = $range[1] ? $range[1] : $nodeSize - 1;
+                $end = $range[1] ?: $nodeSize - 1;
                 if ($start >= $nodeSize) {
                     throw new Exception\RequestedRangeNotSatisfiable('The start offset ('.$range[0].') exceeded the size of the entity ('.$nodeSize.')');
                 }

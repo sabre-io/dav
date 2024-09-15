@@ -18,7 +18,7 @@ class PropFindTest extends XmlTest
 </d:root>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}root' => 'Sabre\\DAV\\Xml\\Request\PropFind']);
+        $result = $this->parse($xml, ['{DAV:}root' => \Sabre\DAV\Xml\Request\PropFind::class]);
 
         $propFind = new PropFind();
         $propFind->properties = ['{DAV:}hello'];
@@ -34,7 +34,7 @@ class PropFindTest extends XmlTest
 </d:root>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}root' => 'Sabre\\DAV\\Xml\\Request\PropFind']);
+        $result = $this->parse($xml, ['{DAV:}root' => \Sabre\DAV\Xml\Request\PropFind::class]);
 
         $propFind = new PropFind();
         $propFind->allProp = true;

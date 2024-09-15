@@ -76,7 +76,7 @@ class SyncCollectionReport implements XmlDeserializable
 
         $reader->pushContext();
 
-        $reader->elementMap['{DAV:}prop'] = 'Sabre\Xml\Element\Elements';
+        $reader->elementMap['{DAV:}prop'] = \Sabre\Xml\Element\Elements::class;
         $elems = KeyValue::xmlDeserialize($reader);
 
         $reader->popContext();

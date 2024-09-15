@@ -18,7 +18,7 @@ abstract class AbstractTest extends \PHPUnit\Framework\TestCase
     public function testSetup()
     {
         $backend = $this->getBackend();
-        self::assertInstanceOf('Sabre\\DAV\\Locks\\Backend\\AbstractBackend', $backend);
+        self::assertInstanceOf(\Sabre\DAV\Locks\Backend\AbstractBackend::class, $backend);
     }
 
     /**

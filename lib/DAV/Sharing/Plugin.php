@@ -84,7 +84,7 @@ class Plugin extends ServerPlugin
     {
         $this->server = $server;
 
-        $server->xml->elementMap['{DAV:}share-resource'] = 'Sabre\\DAV\\Xml\\Request\\ShareResource';
+        $server->xml->elementMap['{DAV:}share-resource'] = \Sabre\DAV\Xml\Request\ShareResource::class;
 
         array_push(
             $server->protectedProperties,

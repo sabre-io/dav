@@ -42,7 +42,7 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testGetChild404()
     {
-        $this->expectException('Sabre\DAV\Exception\NotFound');
+        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
         $s = new SimpleCollection('foo', []);
         $s->getChild('404');
     }

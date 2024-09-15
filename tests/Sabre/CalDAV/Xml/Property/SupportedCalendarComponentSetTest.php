@@ -66,7 +66,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet']
+            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
         );
 
         self::assertEquals(
@@ -77,7 +77,7 @@ XML;
 
     public function testUnserializeEmpty()
     {
-        $this->expectException('Sabre\Xml\ParseException');
+        $this->expectException(\Sabre\Xml\ParseException::class);
         $cal = CalDAV\Plugin::NS_CALDAV;
         $cs = CalDAV\Plugin::NS_CALENDARSERVER;
 
@@ -89,7 +89,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet']
+            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
         );
     }
 }

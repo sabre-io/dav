@@ -41,11 +41,11 @@ class ShareResourceTest extends XmlTest
 XML;
 
         $result = $this->parse($xml, [
-            '{DAV:}share-resource' => 'Sabre\\DAV\\Xml\\Request\\ShareResource',
+            '{DAV:}share-resource' => \Sabre\DAV\Xml\Request\ShareResource::class,
         ]);
 
         self::assertInstanceOf(
-            'Sabre\\DAV\\Xml\\Request\\ShareResource',
+            \Sabre\DAV\Xml\Request\ShareResource::class,
             $result['value']
         );
 

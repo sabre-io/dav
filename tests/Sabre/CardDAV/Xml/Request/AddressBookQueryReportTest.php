@@ -9,7 +9,7 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class AddressBookQueryReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{urn:ietf:params:xml:ns:carddav}addressbook-query' => 'Sabre\\CardDAV\\Xml\\Request\AddressBookQueryReport',
+        '{urn:ietf:params:xml:ns:carddav}addressbook-query' => \Sabre\CardDAV\Xml\Request\AddressBookQueryReport::class,
     ];
 
     public function testDeserialize()
@@ -86,7 +86,7 @@ XML;
 
     public function testDeserializeBadTest()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -231,7 +231,7 @@ XML;
 
     public function testDeserializeBadMatchType()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -252,7 +252,7 @@ XML;
 
     public function testDeserializeBadMatchType2()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
@@ -271,7 +271,7 @@ XML;
 
     public function testDeserializeDoubleFilter()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0"?>
 <c:addressbook-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">

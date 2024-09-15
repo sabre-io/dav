@@ -10,7 +10,7 @@ class ServiceTest extends TestCase
 {
     public function testInvalidNameSpace()
     {
-        $this->expectException('Sabre\Xml\LibXMLException');
+        $this->expectException(\Sabre\Xml\LibXMLException::class);
         $xml = '<D:propfind xmlns:D="DAV:"><D:prop><bar:foo xmlns:bar=""/></D:prop></D:propfind>';
         $util = new Service();
         $util->expect('{DAV:}propfind', $xml);

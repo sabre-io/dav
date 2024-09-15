@@ -20,7 +20,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
-        self::assertInstanceOf('Sabre\DAV\ClientMock', $client);
+        self::assertInstanceOf(\Sabre\DAV\ClientMock::class, $client);
     }
 
     public function testConstructNoBaseUri()
@@ -137,7 +137,7 @@ XML;
 
     public function testPropFindError()
     {
-        $this->expectException('Sabre\HTTP\ClientHttpException');
+        $this->expectException(\Sabre\HTTP\ClientHttpException::class);
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
@@ -504,7 +504,7 @@ XML;
      */
     public function testPropPatchHTTPError()
     {
-        $this->expectException('Sabre\HTTP\ClientHttpException');
+        $this->expectException(\Sabre\HTTP\ClientHttpException::class);
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
@@ -518,7 +518,7 @@ XML;
      */
     public function testPropPatchMultiStatusError()
     {
-        $this->expectException('Sabre\HTTP\ClientException');
+        $this->expectException(\Sabre\HTTP\ClientException::class);
         $client = new ClientMock([
             'baseUri' => '/',
         ]);

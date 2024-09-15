@@ -19,7 +19,7 @@ class DirectoryTest extends \PHPUnit\Framework\TestCase
 
     public function testChildExistDot()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $dir = $this->create();
         $dir->childExists('..');
     }

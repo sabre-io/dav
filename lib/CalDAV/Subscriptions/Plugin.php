@@ -31,11 +31,11 @@ class Plugin extends ServerPlugin
      */
     public function initialize(Server $server)
     {
-        $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription'] =
+        $server->resourceTypeMapping[\Sabre\CalDAV\Subscriptions\ISubscription::class] =
             '{http://calendarserver.org/ns/}subscribed';
 
         $server->xml->elementMap['{http://calendarserver.org/ns/}source'] =
-            'Sabre\\DAV\\Xml\\Property\\Href';
+            \Sabre\DAV\Xml\Property\Href::class;
 
         $server->on('propFind', [$this, 'propFind'], 150);
     }

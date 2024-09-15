@@ -28,14 +28,14 @@ class UserTest extends \PHPUnit\Framework\TestCase
 
     public function testCreateFile()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $u = $this->getInstance();
         $u->createFile('test');
     }
 
     public function testCreateDirectory()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $u = $this->getInstance();
         $u->createDirectory('test');
     }
@@ -44,26 +44,26 @@ class UserTest extends \PHPUnit\Framework\TestCase
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-read');
-        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $child);
+        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyRead::class, $child);
     }
 
     public function testGetChildProxyWrite()
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-write');
-        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $child);
+        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyWrite::class, $child);
     }
 
     public function testGetChildNotFound()
     {
-        $this->expectException('Sabre\DAV\Exception\NotFound');
+        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
         $u = $this->getInstance();
         $child = $u->getChild('foo');
     }
 
     public function testGetChildNotFound2()
     {
-        $this->expectException('Sabre\DAV\Exception\NotFound');
+        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
         $u = $this->getInstance();
         $child = $u->getChild('random');
     }
@@ -73,8 +73,8 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $u = $this->getInstance();
         $children = $u->getChildren();
         self::assertEquals(2, count($children));
-        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyRead', $children[0]);
-        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\ProxyWrite', $children[1]);
+        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyRead::class, $children[0]);
+        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyWrite::class, $children[1]);
     }
 
     public function testChildExist()

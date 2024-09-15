@@ -61,8 +61,8 @@ class ShareResource implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = $reader->parseInnerTree([
-            '{DAV:}sharee' => 'Sabre\DAV\Xml\Element\Sharee',
-            '{DAV:}share-access' => 'Sabre\DAV\Xml\Property\ShareAccess',
+            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
+            '{DAV:}share-access' => \Sabre\DAV\Xml\Property\ShareAccess::class,
             '{DAV:}prop' => 'Sabre\Xml\Deserializer\keyValue',
         ]);
 

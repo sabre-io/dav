@@ -27,13 +27,13 @@ class ObjectTreeTest extends \PHPUnit\Framework\TestCase
     public function testGetRootNode()
     {
         $root = $this->tree->getNodeForPath('');
-        self::assertInstanceOf('Sabre\\DAV\\FSExt\\Directory', $root);
+        self::assertInstanceOf(\Sabre\DAV\FSExt\Directory::class, $root);
     }
 
     public function testGetSubDir()
     {
         $root = $this->tree->getNodeForPath('subdir');
-        self::assertInstanceOf('Sabre\\DAV\\FSExt\\Directory', $root);
+        self::assertInstanceOf(\Sabre\DAV\FSExt\Directory::class, $root);
     }
 
     public function testCopyFile()

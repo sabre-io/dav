@@ -37,8 +37,7 @@
         "monolog/monolog": "^1.27 || ^2.0",
         "phpstan/phpstan": "^0.12 || ^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6",
-        "rector/rector": "^1.2"
+        "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6"
     },
     "suggest" : {
         "ext-curl" : "*",

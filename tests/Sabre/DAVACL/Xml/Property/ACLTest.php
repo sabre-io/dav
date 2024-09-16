@@ -12,7 +12,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $acl = new Acl([]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\ACL::class, $acl);
+        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Acl::class, $acl);
     }
 
     public function testSerializeEmpty()

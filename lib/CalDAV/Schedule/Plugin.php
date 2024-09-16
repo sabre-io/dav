@@ -113,8 +113,8 @@ class Plugin extends ServerPlugin
          * This information ensures that the {DAV:}resourcetype property has
          * the correct values.
          */
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IOutbox'] = $ns.'schedule-outbox';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Schedule\\IInbox'] = $ns.'schedule-inbox';
+        $server->resourceTypeMapping[\Sabre\CalDAV\Schedule\IOutbox::class] = $ns.'schedule-outbox';
+        $server->resourceTypeMapping[\Sabre\CalDAV\Schedule\IInbox::class] = $ns.'schedule-inbox';
 
         /*
          * Properties we protect are made read-only by the server.

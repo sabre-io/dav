@@ -11,7 +11,7 @@ class ApacheTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $backend = new Apache();
-        self::assertInstanceOf('Sabre\DAV\Auth\Backend\Apache', $backend);
+        self::assertInstanceOf(\Sabre\DAV\Auth\Backend\Apache::class, $backend);
     }
 
     public function testNoHeader()

@@ -86,8 +86,8 @@ class CalendarMultiGetReport implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = $reader->parseInnerTree([
-            '{urn:ietf:params:xml:ns:caldav}calendar-data' => 'Sabre\\CalDAV\\Xml\\Filter\\CalendarData',
-            '{DAV:}prop' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{urn:ietf:params:xml:ns:caldav}calendar-data' => \Sabre\CalDAV\Xml\Filter\CalendarData::class,
+            '{DAV:}prop' => \Sabre\Xml\Element\KeyValue::class,
         ]);
 
         $newProps = [

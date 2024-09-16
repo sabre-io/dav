@@ -32,7 +32,7 @@ class ShareeTest extends AbstractXmlTestCase
 XML;
 
         $result = $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
+            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
         ]);
 
         $expected = new Sharee([
@@ -49,7 +49,7 @@ XML;
 
     public function testDeserializeNoHref()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sharee xmlns:D="DAV:">
@@ -64,13 +64,13 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
+            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
         ]);
     }
 
     public function testDeserializeNoShareeAccess()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0" encoding="utf-8" ?>
 <D:sharee xmlns:D="DAV:">
@@ -83,7 +83,7 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => 'Sabre\\DAV\\Xml\\Element\\Sharee',
+            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
         ]);
     }
 }

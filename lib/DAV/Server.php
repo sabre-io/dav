@@ -152,7 +152,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var array
      */
     public $resourceTypeMapping = [
-        'Sabre\\DAV\\ICollection' => '{DAV:}collection',
+        \Sabre\DAV\ICollection::class => '{DAV:}collection',
     ];
 
     /**

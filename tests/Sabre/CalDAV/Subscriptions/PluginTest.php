@@ -17,10 +17,10 @@ class PluginTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(
             '{http://calendarserver.org/ns/}subscribed',
-            $server->resourceTypeMapping['Sabre\\CalDAV\\Subscriptions\\ISubscription']
+            $server->resourceTypeMapping[\Sabre\CalDAV\Subscriptions\ISubscription::class]
         );
         self::assertEquals(
-            'Sabre\\DAV\\Xml\\Property\\Href',
+            \Sabre\DAV\Xml\Property\Href::class,
             $server->xml->elementMap['{http://calendarserver.org/ns/}source']
         );
 

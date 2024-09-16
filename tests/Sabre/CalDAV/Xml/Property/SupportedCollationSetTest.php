@@ -12,7 +12,7 @@ class SupportedCollationSetTest extends DAV\Xml\AbstractXmlTestCase
     public function testSimple()
     {
         $scs = new SupportedCollationSet();
-        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\SupportedCollationSet', $scs);
+        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\SupportedCollationSet::class, $scs);
     }
 
     /**

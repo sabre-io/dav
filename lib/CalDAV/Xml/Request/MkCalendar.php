@@ -62,8 +62,8 @@ class MkCalendar implements XmlDeserializable
         $self = new self();
 
         $elementMap = $reader->elementMap;
-        $elementMap['{DAV:}prop'] = 'Sabre\DAV\Xml\Element\Prop';
-        $elementMap['{DAV:}set'] = 'Sabre\Xml\Element\KeyValue';
+        $elementMap['{DAV:}prop'] = \Sabre\DAV\Xml\Element\Prop::class;
+        $elementMap['{DAV:}set'] = \Sabre\Xml\Element\KeyValue::class;
         $elems = $reader->parseInnerTree($elementMap);
 
         foreach ($elems as $elem) {

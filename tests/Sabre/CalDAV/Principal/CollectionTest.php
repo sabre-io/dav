@@ -15,6 +15,6 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
         $r = $col->getChildForPrincipal([
             'uri' => 'principals/admin',
         ]);
-        self::assertInstanceOf('Sabre\\CalDAV\\Principal\\User', $r);
+        self::assertInstanceOf(\Sabre\CalDAV\Principal\User::class, $r);
     }
 }

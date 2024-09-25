@@ -621,6 +621,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * If the first offset is null, the second offset should be used to retrieve the last x bytes of the entity
      *
      * @return int[]|null
+     *
+     * @deprecated Use getHTTPRangeHeaderValue in combination with CorePlugin->preprocessRanges to account for multipart ranges
      */
     public function getHTTPRange()
     {
@@ -643,6 +645,41 @@ class Server implements LoggerAwareInterface, EmitterInterface
             '' !== $matches[1] ? (int) $matches[1] : null,
             '' !== $matches[2] ? (int) $matches[2] : null,
         ];
+    }
+
+    /**
+     * Returns the HTTP range header.
+     *
+     * This method returns null if there is no well-formed HTTP range request
+     * header.
+     *
+     * If the string is valid, the ranges will be evaluated and processed in
+     * the next function
+     *
+     * @return string|null
+     */
+    public function getHTTPRangeHeaderValue()
+    {
+        $rangeHeader = $this->httpRequest->getHeader('range');
+
+        if (is_null($rangeHeader)) {
+            return null;
+        }
+
+        // remove all spaces before evaluation
+        $rangeHeader = str_replace(' ', '', $rangeHeader);
+
+        // regex to allow multiple ranges
+        // e.g.'Range: bytes=0-50,100-140, 200-500'
+        if (!preg_match('/^bytes=(([0-9]*-{1}[0-9]*,? ?)*)$/i', $rangeHeader, $matches)) {
+            return null;
+        }
+
+        // remove trailing comma
+        $matches[1] = trim($matches[1], ',');
+
+        // remove the range string
+        return $matches[1];
     }
 
     /**

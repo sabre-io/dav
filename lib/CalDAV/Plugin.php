@@ -793,14 +793,14 @@ class Plugin extends DAV\ServerPlugin
             // If the data starts with a [, we can reasonably assume we're dealing
             // with a jCal object.
             if ('[' === substr($data, 0, 1)) {
-                $vobj = VObject\Reader::readJson($data);
+                $vobj = VObject\Reader::readJson($data, VObject\Reader::OPTION_FORGIVING);
 
                 // Converting $data back to iCalendar, as that's what we
                 // technically support everywhere.
                 $data = $vobj->serialize();
                 $modified = true;
             } else {
-                $vobj = VObject\Reader::read($data);
+                $vobj = VObject\Reader::read($data, VObject\Reader::OPTION_FORGIVING);
             }
         } catch (VObject\ParseException $e) {
             throw new DAV\Exception\UnsupportedMediaType('This resource only supports valid iCalendar 2.0 data. Parse error: '.$e->getMessage());

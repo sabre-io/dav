@@ -90,7 +90,23 @@ class PropFind
      */
     public function handle($propertyName, $valueOrCallBack)
     {
-        if ($this->itemsLeft && isset($this->result[$propertyName]) && 404 === $this->result[$propertyName][0]) {
+        // If this is an ALLPROPS request and the property is
+        // unknown, add it to the result; else ignore it:
+        if (!isset($this->result[$propertyName])) {
+            if (self::ALLPROPS === $this->requestType) {
+                if (is_callable($valueOrCallBack)) {
+                    $value = $valueOrCallBack();
+                } else {
+                    $value = $valueOrCallBack;
+                }
+
+                $this->result[$propertyName] = [200, $value];
+            }
+
+            return;
+        }
+
+        if ($this->itemsLeft && 404 === $this->result[$propertyName][0]) {
             if (is_callable($valueOrCallBack)) {
                 $value = $valueOrCallBack();
             } else {

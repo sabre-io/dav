@@ -1,6 +1,19 @@
 ChangeLog
 =========
 
+4.7.0 (2024-10-29)
+-------------------------
+* #1074 Add event to allow inspecting and changing multipart responses (@icewind1991)
+* #1529 fix typo in comment (@st3iny)
+* #1534 remove script for dead Google Code (@Rotzbua)
+* #1536 fix typos (@Rotzbua)
+* #1539 bump actions/cache from 3 to 4
+* #1540 bump codecov/codecov-action from 3 to 4
+* #1545 fix getNodeForPath caching (@icewind1991)
+* #1550 stop exporting php-cs-fixer config (@phil-davis)
+* #1559 Allow for custom iTipBroker (@SebastianKrupinski)
+* #1560 Fix PHP 8.4 deprecations (@cedric-anne)
+
 4.6.0 (2023-12-11)
 -------------------------
 * #1526: feat: add propFindUnfiltered public method to Client (@phil-davis)

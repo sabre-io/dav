@@ -9,7 +9,7 @@ use Sabre\DAV;
 /**
  * InvalidSyncToken.
  *
- * This exception is emited for the {DAV:}valid-sync-token pre-condition, as
+ * This exception is emitted for the {DAV:}valid-sync-token pre-condition, as
  * defined in rfc6578, section 3.2.
  *
  * http://tools.ietf.org/html/rfc6578#section-3.2

@@ -522,7 +522,7 @@ HTML;
 
     /**
      * This method takes a path/name of an asset and turns it into url
-     * suiteable for http access.
+     * suitable for http access.
      *
      * @param string $assetName
      *

@@ -136,7 +136,7 @@ class SharingPlugin extends DAV\ServerPlugin
     }
 
     /**
-     * This method is trigged when a user attempts to update a node's
+     * This method is triggered when a user attempts to update a node's
      * properties.
      *
      * A previous draft of the sharing spec stated that it was possible to use

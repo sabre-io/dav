@@ -20,16 +20,16 @@ class Service extends \Sabre\Xml\Service
      * be mapped to Sabre\DAV\Xml\Request\PropFind
      */
     public array $elementMap = [
-        '{DAV:}multistatus' => \Sabre\DAV\Xml\Response\MultiStatus::class,
-        '{DAV:}response' => \Sabre\DAV\Xml\Element\Response::class,
+        '{DAV:}multistatus' => Response\MultiStatus::class,
+        '{DAV:}response' => Element\Response::class,
 
         // Requests
-        '{DAV:}propfind' => \Sabre\DAV\Xml\Request\PropFind::class,
-        '{DAV:}propertyupdate' => \Sabre\DAV\Xml\Request\PropPatch::class,
-        '{DAV:}mkcol' => \Sabre\DAV\Xml\Request\MkCol::class,
+        '{DAV:}propfind' => Request\PropFind::class,
+        '{DAV:}propertyupdate' => Request\PropPatch::class,
+        '{DAV:}mkcol' => Request\MkCol::class,
 
         // Properties
-        '{DAV:}resourcetype' => \Sabre\DAV\Xml\Property\ResourceType::class,
+        '{DAV:}resourcetype' => Property\ResourceType::class,
     ];
 
     /**

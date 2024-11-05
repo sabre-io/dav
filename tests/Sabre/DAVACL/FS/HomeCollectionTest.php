@@ -44,7 +44,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $child = $this->sut->getChild('user1');
-        self::assertInstanceOf(\Sabre\DAVACL\FS\Collection::class, $child);
+        self::assertInstanceOf(Collection::class, $child);
         self::assertEquals('user1', $child->getName());
 
         $owner = 'principals/user1';

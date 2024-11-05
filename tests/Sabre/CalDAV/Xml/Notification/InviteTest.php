@@ -76,7 +76,7 @@ class InviteTest extends DAV\Xml\AbstractXmlTestCase
   </cs:invite-notification>
 </cs:root>
 
-FOO
+FOO,
             ],
             [
                 [
@@ -115,7 +115,7 @@ FOO
   </cs:invite-notification>
 </cs:root>
 
-FOO
+FOO,
             ],
         ];
     }

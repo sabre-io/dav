@@ -273,7 +273,7 @@ class Client extends HTTP\Client
         foreach ($properties as $property) {
             list(
                 $namespace,
-                $elementName
+                $elementName,
             ) = \Sabre\Xml\Service::parseClarkNotation($property);
 
             if ('DAV:' === $namespace) {

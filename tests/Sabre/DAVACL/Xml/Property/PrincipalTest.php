@@ -30,7 +30,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
      */
     public function testNoHref()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $principal = new Principal(Principal::HREF);
     }
 
@@ -113,7 +113,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
 
     public function testUnserializeUnknown()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $xml = '<?xml version="1.0"?>
 <d:principal xmlns:d="DAV:">'.
 '  <d:foo />'.
@@ -125,7 +125,7 @@ class PrincipalTest extends \PHPUnit\Framework\TestCase
     public function parse($xml)
     {
         $reader = new Reader();
-        $reader->elementMap['{DAV:}principal'] = \Sabre\DAVACL\Xml\Property\Principal::class;
+        $reader->elementMap['{DAV:}principal'] = Principal::class;
         $reader->xml($xml);
         $result = $reader->parse();
 

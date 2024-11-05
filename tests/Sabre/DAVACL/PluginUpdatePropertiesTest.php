@@ -74,7 +74,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
 
     public function testSetBadValue()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];

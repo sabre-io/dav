@@ -32,7 +32,7 @@ class ShareeTest extends AbstractXmlTestCase
 XML;
 
         $result = $this->parse($xml, [
-            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
+            '{DAV:}sharee' => Sharee::class,
         ]);
 
         $expected = new Sharee([
@@ -64,7 +64,7 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
+            '{DAV:}sharee' => Sharee::class,
         ]);
     }
 
@@ -83,7 +83,7 @@ XML;
 XML;
 
         $this->parse($xml, [
-            '{DAV:}sharee' => \Sabre\DAV\Xml\Element\Sharee::class,
+            '{DAV:}sharee' => Sharee::class,
         ]);
     }
 }

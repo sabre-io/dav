@@ -29,7 +29,7 @@ class ServerPluginTest extends AbstractServerTestCase
         self::assertEquals([], $p->getHTTPMethods(''));
         self::assertEquals(
             [
-                'name' => \Sabre\DAV\ServerPluginMock::class,
+                'name' => ServerPluginMock::class,
                 'description' => null,
                 'link' => null,
             ], $p->getPluginInfo()

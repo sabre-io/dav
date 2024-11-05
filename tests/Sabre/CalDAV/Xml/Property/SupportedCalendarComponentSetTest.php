@@ -66,7 +66,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
+            ['{DAV:}root' => SupportedCalendarComponentSet::class]
         );
 
         self::assertEquals(
@@ -89,7 +89,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
+            ['{DAV:}root' => SupportedCalendarComponentSet::class]
         );
     }
 }

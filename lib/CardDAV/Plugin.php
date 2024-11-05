@@ -73,12 +73,12 @@ class Plugin extends DAV\ServerPlugin
 
         $server->xml->namespaceMap[self::NS_CARDDAV] = 'card';
 
-        $server->xml->elementMap['{'.self::NS_CARDDAV.'}addressbook-query'] = \Sabre\CardDAV\Xml\Request\AddressBookQueryReport::class;
-        $server->xml->elementMap['{'.self::NS_CARDDAV.'}addressbook-multiget'] = \Sabre\CardDAV\Xml\Request\AddressBookMultiGetReport::class;
+        $server->xml->elementMap['{'.self::NS_CARDDAV.'}addressbook-query'] = Xml\Request\AddressBookQueryReport::class;
+        $server->xml->elementMap['{'.self::NS_CARDDAV.'}addressbook-multiget'] = Xml\Request\AddressBookMultiGetReport::class;
 
         /* Mapping Interfaces to {DAV:}resourcetype values */
-        $server->resourceTypeMapping[\Sabre\CardDAV\IAddressBook::class] = '{'.self::NS_CARDDAV.'}addressbook';
-        $server->resourceTypeMapping[\Sabre\CardDAV\IDirectory::class] = '{'.self::NS_CARDDAV.'}directory';
+        $server->resourceTypeMapping[IAddressBook::class] = '{'.self::NS_CARDDAV.'}addressbook';
+        $server->resourceTypeMapping[IDirectory::class] = '{'.self::NS_CARDDAV.'}directory';
 
         /* Adding properties that may never be changed */
         $server->protectedProperties[] = '{'.self::NS_CARDDAV.'}supported-address-data';
@@ -86,7 +86,7 @@ class Plugin extends DAV\ServerPlugin
         $server->protectedProperties[] = '{'.self::NS_CARDDAV.'}addressbook-home-set';
         $server->protectedProperties[] = '{'.self::NS_CARDDAV.'}supported-collation-set';
 
-        $server->xml->elementMap['{http://calendarserver.org/ns/}me-card'] = \Sabre\DAV\Xml\Property\Href::class;
+        $server->xml->elementMap['{http://calendarserver.org/ns/}me-card'] = DAV\Xml\Property\Href::class;
 
         $this->server = $server;
     }

@@ -55,7 +55,7 @@ class Plugin extends DAV\ServerPlugin
     {
         $this->server = $server;
 
-        $this->server->xml->elementMap['{DAV:}lockinfo'] = \Sabre\DAV\Xml\Request\Lock::class;
+        $this->server->xml->elementMap['{DAV:}lockinfo'] = DAV\Xml\Request\Lock::class;
 
         $server->on('method:LOCK', [$this, 'httpLock']);
         $server->on('method:UNLOCK', [$this, 'httpUnlock']);

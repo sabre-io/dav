@@ -443,22 +443,22 @@ END:VCALENDAR';
 
         self::assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set', $props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals('calendars/user1/', $prop->getHref());
 
         self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
         self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
         self::assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}email-address-set', $props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER.'}email-address-set'];
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\EmailAddressSet::class, $prop);
+        self::assertInstanceOf(Xml\Property\EmailAddressSet::class, $prop);
         self::assertEquals(['user1.sabredav@sabredav.org'], $prop->getValue());
     }
 
@@ -474,7 +474,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{DAV:}expand-property',
             '{DAV:}principal-match',
@@ -499,7 +499,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
@@ -526,7 +526,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{DAV:}sync-collection',
             '{DAV:}expand-property',

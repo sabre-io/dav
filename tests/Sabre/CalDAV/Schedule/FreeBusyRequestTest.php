@@ -141,7 +141,7 @@ END:VCALENDAR',
 
     public function testNoItipMethod()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -161,7 +161,7 @@ ICS;
 
     public function testNoVFreeBusy()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
+        $this->expectException(DAV\Exception\NotImplemented::class);
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -182,7 +182,7 @@ ICS;
 
     public function testIncorrectOrganizer()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(DAV\Exception\Forbidden::class);
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -204,7 +204,7 @@ ICS;
 
     public function testNoAttendees()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',
@@ -226,7 +226,7 @@ ICS;
 
     public function testNoDTStart()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $this->server->httpRequest = new HTTP\Request(
             'POST',
             '/calendars/user1/outbox',

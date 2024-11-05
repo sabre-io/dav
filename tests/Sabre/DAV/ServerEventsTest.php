@@ -159,7 +159,7 @@ class ServerEventsTest extends AbstractServerTestCase
         $this->server->httpRequest = $req;
         $this->server->exec();
 
-        self::assertInstanceOf(\Sabre\DAV\Exception\NotFound::class, $this->exception);
+        self::assertInstanceOf(Exception\NotFound::class, $this->exception);
     }
 
     public function exceptionHandler(Exception $exception)

@@ -52,7 +52,7 @@ class Plugin extends DAV\ServerPlugin
     public function initialize(DAV\Server $server)
     {
         $this->server = $server;
-        $server->xml->elementMap['{DAV:}sync-collection'] = \Sabre\DAV\Xml\Request\SyncCollectionReport::class;
+        $server->xml->elementMap['{DAV:}sync-collection'] = SyncCollectionReport::class;
 
         $self = $this;
 

@@ -207,7 +207,7 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarIncorrectComponentSet()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $backend = new PDO($this->pdo);
 
         // Creating a new calendar
@@ -308,7 +308,7 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarObjectNoComponent()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
@@ -1024,7 +1024,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testCreateSubscriptionFail()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(DAV\Exception\Forbidden::class);
         $props = [
         ];
 
@@ -1509,7 +1509,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testSetPublishStatus()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
+        $this->expectException(DAV\Exception\NotImplemented::class);
         $backend = new PDO($this->pdo);
         $backend->setPublishStatus([1, 1], true);
     }

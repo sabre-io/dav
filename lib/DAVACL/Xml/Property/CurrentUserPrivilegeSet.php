@@ -109,7 +109,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
     {
         $result = [];
 
-        $tree = $reader->parseInnerTree(['{DAV:}privilege' => \Sabre\Xml\Element\Elements::class]);
+        $tree = $reader->parseInnerTree(['{DAV:}privilege' => Element\Elements::class]);
         foreach ($tree as $element) {
             if ('{DAV:}privilege' !== $element['name']) {
                 continue;

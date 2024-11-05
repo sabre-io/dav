@@ -17,7 +17,7 @@ abstract class AbstractTestCase extends TestCase
     public function testSetup()
     {
         $backend = $this->getBackend();
-        self::assertInstanceOf(\Sabre\DAV\Locks\Backend\AbstractBackend::class, $backend);
+        self::assertInstanceOf(AbstractBackend::class, $backend);
     }
 
     /**

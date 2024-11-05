@@ -85,8 +85,8 @@ class PropPatch implements Element
 
         $elementMap = $reader->elementMap;
         $elementMap['{DAV:}prop'] = \Sabre\DAV\Xml\Element\Prop::class;
-        $elementMap['{DAV:}set'] = \Sabre\Xml\Element\KeyValue::class;
-        $elementMap['{DAV:}remove'] = \Sabre\Xml\Element\KeyValue::class;
+        $elementMap['{DAV:}set'] = Element\KeyValue::class;
+        $elementMap['{DAV:}remove'] = Element\KeyValue::class;
 
         $elems = $reader->parseInnerTree($elementMap);
 

@@ -76,7 +76,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp::class]
+            ['{DAV:}root' => ScheduleCalendarTransp::class]
         );
 
         self::assertEquals(
@@ -99,7 +99,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp::class]
+            ['{DAV:}root' => ScheduleCalendarTransp::class]
         );
 
         self::assertEquals(

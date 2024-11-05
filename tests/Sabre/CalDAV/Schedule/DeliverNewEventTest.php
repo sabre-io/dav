@@ -77,7 +77,7 @@ ICS
         self::assertEquals(1, count($messages));
         $message = $messages[0];
 
-        self::assertInstanceOf(\Sabre\VObject\ITip\Message::class, $message);
+        self::assertInstanceOf(VObject\ITip\Message::class, $message);
         self::assertEquals('mailto:user2.sabredav@sabredav.org', $message->recipient);
         self::assertEquals('Roxy Kesh', $message->recipientName);
         self::assertEquals('mailto:user1.sabredav@sabredav.org', $message->sender);

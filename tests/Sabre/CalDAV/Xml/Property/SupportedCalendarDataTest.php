@@ -12,7 +12,7 @@ class SupportedCalendarDataTest extends DAV\Xml\AbstractXmlTestCase
     public function testSimple()
     {
         $sccs = new SupportedCalendarData();
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\SupportedCalendarData::class, $sccs);
+        self::assertInstanceOf(SupportedCalendarData::class, $sccs);
     }
 
     /**

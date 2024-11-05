@@ -157,7 +157,7 @@ class Sharee implements Element
     {
         // Temporarily override configuration
         $reader->pushContext();
-        $reader->elementMap['{DAV:}share-access'] = \Sabre\DAV\Xml\Property\ShareAccess::class;
+        $reader->elementMap['{DAV:}share-access'] = ShareAccess::class;
         $reader->elementMap['{DAV:}prop'] = 'Sabre\Xml\Deserializer\keyValue';
 
         $elems = Deserializer\keyValue($reader, 'DAV:');

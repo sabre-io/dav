@@ -20,7 +20,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
-        self::assertInstanceOf(\Sabre\DAV\ClientMock::class, $client);
+        self::assertInstanceOf(ClientMock::class, $client);
     }
 
     public function testConstructNoBaseUri()

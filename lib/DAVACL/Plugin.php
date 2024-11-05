@@ -808,17 +808,17 @@ class Plugin extends DAV\ServerPlugin
 
         // Automatically mapping nodes implementing IPrincipal to the
         // {DAV:}principal resourcetype.
-        $server->resourceTypeMapping[\Sabre\DAVACL\IPrincipal::class] = '{DAV:}principal';
+        $server->resourceTypeMapping[IPrincipal::class] = '{DAV:}principal';
 
         // Mapping the group-member-set property to the HrefList property
         // class.
-        $server->xml->elementMap['{DAV:}group-member-set'] = \Sabre\DAV\Xml\Property\Href::class;
-        $server->xml->elementMap['{DAV:}acl'] = \Sabre\DAVACL\Xml\Property\Acl::class;
-        $server->xml->elementMap['{DAV:}acl-principal-prop-set'] = \Sabre\DAVACL\Xml\Request\AclPrincipalPropSetReport::class;
-        $server->xml->elementMap['{DAV:}expand-property'] = \Sabre\DAVACL\Xml\Request\ExpandPropertyReport::class;
-        $server->xml->elementMap['{DAV:}principal-property-search'] = \Sabre\DAVACL\Xml\Request\PrincipalPropertySearchReport::class;
-        $server->xml->elementMap['{DAV:}principal-search-property-set'] = \Sabre\DAVACL\Xml\Request\PrincipalSearchPropertySetReport::class;
-        $server->xml->elementMap['{DAV:}principal-match'] = \Sabre\DAVACL\Xml\Request\PrincipalMatchReport::class;
+        $server->xml->elementMap['{DAV:}group-member-set'] = Href::class;
+        $server->xml->elementMap['{DAV:}acl'] = Xml\Property\Acl::class;
+        $server->xml->elementMap['{DAV:}acl-principal-prop-set'] = Xml\Request\AclPrincipalPropSetReport::class;
+        $server->xml->elementMap['{DAV:}expand-property'] = Xml\Request\ExpandPropertyReport::class;
+        $server->xml->elementMap['{DAV:}principal-property-search'] = Xml\Request\PrincipalPropertySearchReport::class;
+        $server->xml->elementMap['{DAV:}principal-search-property-set'] = Xml\Request\PrincipalSearchPropertySetReport::class;
+        $server->xml->elementMap['{DAV:}principal-match'] = Xml\Request\PrincipalMatchReport::class;
     }
 
     /* {{{ Event handlers */

@@ -9,7 +9,7 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class CalendarQueryReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{urn:ietf:params:xml:ns:caldav}calendar-query' => \Sabre\CalDAV\Xml\Request\CalendarQueryReport::class,
+        '{urn:ietf:params:xml:ns:caldav}calendar-query' => CalendarQueryReport::class,
     ];
 
     public function testDeserialize()

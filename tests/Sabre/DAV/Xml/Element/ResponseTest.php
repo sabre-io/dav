@@ -189,7 +189,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
 ';
 
         $result = $this->parse($xml, [
-            '{DAV:}response' => \Sabre\DAV\Xml\Element\Response::class,
+            '{DAV:}response' => Response::class,
             '{DAV:}foo' => function ($reader) {
                 $reader->next();
 
@@ -346,7 +346,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
 ';
 
         $result = $this->parse($xml, [
-            '{DAV:}response' => \Sabre\DAV\Xml\Element\Response::class,
+            '{DAV:}response' => Response::class,
             '{DAV:}foo' => function ($reader) {
                 throw new \LogicException('This should never happen');
             },

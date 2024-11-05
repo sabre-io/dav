@@ -37,7 +37,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
      */
     public function testAuthenticateFail()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotAuthenticated::class);
+        $this->expectException(DAV\Exception\NotAuthenticated::class);
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $backend = new Backend\Mock();
         $backend->fail = true;
@@ -90,7 +90,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
      */
     public function testNoAuthBackend()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
 
         $plugin = new Plugin();
@@ -103,7 +103,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
      */
     public function testInvalidCheckResponse()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $fakeServer = new DAV\Server(new DAV\SimpleCollection('bla'));
         $backend = new Backend\Mock();
         $backend->invalidCheckResponse = true;

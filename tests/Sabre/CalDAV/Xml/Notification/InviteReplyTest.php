@@ -81,7 +81,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
   </cs:invite-reply>
 </cs:root>
 
-FOO
+FOO,
             ],
             [
                 [
@@ -110,7 +110,7 @@ FOO
   </cs:invite-reply>
 </cs:root>
 
-FOO
+FOO,
             ],
         ];
     }

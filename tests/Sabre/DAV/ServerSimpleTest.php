@@ -20,7 +20,7 @@ class ServerSimpleTest extends AbstractServer
 
     public function testConstructInvalidArg()
     {
-        $this->expectException('Sabre\DAV\Exception');
+        $this->expectException(\Sabre\DAV\Exception::class);
         $server = new Server(1);
     }
 
@@ -189,7 +189,7 @@ class ServerSimpleTest extends AbstractServer
 
     public function testCalculateUriBreakout()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $uri = '/path1/';
 
         $this->server->setBaseUri('/path2/');
@@ -310,7 +310,7 @@ class ServerSimpleTest extends AbstractServer
      */
     public function testGuessBaseUriBadConfig()
     {
-        $this->expectException('Sabre\DAV\Exception');
+        $this->expectException(\Sabre\DAV\Exception::class);
         $serverVars = [
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/index.php/root/heyyy',

@@ -12,7 +12,7 @@ class SupportedAddressDataTest extends DAV\Xml\XmlTest
     public function testSimple()
     {
         $property = new SupportedAddressData();
-        self::assertInstanceOf('Sabre\CardDAV\Xml\Property\SupportedAddressData', $property);
+        self::assertInstanceOf(\Sabre\CardDAV\Xml\Property\SupportedAddressData::class, $property);
     }
 
     /**

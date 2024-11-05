@@ -120,10 +120,10 @@ class AddressBookQueryReport implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = (array) $reader->parseInnerTree([
-            '{urn:ietf:params:xml:ns:carddav}prop-filter' => 'Sabre\\CardDAV\\Xml\\Filter\\PropFilter',
-            '{urn:ietf:params:xml:ns:carddav}param-filter' => 'Sabre\\CardDAV\\Xml\\Filter\\ParamFilter',
-            '{urn:ietf:params:xml:ns:carddav}address-data' => 'Sabre\\CardDAV\\Xml\\Filter\\AddressData',
-            '{DAV:}prop' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{urn:ietf:params:xml:ns:carddav}prop-filter' => \Sabre\CardDAV\Xml\Filter\PropFilter::class,
+            '{urn:ietf:params:xml:ns:carddav}param-filter' => \Sabre\CardDAV\Xml\Filter\ParamFilter::class,
+            '{urn:ietf:params:xml:ns:carddav}address-data' => \Sabre\CardDAV\Xml\Filter\AddressData::class,
+            '{DAV:}prop' => \Sabre\Xml\Element\KeyValue::class,
         ]);
 
         $newProps = [

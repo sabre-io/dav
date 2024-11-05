@@ -914,7 +914,7 @@ class PluginTest extends DAV\AbstractServer
 
     public function testGetTimeoutHeaderInvalid()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $request = new HTTP\Request('GET', '/', ['Timeout' => 'yourmom']);
 
         $this->server->httpRequest = $request;

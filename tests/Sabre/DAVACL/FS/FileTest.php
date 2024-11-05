@@ -53,7 +53,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function testSetAcl()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $this->sut->setACL([]);
     }
 

@@ -37,7 +37,7 @@ class AbstractDigestTest extends \PHPUnit\Framework\TestCase
 
     public function testCheckBadGetUserInfoResponse2()
     {
-        $this->expectException('Sabre\DAV\Exception');
+        $this->expectException(\Sabre\DAV\Exception::class);
         $header = 'username=array, realm=myRealm, nonce=12345, uri=/, response=HASH, opaque=1, qop=auth, nc=1, cnonce=1';
         $request = HTTP\Sapi::createFromServerArray([
             'REQUEST_METHOD' => 'GET',

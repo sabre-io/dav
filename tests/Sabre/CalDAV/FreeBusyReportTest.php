@@ -110,7 +110,7 @@ XML;
 
     public function testFreeBusyReportNoTimeRange()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $reportXML = <<<XML
 <?xml version="1.0"?>
 <c:free-busy-query xmlns:c="urn:ietf:params:xml:ns:caldav">
@@ -122,7 +122,7 @@ XML;
 
     public function testFreeBusyReportWrongNode()
     {
-        $this->expectException('Sabre\DAV\Exception\NotImplemented');
+        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
         $request = new HTTP\Request('REPORT', '/');
         $this->server->httpRequest = $request;
 
@@ -139,7 +139,7 @@ XML;
 
     public function testFreeBusyReportNoACLPlugin()
     {
-        $this->expectException('Sabre\DAV\Exception');
+        $this->expectException(\Sabre\DAV\Exception::class);
         $this->server = new DAV\Server();
         $this->server->httpRequest = new HTTP\Request('REPORT', '/');
         $this->plugin = new Plugin();

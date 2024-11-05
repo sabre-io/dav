@@ -22,7 +22,7 @@ class CollectionTest extends FileTest
     {
         file_put_contents(SABRE_TEMPDIR.'/file.txt', 'hello');
         $child = $this->sut->getChild('file.txt');
-        self::assertInstanceOf('Sabre\\DAVACL\\FS\\File', $child);
+        self::assertInstanceOf(\Sabre\DAVACL\FS\File::class, $child);
 
         self::assertEquals('file.txt', $child->getName());
         self::assertEquals($this->acl, $child->getACL());
@@ -33,7 +33,7 @@ class CollectionTest extends FileTest
     {
         mkdir(SABRE_TEMPDIR.'/dir');
         $child = $this->sut->getChild('dir');
-        self::assertInstanceOf('Sabre\\DAVACL\\FS\\Collection', $child);
+        self::assertInstanceOf(\Sabre\DAVACL\FS\Collection::class, $child);
 
         self::assertEquals('dir', $child->getName());
         self::assertEquals($this->acl, $child->getACL());

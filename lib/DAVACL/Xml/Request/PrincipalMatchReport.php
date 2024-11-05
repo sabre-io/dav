@@ -25,12 +25,12 @@ class PrincipalMatchReport implements XmlDeserializable
     /**
      * Report on a list of principals that match the current principal.
      */
-    const SELF = 1;
+    public const SELF = 1;
 
     /**
      * Report on a property on resources, such as {DAV:}owner, that match the current principal.
      */
-    const PRINCIPAL_PROPERTY = 2;
+    public const PRINCIPAL_PROPERTY = 2;
 
     /**
      * Must be SELF or PRINCIPAL_PROPERTY.
@@ -71,8 +71,6 @@ class PrincipalMatchReport implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {

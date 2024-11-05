@@ -70,7 +70,7 @@ class SupportedAddressData implements XmlSerializable
             $writer->writeAttributes([
                 'content-type' => $supported['contentType'],
                 'version' => $supported['version'],
-                ]);
+            ]);
             $writer->endElement(); // address-data-type
         }
     }

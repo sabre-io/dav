@@ -28,9 +28,9 @@ abstract class Collection extends Node implements ICollection
      *
      * @param string $name
      *
-     * @throws Exception\NotFound
-     *
      * @return INode
+     *
+     * @throws Exception\NotFound
      */
     public function getChild($name)
     {

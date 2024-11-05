@@ -26,12 +26,12 @@ require_once 'vendor/autoload.php';
 $authBackend = new Sabre\DAV\Auth\Backend\PDO($pdo);
 $principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
 $carddavBackend = new Sabre\CardDAV\Backend\PDO($pdo);
-//$caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
+// $caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
 
 // Setting up the directory tree //
 $nodes = [
     new Sabre\DAVACL\PrincipalCollection($principalBackend),
-//    new Sabre\CalDAV\CalendarRoot($authBackend, $caldavBackend),
+    //    new Sabre\CalDAV\CalendarRoot($authBackend, $caldavBackend),
     new Sabre\CardDAV\AddressBookRoot($principalBackend, $carddavBackend),
 ];
 
@@ -42,7 +42,7 @@ $server->setBaseUri($baseUri);
 // Plugins
 $server->addPlugin(new Sabre\DAV\Auth\Plugin($authBackend));
 $server->addPlugin(new Sabre\DAV\Browser\Plugin());
-//$server->addPlugin(new Sabre\CalDAV\Plugin());
+// $server->addPlugin(new Sabre\CalDAV\Plugin());
 $server->addPlugin(new Sabre\CardDAV\Plugin());
 $server->addPlugin(new Sabre\DAVACL\Plugin());
 $server->addPlugin(new Sabre\DAV\Sync\Plugin());

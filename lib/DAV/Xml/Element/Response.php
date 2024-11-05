@@ -177,14 +177,12 @@ class Response implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
         $reader->pushContext();
 
-        $reader->elementMap['{DAV:}propstat'] = \Sabre\Xml\Element\KeyValue::class;
+        $reader->elementMap['{DAV:}propstat'] = Element\KeyValue::class;
 
         // We are overriding the parser for {DAV:}prop. This deserializer is
         // almost identical to the one for Sabre\Xml\Element\KeyValue.

@@ -24,9 +24,9 @@ use Sabre\HTTP\ResponseInterface;
  */
 class Plugin extends DAV\ServerPlugin
 {
-    const RANGE_APPEND = 1;
-    const RANGE_START = 2;
-    const RANGE_END = 3;
+    public const RANGE_APPEND = 1;
+    public const RANGE_START = 2;
+    public const RANGE_END = 3;
 
     /**
      * Reference to server.

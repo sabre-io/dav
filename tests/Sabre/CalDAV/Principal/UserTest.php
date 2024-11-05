@@ -44,14 +44,14 @@ class UserTest extends \PHPUnit\Framework\TestCase
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-read');
-        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyRead::class, $child);
+        self::assertInstanceOf(ProxyRead::class, $child);
     }
 
     public function testGetChildProxyWrite()
     {
         $u = $this->getInstance();
         $child = $u->getChild('calendar-proxy-write');
-        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyWrite::class, $child);
+        self::assertInstanceOf(ProxyWrite::class, $child);
     }
 
     public function testGetChildNotFound()
@@ -73,8 +73,8 @@ class UserTest extends \PHPUnit\Framework\TestCase
         $u = $this->getInstance();
         $children = $u->getChildren();
         self::assertEquals(2, count($children));
-        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyRead::class, $children[0]);
-        self::assertInstanceOf(\Sabre\CalDAV\Principal\ProxyWrite::class, $children[1]);
+        self::assertInstanceOf(ProxyRead::class, $children[0]);
+        self::assertInstanceOf(ProxyWrite::class, $children[1]);
     }
 
     public function testChildExist()

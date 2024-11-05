@@ -14,7 +14,7 @@ abstract class AbstractPDOTestCase extends TestCase
     use DbTestHelperTrait;
 
     /**
-     * @var CardDAV\Backend\PDO
+     * @var PDO
      */
     protected $backend;
 

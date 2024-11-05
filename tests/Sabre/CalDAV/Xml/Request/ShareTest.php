@@ -10,7 +10,7 @@ use Sabre\DAV\Xml\Element\Sharee;
 class ShareTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{http://calendarserver.org/ns/}share' => 'Sabre\\CalDAV\\Xml\\Request\\Share',
+        '{http://calendarserver.org/ns/}share' => \Sabre\CalDAV\Xml\Request\Share::class,
     ];
 
     public function testDeserialize()

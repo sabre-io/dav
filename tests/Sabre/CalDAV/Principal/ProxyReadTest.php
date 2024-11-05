@@ -41,14 +41,14 @@ class ProxyReadTest extends \PHPUnit\Framework\TestCase
 
     public function testDelete()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $i = $this->getInstance();
         $i->delete();
     }
 
     public function testSetName()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $i = $this->getInstance();
         $i->setName('foo');
     }

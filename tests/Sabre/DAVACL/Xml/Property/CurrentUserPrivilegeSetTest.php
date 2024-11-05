@@ -56,7 +56,7 @@ XML;
     public function parse($xml)
     {
         $reader = new Reader();
-        $reader->elementMap['{DAV:}root'] = 'Sabre\\DAVACL\\Xml\\Property\\CurrentUserPrivilegeSet';
+        $reader->elementMap['{DAV:}root'] = \Sabre\DAVACL\Xml\Property\CurrentUserPrivilegeSet::class;
         $reader->xml($xml);
         $result = $reader->parse();
 

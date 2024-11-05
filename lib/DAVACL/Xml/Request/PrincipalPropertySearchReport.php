@@ -86,8 +86,8 @@ class PrincipalPropertySearchReport implements XmlDeserializable
         }
 
         $elemMap = [
-            '{DAV:}property-search' => 'Sabre\\Xml\\Element\\KeyValue',
-            '{DAV:}prop' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{DAV:}property-search' => \Sabre\Xml\Element\KeyValue::class,
+            '{DAV:}prop' => \Sabre\Xml\Element\KeyValue::class,
         ];
 
         foreach ($reader->parseInnerTree($elemMap) as $elem) {

@@ -12,7 +12,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $acl = new Acl([]);
-        self::assertInstanceOf('Sabre\DAVACL\Xml\Property\ACL', $acl);
+        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Acl::class, $acl);
     }
 
     public function testSerializeEmpty()
@@ -157,13 +157,13 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 ';
 
         $reader = new \Sabre\Xml\Reader();
-        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->elementMap['{DAV:}root'] = \Sabre\DAVACL\Xml\Property\Acl::class;
         $reader->xml($source);
 
         $result = $reader->parse();
         $result = $result['value'];
 
-        self::assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
+        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Acl::class, $result);
 
         $expected = [
             [
@@ -183,7 +183,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 
     public function testUnserializeNoPrincipal()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ace>
@@ -197,7 +197,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 ';
 
         $reader = new \Sabre\Xml\Reader();
-        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->elementMap['{DAV:}root'] = \Sabre\DAVACL\Xml\Property\Acl::class;
         $reader->xml($source);
 
         $result = $reader->parse();
@@ -236,13 +236,13 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 ';
 
         $reader = new \Sabre\Xml\Reader();
-        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->elementMap['{DAV:}root'] = \Sabre\DAVACL\Xml\Property\Acl::class;
         $reader->xml($source);
 
         $result = $reader->parse();
         $result = $result['value'];
 
-        self::assertInstanceOf('Sabre\\DAVACL\\Xml\\Property\\Acl', $result);
+        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Acl::class, $result);
 
         $expected = [
             [
@@ -267,7 +267,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 
     public function testUnserializeDeny()
     {
-        $this->expectException('Sabre\DAV\Exception\NotImplemented');
+        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
         $source = '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:ignore-me />
@@ -283,7 +283,7 @@ class ACLTest extends \PHPUnit\Framework\TestCase
 ';
 
         $reader = new \Sabre\Xml\Reader();
-        $reader->elementMap['{DAV:}root'] = 'Sabre\DAVACL\Xml\Property\Acl';
+        $reader->elementMap['{DAV:}root'] = \Sabre\DAVACL\Xml\Property\Acl::class;
         $reader->xml($source);
 
         $result = $reader->parse();

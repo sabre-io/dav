@@ -499,7 +499,7 @@ HTML;
 
         // We also know fairly certain that if an object is a non-extended
         // SimpleCollection, we won't need to show the panel either.
-        if ('Sabre\\DAV\\SimpleCollection' === get_class($node)) {
+        if (\Sabre\DAV\SimpleCollection::class === get_class($node)) {
             return;
         }
 

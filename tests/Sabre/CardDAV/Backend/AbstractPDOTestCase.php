@@ -146,7 +146,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testCreateAddressBookUnsupportedProp()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $this->backend->createAddressBook('principals/user1', 'book2', [
             '{DAV:}foo' => 'bar',
         ]);

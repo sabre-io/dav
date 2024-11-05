@@ -11,7 +11,7 @@ class AclRestrictionsTest extends \PHPUnit\Framework\TestCase
     public function testConstruct()
     {
         $prop = new AclRestrictions();
-        self::assertInstanceOf('Sabre\DAVACL\Xml\Property\AclRestrictions', $prop);
+        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\AclRestrictions::class, $prop);
     }
 
     public function testSerialize()

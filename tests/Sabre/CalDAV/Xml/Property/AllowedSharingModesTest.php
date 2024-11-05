@@ -12,7 +12,7 @@ class AllowedSharingModesTest extends DAV\Xml\AbstractXmlTestCase
     public function testSimple()
     {
         $sccs = new AllowedSharingModes(true, true);
-        self::assertInstanceOf('Sabre\CalDAV\Xml\Property\AllowedSharingModes', $sccs);
+        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\AllowedSharingModes::class, $sccs);
     }
 
     /**

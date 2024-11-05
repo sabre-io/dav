@@ -85,7 +85,7 @@ class Prop implements XmlDeserializable
 
         if (array_key_exists($name, $reader->elementMap)) {
             $deserializer = $reader->elementMap[$name];
-            if (is_subclass_of($deserializer, 'Sabre\\Xml\\XmlDeserializable')) {
+            if (is_subclass_of($deserializer, \Sabre\Xml\XmlDeserializable::class)) {
                 $value = call_user_func([$deserializer, 'xmlDeserialize'], $reader);
             } elseif (is_callable($deserializer)) {
                 $value = call_user_func($deserializer, $reader);

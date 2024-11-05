@@ -161,9 +161,9 @@ class Acl implements Element, HtmlOutput
     public static function xmlDeserialize(Reader $reader)
     {
         $elementMap = [
-            '{DAV:}ace' => 'Sabre\Xml\Element\KeyValue',
-            '{DAV:}privilege' => 'Sabre\Xml\Element\Elements',
-            '{DAV:}principal' => 'Sabre\DAVACL\Xml\Property\Principal',
+            '{DAV:}ace' => \Sabre\Xml\Element\KeyValue::class,
+            '{DAV:}privilege' => \Sabre\Xml\Element\Elements::class,
+            '{DAV:}principal' => \Sabre\DAVACL\Xml\Property\Principal::class,
         ];
 
         $privileges = [];

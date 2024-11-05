@@ -75,7 +75,7 @@ class NodeTest extends \PHPUnit\Framework\TestCase
 
     public function testSetACL()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $node = $this->getInstance();
         $node->setACL([]);
     }

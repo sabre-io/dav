@@ -45,7 +45,7 @@ class SharingPluginTest extends AbstractDAVServerTestCase
 
     public function testSimple()
     {
-        self::assertInstanceOf(\Sabre\CalDAV\SharingPlugin::class, $this->server->getPlugin('caldav-sharing'));
+        self::assertInstanceOf(SharingPlugin::class, $this->server->getPlugin('caldav-sharing'));
         self::assertEquals(
             'caldav-sharing',
             $this->caldavSharingPlugin->getPluginInfo()['name']
@@ -75,8 +75,8 @@ class SharingPluginTest extends AbstractDAVServerTestCase
             '{'.Plugin::NS_CALENDARSERVER.'}allowed-sharing-modes',
         ]);
 
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\Invite::class, $props['{'.Plugin::NS_CALENDARSERVER.'}invite']);
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\AllowedSharingModes::class, $props['{'.Plugin::NS_CALENDARSERVER.'}allowed-sharing-modes']);
+        self::assertInstanceOf(Xml\Property\Invite::class, $props['{'.Plugin::NS_CALENDARSERVER.'}invite']);
+        self::assertInstanceOf(Xml\Property\AllowedSharingModes::class, $props['{'.Plugin::NS_CALENDARSERVER.'}allowed-sharing-modes']);
     }
 
     public function testBeforeGetSharedCalendar()
@@ -86,8 +86,9 @@ class SharingPluginTest extends AbstractDAVServerTestCase
             '{'.Plugin::NS_CALENDARSERVER.'}invite',
         ]);
 
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\Invite::class, $props['{'.Plugin::NS_CALENDARSERVER.'}invite']);
+        self::assertInstanceOf(Xml\Property\Invite::class, $props['{'.Plugin::NS_CALENDARSERVER.'}invite']);
         // self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $props['{' . Plugin::NS_CALENDARSERVER . '}shared-url']);
+    }
 
     public function testUpdateResourceType()
     {

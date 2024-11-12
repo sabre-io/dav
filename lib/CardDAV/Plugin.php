@@ -407,7 +407,12 @@ class Plugin extends DAV\ServerPlugin
                 throw new ReportNotSupported('The addressbook-query report is not supported on this url with Depth: 0');
             }
         } else {
-            $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
+            if($report->limit && $report->offset){
+             $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri(),$report->limit , $report->offset);
+            }
+            else{
+                $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
+            }
         }
 
         $contentType = $report->contentType;
@@ -800,7 +805,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return string
      */
-    protected function convertVCard($data, $target, ?array $propertiesFilter = null)
+    protected function convertVCard($data, $target, array $propertiesFilter = null)
     {
         if (is_resource($data)) {
             $data = stream_get_contents($data);

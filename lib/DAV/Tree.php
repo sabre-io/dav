@@ -207,18 +207,25 @@ class Tree implements INodeByPath
      *
      * @return \Traversable
      */
-    public function getChildren($path)
+    public function getChildren($path, $limit = null, $offset= null)
     {
         $node = $this->getNodeForPath($path);
         $basePath = trim($path, '/');
         if ('' !== $basePath) {
             $basePath .= '/';
         }
-
-        foreach ($node->getChildren() as $child) {
-            $this->cache[$basePath.$child->getName()] = $child;
-            yield $child;
+        if($limit && $offset){
+            foreach ($node->getChildren($limit,$offset) as $child) {
+                $this->cache[$basePath.$child->getName()] = $child;
+                yield $child;
+            }
         }
+        else{
+            foreach ($node->getChildren() as $child) {
+                $this->cache[$basePath.$child->getName()] = $child;
+                yield $child;
+        }
+    }
     }
 
     /**

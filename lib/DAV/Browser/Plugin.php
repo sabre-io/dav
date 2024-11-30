@@ -262,9 +262,6 @@ class Plugin extends DAV\ServerPlugin
 
         $node = $this->server->tree->getNodeForPath($path);
         if ($node instanceof DAV\ICollection) {
-            $html .= "<section><h1>Nodes</h1>\n";
-            $html .= '<table class="nodeTable">';
-
             $subNodes = $this->server->getPropertiesForChildren($path, [
                 '{DAV:}displayname',
                 '{DAV:}resourcetype',
@@ -272,6 +269,9 @@ class Plugin extends DAV\ServerPlugin
                 '{DAV:}getcontentlength',
                 '{DAV:}getlastmodified',
             ]);
+
+            $html .= "<section><h1>Nodes (" . count($subNodes) . ")</h1>\n";
+            $html .= '<table class="nodeTable">';
 
             foreach ($subNodes as $subPath => $subProps) {
                 $subNode = $this->server->tree->getNodeForPath($subPath);
@@ -322,9 +322,9 @@ class Plugin extends DAV\ServerPlugin
             }
 
             $html .= '</table>';
+            $html .= '</section>';
         }
 
-        $html .= '</section>';
         $html .= '<section><h1>Properties</h1>';
         $html .= '<table class="propTable">';
 

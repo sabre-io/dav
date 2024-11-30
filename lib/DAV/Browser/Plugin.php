@@ -608,8 +608,15 @@ HTML;
             ? (in_array('{DAV:}collection', $b['{DAV:}resourcetype']->getValue()))
             : false;
 
-        // If same type, sort alphabetically by filename:
         if ($typeA === $typeB) {
+            $lastModifiedA = $a['{DAV:}getlastmodified'] ? $a['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
+            $lastModifiedB = $b['{DAV:}getlastmodified'] ? $b['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
+
+            if ($lastModifiedA !== $lastModifiedB) {
+                return $lastModifiedB <=> $lastModifiedA; // Descending order
+            }
+
+            // If same type and last modified datetime, sort alphabetically by filename:
             return strnatcasecmp($a['displayPath'], $b['displayPath']);
         }
 

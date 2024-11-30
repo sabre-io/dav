@@ -590,8 +590,8 @@ HTML;
     }
 
     /**
-     * Sort helper function: compares two directory entries based on type and
-     * display name. Collections sort above other types.
+     * Sort helper function: compares two directory entries based on type, last modified date
+     * and display name. Collections sort above other types.
      *
      * @param array $a
      * @param array $b
@@ -609,8 +609,8 @@ HTML;
             : false;
 
         if ($typeA === $typeB) {
-            $lastModifiedA = $a['{DAV:}getlastmodified'] ? $a['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
-            $lastModifiedB = $b['{DAV:}getlastmodified'] ? $b['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
+            $lastModifiedA = isset($a['{DAV:}getlastmodified']) ? $a['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
+            $lastModifiedB = isset($b['{DAV:}getlastmodified']) ? $b['{DAV:}getlastmodified']->getTime()->getTimestamp() : 0;
 
             if ($lastModifiedA !== $lastModifiedB) {
                 return $lastModifiedB <=> $lastModifiedA; // Descending order

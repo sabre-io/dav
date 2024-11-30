@@ -262,6 +262,24 @@ class Plugin extends DAV\ServerPlugin
 
         $node = $this->server->tree->getNodeForPath($path);
 
+        $subNodes = null;
+        $numSubNodes = 0;
+        $maxNodesAtTopSection = 20;
+        if ($node instanceof DAV\ICollection) {
+            $subNodes = $this->server->getPropertiesForChildren($path, [
+                '{DAV:}displayname',
+                '{DAV:}resourcetype',
+                '{DAV:}getcontenttype',
+                '{DAV:}getcontentlength',
+                '{DAV:}getlastmodified',
+            ]);
+            $numSubNodes = count($subNodes);
+            if ($numSubNodes && $numSubNodes <= $maxNodesAtTopSection) {
+               $html .= $this->generateNodesSection($subNodes, $numSubNodes);
+               $numSubNodes = 0;
+            }
+        }
+
         $html .= '<section><h1>Properties</h1>';
         $html .= '<table class="propTable">';
 
@@ -295,74 +313,81 @@ class Plugin extends DAV\ServerPlugin
             $html .= "</section>\n";
         }
 
-        if ($node instanceof DAV\ICollection) {
-            $subNodes = $this->server->getPropertiesForChildren($path, [
-                '{DAV:}displayname',
-                '{DAV:}resourcetype',
-                '{DAV:}getcontenttype',
-                '{DAV:}getcontentlength',
-                '{DAV:}getlastmodified',
-            ]);
-
-            $html .= "<section><h1>Nodes (" . count($subNodes) . ")</h1>\n";
-            $html .= '<table class="nodeTable">';
-
-            foreach ($subNodes as $subPath => $subProps) {
-                $subNode = $this->server->tree->getNodeForPath($subPath);
-                $fullPath = $this->server->getBaseUri().HTTP\encodePath($subPath);
-                list(, $displayPath) = Uri\split($subPath);
-
-                $subNodes[$subPath]['subNode'] = $subNode;
-                $subNodes[$subPath]['fullPath'] = $fullPath;
-                $subNodes[$subPath]['displayPath'] = $displayPath;
-            }
-            uasort($subNodes, [$this, 'compareNodes']);
-
-            foreach ($subNodes as $subProps) {
-                $type = [
-                    'string' => 'Unknown',
-                    'icon' => 'cog',
-                ];
-                if (isset($subProps['{DAV:}resourcetype'])) {
-                    $type = $this->mapResourceType($subProps['{DAV:}resourcetype']->getValue(), $subProps['subNode']);
-                }
-
-                $html .= '<tr>';
-                $html .= '<td class="nameColumn"><a href="'.$this->escapeHTML($subProps['fullPath']).'"><span class="oi" data-glyph="'.$this->escapeHTML($type['icon']).'"></span> '.$this->escapeHTML($subProps['displayPath']).'</a></td>';
-                $html .= '<td class="typeColumn">'.$this->escapeHTML($type['string']).'</td>';
-                $html .= '<td>';
-                if (isset($subProps['{DAV:}getcontentlength'])) {
-                    $html .= $this->escapeHTML($subProps['{DAV:}getcontentlength'].' bytes');
-                }
-                $html .= '</td><td>';
-                if (isset($subProps['{DAV:}getlastmodified'])) {
-                    $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
-                    $html .= $this->escapeHTML($lastMod->format('F j, Y, g:i a'));
-                }
-                $html .= '</td><td>';
-                if (isset($subProps['{DAV:}displayname'])) {
-                    $html .= $this->escapeHTML($subProps['{DAV:}displayname']);
-                }
-                $html .= '</td>';
-
-                $buttonActions = '';
-                if ($subProps['subNode'] instanceof DAV\IFile) {
-                    $buttonActions = '<a href="'.$this->escapeHTML($subProps['fullPath']).'?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
-                }
-                $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);
-
-                $html .= '<td>'.$buttonActions.'</td>';
-                $html .= '</tr>';
-            }
-
-            $html .= '</table>';
-            $html .= '</section>';
+        // If there are nodes and they are more than the max number to show at the top of the page
+        if ($numSubNodes) {
+            $html .= $this->generateNodesSection($subNodes, $numSubNodes);
         }
 
         $html .= $this->generateFooter();
 
         $this->server->httpResponse->setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self';");
 
+        return $html;
+    }
+
+    /**
+     * Generates the Nodes section block of HTML.
+     *
+     * @param array $subNodes
+     * @param int $numSubNodes
+     *
+     * @return string
+     */
+    protected function generateNodesSection($subNodes, $numSubNodes)
+    {
+        $html = "<section><h1>Nodes (" . $numSubNodes . ")</h1>\n";
+        $html .= '<table class="nodeTable">';
+
+        foreach ($subNodes as $subPath => $subProps) {
+            $subNode = $this->server->tree->getNodeForPath($subPath);
+            $fullPath = $this->server->getBaseUri().HTTP\encodePath($subPath);
+            list(, $displayPath) = Uri\split($subPath);
+
+            $subNodes[$subPath]['subNode'] = $subNode;
+            $subNodes[$subPath]['fullPath'] = $fullPath;
+            $subNodes[$subPath]['displayPath'] = $displayPath;
+        }
+        uasort($subNodes, [$this, 'compareNodes']);
+
+        foreach ($subNodes as $subProps) {
+            $type = [
+                'string' => 'Unknown',
+                'icon' => 'cog',
+            ];
+            if (isset($subProps['{DAV:}resourcetype'])) {
+                $type = $this->mapResourceType($subProps['{DAV:}resourcetype']->getValue(), $subProps['subNode']);
+            }
+
+            $html .= '<tr>';
+            $html .= '<td class="nameColumn"><a href="'.$this->escapeHTML($subProps['fullPath']).'"><span class="oi" data-glyph="'.$this->escapeHTML($type['icon']).'"></span> '.$this->escapeHTML($subProps['displayPath']).'</a></td>';
+            $html .= '<td class="typeColumn">'.$this->escapeHTML($type['string']).'</td>';
+            $html .= '<td>';
+            if (isset($subProps['{DAV:}getcontentlength'])) {
+                $html .= $this->escapeHTML($subProps['{DAV:}getcontentlength'].' bytes');
+            }
+            $html .= '</td><td>';
+            if (isset($subProps['{DAV:}getlastmodified'])) {
+                $lastMod = $subProps['{DAV:}getlastmodified']->getTime();
+                $html .= $this->escapeHTML($lastMod->format('F j, Y, g:i a'));
+            }
+            $html .= '</td><td>';
+            if (isset($subProps['{DAV:}displayname'])) {
+                $html .= $this->escapeHTML($subProps['{DAV:}displayname']);
+            }
+            $html .= '</td>';
+
+            $buttonActions = '';
+            if ($subProps['subNode'] instanceof DAV\IFile) {
+                $buttonActions = '<a href="'.$this->escapeHTML($subProps['fullPath']).'?sabreAction=info"><span class="oi" data-glyph="info"></span></a>';
+            }
+            $this->server->emit('browserButtonActions', [$subProps['fullPath'], $subProps['subNode'], &$buttonActions]);
+
+            $html .= '<td>'.$buttonActions.'</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</table>';
+        $html .= '</section>';
         return $html;
     }
 

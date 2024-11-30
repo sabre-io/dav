@@ -261,6 +261,40 @@ class Plugin extends DAV\ServerPlugin
         $html = $this->generateHeader($path ?: '/', $path);
 
         $node = $this->server->tree->getNodeForPath($path);
+
+        $html .= '<section><h1>Properties</h1>';
+        $html .= '<table class="propTable">';
+
+        // Allprops request
+        $propFind = new PropFindAll($path);
+        $properties = $this->server->getPropertiesByNode($propFind, $node);
+
+        $properties = $propFind->getResultForMultiStatus()[200];
+
+        foreach ($properties as $propName => $propValue) {
+            if (!in_array($propName, $this->uninterestingProperties)) {
+                $html .= $this->drawPropertyRow($propName, $propValue);
+            }
+        }
+
+        $html .= '</table>';
+        $html .= '</section>';
+
+        /* Start of generating actions */
+
+        $output = '';
+        if ($this->enablePost) {
+            $this->server->emit('onHTMLActionsPanel', [$node, &$output, $path]);
+        }
+
+        if ($output) {
+            $html .= '<section><h1>Actions</h1>';
+            $html .= "<div class=\"actions\">\n";
+            $html .= $output;
+            $html .= "</div>\n";
+            $html .= "</section>\n";
+        }
+
         if ($node instanceof DAV\ICollection) {
             $subNodes = $this->server->getPropertiesForChildren($path, [
                 '{DAV:}displayname',
@@ -323,39 +357,6 @@ class Plugin extends DAV\ServerPlugin
 
             $html .= '</table>';
             $html .= '</section>';
-        }
-
-        $html .= '<section><h1>Properties</h1>';
-        $html .= '<table class="propTable">';
-
-        // Allprops request
-        $propFind = new PropFindAll($path);
-        $properties = $this->server->getPropertiesByNode($propFind, $node);
-
-        $properties = $propFind->getResultForMultiStatus()[200];
-
-        foreach ($properties as $propName => $propValue) {
-            if (!in_array($propName, $this->uninterestingProperties)) {
-                $html .= $this->drawPropertyRow($propName, $propValue);
-            }
-        }
-
-        $html .= '</table>';
-        $html .= '</section>';
-
-        /* Start of generating actions */
-
-        $output = '';
-        if ($this->enablePost) {
-            $this->server->emit('onHTMLActionsPanel', [$node, &$output, $path]);
-        }
-
-        if ($output) {
-            $html .= '<section><h1>Actions</h1>';
-            $html .= "<div class=\"actions\">\n";
-            $html .= $output;
-            $html .= "</div>\n";
-            $html .= "</section>\n";
         }
 
         $html .= $this->generateFooter();

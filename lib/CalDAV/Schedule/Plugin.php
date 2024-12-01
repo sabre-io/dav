@@ -597,8 +597,9 @@ class Plugin extends ServerPlugin
     }
 
     /**
-     * This method looks at an old iCalendar object, a new iCalendar object and
-     * starts sending scheduling messages based on the changes.
+     * This method looks at an old iCalendar object, a new iCalendar object and:
+     * - starts sending scheduling messages based on the changes.
+     * - ensures the description fields are coherent
      *
      * A list of addresses needs to be specified, so the system knows who made
      * the update, because the behavior may be different based on if it's an
@@ -612,6 +613,8 @@ class Plugin extends ServerPlugin
      */
     protected function processICalendarChange($oldObject, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false)
     {
+        $this->ensureDescriptionConsistency($oldObject, $newObject, $modified);
+        
         $broker = $this->createITipBroker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);
 
@@ -1002,5 +1005,42 @@ class Plugin extends ServerPlugin
     protected function createITipBroker(): Broker
     {
         return new Broker();
+    }
+    
+    /**
+     * Ensure the alternate version of the description is removed if only the main one is changed
+     */
+    private function ensureDescriptionConsistency($oldObj, VCalendar $vCal, &$modified) {
+        if (!$oldObj) {
+            return; // No previous version to compare
+        }
+
+        $xAltDescPropName = "X-ALT-DESC";
+
+        // Get presence of description fields
+        $hasOldDescription = isset($oldObj->VTODO) && isset($oldObj->VTODO->DESCRIPTION);
+        $hasNewDescription = isset($vCal->VTODO) && isset($vCal->VTODO->DESCRIPTION);
+        $hasOldXAltDesc = isset($oldObj->VTODO) && isset($oldObj->VTODO->{$xAltDescPropName});
+        $hasNewXAltDesc = isset($vCal->VTODO) && isset($vCal->VTODO->{$xAltDescPropName});
+        $hasAllDesc = $hasOldDescription && $hasNewDescription && $hasOldXAltDesc && $hasNewXAltDesc;
+
+        // If all description fields are present, then verify consistency
+        if ($hasAllDesc) {
+            // Get descriptions
+            $oldDescription = (string) $oldObj->VTODO->DESCRIPTION;
+            $newDescription = (string) $vCal->VTODO->DESCRIPTION;
+            $oldXAltDesc = (string) $oldObj->VTODO->{$xAltDescPropName};
+            $newXAltDesc = (string) $vCal->VTODO->{$xAltDescPropName};
+
+            // Compare descriptions
+            $isSameDescription = $oldDescription === $newDescription;
+            $isSameXAltDesc = $oldXAltDesc === $newXAltDesc;
+
+            // If the description changed, but not the alternate one, then delete the latest
+            if (!$isSameDescription && $isSameXAltDesc) {
+                unset($vCal->VTODO->{$xAltDescPropName});
+                $modified = true;
+            }
+        }
     }
 }

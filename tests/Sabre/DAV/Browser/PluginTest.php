@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Browser;
 
+use Sabre\DAV\Xml\Property\GetLastModified;
+use DateTime;
 use Sabre\DAV;
 use Sabre\HTTP;
 
@@ -82,6 +84,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $body = $this->response->getBodyAsString();
         self::assertTrue(false !== strpos($body, '<title>/'), $body);
+        self::assertTrue(false !== strpos($body, 'Nodes (3)'), $body);
         self::assertTrue(false !== strpos($body, '<a href="/dir/">'));
         self::assertTrue(false !== strpos($body, '<span class="btn disabled">'));
     }
@@ -181,5 +184,42 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
+    }
+
+    public function testCollectionNodesOrder()
+    {
+        $compareNodes = new \ReflectionMethod($this->plugin, 'compareNodes');
+        $compareNodes->setAccessible(true);
+
+        $day1 = new GetLastModified(new DateTime('2000-01-01'));
+        $day2 = new GetLastModified(new DateTime('2000-01-02'));
+
+        $file1 = [
+            '{DAV:}getlastmodified' => $day1,
+            'displayPath' => 'file1'
+        ];
+        $file1_clon = [
+            '{DAV:}getlastmodified' => $day1,
+            'displayPath' => 'file1'
+        ];
+        $file2 = [
+            '{DAV:}getlastmodified' => $day1,
+            'displayPath' => 'file2'
+        ];
+        $file2_newer = [
+            '{DAV:}getlastmodified' => $day2,
+            'displayPath' => 'file2'
+        ];
+
+        // Case 1: Newer node should come before older node
+        self::assertEquals(-1, $compareNodes->invoke($this->plugin, $file2_newer, $file2));
+        self::assertEquals(1, $compareNodes->invoke($this->plugin, $file1, $file2_newer));
+
+        // Case 2: Nodes with same lastmodified but different displayPath (alphabetically)
+        self::assertEquals(-1, $compareNodes->invoke($this->plugin, $file1_clon, $file2));
+        self::assertEquals(1, $compareNodes->invoke($this->plugin, $file2, $file1));
+
+        // Case 3: Nodes with same lastmodified and same displayPath
+        self::assertEquals(0, $compareNodes->invoke($this->plugin, $file1, $file1_clon));
     }
 }

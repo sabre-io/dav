@@ -20,5 +20,3 @@ ADD run-tests.sh .
 RUN chmod +x run-tests.sh
 
 ENTRYPOINT ["/run-tests.sh"]
-
-# docker run -ti -v /mnt/d/temp/repos/sabre-dav:/src:rw sabre-dav-unit-tests:latest /bin/bash

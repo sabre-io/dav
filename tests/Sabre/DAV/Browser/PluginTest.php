@@ -87,6 +87,19 @@ class PluginTest extends DAV\AbstractServerTestCase
         self::assertTrue(false !== strpos($body, 'Nodes (3)'), $body);
         self::assertTrue(false !== strpos($body, '<a href="/dir/">'));
         self::assertTrue(false !== strpos($body, '<span class="btn disabled">'));
+
+        $dom = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadXML($body);
+        $xpath = new \DOMXPath($dom);
+
+        $sections = $xpath->query('//section');
+
+        $firstSectionContainsNodes = false;
+        if ($sections->length > 0) {
+            $firstH1 = $xpath->query('.//h1[text()="Nodes (3)"]', $sections->item(0));
+            $firstSectionContainsNodes = $firstH1->length > 0;
+        }
+        self::assertTrue($firstSectionContainsNodes, 'First section is listing Nodes (3)');
     }
 
     public function testGETPassthru()
@@ -185,6 +198,38 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         self::assertEquals(404, $this->response->getStatus(), 'Error: '.$this->response->getBodyAsString());
     }
+
+    public function testCollectionWithManyNodesGetSubdir()
+    {
+        $dir = $this->server->tree->getNodeForPath('dir2');
+        $dir->createDirectory('subdir');
+        $maxNodes = 20; // directory + 20 files
+        for ($i = 1; $i <= $maxNodes; $i++) {
+            $dir->createFile("file$i");
+        }
+
+        $request = new HTTP\Request('GET', '/dir2');
+        $this->server->httpRequest = ($request);
+        $this->server->exec();
+
+        $body = $this->response->getBodyAsString();
+        self::assertTrue(false !== strpos($body, 'Nodes (21)'), $body);
+        self::assertTrue(false !== strpos($body, '<a href="/dir2/subdir/">'));
+
+        $dom = new \DOMDocument('1.0', 'utf-8');
+        $dom->loadXML($body);
+        $xpath = new \DOMXPath($dom);
+
+        $sections = $xpath->query('//section');
+
+        $lastSectionContainsNodes = false;
+        if ($sections->length > 1) {
+            $lastH1 = $xpath->query('.//h1[text()="Nodes (21)"]', $sections->item($sections->length - 1));
+            $lastSectionContainsNodes = $lastH1->length > 0;
+        }
+        self::assertTrue($lastSectionContainsNodes, 'Last section is listing Nodes (21)');
+    }
+
 
     public function testCollectionNodesOrder()
     {

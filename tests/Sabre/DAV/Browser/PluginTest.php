@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Browser;
 
-use Sabre\DAV\Xml\Property\GetLastModified;
 use DateTime;
 use Sabre\DAV;
 use Sabre\HTTP;
+use Sabre\DAV\Xml\Property\GetLastModified;
 
 class PluginTest extends DAV\AbstractServerTestCase
 {
@@ -241,19 +241,19 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $file1 = [
             '{DAV:}getlastmodified' => $day1,
-            'displayPath' => 'file1'
+            'displayPath' => 'file1',
         ];
         $file1_clon = [
             '{DAV:}getlastmodified' => $day1,
-            'displayPath' => 'file1'
+            'displayPath' => 'file1',
         ];
         $file2 = [
             '{DAV:}getlastmodified' => $day1,
-            'displayPath' => 'file2'
+            'displayPath' => 'file2',
         ];
         $file2_newer = [
             '{DAV:}getlastmodified' => $day2,
-            'displayPath' => 'file2'
+            'displayPath' => 'file2',
         ];
 
         // Case 1: Newer node should come before older node

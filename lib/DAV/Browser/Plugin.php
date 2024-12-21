@@ -275,8 +275,8 @@ class Plugin extends DAV\ServerPlugin
             ]);
             $numSubNodes = count($subNodes);
             if ($numSubNodes && $numSubNodes <= $maxNodesAtTopSection) {
-               $html .= $this->generateNodesSection($subNodes, $numSubNodes);
-               $numSubNodes = 0;
+                $html .= $this->generateNodesSection($subNodes, $numSubNodes);
+                $numSubNodes = 0;
             }
         }
 
@@ -329,13 +329,13 @@ class Plugin extends DAV\ServerPlugin
      * Generates the Nodes section block of HTML.
      *
      * @param array $subNodes
-     * @param int $numSubNodes
+     * @param int   $numSubNodes
      *
      * @return string
      */
     protected function generateNodesSection($subNodes, $numSubNodes)
     {
-        $html = "<section><h1>Nodes (" . $numSubNodes . ")</h1>\n";
+        $html = '<section><h1>Nodes ('.$numSubNodes.")</h1>\n";
         $html .= '<table class="nodeTable">';
 
         foreach ($subNodes as $subPath => $subProps) {
@@ -388,6 +388,7 @@ class Plugin extends DAV\ServerPlugin
 
         $html .= '</table>';
         $html .= '</section>';
+
         return $html;
     }
 

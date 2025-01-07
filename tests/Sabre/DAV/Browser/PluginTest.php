@@ -6,8 +6,8 @@ namespace Sabre\DAV\Browser;
 
 use DateTime;
 use Sabre\DAV;
-use Sabre\HTTP;
 use Sabre\DAV\Xml\Property\GetLastModified;
+use Sabre\HTTP;
 
 class PluginTest extends DAV\AbstractServerTestCase
 {
@@ -204,7 +204,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $dir = $this->server->tree->getNodeForPath('dir2');
         $dir->createDirectory('subdir');
         $maxNodes = 20; // directory + 20 files
-        for ($i = 1; $i <= $maxNodes; $i++) {
+        for ($i = 1; $i <= $maxNodes; ++$i) {
             $dir->createFile("file$i");
         }
 
@@ -229,7 +229,6 @@ class PluginTest extends DAV\AbstractServerTestCase
         }
         self::assertTrue($lastSectionContainsNodes, 'Last section is listing Nodes (21)');
     }
-
 
     public function testCollectionNodesOrder()
     {

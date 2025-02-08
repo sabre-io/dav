@@ -86,7 +86,7 @@ class SharingPlugin extends DAV\ServerPlugin
         $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}share'] = \Sabre\CalDAV\Xml\Request\Share::class;
         $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}invite-reply'] = \Sabre\CalDAV\Xml\Request\InviteReply::class;
 
-        $this->server->on('propFind', [$this, 'propFindEarly']);
+        $this->server->on('propFind', [$this, 'propFindEarly'], 10);
         $this->server->on('propFind', [$this, 'propFindLate'], 150);
         $this->server->on('propPatch', [$this, 'propPatch'], 40);
         $this->server->on('method:POST', [$this, 'httpPost']);
@@ -105,6 +105,14 @@ class SharingPlugin extends DAV\ServerPlugin
                 return new Xml\Property\Invite(
                     $node->getInvites()
                 );
+            });
+
+            // Needs to be called before ACL
+            $propFind->handle('{DAV:}owner', function () use ($node) {
+                $shareAccess = $node->getShareAccess();
+                if ($shareAccess > 1) {
+                    return new \Sabre\DAV\Xml\Property\Href($node->getOwnerPrincipal() . '/');
+                }
             });
         }
     }

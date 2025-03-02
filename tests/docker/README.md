@@ -16,7 +16,10 @@ LOCAL
 
 - Goto **$local_repo_path/tests/docker** using a terminal
 - Run `docker compose up`
-- Run `docker run --rm -ti -v $local_repo_path:/test-dir/ sabre-dav-unit-tests`
+- Run either:
+    - `docker run --rm -ti -v $local_repo_path:/test-dir/ sabre-dav-unit-tests`
+    - `./run-local.sh`
+
 
 DEV
 ---

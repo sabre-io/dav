@@ -46,7 +46,8 @@ echo "Starting test container"
 
 src=/test-dir/
 if [ -d $src ]; then
-  echo "Using local volume" 
+  echo "Using local volume"
+  git config --global --add safe.directory /test-dir 
 else
   src=/src/
   echo "Using repository"

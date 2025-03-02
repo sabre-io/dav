@@ -1009,28 +1009,32 @@ class Plugin extends ServerPlugin
 
     /**
      * Ensure the alternate version of the description is removed if only the main one is changed.
+     * 
+     * @param VCalendar|string|null $oldObject
+     * @param \Sabre\VObject\Component\VCalendar $vCal
+     * @param bool                  $modified  a marker to indicate that the original object modified by this process
      */
-    private function ensureDescriptionConsistency($oldObj, VCalendar $vCal, &$modified)
+    private function ensureDescriptionConsistency($oldObject, VCalendar $vCal, &$modified)
     {
-        if (!$oldObj) {
+        if (!$oldObject) {
             return; // No previous version to compare
         }
 
         $xAltDescPropName = 'X-ALT-DESC';
 
         // Get presence of description fields
-        $hasOldDescription = isset($oldObj->VTODO) && isset($oldObj->VTODO->DESCRIPTION);
+        $hasOldDescription = isset($oldObject->VTODO) && isset($oldObject->VTODO->DESCRIPTION);
         $hasNewDescription = isset($vCal->VTODO) && isset($vCal->VTODO->DESCRIPTION);
-        $hasOldXAltDesc = isset($oldObj->VTODO) && isset($oldObj->VTODO->{$xAltDescPropName});
+        $hasOldXAltDesc = isset($oldObject->VTODO) && isset($oldObject->VTODO->{$xAltDescPropName});
         $hasNewXAltDesc = isset($vCal->VTODO) && isset($vCal->VTODO->{$xAltDescPropName});
         $hasAllDesc = $hasOldDescription && $hasNewDescription && $hasOldXAltDesc && $hasNewXAltDesc;
 
         // If all description fields are present, then verify consistency
         if ($hasAllDesc) {
             // Get descriptions
-            $oldDescription = (string) $oldObj->VTODO->DESCRIPTION;
+            $oldDescription = (string) $oldObject->VTODO->DESCRIPTION;
             $newDescription = (string) $vCal->VTODO->DESCRIPTION;
-            $oldXAltDesc = (string) $oldObj->VTODO->{$xAltDescPropName};
+            $oldXAltDesc = (string) $oldObject->VTODO->{$xAltDescPropName};
             $newXAltDesc = (string) $vCal->VTODO->{$xAltDescPropName};
 
             // Compare descriptions

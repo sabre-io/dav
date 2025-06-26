@@ -135,13 +135,13 @@ class Tree implements INodeByPath
     /**
      * Copies a file from path to another.
      *
-     * @param string     $sourcePath      The source location
-     * @param string     $destinationPath The full destination path
-     * @param int|string $depth           How much levle of children to copy.
-     *                                    The value can be 'infinity' or a positiv integer, including zero.
-     *                                    Zero means only copy the collection without children but with its properties.
+     * @param string $sourcePath      The source location
+     * @param string $destinationPath The full destination path
+     * @param int    $depth           How many levels of children to copy.
+     *                                The value can be 'infinity' (\Sabre\DAV\Server::DEPTH_INFINITY) or a positive integer, including zero.
+     *                                Zero means only copy the collection without children but with its properties.
      */
-    public function copy($sourcePath, $destinationPath, $depth = 'infinity')
+    public function copy($sourcePath, $destinationPath, int $depth = Server::DEPTH_INFINITY)
     {
         $sourceNode = $this->getNodeForPath($sourcePath);
 
@@ -182,7 +182,7 @@ class Tree implements INodeByPath
             }
             if (!$moveSuccess) {
                 // Move is a copy with depth = infinity and deleting the source afterwards
-                $this->copy($sourcePath, $destinationPath, 'infinity');
+                $this->copy($sourcePath, $destinationPath, Server::DEPTH_INFINITY);
                 $this->getNodeForPath($sourcePath)->delete();
             }
         }
@@ -310,10 +310,10 @@ class Tree implements INodeByPath
     /**
      * copyNode.
      *
-     * @param string     $destinationName
-     * @param int|string $depth           How many children of the node to copy
+     * @param string $destinationName
+     * @param int    $depth           How many children of the node to copy
      */
-    protected function copyNode(INode $source, ICollection $destinationParent, ?string $destinationName = null, $depth = 'infinity')
+    protected function copyNode(INode $source, ICollection $destinationParent, ?string $destinationName = null, int $depth = Server::DEPTH_INFINITY)
     {
         if ('' === (string) $destinationName) {
             $destinationName = $source->getName();
@@ -340,7 +340,7 @@ class Tree implements INodeByPath
             // Copy children if depth is not zero
             if (0 !== $depth) {
                 // Adjust next depth for children (keep 'infinity' or decrease)
-                $depth = 'infinity' === $depth ? 'infinity' : $depth - 1;
+                $depth = Server::DEPTH_INFINITY === $depth ? Server::DEPTH_INFINITY : $depth - 1;
                 $destination = $destinationParent->getChild($destinationName);
                 foreach ($source->getChildren() as $child) {
                     $this->copyNode($child, $destination, null, $depth);

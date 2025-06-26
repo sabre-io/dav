@@ -580,9 +580,10 @@ class Server implements LoggerAwareInterface, EmitterInterface
     /**
      * Returns the HTTP depth header.
      *
-     * This method returns the contents of the HTTP depth request header. If the depth header was 'infinity' it will return the Sabre\DAV\Server::DEPTH_INFINITY object
+     * This method returns the contents of the HTTP depth request header. If the depth header was 'infinity' it will return the Sabre\DAV\Server::DEPTH_INFINITY constant.
      * It is possible to supply a default depth value, which is used when the depth header has invalid content, or is completely non-existent
      *
+     * @param mixed $default default value to use if no header is set or has invalid value
      * @param mixed $default
      *
      * @return int
@@ -726,13 +727,14 @@ class Server implements LoggerAwareInterface, EmitterInterface
         }
         $destination = $this->calculateUri($request->getHeader('Destination'));
 
-        // Depth of inifinty is valid for MOVE and COPY. If it is not set the RFC requires to act like it was 'infinity'.
-        $depth = strtolower($request->getHeader('Depth') ?? 'infinity');
-        if ('infinity' !== $depth && is_numeric($depth)) {
+        // Depth of infinity is valid for MOVE and COPY. If it is not set the RFC requires to act like it was 'infinity'.
+        $depth = $request->getHeader('Depth') ?? 'infinity';
+        if ('infinity' === strtolower($depth)) {
+            $depth = self::DEPTH_INFINITY;
+        } elseif (!ctype_digit($depth) || ((int) $depth) < 0) {
+            throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positive integer');
+        } else {
             $depth = (int) $depth;
-            if ($depth < 0) {
-                throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positive number');
-            }
         }
 
         $overwrite = $request->getHeader('Overwrite') ?? 'T';

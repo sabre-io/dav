@@ -590,7 +590,7 @@ class CorePlugin extends ServerPlugin
         $moveInfo = $this->server->getCopyAndMoveInfo($request);
 
         // MOVE does only allow "infinity" every other header value is considered invalid
-        if ('infinity' !== $moveInfo['depth']) {
+        if (Server::DEPTH_INFINITY !== $moveInfo['depth']) {
             throw new BadRequest('The HTTP Depth header must only contain "infinity" for MOVE');
         }
 

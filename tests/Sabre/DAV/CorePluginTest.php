@@ -62,7 +62,7 @@ class CorePluginTest extends \PHPUnit\Framework\TestCase
 
         $server->expects($this->once())
             ->method('getCopyAndMoveInfo')
-            ->willReturn(['depth' => 'infinity', 'destinationExists' => true, 'destination' => 'dst']);
+            ->willReturn(['depth' => Server::DEPTH_INFINITY, 'destinationExists' => true, 'destination' => 'dst']);
         $corePlugin->httpMove($request, $response);
     }
 }

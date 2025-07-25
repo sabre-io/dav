@@ -234,6 +234,7 @@ class Plugin extends DAV\ServerPlugin
         }
 
         $this->lockNode($uri, $lockInfo);
+        $lockInfo->uri = urlencode($lockInfo->uri);
 
         $response->setHeader('Content-Type', 'application/xml; charset=utf-8');
         $response->setHeader('Lock-Token', '<opaquelocktoken:'.$lockInfo->token.'>');

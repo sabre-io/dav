@@ -512,11 +512,111 @@ HTML;
 </form>
 <form method="post" action="" enctype="multipart/form-data">
 <h3>Upload file</h3>
-<input type="hidden" name="sabreAction" value="put" />
-<label>Name (optional):</label> <input type="text" name="name" /><br />
-<label>File:</label> <input type="file" name="file" /><br />
-<input type="submit" value="upload" />
+Select one or more file(s), then you can upload.<BR>
+<form action="#" id="uploadFiles" onsubmit="uploadFiles(); return false">
+<label for="filesInput">File(s):</label><input id="filesInput" type="file" multiple /><br />
+<input type="submit" id="submit" disabled style="visibility:hidden;" value="upload" />
+<div id="uploadProgress"></div>
 </form>
+<script>
+function updateProgress(text) {
+  document.getElementById("uploadProgress").innerHTML = text;
+}
+
+var uploads = [];
+
+function uploadFiles() {
+  document.forms["uploadFiles"].filesInput.disabled = true;
+  document.forms["uploadFiles"].submit.disabled = true;
+  document.forms["uploadFiles"].submit.style.visibility = "hidden";
+  var remoteURL = window.location.href.split('?')[0];
+  if (!remoteURL.endsWith("/")) { remoteURL = remoteURL + "/"; }
+  var files = document.forms["uploadFiles"].filesInput.files;
+  var nrFiles = files.length;
+  for (i = 0; i < files.length; i++) {
+    var file = files[i];
+    var xhr = new XMLHttpRequest();
+    uploads.push(xhr);
+    xhr.upload.url = remoteURL + encodeURIComponent(file.name);
+    xhr.upload.nr = i;
+    xhr.upload.filename = file;
+    xhr.upload.progressBar = document.getElementById("file_" + i.toString());
+    xhr.upload.statusBar = document.getElementById("status_file_" + i.toString());
+    xhr.upload.onprogress = function (e) {
+      if (e.lengthComputable) {
+        this.progressBar.max = e.total;
+        this.progressBar.value = e.loaded;
+      }
+    }
+    xhr.upload.onloadstart = function (e) { this.progressBar.value = 0; }
+    xhr.upload.onloadend = function (e) { this.progressBar.value = e.loaded; }
+    xhr.onload = function() {
+      nrFiles--;
+      if (this.readyState == 4 && (this.status == 201 || this.status == 204)) {
+        this.upload.statusBar.style = "color:green";
+        if (this.status == 201) {
+          this.upload.statusBar.innerHTML = " Uploaded";
+        } else {
+          this.upload.statusBar.innerHTML = " Updated";
+        } 
+      } else if (this.status == 0) {
+        this.upload.statusBar.style = "color:red";
+        this.upload.statusBar.innerHTML = " Canceled";
+      } else {
+        this.upload.statusBar.style = "color:red";
+        this.upload.statusBar.innerHTML = " ERROR: " + this.status;
+      }
+      if (nrFiles == 0) {
+        setTimeout(function(){ location.reload(true); }, 1500);
+      }
+    }
+    xhr.onabort = function() {
+      this.upload.statusBar.style = "color:red";
+      this.upload.statusBar.innerHTML = " Canceled by user";
+    }
+    xhr.onerror = function() {
+      this.upload.statusBar.style = "color:red";
+      this.readyState = 0;
+      var button = "<button type=\"button\" onclick=\"sendFile(" + this.upload.nr + ")\">Retry</button>";
+      this.upload.statusBar.innerHTML = " ERROR: " + this.statusText + button;
+    }
+    xhr.ontimeout = function() {
+      console.log("An timeout occurred while transferring the file.");
+      console.log(this);
+    }
+    sendFile(xhr.upload.nr);
+  }
+}
+
+function sendFile(nr) {
+  var request = uploads[nr];
+  request.open("PUT", request.upload.url, true);
+  var button = "<button type=\"button\" id=\"cancel_" + nr.toString() + "\" onclick=\"abortUpload(" + nr.toString() + ")\">Cancel</button>";
+  request.upload.statusBar.innerHTML = button;
+  request.send(request.upload.filename);
+}
+
+function abortUpload(nr) { uploads[nr].abort(); }
+
+document.getElementById("filesInput").onchange = function() {
+  var fileTable = "<TABLE>";
+  if (this.files.length > 0) {
+    for (i = 0; i < this.files.length; i++) {
+      var file = this.files[i];
+      var progressBar = "file_" + i.toString();
+      var index = (i + 1).toString();
+      fileTable += "<TR><TD>" + index + ".) " +file.name + ":</TD><TD><progress id=\"" + progressBar + "\" value=\"0\"></progress><span id=\"status_" + progressBar + "\"></span></TD></TR>";
+    }
+    fileTable += "</TABLE>";
+    updateProgress(fileTable);
+    document.forms["uploadFiles"].submit.disabled = false;
+    document.forms["uploadFiles"].submit.style.visibility = "visible";
+  } else {
+    document.forms["uploadFiles"].submit.disabled = true;
+    document.forms["uploadFiles"].submit.style.visibility = "hidden";
+  }
+}
+</script>
 HTML;
     }
 

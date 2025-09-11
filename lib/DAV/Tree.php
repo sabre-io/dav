@@ -84,7 +84,7 @@ class Tree implements INodeByPath
 
             if ($node instanceof INodeByPath) {
                 $targetNode = $node->getNodeForPath(implode('/', $parts));
-                if ($targetNode instanceof Node) {
+                if ($targetNode instanceof INode) {
                     $node = $targetNode;
                     break;
                 }

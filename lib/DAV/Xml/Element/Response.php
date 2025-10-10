@@ -29,7 +29,7 @@ class Response implements Element
     protected $href;
 
     /**
-     * Propertylist, ordered by HTTP status code.
+     * Property list, ordered by HTTP status code.
      *
      * @var array
      */
@@ -124,7 +124,7 @@ class Response implements Element
         $writer->writeElement('{DAV:}href', $writer->contextUri.\Sabre\HTTP\encodePath($this->getHref()));
 
         $empty = true;
-        $httpStatus = $this->getHTTPStatus();
+        $httpStatus = $this->getHttpStatus();
 
         // Add propstat elements
         foreach ($this->getResponseProperties() as $status => $properties) {

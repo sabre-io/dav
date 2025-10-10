@@ -87,7 +87,7 @@ class AddressBookQueryReport implements XmlDeserializable
      *
      * @var string
      */
-    public $contentType = null;
+    public $contentType;
 
     /**
      * The version of vcard data that should be returned. Usually 3.0,
@@ -95,7 +95,7 @@ class AddressBookQueryReport implements XmlDeserializable
      *
      * @var string
      */
-    public $version = null;
+    public $version;
 
     /**
      * The deserialize method is called during xml parsing.
@@ -114,8 +114,6 @@ class AddressBookQueryReport implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
@@ -179,7 +177,7 @@ class AddressBookQueryReport implements XmlDeserializable
              * include the filter element, and we need to treat it as if no
              * filters are supplied
              */
-            //throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
+            // throw new BadRequest('The {' . Plugin::NS_CARDDAV . '}filter element is required for this request');
             $newProps['filters'] = [];
         }
 

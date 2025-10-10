@@ -78,8 +78,6 @@ class PropPatch implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
@@ -87,8 +85,8 @@ class PropPatch implements Element
 
         $elementMap = $reader->elementMap;
         $elementMap['{DAV:}prop'] = \Sabre\DAV\Xml\Element\Prop::class;
-        $elementMap['{DAV:}set'] = \Sabre\Xml\Element\KeyValue::class;
-        $elementMap['{DAV:}remove'] = \Sabre\Xml\Element\KeyValue::class;
+        $elementMap['{DAV:}set'] = Element\KeyValue::class;
+        $elementMap['{DAV:}remove'] = Element\KeyValue::class;
 
         $elems = $reader->parseInnerTree($elementMap);
 

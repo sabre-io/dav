@@ -20,7 +20,7 @@ class ServerSimpleTest extends AbstractServerTestCase
 
     public function testConstructInvalidArg()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(Exception::class);
         $server = new Server(1);
     }
 
@@ -71,7 +71,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals([
@@ -93,7 +93,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         $request = HTTP\Sapi::createFromServerArray($serverVars);
         $this->server->setBaseUri('/blabla/');
         self::assertEquals('/blabla/', $this->server->getBaseUri());
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals([
@@ -102,9 +102,9 @@ class ServerSimpleTest extends AbstractServerTestCase
             'Content-Length' => [13],
             'Last-Modified' => [HTTP\toDate(new \DateTime('@'.filemtime($filename)))],
             'ETag' => ['"'.sha1(fileinode($filename).filesize($filename).filemtime($filename)).'"'],
-            ],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         self::assertEquals(200, $this->response->status);
         self::assertEquals('Test contents', stream_get_contents($this->response->body));
@@ -189,7 +189,7 @@ class ServerSimpleTest extends AbstractServerTestCase
 
     public function testCalculateUriBreakout()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $uri = '/path1/';
 
         $this->server->setBaseUri('/path2/');
@@ -310,7 +310,7 @@ class ServerSimpleTest extends AbstractServerTestCase
      */
     public function testGuessBaseUriBadConfig()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(Exception::class);
         $serverVars = [
             'REQUEST_METHOD' => 'GET',
             'REQUEST_URI' => '/index.php/root/heyyy',
@@ -356,16 +356,16 @@ class ServerSimpleTest extends AbstractServerTestCase
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->exec();
 
         self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
-            ],
+        ],
             $this->response->getHeaders()
-         );
+        );
 
         self::assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
@@ -378,7 +378,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->httpRequest->setBody('<?xml version="1.0"?><bla:myreport xmlns:bla="http://www.rooftopsolutions.nl/NS"></bla:myreport>');
         $this->server->on('report', [$this, 'reportHandler']);
         $this->server->exec();
@@ -386,7 +386,7 @@ class ServerSimpleTest extends AbstractServerTestCase
         self::assertEquals([
             'X-Sabre-Version' => [Version::VERSION],
             'testheader' => ['testvalue'],
-            ],
+        ],
             $this->response->getHeaders()
         );
 

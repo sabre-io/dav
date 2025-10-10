@@ -51,8 +51,6 @@ interface BackendInterface
      *
      * @param string $principalUri
      * @param string $calendarUri
-     *
-     * @return mixed
      */
     public function createCalendar($principalUri, $calendarUri, array $properties);
 
@@ -67,15 +65,11 @@ interface BackendInterface
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param mixed $calendarId
      */
     public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch);
 
     /**
      * Delete a calendar and all its objects.
-     *
-     * @param mixed $calendarId
      */
     public function deleteCalendar($calendarId);
 
@@ -107,8 +101,6 @@ interface BackendInterface
      * used/fetched to determine these numbers. If both are specified the
      * amount of times this is needed is reduced by a great degree.
      *
-     * @param mixed $calendarId
-     *
      * @return array
      */
     public function getCalendarObjects($calendarId);
@@ -125,7 +117,6 @@ interface BackendInterface
      *
      * This method must return null if the object did not exist.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      *
      * @return array|null
@@ -139,8 +130,6 @@ interface BackendInterface
      * return all the calendar objects in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */
@@ -159,7 +148,6 @@ interface BackendInterface
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *
@@ -180,7 +168,6 @@ interface BackendInterface
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *
@@ -193,7 +180,6 @@ interface BackendInterface
      *
      * The object uri is only the basename, or filename and not a full path.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      */
     public function deleteCalendarObject($calendarId, $objectUri);
@@ -242,8 +228,6 @@ interface BackendInterface
      * be found in Sabre\CalDAV\CalendarQueryFilter. This class is as correct
      * as possible, so it gives you a good idea on what type of stuff you need
      * to think of.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */

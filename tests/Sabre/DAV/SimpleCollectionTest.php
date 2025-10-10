@@ -29,7 +29,7 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
     public function testConstructBadParam()
     {
         $this->expectException('InvalidArgumentException');
-        new SimpleCollection('foo', [new \StdClass()]);
+        new SimpleCollection('foo', [new \stdClass()]);
     }
 
     public function testGetChildren()
@@ -42,7 +42,7 @@ class SimpleCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testGetChild404()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
+        $this->expectException(Exception\NotFound::class);
         $s = new SimpleCollection('foo', []);
         $s->getChild('404');
     }

@@ -29,8 +29,6 @@ abstract class AbstractBackend implements BackendInterface
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param mixed $calendarId
      */
     public function updateCalendar($calendarId, \Sabre\DAV\PropPatch $propPatch)
     {
@@ -43,8 +41,6 @@ abstract class AbstractBackend implements BackendInterface
      * return all the calendar objects in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */
@@ -99,8 +95,6 @@ abstract class AbstractBackend implements BackendInterface
      * be found in \Sabre\CalDAV\CalendarQueryFilter. This class is as correct
      * as possible, so it gives you a good idea on what type of stuff you need
      * to think of.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */

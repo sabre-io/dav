@@ -8,14 +8,14 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
 {
     public function testPut()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $file = new FileMock();
         $file->put('hi');
     }
 
     public function testGet()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $file = new FileMock();
         $file->get();
     }
@@ -40,14 +40,14 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testDelete()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $file = new FileMock();
         $file->delete();
     }
 
     public function testSetName()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $file = new FileMock();
         $file->setName('hi');
     }
@@ -82,21 +82,21 @@ class BasicNodeTest extends \PHPUnit\Framework\TestCase
 
     public function testGetChild404()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
+        $this->expectException(Exception\NotFound::class);
         $dir = new DirectoryMock();
         $file = $dir->getChild('blabla');
     }
 
     public function testCreateFile()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $dir = new DirectoryMock();
         $dir->createFile('hello', 'data');
     }
 
     public function testCreateDirectory()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(Exception\Forbidden::class);
         $dir = new DirectoryMock();
         $dir->createDirectory('hello');
     }

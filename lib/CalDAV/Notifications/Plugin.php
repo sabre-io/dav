@@ -31,7 +31,7 @@ class Plugin extends ServerPlugin
     /**
      * This is the namespace for the proprietary calendarserver extensions.
      */
-    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
+    public const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
      * Reference to the main server object.
@@ -68,7 +68,7 @@ class Plugin extends ServerPlugin
         $server->on('propFind', [$this, 'propFind']);
 
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
-        $server->resourceTypeMapping[\Sabre\CalDAV\Notifications\ICollection::class] = '{'.self::NS_CALENDARSERVER.'}notification';
+        $server->resourceTypeMapping[ICollection::class] = '{'.self::NS_CALENDARSERVER.'}notification';
 
         array_push($server->protectedProperties,
             '{'.self::NS_CALENDARSERVER.'}notification-URL',

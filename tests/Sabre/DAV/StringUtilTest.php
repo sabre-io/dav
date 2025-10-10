@@ -74,13 +74,13 @@ class StringUtilTest extends \PHPUnit\Framework\TestCase
 
     public function testBadCollation()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(Exception\BadRequest::class);
         StringUtil::textMatch('foobar', 'foo', 'blabla', 'contains');
     }
 
     public function testBadMatchType()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(Exception\BadRequest::class);
         StringUtil::textMatch('foobar', 'foo', 'i;octet', 'booh');
     }
 

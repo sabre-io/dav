@@ -55,7 +55,7 @@ class Plugin extends DAV\ServerPlugin
     {
         $this->server = $server;
 
-        $this->server->xml->elementMap['{DAV:}lockinfo'] = \Sabre\DAV\Xml\Request\Lock::class;
+        $this->server->xml->elementMap['{DAV:}lockinfo'] = DAV\Xml\Request\Lock::class;
 
         $server->on('method:LOCK', [$this, 'httpLock']);
         $server->on('method:UNLOCK', [$this, 'httpUnlock']);
@@ -353,7 +353,7 @@ class Plugin extends DAV\ServerPlugin
 
         if ($header) {
             if (0 === stripos($header, 'second-')) {
-                $header = (int) (substr($header, 7));
+                $header = (int) substr($header, 7);
             } elseif (0 === stripos($header, 'infinite')) {
                 $header = LockInfo::TIMEOUT_INFINITE;
             } else {
@@ -387,8 +387,6 @@ class Plugin extends DAV\ServerPlugin
      * In addition, it will also ensure that it checks any missing lokens that
      * must be present in the request, and reject requests without the proper
      * tokens.
-     *
-     * @param mixed $conditions
      */
     public function validateTokens(RequestInterface $request, &$conditions)
     {
@@ -432,7 +430,7 @@ class Plugin extends DAV\ServerPlugin
                 ));
                 break;
             case 'LOCK':
-                //Temporary measure.. figure out later why this is needed
+                // Temporary measure.. figure out later why this is needed
                 // Here we basically ignore all incoming tokens...
                 foreach ($conditions as $ii => $condition) {
                     foreach ($condition['tokens'] as $jj => $token) {

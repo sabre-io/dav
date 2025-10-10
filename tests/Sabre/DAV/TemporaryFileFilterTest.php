@@ -19,7 +19,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
     {
         $request = new HTTP\Request('PUT', '/testput.txt', [], 'Testing new file');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals('', $this->response->getBodyAsString());
@@ -34,7 +34,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
         // mimicking an OS/X resource fork
         $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals('', $this->response->getBodyAsString());
@@ -51,7 +51,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
         // mimicking an OS/X resource fork
         $request = new HTTP\Request('PUT', '/._testput.txt', ['If-None-Match' => '*'], 'Testing new file');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals('', $this->response->getBodyAsString());
@@ -75,7 +75,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
     {
         // mimicking an OS/X resource fork
         $request = new HTTP\Request('PUT', '/._testput.txt', [], 'Testing new file');
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals('', $this->response->getBodyAsString());
@@ -128,7 +128,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
     </D:owner>
 </D:lockinfo>');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals(201, $this->response->status);
@@ -181,7 +181,7 @@ class TemporaryFileFilterTest extends AbstractServerTestCase
 
         $request = new HTTP\Request('PROPFIND', '/._testput.txt');
 
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         $bodyAsString = $this->response->getBodyAsString();

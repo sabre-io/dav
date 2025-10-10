@@ -32,7 +32,7 @@
     },
     "require-dev" : {
         "ext-sqlite3": "*",
-        "friendsofphp/php-cs-fixer": "^2.19",
+        "friendsofphp/php-cs-fixer": "^3.64",
         "monolog/monolog": "^2.9",
         "phpstan/phpstan": "^1.11",
         "phpstan/phpstan-phpunit": "^1.4",

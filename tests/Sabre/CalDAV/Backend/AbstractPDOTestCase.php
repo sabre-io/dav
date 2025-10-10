@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Sabre\CalDAV;
 use Sabre\DAV;
@@ -87,7 +86,7 @@ abstract class AbstractPDOTestCase extends TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -133,7 +132,7 @@ abstract class AbstractPDOTestCase extends TestCase
         $this->expectException('InvalidArgumentException');
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -152,7 +151,7 @@ abstract class AbstractPDOTestCase extends TestCase
     {
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
         $propPatch = new PropPatch([
@@ -208,10 +207,10 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarIncorrectComponentSet()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $backend = new PDO($this->pdo);
 
-        //Creating a new calendar
+        // Creating a new calendar
         $newId = $backend->createCalendar('principals/user2', 'somerandomid', [
             '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set' => 'blabla',
         ]);
@@ -309,7 +308,7 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarObjectNoComponent()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
@@ -769,8 +768,8 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120103'),
-                        'end' => new DateTime('20120104'),
+                        'start' => new \DateTime('20120103'),
+                        'end' => new \DateTime('20120104'),
                     ],
                 ],
             ],
@@ -800,7 +799,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120102'),
+                        'start' => new \DateTime('20120102'),
                         'end' => null,
                     ],
                 ],
@@ -831,7 +830,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'start' => new DateTime('20120102'),
+                        'start' => new \DateTime('20120102'),
                     ],
                 ],
             ],
@@ -861,7 +860,7 @@ abstract class AbstractPDOTestCase extends TestCase
                     'prop-filters' => [],
                     'is-not-defined' => false,
                     'time-range' => [
-                        'end' => new DateTime('20120102'),
+                        'end' => new \DateTime('20120102'),
                     ],
                 ],
             ],
@@ -1000,7 +999,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1025,7 +1024,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testCreateSubscriptionFail()
     {
-        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
+        $this->expectException(DAV\Exception\Forbidden::class);
         $props = [
         ];
 
@@ -1041,7 +1040,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1053,7 +1052,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
         ];
 
-        $propPatch = new DAV\PropPatch($newProps);
+        $propPatch = new PropPatch($newProps);
         $backend->updateSubscription(1, $propPatch);
         $result = $propPatch->commit();
 
@@ -1083,14 +1082,14 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
         $backend = new PDO($this->pdo);
         $backend->createSubscription('principals/user1', 'sub1', $props);
 
-        $propPatch = new DAV\PropPatch([
+        $propPatch = new PropPatch([
             '{DAV:}displayname' => 'new displayname',
             '{http://calendarserver.org/ns/}source' => new Href('http://example.org/cal2.ics'),
             '{DAV:}unknown' => 'foo',
@@ -1114,7 +1113,7 @@ abstract class AbstractPDOTestCase extends TestCase
             '{http://apple.com/ns/ical/}refreshrate' => 'P1W',
             '{http://apple.com/ns/ical/}calendar-color' => '#FF00FFFF',
             '{http://calendarserver.org/ns/}subscribed-strip-todos' => true,
-            //'{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
+            // '{http://calendarserver.org/ns/}subscribed-strip-alarms' => true,
             '{http://calendarserver.org/ns/}subscribed-strip-attachments' => true,
         ];
 
@@ -1510,7 +1509,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testSetPublishStatus()
     {
-        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
+        $this->expectException(DAV\Exception\NotImplemented::class);
         $backend = new PDO($this->pdo);
         $backend->setPublishStatus([1, 1], true);
     }

@@ -69,7 +69,7 @@ XML;
         ];
 
         $elementMap = [
-            '{DAV:}foo' => \Sabre\DAV\Xml\Property\Href::class,
+            '{DAV:}foo' => Href::class,
         ];
 
         self::assertDecodeProp($input, $expected, $elementMap);
@@ -131,7 +131,7 @@ XML;
         $expected = [];
 
         $elementMap = [
-            '{DAV:}foo' => new \StdClass(),
+            '{DAV:}foo' => new \stdClass(),
         ];
 
         self::assertDecodeProp($input, $expected, $elementMap);
@@ -139,7 +139,7 @@ XML;
 
     public function assertDecodeProp($input, array $expected, array $elementMap = [])
     {
-        $elementMap['{DAV:}root'] = \Sabre\DAV\Xml\Element\Prop::class;
+        $elementMap['{DAV:}root'] = Prop::class;
 
         $result = $this->parse($input, $elementMap);
         self::assertIsArray($result);

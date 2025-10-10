@@ -38,7 +38,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $card = $this->ab->getChild('card1');
-        self::assertInstanceOf(\Sabre\CardDAV\Card::class, $card);
+        self::assertInstanceOf(Card::class, $card);
         self::assertEquals('card1', $card->getName());
     }
 

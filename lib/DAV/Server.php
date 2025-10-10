@@ -31,12 +31,12 @@ class Server implements LoggerAwareInterface, EmitterInterface
     /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree.
      */
-    const DEPTH_INFINITY = -1;
+    public const DEPTH_INFINITY = -1;
 
     /**
      * XML namespace for all SabreDAV related elements.
      */
-    const NS_SABREDAV = 'http://sabredav.org/ns';
+    public const NS_SABREDAV = 'http://sabredav.org/ns';
 
     /**
      * The tree object.
@@ -50,7 +50,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @var string
      */
-    protected $baseUri = null;
+    protected $baseUri;
 
     /**
      * httpResponse.
@@ -152,7 +152,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var array
      */
     public $resourceTypeMapping = [
-        \Sabre\DAV\ICollection::class => '{DAV:}collection',
+        ICollection::class => '{DAV:}collection',
     ];
 
     /**
@@ -552,9 +552,9 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @param string $uri
      *
-     * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
-     *
      * @return string
+     *
+     * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
      */
     public function calculateUri($uri)
     {
@@ -582,8 +582,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * This method returns the contents of the HTTP depth request header. If the depth header was 'infinity' it will return the Sabre\DAV\Server::DEPTH_INFINITY object
      * It is possible to supply a default depth value, which is used when the depth header has invalid content, or is completely non-existent
-     *
-     * @param mixed $default
      *
      * @return int
      */
@@ -706,6 +704,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *   * destination - Destination path
      *   * destinationExists - Whether or not the destination is an existing url (and should therefore be overwritten)
      *
+     * @return array
+     *
      * @throws Exception\BadRequest           upon missing or broken request headers
      * @throws Exception\UnsupportedMediaType when trying to copy into a
      *                                        non-collection
@@ -715,8 +715,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *                                        identical
      * @throws Exception\Conflict             when trying to copy a node into its own
      *                                        subtree
-     *
-     * @return array
      */
     public function getCopyAndMoveInfo(RequestInterface $request)
     {
@@ -877,8 +875,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
-     *
-     * @param array $yieldFirst
      *
      * @return \Traversable
      */
@@ -1651,9 +1647,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
         return $w->outputMemory();
     }
 
-    /**
-     * @param $fileProperties
-     */
     private function writeMultiStatus(Writer $w, $fileProperties, bool $strip404s)
     {
         $w->contextUri = $this->baseUri;

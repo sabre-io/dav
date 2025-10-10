@@ -19,9 +19,9 @@ use Sabre\Xml\Writer;
  */
 class SystemStatus implements NotificationInterface
 {
-    const TYPE_LOW = 1;
-    const TYPE_MEDIUM = 2;
-    const TYPE_HIGH = 3;
+    public const TYPE_LOW = 1;
+    public const TYPE_MEDIUM = 2;
+    public const TYPE_HIGH = 3;
 
     /**
      * A unique id.

@@ -20,7 +20,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $client = new ClientMock([
             'baseUri' => '/',
         ]);
-        self::assertInstanceOf(\Sabre\DAV\ClientMock::class, $client);
+        self::assertInstanceOf(ClientMock::class, $client);
     }
 
     public function testConstructNoBaseUri()
@@ -172,7 +172,7 @@ XML;
 
         self::assertEquals([
             '/foo' => [
-            '{DAV:}displayname' => 'bar',
+                '{DAV:}displayname' => 'bar',
             ],
         ], $result);
 
@@ -250,8 +250,8 @@ XML;
 
         self::assertEquals([
             '/folder1' => [
-            '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
-            '{DAV:}displayname' => 'Folder1',
+                '{DAV:}resourcetype' => new Xml\Property\ResourceType('{DAV:}collection'),
+                '{DAV:}displayname' => 'Folder1',
             ],
             '/folder1/file1.txt' => [
                 '{DAV:}resourcetype' => null,

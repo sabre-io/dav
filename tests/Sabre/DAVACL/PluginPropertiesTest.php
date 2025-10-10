@@ -19,7 +19,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
                 'privilege' => '{DAV:}all',
             ],
         ]);
-        //Anyone can do anything
+        // Anyone can do anything
         $plugin->principalCollectionSet = [
             'principals1',
             'principals2',
@@ -37,7 +37,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]));
         self::assertArrayHasKey('{DAV:}principal-collection-set', $result[200]);
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $result[200]['{DAV:}principal-collection-set']);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $result[200]['{DAV:}principal-collection-set']);
 
         $expected = [
             'principals1/',
@@ -70,7 +70,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]));
         self::assertArrayHasKey('{DAV:}current-user-principal', $result[200]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Principal::class, $result[200]['{DAV:}current-user-principal']);
+        self::assertInstanceOf(Xml\Property\Principal::class, $result[200]['{DAV:}current-user-principal']);
         self::assertEquals(Xml\Property\Principal::UNAUTHENTICATED, $result[200]['{DAV:}current-user-principal']->getType());
 
         // This will force the login
@@ -81,7 +81,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]));
         self::assertArrayHasKey('{DAV:}current-user-principal', $result[200]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Principal::class, $result[200]['{DAV:}current-user-principal']);
+        self::assertInstanceOf(Xml\Property\Principal::class, $result[200]['{DAV:}current-user-principal']);
         self::assertEquals(Xml\Property\Principal::HREF, $result[200]['{DAV:}current-user-principal']->getType());
         self::assertEquals('principals/admin/', $result[200]['{DAV:}current-user-principal']->getHref());
     }
@@ -108,7 +108,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]));
         self::assertArrayHasKey('{DAV:}supported-privilege-set', $result[200]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\SupportedPrivilegeSet::class, $result[200]['{DAV:}supported-privilege-set']);
+        self::assertInstanceOf(Xml\Property\SupportedPrivilegeSet::class, $result[200]['{DAV:}supported-privilege-set']);
 
         $server = new DAV\Server();
 
@@ -188,7 +188,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]), 'The {DAV:}acl property did not return from the list. Full list: '.print_r($result, true));
         self::assertArrayHasKey('{DAV:}acl', $result[200]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\Acl::class, $result[200]['{DAV:}acl']);
+        self::assertInstanceOf(Xml\Property\Acl::class, $result[200]['{DAV:}acl']);
     }
 
     public function testACLRestrictions()
@@ -225,7 +225,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals(1, count($result[200]), 'The {DAV:}acl-restrictions property did not return from the list. Full list: '.print_r($result, true));
         self::assertArrayHasKey('{DAV:}acl-restrictions', $result[200]);
-        self::assertInstanceOf(\Sabre\DAVACL\Xml\Property\AclRestrictions::class, $result[200]['{DAV:}acl-restrictions']);
+        self::assertInstanceOf(Xml\Property\AclRestrictions::class, $result[200]['{DAV:}acl-restrictions']);
     }
 
     public function testAlternateUriSet()
@@ -237,8 +237,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend())
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([
@@ -257,7 +257,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertTrue(isset($result[200]));
         self::assertTrue(isset($result[200]['{DAV:}alternate-URI-set']));
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $result[200]['{DAV:}alternate-URI-set']);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $result[200]['{DAV:}alternate-URI-set']);
 
         self::assertEquals([], $result[200]['{DAV:}alternate-URI-set']->getHrefs());
     }
@@ -271,8 +271,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([
@@ -292,7 +292,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertTrue(isset($result[200]));
         self::assertTrue(isset($result[200]['{DAV:}principal-URL']));
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $result[200]['{DAV:}principal-URL']);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $result[200]['{DAV:}principal-URL']);
 
         self::assertEquals('principals/user/', $result[200]['{DAV:}principal-URL']->getHref());
     }
@@ -306,8 +306,8 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
         ];
 
         $fakeServer = new DAV\Server($tree);
-        //$plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
-        //$fakeServer->addPlugin($plugin);
+        // $plugin = new DAV\Auth\Plugin(new DAV\Auth\MockBackend());
+        // $fakeServer->addPlugin($plugin);
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         $plugin->setDefaultACL([
@@ -327,7 +327,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertTrue(isset($result[200]));
         self::assertTrue(isset($result[200]['{DAV:}group-member-set']));
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $result[200]['{DAV:}group-member-set']);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $result[200]['{DAV:}group-member-set']);
 
         self::assertEquals([], $result[200]['{DAV:}group-member-set']->getHrefs());
     }
@@ -360,7 +360,7 @@ class PluginPropertiesTest extends \PHPUnit\Framework\TestCase
 
         self::assertTrue(isset($result[200]));
         self::assertTrue(isset($result[200]['{DAV:}group-membership']));
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $result[200]['{DAV:}group-membership']);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $result[200]['{DAV:}group-membership']);
 
         self::assertEquals([], $result[200]['{DAV:}group-membership']->getHrefs());
     }

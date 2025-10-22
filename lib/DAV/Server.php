@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
+use Generator;
+use Iterator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\Event\EmitterInterface;
 use Sabre\Event\WildcardEmitterTrait;
 use Sabre\HTTP;
@@ -423,7 +426,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
     /**
      * Returns all plugins.
      *
-     * @return array
+     * @return ServerPlugin[]
      */
     public function getPlugins()
     {
@@ -942,21 +945,20 @@ class Server implements LoggerAwareInterface, EmitterInterface
     }
 
     /**
-     * Returns a list of properties for a given path.
+     * Returns an iterable of tuples, each containing an initialized PropFind object
+     * and its corresponding node, for the given $path. The node tree is traversed
+     * starting from the node at $path, according to the specified $depth.
      *
-     * The path that should be supplied should have the baseUrl stripped out
-     * The list of properties should be supplied in Clark notation. If the list is empty
-     * 'allprops' is assumed.
+     * Each PropFind represents a resource discovered during traversal but contains
+     * no property values. The objects are only initialized with the appropriate
+     * constructor parameters and are meant to be populated later by the property
+     * retrieval logic.
      *
-     * If a depth of 1 is requested child elements will also be returned.
+     * @return iterable<array{PropFind, INode}> Iterable of [PropFind, INode] tuples
      *
-     * @param string $path
-     * @param array  $propertyNames
-     * @param int    $depth
-     *
-     * @return \Iterator
+     * @throws NotFound when a node for $path cannot be found
      */
-    public function getPropertiesIteratorForPath($path, $propertyNames = [], $depth = 0)
+    public function generatePropFindsForPath($path, $propertyNames = [], $depth = 0): iterable
     {
         // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
         if (!$this->enablePropfindDepthInfinity && 0 != $depth) {
@@ -979,8 +981,22 @@ class Server implements LoggerAwareInterface, EmitterInterface
             $propFindRequests = $this->generatePathNodes(clone $propFind, current($propFindRequests));
         }
 
-        foreach ($propFindRequests as $propFindRequest) {
-            list($propFind, $node) = $propFindRequest;
+        return $propFindRequests;
+    }
+
+    /**
+     * Yields arrays representing multistatus results with all the discovered
+     * properties for the provided $propFindRequests.
+     *
+     * @see PropFind::getResultForMultiStatus()
+     */
+    public function getNodePropertiesGenerator(iterable $propFindRequests): Generator
+    {
+        /**
+         * @var PropFind $propFind
+         * @var INode    $node
+         */
+        foreach ($propFindRequests as [$propFind, $node]) {
             $r = $this->getPropertiesByNode($propFind, $node);
             if ($r) {
                 $result = $propFind->getResultForMultiStatus();
@@ -997,6 +1013,28 @@ class Server implements LoggerAwareInterface, EmitterInterface
                 yield $result;
             }
         }
+    }
+
+    /**
+     * Returns a list of properties for a given path.
+     *
+     * The path that should be supplied should have the baseUrl stripped out
+     * The list of properties should be supplied in Clark notation. If the list is empty
+     * 'allprops' is assumed.
+     *
+     * If a depth of 1 is requested child elements will also be returned.
+     *
+     * @param string $path
+     * @param array  $propertyNames
+     * @param int    $depth
+     *
+     * @return Iterator
+     */
+    public function getPropertiesIteratorForPath($path, $propertyNames = [], $depth = 0)
+    {
+        $propFinds = $this->generatePropFindsForPath($path, $propertyNames, $depth);
+
+        return $this->getNodePropertiesGenerator($propFinds);
     }
 
     /**

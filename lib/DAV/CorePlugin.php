@@ -304,11 +304,13 @@ class CorePlugin extends ServerPlugin
     public function httpPropFind(RequestInterface $request, ResponseInterface $response)
     {
         $propFindXml = $this->parseRequestedProperties($request);
-        $newProperties = $this->server->getPropertiesIteratorForPath(
+        $propFindRequests = $this->server->generatePropFindsForPath(
             $request->getPath(),
             $propFindXml->properties,
             $this->getDepth()
         );
+        $this->server->emit('beforePropertyResolution', [&$propFindRequests]);
+        $fileProperties = $this->server->getNodePropertiesGenerator($propFindRequests);
 
         // This is a multi-status response
         $response->setStatus(207);
@@ -328,7 +330,7 @@ class CorePlugin extends ServerPlugin
         $prefer = $this->server->getHTTPPrefer();
         $minimal = 'minimal' === $prefer['return'];
 
-        $data = $this->server->generateMultiStatus($newProperties, $minimal);
+        $data = $this->server->generateMultiStatus($fileProperties, $minimal);
         $response->setBody($data);
 
         // Sending back false will interrupt the event chain and tell the server
@@ -891,14 +893,14 @@ class CorePlugin extends ServerPlugin
     }
 
     /**
-     *  Parses the PROPFIND request body and returns a PropFind XML object.
+     * Parses the PROPFIND request body and returns a PropFind XML object.
      *
-     *  If the request body contains XML, it is parsed using the server's XML service
-     *  and must represent a {DAV:}propfind element. If the body is empty, a default
-     *  PropFind(XML) object is created that requests all properties.
+     * If the request body contains XML, it is parsed using the server's XML service
+     * and must represent a {DAV:}propfind element. If the body is empty, a default
+     * PropFind(XML) object is created that requests all properties.
      *
-     * @param RequestInterface $request
      * @return array|Xml\Request\PropFind|string
+     *
      * @throws BadRequest
      */
     public function parseRequestedProperties(RequestInterface $request)
@@ -916,13 +918,12 @@ class CorePlugin extends ServerPlugin
             $propFindXml->allProp = true;
             $propFindXml->properties = [];
         }
+
         return $propFindXml;
     }
 
     /**
      * Returns the appropriate value for depth from the HTTP request.
-     *
-     * @return int
      */
     protected function getDepth(): int
     {
@@ -931,6 +932,7 @@ class CorePlugin extends ServerPlugin
         if (!$this->server->enablePropfindDepthInfinity && 0 != $depth) {
             $depth = 1;
         }
+
         return $depth;
     }
 }

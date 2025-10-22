@@ -303,28 +303,12 @@ class CorePlugin extends ServerPlugin
      */
     public function httpPropFind(RequestInterface $request, ResponseInterface $response)
     {
-        $path = $request->getPath();
-
-        $requestBody = $request->getBodyAsString();
-        if (strlen($requestBody)) {
-            try {
-                $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
-            } catch (ParseException $e) {
-                throw new BadRequest($e->getMessage(), 0, $e);
-            }
-        } else {
-            $propFindXml = new Xml\Request\PropFind();
-            $propFindXml->allProp = true;
-            $propFindXml->properties = [];
-        }
-
-        $depth = $this->server->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
-        if (!$this->server->enablePropfindDepthInfinity && 0 != $depth) {
-            $depth = 1;
-        }
-
-        $newProperties = $this->server->getPropertiesIteratorForPath($path, $propFindXml->properties, $depth);
+        $propFindXml = $this->parseRequestedProperties($request);
+        $newProperties = $this->server->getPropertiesIteratorForPath(
+            $request->getPath(),
+            $propFindXml->properties,
+            $this->getDepth()
+        );
 
         // This is a multi-status response
         $response->setStatus(207);
@@ -904,5 +888,49 @@ class CorePlugin extends ServerPlugin
             'description' => 'The Core plugin provides a lot of the basic functionality required by WebDAV, such as a default implementation for all HTTP and WebDAV methods.',
             'link' => null,
         ];
+    }
+
+    /**
+     *  Parses the PROPFIND request body and returns a PropFind XML object.
+     *
+     *  If the request body contains XML, it is parsed using the server's XML service
+     *  and must represent a {DAV:}propfind element. If the body is empty, a default
+     *  PropFind(XML) object is created that requests all properties.
+     *
+     * @param RequestInterface $request
+     * @return array|Xml\Request\PropFind|string
+     * @throws BadRequest
+     */
+    public function parseRequestedProperties(RequestInterface $request)
+    {
+        $requestBody = $request->getBodyAsString();
+        if (strlen($requestBody)) {
+            try {
+                $propFindXml =
+                    $this->server->xml->expect('{DAV:}propfind', $requestBody);
+            } catch (ParseException $e) {
+                throw new BadRequest($e->getMessage(), 0, $e);
+            }
+        } else {
+            $propFindXml = new Xml\Request\PropFind();
+            $propFindXml->allProp = true;
+            $propFindXml->properties = [];
+        }
+        return $propFindXml;
+    }
+
+    /**
+     * Returns the appropriate value for depth from the HTTP request.
+     *
+     * @return int
+     */
+    protected function getDepth(): int
+    {
+        $depth = $this->server->getHTTPDepth(1);
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->server->enablePropfindDepthInfinity && 0 != $depth) {
+            $depth = 1;
+        }
+        return $depth;
     }
 }

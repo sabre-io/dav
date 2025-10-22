@@ -334,10 +334,11 @@ class CorePlugin extends ServerPlugin
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
         // this is not harmful, we'll add it.
-        $features = ['1', '3', 'extended-mkcol'];
+        $features = [['1', '3', 'extended-mkcol']];
         foreach ($this->server->getPlugins() as $plugin) {
-            $features = array_merge($features, $plugin->getFeatures());
+            $features[] = $plugin->getFeatures();
         }
+        $features = array_merge(...$features);
         $response->setHeader('DAV', implode(', ', $features));
 
         $prefer = $this->server->getHTTPPrefer();

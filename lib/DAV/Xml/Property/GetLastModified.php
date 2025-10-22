@@ -6,6 +6,7 @@ namespace Sabre\DAV\Xml\Property;
 
 use DateTime;
 use DateTimeZone;
+use JsonSerializable;
 use Sabre\HTTP;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
@@ -21,7 +22,7 @@ use Sabre\Xml\Writer;
  * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class GetLastModified implements Element
+class GetLastModified implements Element, JsonSerializable
 {
     /**
      * time.
@@ -99,5 +100,10 @@ class GetLastModified implements Element
     public static function xmlDeserialize(Reader $reader)
     {
         return new self(new DateTime($reader->parseInnerTree()));
+    }
+
+    public function jsonSerialize()
+    {
+        return HTTP\toDate($this->time);
     }
 }

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Sabre\DAV\Xml\Property;
 
+use JsonSerializable;
 use Sabre\DAV\Browser\HtmlOutput;
 use Sabre\DAV\Browser\HtmlOutputHelper;
 use Sabre\Xml\Element;
 use Sabre\Xml\Reader;
+use Sabre\Xml\Writer;
 
 /**
  * {DAV:}resourcetype property.
@@ -20,7 +22,7 @@ use Sabre\Xml\Reader;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ResourceType extends Element\Elements implements HtmlOutput
+class ResourceType extends Element\Elements implements HtmlOutput, JsonSerializable
 {
     /**
      * Constructor.
@@ -42,7 +44,7 @@ class ResourceType extends Element\Elements implements HtmlOutput
      *
      * For example array('{DAV:}collection')
      *
-     * @return array
+     * @return string[]
      */
     public function getValue()
     {
@@ -115,6 +117,20 @@ class ResourceType extends Element\Elements implements HtmlOutput
         return implode(
             ', ',
             array_map([$html, 'xmlName'], $this->getValue())
+        );
+    }
+
+    /**
+     * Returns an array that produces the correct XML when serialized by Writer.
+     * @see Writer
+     *
+     * @return string[][]
+     */
+    public function jsonSerialize(): array
+    {
+        return array_map(
+            static fn(string $type) => [ $type => null ],
+            $this->getValue()
         );
     }
 }

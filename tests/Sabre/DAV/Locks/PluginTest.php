@@ -920,4 +920,14 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->locksPlugin->getTimeoutHeader();
     }
+
+    public function testLockWithSpaces()
+    {
+        $request = new HTTP\Request('LOCK', '/test .txt', [
+            'Timeout' => 'second-5, infinite',
+        ]);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+        self::assertEquals(201, $this->response->status);
+    }
 }

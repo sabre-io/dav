@@ -179,7 +179,6 @@ class Plugin extends DAV\ServerPlugin
             }
         } else {
             // Gonna check if this was a lock refresh.
-            $existingLocks = $this->getLocks($uri);
             $conditions = $this->server->getIfConditions($request);
             $found = null;
 

@@ -208,8 +208,6 @@ class PDO extends AbstractBackend implements SyncSupport
      * calculating them. If they are specified, you can also omit carddata.
      * This may speed up certain requests, especially with large cards.
      *
-     * @param mixed $addressbookId
-     *
      * @return array
      */
     public function getCards($addressbookId)
@@ -235,7 +233,6 @@ class PDO extends AbstractBackend implements SyncSupport
      *
      * If the card does not exist, you must return false.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      *
      * @return array
@@ -264,8 +261,6 @@ class PDO extends AbstractBackend implements SyncSupport
      * cards in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @param mixed $addressBookId
      *
      * @return array
      */
@@ -308,7 +303,6 @@ class PDO extends AbstractBackend implements SyncSupport
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *
@@ -354,7 +348,6 @@ class PDO extends AbstractBackend implements SyncSupport
      *
      * If you don't return an ETag, you can just return null.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      * @param string $cardData
      *
@@ -382,7 +375,6 @@ class PDO extends AbstractBackend implements SyncSupport
     /**
      * Deletes a card.
      *
-     * @param mixed  $addressBookId
      * @param string $cardUri
      *
      * @return bool
@@ -518,9 +510,8 @@ class PDO extends AbstractBackend implements SyncSupport
     /**
      * Adds a change record to the addressbookchanges table.
      *
-     * @param mixed  $addressBookId
      * @param string $objectUri
-     * @param int    $operation     1 = add, 2 = modify, 3 = delete
+     * @param int    $operation 1 = add, 2 = modify, 3 = delete
      */
     protected function addChange($addressBookId, $objectUri, $operation)
     {

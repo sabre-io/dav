@@ -212,7 +212,7 @@ class SimplePDO extends AbstractBackend
             'calendarid' => $calendarId,
             'size' => strlen($row['calendardata']),
             'calendardata' => $row['calendardata'],
-         ];
+        ];
     }
 
     /**
@@ -228,7 +228,6 @@ class SimplePDO extends AbstractBackend
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *
@@ -259,7 +258,6 @@ class SimplePDO extends AbstractBackend
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *

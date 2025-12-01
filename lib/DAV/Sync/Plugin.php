@@ -29,7 +29,7 @@ class Plugin extends DAV\ServerPlugin
      */
     protected $server;
 
-    const SYNCTOKEN_PREFIX = 'http://sabre.io/ns/sync/';
+    public const SYNCTOKEN_PREFIX = 'http://sabre.io/ns/sync/';
 
     /**
      * Returns a plugin name.
@@ -52,7 +52,7 @@ class Plugin extends DAV\ServerPlugin
     public function initialize(DAV\Server $server)
     {
         $this->server = $server;
-        $server->xml->elementMap['{DAV:}sync-collection'] = \Sabre\DAV\Xml\Request\SyncCollectionReport::class;
+        $server->xml->elementMap['{DAV:}sync-collection'] = SyncCollectionReport::class;
 
         $self = $this;
 
@@ -218,8 +218,8 @@ class Plugin extends DAV\ServerPlugin
                 $node = $this->server->tree->getNodeForPath($condition['uri']);
 
                 if (
-                    $node instanceof ISyncCollection &&
-                    $node->getSyncToken() == substr($token['token'], strlen(self::SYNCTOKEN_PREFIX))
+                    $node instanceof ISyncCollection
+                    && $node->getSyncToken() == substr($token['token'], strlen(self::SYNCTOKEN_PREFIX))
                 ) {
                     $conditions[$kk]['tokens'][$ii]['validToken'] = true;
                 }

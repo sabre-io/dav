@@ -31,7 +31,7 @@ class Plugin extends ServerPlugin
      */
     public function initialize(Server $server)
     {
-        $server->resourceTypeMapping[\Sabre\CalDAV\Subscriptions\ISubscription::class] =
+        $server->resourceTypeMapping[ISubscription::class] =
             '{http://calendarserver.org/ns/}subscribed';
 
         $server->xml->elementMap['{http://calendarserver.org/ns/}source'] =

@@ -25,6 +25,7 @@ ICS;
      * @param string $icalObject
      * @param array  $filters
      * @param int    $outcome
+     *
      * @dataProvider provider
      */
     public function testValid($icalObject, $filters, $outcome)
@@ -508,8 +509,8 @@ yow;
             'prop-filters' => [],
             'is-not-defined' => false,
             'time-range' => [
-               'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
-               'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
+                'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
+                'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
             ],
         ];
         // Time range, no end date
@@ -523,8 +524,8 @@ yow;
         // Time range, other dates
         $filter23 = $filter20;
         $filter23['time-range'] = [
-           'start' => new \DateTime('2011-02-01 10:00:00', new \DateTimeZone('GMT')),
-           'end' => new \DateTime('2011-02-01 13:00:00', new \DateTimeZone('GMT')),
+            'start' => new \DateTime('2011-02-01 10:00:00', new \DateTimeZone('GMT')),
+            'end' => new \DateTime('2011-02-01 13:00:00', new \DateTimeZone('GMT')),
         ];
         // Time range
         $filter24 = [
@@ -533,21 +534,21 @@ yow;
             'prop-filters' => [],
             'is-not-defined' => false,
             'time-range' => [
-               'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
-               'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
+                'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
+                'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
             ],
         ];
         // Time range, other dates (1 month in the future)
         $filter25 = $filter24;
         $filter25['time-range'] = [
-           'start' => new \DateTime('2011-02-01 10:00:00', new \DateTimeZone('GMT')),
-           'end' => new \DateTime('2011-02-01 13:00:00', new \DateTimeZone('GMT')),
+            'start' => new \DateTime('2011-02-01 10:00:00', new \DateTimeZone('GMT')),
+            'end' => new \DateTime('2011-02-01 13:00:00', new \DateTimeZone('GMT')),
         ];
         $filter26 = $filter24;
         $filter26['time-range'] = [
-           'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
-           'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
-       ];
+            'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
+            'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
+        ];
 
         // Time range for VJOURNAL
         $filter27 = [
@@ -556,14 +557,14 @@ yow;
             'prop-filters' => [],
             'is-not-defined' => false,
             'time-range' => [
-               'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
-               'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
+                'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
+                'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
             ],
         ];
         $filter28 = $filter27;
         $filter28['time-range'] = [
-           'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
-           'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
+            'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
+            'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
         ];
         // Time range for VFREEBUSY
         $filter29 = [
@@ -572,8 +573,8 @@ yow;
             'prop-filters' => [],
             'is-not-defined' => false,
             'time-range' => [
-               'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
-               'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
+                'start' => new \DateTime('2011-01-01 12:45:00', new \DateTimeZone('GMT')),
+                'end' => new \DateTime('2011-01-01 13:15:00', new \DateTimeZone('GMT')),
             ],
         ];
         // Time range filter on property
@@ -586,11 +587,11 @@ yow;
                     'is-not-defined' => false,
                     'param-filters' => [],
                     'time-range' => [
-                       'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
-                       'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
-                   ],
+                        'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
+                        'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
+                    ],
                     'text-match' => null,
-               ],
+                ],
             ],
             'is-not-defined' => false,
             'time-range' => null,
@@ -607,20 +608,20 @@ yow;
                     'comp-filters' => [],
                     'prop-filters' => [],
                     'time-range' => [
-                       'start' => new \DateTime('2011-01-01 10:45:00', new \DateTimeZone('GMT')),
-                       'end' => new \DateTime('2011-01-01 11:15:00', new \DateTimeZone('GMT')),
+                        'start' => new \DateTime('2011-01-01 10:45:00', new \DateTimeZone('GMT')),
+                        'end' => new \DateTime('2011-01-01 11:15:00', new \DateTimeZone('GMT')),
                     ],
                     'text-match' => null,
-               ],
+                ],
             ],
             'is-not-defined' => false,
             'time-range' => null,
         ];
         $filter32 = $filter31;
         $filter32['comp-filters'][0]['time-range'] = [
-           'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
-           'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
-       ];
+            'start' => new \DateTime('2011-01-01 11:45:00', new \DateTimeZone('GMT')),
+            'end' => new \DateTime('2011-01-01 12:15:00', new \DateTimeZone('GMT')),
+        ];
 
         $filter33 = $filter31;
         $filter33['name'] = 'VTODO';
@@ -641,11 +642,11 @@ yow;
                     'is-not-defined' => false,
                     'param-filters' => [],
                     'time-range' => [
-                       'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
-                       'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
-                   ],
+                        'start' => new \DateTime('2011-01-01 10:00:00', new \DateTimeZone('GMT')),
+                        'end' => new \DateTime('2011-01-01 13:00:00', new \DateTimeZone('GMT')),
+                    ],
                     'text-match' => null,
-               ],
+                ],
             ],
             'is-not-defined' => false,
             'time-range' => null,
@@ -814,7 +815,7 @@ yow;
             [$blob32, $filter20, 0],
 
             // Bug reported on mailing list, related to all-day events (87)
-            //array($blob33, $filter38, 1),
+            // array($blob33, $filter38, 1),
 
             // Event in timerange, but filtered alarm is in the far future (88).
             [$blob34, $filter39, 0],

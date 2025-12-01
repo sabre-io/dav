@@ -10,7 +10,7 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class InviteReplyTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{http://calendarserver.org/ns/}invite-reply' => \Sabre\CalDAV\Xml\Request\InviteReply::class,
+        '{http://calendarserver.org/ns/}invite-reply' => InviteReply::class,
     ];
 
     public function testDeserialize()
@@ -59,7 +59,7 @@ XML;
 
     public function testDeserializeNoHostUrl()
     {
-        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectException(DAV\Exception\BadRequest::class);
         $xml = <<<XML
 <?xml version="1.0"?>
 <cs:invite-reply xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">

@@ -60,7 +60,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $child = $this->s->getChild('book1');
-        self::assertInstanceOf(\Sabre\CardDAV\AddressBook::class, $child);
+        self::assertInstanceOf(AddressBook::class, $child);
         self::assertEquals('book1', $child->getName());
     }
 
@@ -74,7 +74,7 @@ class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
     {
         $children = $this->s->getChildren();
         self::assertEquals(2, count($children));
-        self::assertInstanceOf(\Sabre\CardDAV\AddressBook::class, $children[0]);
+        self::assertInstanceOf(AddressBook::class, $children[0]);
         self::assertEquals('book1', $children[0]->getName());
     }
 

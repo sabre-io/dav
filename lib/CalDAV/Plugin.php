@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTimeZone;
 use Sabre\CalDAV\Xml\Request\CalendarMultiGetReport;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
@@ -33,18 +32,18 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This is the official CalDAV namespace.
      */
-    const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
+    public const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';
 
     /**
      * This is the namespace for the proprietary calendarserver extensions.
      */
-    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
+    public const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';
 
     /**
      * The hardcoded root for calendar objects. It is unfortunate
      * that we're stuck with it, but it will have to do for now.
      */
-    const CALENDAR_ROOT = 'calendars';
+    public const CALENDAR_ROOT = 'calendars';
 
     /**
      * Reference to server object.
@@ -200,18 +199,18 @@ class Plugin extends DAV\ServerPlugin
         $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
 
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-query'] = \Sabre\CalDAV\Xml\Request\CalendarQueryReport::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-multiget'] = \Sabre\CalDAV\Xml\Request\CalendarMultiGetReport::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}free-busy-query'] = \Sabre\CalDAV\Xml\Request\FreeBusyQueryReport::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}mkcalendar'] = \Sabre\CalDAV\Xml\Request\MkCalendar::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}schedule-calendar-transp'] = \Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp::class;
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = Xml\Property\SupportedCalendarComponentSet::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-query'] = Xml\Request\CalendarQueryReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-multiget'] = CalendarMultiGetReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}free-busy-query'] = Xml\Request\FreeBusyQueryReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}mkcalendar'] = Xml\Request\MkCalendar::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}schedule-calendar-transp'] = Xml\Property\ScheduleCalendarTransp::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = Xml\Property\SupportedCalendarComponentSet::class;
 
-        $server->resourceTypeMapping[\Sabre\CalDAV\ICalendar::class] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping[ICalendar::class] = '{urn:ietf:params:xml:ns:caldav}calendar';
 
-        $server->resourceTypeMapping[\Sabre\CalDAV\Principal\IProxyRead::class] = '{http://calendarserver.org/ns/}calendar-proxy-read';
-        $server->resourceTypeMapping[\Sabre\CalDAV\Principal\IProxyWrite::class] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping[Principal\IProxyRead::class] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping[Principal\IProxyWrite::class] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
         array_push($server->protectedProperties,
             '{'.self::NS_CALDAV.'}supported-calendar-component-set',
@@ -240,8 +239,6 @@ class Plugin extends DAV\ServerPlugin
      * This functions handles REPORT requests specific to CalDAV.
      *
      * @param string $reportName
-     * @param mixed  $report
-     * @param mixed  $path
      *
      * @return bool|null
      */
@@ -319,7 +316,7 @@ class Plugin extends DAV\ServerPlugin
      * resource are fetched. This allows us to add in any CalDAV specific
      * properties.
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFind(DAV\PropFind $propFind, INode $node)
     {
         $ns = '{'.self::NS_CALDAV.'}';
 
@@ -453,7 +450,7 @@ class Plugin extends DAV\ServerPlugin
                             $timeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
                         } else {
                             // Defaulting to UTC.
-                            $timeZone = new DateTimeZone('UTC');
+                            $timeZone = new \DateTimeZone('UTC');
                         }
                         $timeZones[$calendarPath] = $timeZone;
                     }
@@ -518,7 +515,7 @@ class Plugin extends DAV\ServerPlugin
                 $vtimezoneObj->destroy();
             } else {
                 // Defaulting to UTC.
-                $calendarTimeZone = new DateTimeZone('UTC');
+                $calendarTimeZone = new \DateTimeZone('UTC');
             }
         }
 
@@ -601,7 +598,7 @@ class Plugin extends DAV\ServerPlugin
                 list($properties) =
                     $this->server->getPropertiesForPath($this->server->getRequestUri().'/'.$path, $report->properties);
 
-                if (($needsJson || $report->expand)) {
+                if ($needsJson || $report->expand) {
                     $vObject = VObject\Reader::read($properties[200]['{'.self::NS_CALDAV.'}calendar-data']);
 
                     if ($report->expand) {
@@ -660,7 +657,7 @@ class Plugin extends DAV\ServerPlugin
             // Destroy circular references so PHP will garbage collect the object.
             $vtimezoneObj->destroy();
         } else {
-            $calendarTimeZone = new DateTimeZone('UTC');
+            $calendarTimeZone = new \DateTimeZone('UTC');
         }
 
         // Doing a calendar-query first, to make sure we get the most
@@ -935,7 +932,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output)
+    public function htmlActionsPanel(INode $node, &$output)
     {
         if (!$node instanceof CalendarHome) {
             return;

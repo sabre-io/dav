@@ -45,7 +45,7 @@ class CalendarMultiGetReport implements XmlDeserializable
      *
      * @var array|null
      */
-    public $expand = null;
+    public $expand;
 
     /**
      * The mimetype of the content that should be returned. Usually
@@ -53,7 +53,7 @@ class CalendarMultiGetReport implements XmlDeserializable
      *
      * @var string
      */
-    public $contentType = null;
+    public $contentType;
 
     /**
      * The version of calendar-data that should be returned. Usually '2.0',
@@ -61,7 +61,7 @@ class CalendarMultiGetReport implements XmlDeserializable
      *
      * @var string
      */
-    public $version = null;
+    public $version;
 
     /**
      * The deserialize method is called during xml parsing.
@@ -80,8 +80,6 @@ class CalendarMultiGetReport implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {

@@ -54,8 +54,6 @@ class SupportedReportSet implements XmlSerializable, HtmlOutput
      *
      * The report must be a string in clark-notation.
      * Multiple reports can be specified as an array.
-     *
-     * @param mixed $report
      */
     public function addReport($report)
     {

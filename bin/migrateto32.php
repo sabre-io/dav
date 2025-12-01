@@ -35,7 +35,7 @@ php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
-    exit();
+    exit;
 }
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
@@ -82,7 +82,7 @@ echo "Creating 'calendarinstances'\n";
 $addValueType = false;
 try {
     $result = $pdo->query('SELECT * FROM calendarinstances LIMIT 1');
-    $result->fetch(\PDO::FETCH_ASSOC);
+    $result->fetch(PDO::FETCH_ASSOC);
     echo "calendarinstances exists. Assuming this part of the migration has already been done.\n";
 } catch (Exception $e) {
     echo "calendarinstances does not yet exist. Creating table and migrating data.\n";
@@ -110,7 +110,7 @@ CREATE TABLE calendarinstances (
     UNIQUE(calendarid, share_href)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 SQL
-        );
+            );
             $pdo->exec('
 INSERT INTO calendarinstances
     (
@@ -159,7 +159,7 @@ CREATE TABLE calendarinstances (
     UNIQUE (calendarid, share_href)
 );
 SQL
-        );
+            );
             $pdo->exec('
 INSERT INTO calendarinstances
     (
@@ -190,7 +190,7 @@ FROM calendars
 }
 try {
     $result = $pdo->query('SELECT * FROM calendars LIMIT 1');
-    $row = $result->fetch(\PDO::FETCH_ASSOC);
+    $row = $result->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
         echo "Source table is empty.\n";
@@ -233,7 +233,7 @@ CREATE TABLE calendars (
     components VARBINARY(21)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 SQL
-);
+            );
             break;
         case 'sqlite':
             $pdo->exec(<<<SQL
@@ -243,7 +243,7 @@ CREATE TABLE calendars (
     components text NOT NULL
 );
 SQL
-        );
+            );
             break;
     }
 

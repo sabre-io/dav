@@ -12,6 +12,7 @@ class InviteTest extends DAV\Xml\AbstractXmlTestCase
     /**
      * @param array  $notification
      * @param string $expected
+     *
      * @dataProvider dataProvider
      */
     public function testSerializers($notification, $expected)
@@ -52,7 +53,7 @@ class InviteTest extends DAV\Xml\AbstractXmlTestCase
                     'commonName' => 'John Doe',
                     'summary' => 'Awesome stuff!',
                 ],
-<<<FOO
+                <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
@@ -75,7 +76,7 @@ class InviteTest extends DAV\Xml\AbstractXmlTestCase
   </cs:invite-notification>
 </cs:root>
 
-FOO
+FOO,
             ],
             [
                 [
@@ -90,7 +91,7 @@ FOO
                     'firstName' => 'Foo',
                     'lastName' => 'Bar',
                 ],
-<<<FOO
+                <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
@@ -114,7 +115,7 @@ FOO
   </cs:invite-notification>
 </cs:root>
 
-FOO
+FOO,
             ],
         ];
     }

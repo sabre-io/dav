@@ -104,14 +104,12 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
         $result = [];
 
-        $tree = $reader->parseInnerTree(['{DAV:}privilege' => \Sabre\Xml\Element\Elements::class]);
+        $tree = $reader->parseInnerTree(['{DAV:}privilege' => Element\Elements::class]);
         foreach ($tree as $element) {
             if ('{DAV:}privilege' !== $element['name']) {
                 continue;

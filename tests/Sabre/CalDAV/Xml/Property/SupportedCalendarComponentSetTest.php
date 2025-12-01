@@ -43,7 +43,7 @@ class SupportedCalendarComponentSetTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => $property]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:" xmlns:cal="'.CalDAV\Plugin::NS_CALDAV.'" xmlns:cs="'.CalDAV\Plugin::NS_CALENDARSERVER.'">
   <cal:comp name="VEVENT"/>
   <cal:comp name="VTODO"/>
@@ -66,7 +66,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
+            ['{DAV:}root' => SupportedCalendarComponentSet::class]
         );
 
         self::assertEquals(
@@ -89,7 +89,7 @@ XML;
 
         $result = $this->parse(
             $xml,
-            ['{DAV:}root' => \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class]
+            ['{DAV:}root' => SupportedCalendarComponentSet::class]
         );
     }
 }

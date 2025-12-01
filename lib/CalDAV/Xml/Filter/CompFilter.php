@@ -43,8 +43,6 @@ class CompFilter implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
@@ -64,28 +62,28 @@ class CompFilter implements XmlDeserializable
         if (is_array($elems)) {
             foreach ($elems as $elem) {
                 switch ($elem['name']) {
-                case '{'.Plugin::NS_CALDAV.'}comp-filter':
-                    $result['comp-filters'][] = $elem['value'];
-                    break;
-                case '{'.Plugin::NS_CALDAV.'}prop-filter':
-                    $result['prop-filters'][] = $elem['value'];
-                    break;
-                case '{'.Plugin::NS_CALDAV.'}is-not-defined':
-                    $result['is-not-defined'] = true;
-                    break;
-                case '{'.Plugin::NS_CALDAV.'}time-range':
-                    if ('VCALENDAR' === $result['name']) {
-                        throw new BadRequest('You cannot add time-range filters on the VCALENDAR component');
-                    }
-                    $result['time-range'] = [
-                        'start' => isset($elem['attributes']['start']) ? DateTimeParser::parseDateTime($elem['attributes']['start']) : null,
-                        'end' => isset($elem['attributes']['end']) ? DateTimeParser::parseDateTime($elem['attributes']['end']) : null,
-                    ];
-                    if ($result['time-range']['start'] && $result['time-range']['end'] && $result['time-range']['end'] <= $result['time-range']['start']) {
-                        throw new BadRequest('The end-date must be larger than the start-date');
-                    }
-                    break;
-            }
+                    case '{'.Plugin::NS_CALDAV.'}comp-filter':
+                        $result['comp-filters'][] = $elem['value'];
+                        break;
+                    case '{'.Plugin::NS_CALDAV.'}prop-filter':
+                        $result['prop-filters'][] = $elem['value'];
+                        break;
+                    case '{'.Plugin::NS_CALDAV.'}is-not-defined':
+                        $result['is-not-defined'] = true;
+                        break;
+                    case '{'.Plugin::NS_CALDAV.'}time-range':
+                        if ('VCALENDAR' === $result['name']) {
+                            throw new BadRequest('You cannot add time-range filters on the VCALENDAR component');
+                        }
+                        $result['time-range'] = [
+                            'start' => isset($elem['attributes']['start']) ? DateTimeParser::parseDateTime($elem['attributes']['start']) : null,
+                            'end' => isset($elem['attributes']['end']) ? DateTimeParser::parseDateTime($elem['attributes']['end']) : null,
+                        ];
+                        if ($result['time-range']['start'] && $result['time-range']['end'] && $result['time-range']['end'] <= $result['time-range']['start']) {
+                            throw new BadRequest('The end-date must be larger than the start-date');
+                        }
+                        break;
+                }
             }
         }
 

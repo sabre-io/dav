@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTime;
-use DateTimeZone;
 use Sabre\DAV;
 use Sabre\DAVACL;
 use Sabre\HTTP;
@@ -91,7 +89,7 @@ class PluginTest extends \PHPUnit\Framework\TestCase
         $authBackend = new DAV\Auth\Backend\Mock();
         $authBackend->setPrincipal('principals/user1');
         $authPlugin = new DAV\Auth\Plugin($authBackend);
-        $authPlugin->beforeMethod(new \Sabre\HTTP\Request('GET', '/'), new \Sabre\HTTP\Response());
+        $authPlugin->beforeMethod(new HTTP\Request('GET', '/'), new HTTP\Response());
         $this->server->addPlugin($authPlugin);
 
         // This forces a login
@@ -445,22 +443,22 @@ END:VCALENDAR';
 
         self::assertArrayHasKey('{urn:ietf:params:xml:ns:caldav}calendar-home-set', $props[0][200]);
         $prop = $props[0][200]['{urn:ietf:params:xml:ns:caldav}calendar-home-set'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals('calendars/user1/', $prop->getHref());
 
         self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-read-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-read-for'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
         self::assertArrayHasKey('{http://calendarserver.org/ns/}calendar-proxy-write-for', $props[0][200]);
         $prop = $props[0][200]['{http://calendarserver.org/ns/}calendar-proxy-write-for'];
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\Href::class, $prop);
         self::assertEquals(['principals/admin/'], $prop->getHrefs());
 
         self::assertArrayHasKey('{'.Plugin::NS_CALENDARSERVER.'}email-address-set', $props[0][200]);
         $prop = $props[0][200]['{'.Plugin::NS_CALENDARSERVER.'}email-address-set'];
-        self::assertInstanceOf(\Sabre\CalDAV\Xml\Property\EmailAddressSet::class, $prop);
+        self::assertInstanceOf(Xml\Property\EmailAddressSet::class, $prop);
         self::assertEquals(['user1.sabredav@sabredav.org'], $prop->getValue());
     }
 
@@ -476,7 +474,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{DAV:}expand-property',
             '{DAV:}principal-match',
@@ -501,7 +499,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{urn:ietf:params:xml:ns:caldav}calendar-multiget',
             '{urn:ietf:params:xml:ns:caldav}calendar-query',
@@ -516,7 +514,7 @@ END:VCALENDAR';
 
     public function testSupportedReportSetUserCalendars()
     {
-        $this->server->addPlugin(new \Sabre\DAV\Sync\Plugin());
+        $this->server->addPlugin(new DAV\Sync\Plugin());
 
         $props = $this->server->getPropertiesForPath('/calendars/user1', [
             '{DAV:}supported-report-set',
@@ -528,7 +526,7 @@ END:VCALENDAR';
 
         $prop = $props[0][200]['{DAV:}supported-report-set'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\SupportedReportSet::class, $prop);
+        self::assertInstanceOf(DAV\Xml\Property\SupportedReportSet::class, $prop);
         $value = [
             '{DAV:}sync-collection',
             '{DAV:}expand-property',
@@ -612,8 +610,8 @@ XML;
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
         $expectedIcal = $expectedIcal->expand(
-            new DateTime('2011-01-01 00:00:00', new DateTimeZone('UTC')),
-            new DateTime('2011-12-31 23:59:59', new DateTimeZone('UTC'))
+            new \DateTime('2011-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2011-12-31 23:59:59', new \DateTimeZone('UTC'))
         );
         $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
@@ -670,8 +668,8 @@ XML;
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
         $expectedIcal = $expectedIcal->expand(
-            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
-            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
+            new \DateTime('2000-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2010-12-31 23:59:59', new \DateTimeZone('UTC'))
         );
         $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
@@ -732,8 +730,8 @@ XML;
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
         $expectedIcal = $expectedIcal->expand(
-            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
-            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
+            new \DateTime('2000-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2010-12-31 23:59:59', new \DateTimeZone('UTC'))
         );
         $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 
@@ -893,8 +891,8 @@ XML;
         $expectedIcal = TestUtil::getTestCalendarData();
         $expectedIcal = \Sabre\VObject\Reader::read($expectedIcal);
         $expectedIcal = $expectedIcal->expand(
-            new DateTime('2000-01-01 00:00:00', new DateTimeZone('UTC')),
-            new DateTime('2010-12-31 23:59:59', new DateTimeZone('UTC'))
+            new \DateTime('2000-01-01 00:00:00', new \DateTimeZone('UTC')),
+            new \DateTime('2010-12-31 23:59:59', new \DateTimeZone('UTC'))
         );
         $expectedIcal = str_replace("\r\n", "&#xD;\n", $expectedIcal->serialize());
 

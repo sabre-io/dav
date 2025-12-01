@@ -25,7 +25,7 @@ class HrefTest extends AbstractXmlTestCase
         $xml = $this->write(['{DAV:}anything' => $href]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ', $xml);
     }
@@ -36,11 +36,11 @@ class HrefTest extends AbstractXmlTestCase
 <d:anything xmlns:d="DAV:"><d:href>/bla/path</d:href></d:anything>
 ';
 
-        $result = $this->parse($xml, ['{DAV:}anything' => \Sabre\DAV\Xml\Property\Href::class]);
+        $result = $this->parse($xml, ['{DAV:}anything' => Href::class]);
 
         $href = $result['value'];
 
-        self::assertInstanceOf(\Sabre\DAV\Xml\Property\Href::class, $href);
+        self::assertInstanceOf(Href::class, $href);
 
         self::assertEquals('/bla/path', $href->getHref());
     }
@@ -50,7 +50,7 @@ class HrefTest extends AbstractXmlTestCase
         $xml = '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href2>/bla/path</d:href2></d:anything>
 ';
-        $result = $this->parse($xml, ['{DAV:}anything' => \Sabre\DAV\Xml\Property\Href::class]);
+        $result = $this->parse($xml, ['{DAV:}anything' => Href::class]);
         $href = $result['value'];
         self::assertNull($href);
     }
@@ -60,7 +60,7 @@ class HrefTest extends AbstractXmlTestCase
         $xml = '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"></d:anything>
 ';
-        $result = $this->parse($xml, ['{DAV:}anything' => \Sabre\DAV\Xml\Property\Href::class]);
+        $result = $this->parse($xml, ['{DAV:}anything' => Href::class]);
         $href = $result['value'];
         self::assertNull($href);
     }
@@ -76,7 +76,7 @@ class HrefTest extends AbstractXmlTestCase
         $xml = $this->write(['{DAV:}anything' => $href]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:anything xmlns:d="DAV:"><d:href>http://example.org/?a&amp;b</d:href></d:anything>
 ', $xml);
     }

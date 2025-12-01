@@ -51,7 +51,7 @@ class Plugin extends DAV\ServerPlugin
     public $uninterestingProperties = [
         '{DAV:}supportedlock',
         '{DAV:}acl-restrictions',
-//        '{DAV:}supported-privilege-set',
+        //        '{DAV:}supported-privilege-set',
         '{DAV:}supported-method-set',
     ];
 
@@ -159,8 +159,8 @@ class Plugin extends DAV\ServerPlugin
             return;
         }
         list($contentType) = explode(';', $contentType);
-        if ('application/x-www-form-urlencoded' !== $contentType &&
-            'multipart/form-data' !== $contentType) {
+        if ('application/x-www-form-urlencoded' !== $contentType
+            && 'multipart/form-data' !== $contentType) {
             return;
         }
         $postVars = $request->getPostData();
@@ -208,7 +208,7 @@ class Plugin extends DAV\ServerPlugin
                     }
                     break;
 
-                // @codeCoverageIgnoreStart
+                    // @codeCoverageIgnoreStart
                 case 'put':
                     if ($_FILES) {
                         $file = current($_FILES);
@@ -228,7 +228,7 @@ class Plugin extends DAV\ServerPlugin
                         $this->server->createFile($uri.'/'.$newName, fopen($file['tmp_name'], 'r'));
                     }
                     break;
-                // @codeCoverageIgnoreEnd
+                    // @codeCoverageIgnoreEnd
             }
         }
         $response->setHeader('Location', $request->getUrl());
@@ -488,7 +488,6 @@ HTML;
      * This specifically generates the interfaces for creating new files, and
      * creating new directories.
      *
-     * @param mixed  $output
      * @param string $path
      */
     public function htmlActionsPanel(DAV\INode $node, &$output, $path)
@@ -499,7 +498,7 @@ HTML;
 
         // We also know fairly certain that if an object is a non-extended
         // SimpleCollection, we won't need to show the panel either.
-        if (\Sabre\DAV\SimpleCollection::class === get_class($node)) {
+        if (DAV\SimpleCollection::class === get_class($node)) {
             return;
         }
 
@@ -538,9 +537,9 @@ HTML;
      *
      * @param string $assetName
      *
-     * @throws DAV\Exception\NotFound
-     *
      * @return string
+     *
+     * @throws DAV\Exception\NotFound
      */
     protected function getLocalAssetPath($assetName)
     {
@@ -711,7 +710,6 @@ HTML;
      * Draws a table row for a property.
      *
      * @param string $name
-     * @param mixed  $value
      *
      * @return string
      */
@@ -729,7 +727,6 @@ HTML;
      * Draws a table row for a property.
      *
      * @param HtmlOutputHelper $html
-     * @param mixed            $value
      *
      * @return string
      */

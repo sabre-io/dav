@@ -74,7 +74,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
 
     public function testSetBadValue()
     {
-        $this->expectException(\Sabre\DAV\Exception::class);
+        $this->expectException(DAV\Exception::class);
         $tree = [
             new MockPrincipal('foo', 'foo'),
         ];
@@ -84,7 +84,7 @@ class PluginUpdatePropertiesTest extends \PHPUnit\Framework\TestCase
         $server->addPlugin($plugin);
 
         $result = $server->updateProperties('foo', [
-            '{DAV:}group-member-set' => new \StdClass(),
+            '{DAV:}group-member-set' => new \stdClass(),
         ]);
     }
 

@@ -37,21 +37,21 @@ class Plugin extends DAV\ServerPlugin
      *
      * This only checks the base node
      */
-    const R_PARENT = 1;
+    public const R_PARENT = 1;
 
     /**
      * Recursion constants.
      *
      * This checks every node in the tree
      */
-    const R_RECURSIVE = 2;
+    public const R_RECURSIVE = 2;
 
     /**
      * Recursion constants.
      *
      * This checks every parentnode in the tree, but not leaf-nodes.
      */
-    const R_RECURSIVEPARENTS = 3;
+    public const R_RECURSIVEPARENTS = 3;
 
     /**
      * Reference to server object.
@@ -185,10 +185,10 @@ class Plugin extends DAV\ServerPlugin
      * @param int          $recursion
      * @param bool         $throwExceptions if set to false, this method won't throw exceptions
      *
+     * @return bool
+     *
      * @throws NeedPrivileges
      * @throws NotAuthenticated
-     *
-     * @return bool
      */
     public function checkPrivileges($uri, $privileges, $recursion = self::R_PARENT, $throwExceptions = true)
     {
@@ -559,7 +559,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      *
      * @return array
      */
@@ -591,7 +591,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * null will be returned if the node doesn't support ACLs.
      *
-     * @param string|DAV\INode $node
+     * @param string|INode $node
      *
      * @return array
      */
@@ -618,7 +618,7 @@ class Plugin extends DAV\ServerPlugin
                     }
                     break;
 
-                // 'all' matches for every user
+                    // 'all' matches for every user
                 case '{DAV:}all':
                     $collected[] = $ace;
                     break;
@@ -808,17 +808,17 @@ class Plugin extends DAV\ServerPlugin
 
         // Automatically mapping nodes implementing IPrincipal to the
         // {DAV:}principal resourcetype.
-        $server->resourceTypeMapping[\Sabre\DAVACL\IPrincipal::class] = '{DAV:}principal';
+        $server->resourceTypeMapping[IPrincipal::class] = '{DAV:}principal';
 
         // Mapping the group-member-set property to the HrefList property
         // class.
-        $server->xml->elementMap['{DAV:}group-member-set'] = \Sabre\DAV\Xml\Property\Href::class;
-        $server->xml->elementMap['{DAV:}acl'] = \Sabre\DAVACL\Xml\Property\Acl::class;
-        $server->xml->elementMap['{DAV:}acl-principal-prop-set'] = \Sabre\DAVACL\Xml\Request\AclPrincipalPropSetReport::class;
-        $server->xml->elementMap['{DAV:}expand-property'] = \Sabre\DAVACL\Xml\Request\ExpandPropertyReport::class;
-        $server->xml->elementMap['{DAV:}principal-property-search'] = \Sabre\DAVACL\Xml\Request\PrincipalPropertySearchReport::class;
-        $server->xml->elementMap['{DAV:}principal-search-property-set'] = \Sabre\DAVACL\Xml\Request\PrincipalSearchPropertySetReport::class;
-        $server->xml->elementMap['{DAV:}principal-match'] = \Sabre\DAVACL\Xml\Request\PrincipalMatchReport::class;
+        $server->xml->elementMap['{DAV:}group-member-set'] = Href::class;
+        $server->xml->elementMap['{DAV:}acl'] = Xml\Property\Acl::class;
+        $server->xml->elementMap['{DAV:}acl-principal-prop-set'] = Xml\Request\AclPrincipalPropSetReport::class;
+        $server->xml->elementMap['{DAV:}expand-property'] = Xml\Request\ExpandPropertyReport::class;
+        $server->xml->elementMap['{DAV:}principal-property-search'] = Xml\Request\PrincipalPropertySearchReport::class;
+        $server->xml->elementMap['{DAV:}principal-search-property-set'] = Xml\Request\PrincipalSearchPropertySetReport::class;
+        $server->xml->elementMap['{DAV:}principal-match'] = Xml\Request\PrincipalMatchReport::class;
     }
 
     /* {{{ Event handlers */
@@ -917,6 +917,7 @@ class Plugin extends DAV\ServerPlugin
      * Triggered before a node is unlocked.
      *
      * @param string $uri
+     *
      * @TODO: not yet implemented
      */
     public function beforeUnlock($uri, DAV\Locks\LockInfo $lock)
@@ -928,7 +929,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @TODO really should be broken into multiple methods, or even a class.
      */
-    public function propFind(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFind(DAV\PropFind $propFind, INode $node)
     {
         $path = $propFind->getPath();
 
@@ -1066,8 +1067,6 @@ class Plugin extends DAV\ServerPlugin
      * This method handles HTTP REPORT requests.
      *
      * @param string $reportName
-     * @param mixed  $report
-     * @param mixed  $path
      */
     public function report($reportName, $report, $path)
     {
@@ -1111,7 +1110,7 @@ class Plugin extends DAV\ServerPlugin
         $body = $request->getBodyAsString();
 
         if (!$body) {
-            throw new DAV\Exception\BadRequest('XML body expected in ACL request');
+            throw new BadRequest('XML body expected in ACL request');
         }
 
         $acl = $this->server->xml->expect('{DAV:}acl', $body);
@@ -1141,9 +1140,9 @@ class Plugin extends DAV\ServerPlugin
             $found = false;
             foreach ($newAcl as $newAce) {
                 if (
-                    $newAce['privilege'] === $oldAce['privilege'] &&
-                    $newAce['principal'] === $oldAce['principal'] &&
-                    $newAce['protected']
+                    $newAce['privilege'] === $oldAce['privilege']
+                    && $newAce['principal'] === $oldAce['principal']
+                    && $newAce['protected']
                 ) {
                     $found = true;
                 }
@@ -1333,7 +1332,7 @@ class Plugin extends DAV\ServerPlugin
                     continue;
                 }
 
-                if (!$node[200][$propertyName] instanceof DAV\Xml\Property\Href) {
+                if (!$node[200][$propertyName] instanceof Href) {
                     continue;
                 }
 
@@ -1372,7 +1371,7 @@ class Plugin extends DAV\ServerPlugin
     {
         $httpDepth = $this->server->getHTTPDepth(0);
         if (0 !== $httpDepth) {
-            throw new DAV\Exception\BadRequest('This report is only defined when Depth: 0');
+            throw new BadRequest('This report is only defined when Depth: 0');
         }
 
         $writer = $this->server->xml->getWriter();
@@ -1503,7 +1502,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output)
+    public function htmlActionsPanel(INode $node, &$output)
     {
         if (!$node instanceof PrincipalCollection) {
             return;

@@ -44,7 +44,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
     <d:href>/uri</d:href>
@@ -83,7 +83,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertEquals(
-'<d:root xmlns:d="DAV:">
+            '<d:root xmlns:d="DAV:">
  <d:response>
   <d:href>/uri</d:href>
   <d:propstat>
@@ -114,7 +114,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
       <d:href>/uri</d:href>
@@ -143,7 +143,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
       <d:href>/uri</d:href>
@@ -166,7 +166,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $this->expectException('InvalidArgumentException');
         $innerProps = [
             200 => [
-                '{DAV:}link' => new \STDClass(),
+                '{DAV:}link' => new \stdClass(),
             ],
         ];
 
@@ -189,7 +189,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
 ';
 
         $result = $this->parse($xml, [
-            '{DAV:}response' => \Sabre\DAV\Xml\Element\Response::class,
+            '{DAV:}response' => Response::class,
             '{DAV:}foo' => function ($reader) {
                 $reader->next();
 
@@ -222,7 +222,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
     <d:href>/space%20here</d:href>
@@ -255,7 +255,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
       <d:href>/uri</d:href>
@@ -283,7 +283,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
       <d:href>/uri</d:href>
@@ -312,7 +312,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
         $xml = $this->write(['{DAV:}root' => ['{DAV:}response' => $property]]);
 
         self::assertXmlStringEqualsXmlString(
-'<?xml version="1.0"?>
+            '<?xml version="1.0"?>
 <d:root xmlns:d="DAV:">
   <d:response>
     <d:href>/uri</d:href>
@@ -346,7 +346,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
 ';
 
         $result = $this->parse($xml, [
-            '{DAV:}response' => \Sabre\DAV\Xml\Element\Response::class,
+            '{DAV:}response' => Response::class,
             '{DAV:}foo' => function ($reader) {
                 throw new \LogicException('This should never happen');
             },

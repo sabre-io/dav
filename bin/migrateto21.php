@@ -35,7 +35,7 @@ php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
-    exit();
+    exit;
 }
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
@@ -80,7 +80,7 @@ echo "Upgrading 'calendarobjects'\n";
 $addUid = false;
 try {
     $result = $pdo->query('SELECT * FROM calendarobjects LIMIT 1');
-    $row = $result->fetch(\PDO::FETCH_ASSOC);
+    $row = $result->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
         echo "No data in table. Going to try to add the uid field anyway.\n";
@@ -111,10 +111,10 @@ if ($addUid) {
     $stmt = $pdo->prepare('UPDATE calendarobjects SET uid = ? WHERE id = ?');
     $counter = 0;
 
-    while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         try {
-            $vobj = \Sabre\VObject\Reader::read($row['calendardata']);
-        } catch (\Exception $e) {
+            $vobj = Sabre\VObject\Reader::read($row['calendardata']);
+        } catch (Exception $e) {
             echo "Warning! Item with id $row[id] could not be parsed!\n";
             continue;
         }

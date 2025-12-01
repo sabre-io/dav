@@ -27,7 +27,7 @@ class PreconditionFailed extends DAV\Exception
      *
      * @var string
      */
-    public $header = null;
+    public $header;
 
     /**
      * Create the exception.

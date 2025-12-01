@@ -451,7 +451,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
-        self::assertTrue(1 === preg_match('/^<opaquelocktoken:(.*)>$/', $this->response->getHeader('Lock-Token')), 'We did not get a valid Locktoken back ('.$this->response->getHeader('Lock-Token').')');
+        self::assertFalse($this->response->hasHeader('Lock-Token'), 'We did get unexpected Lock-Token header back in PUT response');
 
         // self::assertEquals('412 Precondition failed',$this->response->status);
         self::assertEquals(423, $this->response->status);

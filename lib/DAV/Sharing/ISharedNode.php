@@ -66,4 +66,13 @@ interface ISharedNode extends INode
      * @return \Sabre\DAV\Xml\Element\Sharee[]
      */
     public function getInvites();
+
+    /**
+     * Returns the 'original owner principal' for this shared resource.
+     *
+     * This must be a url to a principal, or null if there's no owner
+     *
+     * @return string|null
+     */
+    public function getOwnerPrincipal();
 }

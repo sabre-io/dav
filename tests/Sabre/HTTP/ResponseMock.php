@@ -20,4 +20,15 @@ class ResponseMock extends Response
      */
     public $body;
     public int $status;
+
+    /**
+     * Reset the response state. Needed if making more than one request in a single test.
+     */
+    function reset()
+    {
+        $this->headers = [];
+        $this->body = null;
+        $this->status = 500;
+        $this->statusText = '';
+    }
 }

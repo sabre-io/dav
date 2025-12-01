@@ -321,7 +321,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
-        self::assertTrue(1 === preg_match('/^<opaquelocktoken:(.*)>$/', $this->response->getHeader('Lock-Token')), 'We did not get a valid Locktoken back ('.$this->response->getHeader('Lock-Token').')');
+        self::assertFalse($this->response->hasHeader('Lock-Token'), 'Unexpected Lock-Token in response');
 
         self::assertEquals(423, $this->response->getStatus());
     }
@@ -518,7 +518,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(204, $this->response->getStatus());
-        self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
+        self::assertNull($this->response->body);
     }
 
     /**
@@ -592,7 +592,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(201, $this->response->getStatus(), 'Copy must succeed if only the source is locked, but not the destination');
-        self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
+        self::assertNull($this->response->body);
     }
 
     /**
@@ -761,7 +761,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(201, $this->response->getStatus(), 'We locked the parent of both the source and destination, but the move didn\'t succeed.');
-        self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
+        self::assertNull($this->response->body);
     }
 
     /**
@@ -794,8 +794,8 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
-        self::assertTrue(1 === preg_match('/^<opaquelocktoken:(.*)>$/', $this->response->getHeader('Lock-Token')), 'We did not get a valid Locktoken back ('.$this->response->getHeader('Lock-Token').')');
+        self::assertNull($this->response->body);
+        self::assertFalse($this->response->hasHeader('Lock-Token'), 'Unexpected Lock-Token header');
 
         self::assertEquals(204, $this->response->getStatus());
     }
@@ -832,8 +832,8 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals('application/xml; charset=utf-8', $this->response->getHeader('Content-Type'));
-        self::assertTrue(1 === preg_match('/^<opaquelocktoken:(.*)>$/', $this->response->getHeader('Lock-Token')), 'We did not get a valid Locktoken back ('.$this->response->getHeader('Lock-Token').')');
+        self::assertNull($this->response->body);
+        self::assertFalse($this->response->hasHeader('Lock-Token'), 'Unexpected Lock-Token header');
 
         self::assertEquals(204, $this->response->getStatus());
     }

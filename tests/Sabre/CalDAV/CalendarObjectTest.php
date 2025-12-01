@@ -117,7 +117,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
         $obj = $children[0];
 
         $lastMod = $obj->getLastModified();
-        self::assertTrue(is_int($lastMod) || ctype_digit($lastMod) || is_null($lastMod));
+        self::assertTrue(is_null($lastMod) || is_int($lastMod) || ctype_digit($lastMod));
     }
 
     /**

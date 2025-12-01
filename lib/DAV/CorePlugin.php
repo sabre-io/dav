@@ -303,28 +303,14 @@ class CorePlugin extends ServerPlugin
      */
     public function httpPropFind(RequestInterface $request, ResponseInterface $response)
     {
-        $path = $request->getPath();
-
-        $requestBody = $request->getBodyAsString();
-        if (strlen($requestBody)) {
-            try {
-                $propFindXml = $this->server->xml->expect('{DAV:}propfind', $requestBody);
-            } catch (ParseException $e) {
-                throw new BadRequest($e->getMessage(), 0, $e);
-            }
-        } else {
-            $propFindXml = new Xml\Request\PropFind();
-            $propFindXml->allProp = true;
-            $propFindXml->properties = [];
-        }
-
-        $depth = $this->server->getHTTPDepth(1);
-        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
-        if (!$this->server->enablePropfindDepthInfinity && 0 != $depth) {
-            $depth = 1;
-        }
-
-        $newProperties = $this->server->getPropertiesIteratorForPath($path, $propFindXml->properties, $depth);
+        $propFindXml = $this->parseRequestedProperties($request);
+        $propFindRequests = $this->server->generatePropFindsForPath(
+            $request->getPath(),
+            $propFindXml->properties,
+            $this->getDepth()
+        );
+        $this->server->emit('beforePropertyResolution', [&$propFindRequests]);
+        $fileProperties = $this->server->getNodePropertiesGenerator($propFindRequests);
 
         // This is a multi-status response
         $response->setStatus(207);
@@ -334,16 +320,17 @@ class CorePlugin extends ServerPlugin
         // Normally this header is only needed for OPTIONS responses, however..
         // iCal seems to also depend on these being set for PROPFIND. Since
         // this is not harmful, we'll add it.
-        $features = ['1', '3', 'extended-mkcol'];
+        $features = [['1', '3', 'extended-mkcol']];
         foreach ($this->server->getPlugins() as $plugin) {
-            $features = array_merge($features, $plugin->getFeatures());
+            $features[] = $plugin->getFeatures();
         }
+        $features = array_merge(...$features);
         $response->setHeader('DAV', implode(', ', $features));
 
         $prefer = $this->server->getHTTPPrefer();
         $minimal = 'minimal' === $prefer['return'];
 
-        $data = $this->server->generateMultiStatus($newProperties, $minimal);
+        $data = $this->server->generateMultiStatus($fileProperties, $minimal);
         $response->setBody($data);
 
         // Sending back false will interrupt the event chain and tell the server
@@ -903,5 +890,49 @@ class CorePlugin extends ServerPlugin
             'description' => 'The Core plugin provides a lot of the basic functionality required by WebDAV, such as a default implementation for all HTTP and WebDAV methods.',
             'link' => null,
         ];
+    }
+
+    /**
+     * Parses the PROPFIND request body and returns a PropFind XML object.
+     *
+     * If the request body contains XML, it is parsed using the server's XML service
+     * and must represent a {DAV:}propfind element. If the body is empty, a default
+     * PropFind(XML) object is created that requests all properties.
+     *
+     * @return array|Xml\Request\PropFind|string
+     *
+     * @throws BadRequest
+     */
+    public function parseRequestedProperties(RequestInterface $request)
+    {
+        $requestBody = $request->getBodyAsString();
+        if (strlen($requestBody)) {
+            try {
+                $propFindXml =
+                    $this->server->xml->expect('{DAV:}propfind', $requestBody);
+            } catch (ParseException $e) {
+                throw new BadRequest($e->getMessage(), 0, $e);
+            }
+        } else {
+            $propFindXml = new Xml\Request\PropFind();
+            $propFindXml->allProp = true;
+            $propFindXml->properties = [];
+        }
+
+        return $propFindXml;
+    }
+
+    /**
+     * Returns the appropriate value for depth from the HTTP request.
+     */
+    protected function getDepth(): int
+    {
+        $depth = $this->server->getHTTPDepth(1);
+        // The only two options for the depth of a propfind is 0 or 1 - as long as depth infinity is not enabled
+        if (!$this->server->enablePropfindDepthInfinity && 0 != $depth) {
+            $depth = 1;
+        }
+
+        return $depth;
     }
 }

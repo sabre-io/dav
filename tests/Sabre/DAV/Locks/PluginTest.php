@@ -929,5 +929,9 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
         self::assertEquals(201, $this->response->status);
+        $xml = $this->getSanitizedBodyAsXml();
+        $xml->registerXPathNamespace('d', 'prop:DAV');
+        $token = $xml->xpath('/d:prop/d:lockdiscovery/d:activelock/d:locktoken/d:href');
+        self::assertEquals($this->response->getHeader('Lock-Token'), '<'.(string) $token[0].'>', 'Token in response body didn\'t match token in response header.');	
     }
 }

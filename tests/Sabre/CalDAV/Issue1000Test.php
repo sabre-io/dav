@@ -94,6 +94,6 @@ END:VCALENDAR
         $response = $this->request($request);
 
         self::assertTrue(strpos($response->getBodyAsString(), 'event2.ics') > 0);
-        self::assertTrue(strpos($response->getBodyAsString(), 'event1.ics') === false);
+        self::assertTrue(false === strpos($response->getBodyAsString(), 'event1.ics'));
     }
 }

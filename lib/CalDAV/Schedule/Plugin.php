@@ -378,7 +378,7 @@ class Plugin extends ServerPlugin
 
         $node = $this->server->tree->getNodeForPath($path);
 
-        if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject) {
+        if (!$node instanceof ICalendarObject || $node instanceof ISchedulingObject || !$node instanceof DAVACL\IACL) {
             return;
         }
 
@@ -386,10 +386,13 @@ class Plugin extends ServerPlugin
             return;
         }
 
-        $addresses = $this->getAddressesForPrincipal(
-            $node->getOwner()
-        );
+        $owner = $node->getOwner();
 
+        if (!$owner) {
+            return;
+        }
+
+        $addresses = $this->getAddressesForPrincipal($owner);
         $broker = $this->createITipBroker();
         $messages = $broker->parseEvent(null, $addresses, $node->get());
 

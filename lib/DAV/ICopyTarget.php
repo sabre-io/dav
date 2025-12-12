@@ -31,8 +31,11 @@ interface ICopyTarget extends ICollection
      * @param string $targetName new local file/collection name
      * @param string $sourcePath Full path to source node
      * @param INode  $sourceNode Source node itself
+     * @param int    $depth      How many level of children to copy.
+     *                           The value can be 'infinity' (Sabre\DAV\Server::DEPTH_INFINITY) or a positive number including zero.
+     *                           Zero means to only copy a shallow collection with props but without children.
      *
      * @return bool
      */
-    public function copyInto($targetName, $sourcePath, INode $sourceNode);
+    public function copyInto($targetName, $sourcePath, INode $sourceNode, int $depth);
 }

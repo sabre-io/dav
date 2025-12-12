@@ -585,6 +585,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $request = new HTTP\Request('COPY', '/dir/child.txt', [
             'Destination' => '/dir/child2.txt',
+            'Depth' => 'infinity',
         ]);
 
         $this->server->httpRequest = $request;
@@ -619,6 +620,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $request = new HTTP\Request('COPY', '/dir/child.txt', [
             'Destination' => '/dir/child2.txt',
+            'Depth' => 'infinity',
         ]);
         $this->server->httpRequest = $request;
         $this->server->exec();

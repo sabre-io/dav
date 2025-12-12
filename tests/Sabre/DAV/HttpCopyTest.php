@@ -21,13 +21,21 @@ class HttpCopyTest extends AbstractDAVServerTestCase
      */
     public function setUpTree()
     {
-        $this->tree = new Mock\Collection('root', [
+        $propsCollection = new Mock\PropertiesCollection('propscoll', [
+            'file3' => 'content3',
+            'file4' => 'content4',
+        ], [
+            'my-prop' => 'my-value',
+        ]);
+        $propsCollection->failMode = 'updatepropstrue';
+        $this->tree = new Mock\PropertiesCollection('root', [
             'file1' => 'content1',
             'file2' => 'content2',
-            'coll1' => [
+            'coll1' => new Mock\Collection('coll1', [
                 'file3' => 'content3',
                 'file4' => 'content4',
-            ],
+            ]),
+            'propscoll' => $propsCollection,
         ]);
     }
 
@@ -35,6 +43,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file5',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(201, $response->getStatus());
@@ -54,6 +63,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(204, $response->getStatus());
@@ -64,6 +74,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'T',
         ]);
         $response = $this->request($request);
@@ -75,6 +86,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'B',
         ]);
         $response = $this->request($request);
@@ -85,6 +97,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/notfound/file2',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(409, $response->getStatus());
@@ -94,6 +107,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'F',
         ]);
         $response = $this->request($request);
@@ -110,6 +124,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
         });
         $request = new HTTP\Request('COPY', '/file1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'T',
         ]);
         $response = $this->request($request);
@@ -122,16 +137,39 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/coll2',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(201, $response->getStatus());
         self::assertEquals('content3', $this->tree->getChild('coll2')->getChild('file3')->get());
     }
 
+    public function testShallowCopyColl()
+    {
+        // Ensure proppatches are applied
+        $this->tree->failMode = 'updatepropstrue';
+        $request = new HTTP\Request('COPY', '/propscoll', [
+            'Destination' => '/shallow-coll',
+            'Depth' => '0',
+        ]);
+        $response = $this->request($request);
+        // reset
+        $this->tree->failMode = false;
+
+        self::assertEquals(201, $response->getStatus());
+        // The copied collection exists
+        self::assertEquals(true, $this->tree->childExists('shallow-coll'));
+        // But it does not contain children
+        self::assertEquals([], $this->tree->getChild('shallow-coll')->getChildren());
+        // But the properties are preserved
+        self::assertEquals(['my-prop' => 'my-value'], $this->tree->getChild('shallow-coll')->getProperties([]));
+    }
+
     public function testCopyCollToSelf()
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/coll1',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(403, $response->getStatus());
@@ -141,6 +179,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(204, $response->getStatus());
@@ -151,6 +190,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'T',
         ]);
         $response = $this->request($request);
@@ -162,6 +202,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/file2',
+            'Depth' => 'infinity',
             'Overwrite' => 'F',
         ]);
         $response = $this->request($request);
@@ -173,6 +214,7 @@ class HttpCopyTest extends AbstractDAVServerTestCase
     {
         $request = new HTTP\Request('COPY', '/coll1', [
             'Destination' => '/coll1/subcol',
+            'Depth' => 'infinity',
         ]);
         $response = $this->request($request);
         self::assertEquals(409, $response->getStatus());

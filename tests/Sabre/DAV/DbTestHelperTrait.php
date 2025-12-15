@@ -48,13 +48,22 @@ trait DbTestHelperTrait
                     $dsn = getenv('SABRE_MYSQLDSN');
                     $user = getenv('SABRE_MYSQLUSER');
                     $pass = getenv('SABRE_MYSQLPASS');
+                    if (empty($dsn)) {
+                        DbCache::$cache[$this->driver] = null;
+                        $this->markTestSkipped('SABRE_MYSQLDSN not set');
+                    }
                     $pdo = new PDO($dsn, $user, $pass);
                     break;
                 case 'sqlite':
                     $pdo = new PDO('sqlite:'.TestUtil::SABRE_TEMPDIR.'/testdb');
                     break;
                 case 'pgsql':
-                    $pdo = new PDO(getenv('SABRE_PGSQLDSN'));
+                    $dsn = getenv('SABRE_PGSQLDSN');
+                    if (empty($dsn)) {
+                        DbCache::$cache[$this->driver] = null;
+                        $this->markTestSkipped('SABRE_PGSQLDSN not set');
+                    }
+                    $pdo = new PDO($dsn);
                     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
                     preg_match('|([0-9\.]){5,}|', $version, $matches);
                     $version = $matches[0];

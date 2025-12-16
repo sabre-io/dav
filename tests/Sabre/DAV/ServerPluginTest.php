@@ -56,7 +56,7 @@ class ServerPluginTest extends AbstractServerTestCase
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals('', $this->response->getBodyAsString());
         self::assertEquals('OPTIONS', $this->testPlugin->beforeMethod);
     }

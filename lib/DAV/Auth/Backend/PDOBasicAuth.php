@@ -13,7 +13,7 @@ class PDOBasicAuth extends AbstractBasic
     /**
      * Reference to PDO connection.
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 

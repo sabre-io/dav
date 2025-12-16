@@ -7,11 +7,11 @@ namespace Sabre\CardDAV;
 class CardTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\CardDAV\Card
+     * @var Card
      */
     protected $card;
     /**
-     * @var Sabre\CardDAV\MockBackend
+     * @var Backend\Mock
      */
     protected $backend;
 

@@ -156,8 +156,8 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport
     /**
      * This method is called when a user replied to a request to share.
      *
-     * @param string href The sharee who is replying (often a mailto: address)
-     * @param int status One of the \Sabre\DAV\Sharing\Plugin::INVITE_* constants
+     * @param string $href        The sharee who is replying (often a mailto: address)
+     * @param int    $status      One of the \Sabre\DAV\Sharing\Plugin::INVITE_* constants
      * @param string $calendarUri The url to the calendar thats being shared
      * @param string $inReplyTo   The unique id this message is a response to
      * @param string $summary     A description of the reply

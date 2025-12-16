@@ -204,7 +204,7 @@ abstract class AbstractDAVServerTestCase extends TestCase
         if (is_array($request)) {
             $request = HTTP\Sapi::createFromServerArray($request);
         }
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;

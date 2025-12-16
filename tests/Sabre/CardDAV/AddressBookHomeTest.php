@@ -9,7 +9,7 @@ use Sabre\DAV\MkCol;
 class AddressBookHomeTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\CardDAV\AddressBookHome
+     * @var AddressBookHome
      */
     protected $s;
     protected $backend;

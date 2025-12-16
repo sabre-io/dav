@@ -147,7 +147,7 @@ BLA
         $response = $this->request($request);
 
         self::assertEquals('', $response->getBodyAsString(), 'Expected empty body: '.$response->getBodyAsString());
-        self::assertEquals(204, $response->status);
+        self::assertEquals(204, $response->getStatus());
     }
 
     public function testproppatchMinimalError()
@@ -169,7 +169,7 @@ BLA
 
         $body = $response->getBodyAsString();
 
-        self::assertEquals(207, $response->status);
+        self::assertEquals(207, $response->getStatus());
         self::assertTrue(false !== strpos($body, 'something'));
         self::assertTrue(false !== strpos($body, '403 Forbidden'), $body);
     }

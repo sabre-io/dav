@@ -10,7 +10,7 @@ use Sabre\DAV\MkCol;
 class CalendarHomeTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\CalDAV\CalendarHome
+     * @var CalendarHome
      */
     protected $usercalendars;
 

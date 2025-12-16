@@ -19,7 +19,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
-        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $fakeServer->httpResponse = new HTTP\Response();
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         self::assertTrue($plugin instanceof Plugin);
@@ -48,7 +48,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(400, $server->httpResponse->status);
+        self::assertEquals(400, $server->httpResponse->getStatus());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -74,7 +74,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(400, $server->httpResponse->status, $server->httpResponse->getBodyAsString());
+        self::assertEquals(400, $server->httpResponse->getStatus(), $server->httpResponse->getBodyAsString());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -101,7 +101,7 @@ class PrincipalSearchPropertySetTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        self::assertEquals(200, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals(200, $server->httpResponse->getStatus(), $bodyAsString);
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],

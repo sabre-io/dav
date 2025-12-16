@@ -11,7 +11,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
     use \Sabre\DAV\DbTestHelperTrait;
 
     /**
-     * @var Sabre\CardDAV\AddressBook
+     * @var AddressBook
      */
     protected $ab;
     protected $backend;

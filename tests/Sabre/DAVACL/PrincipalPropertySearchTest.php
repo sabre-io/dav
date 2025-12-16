@@ -19,10 +19,9 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
 
         $fakeServer = new DAV\Server($dir);
         $fakeServer->sapi = new HTTP\SapiMock();
-        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $fakeServer->httpResponse = new HTTP\Response();
         $fakeServer->debugExceptions = true;
         $plugin = new MockPlugin();
-        $plugin->allowAccessToNodesWithoutACL = true;
         $plugin->allowUnauthenticatedAccess = false;
 
         self::assertTrue($plugin instanceof Plugin);
@@ -139,7 +138,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals(207, $server->httpResponse->getStatus(), $bodyAsString);
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -211,7 +210,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals(207, $server->httpResponse->getStatus(), $bodyAsString);
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -283,7 +282,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals(207, $server->httpResponse->getStatus(), $bodyAsString);
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -348,7 +347,7 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         $bodyAsString = $server->httpResponse->getBodyAsString();
-        self::assertEquals(207, $server->httpResponse->status, $bodyAsString);
+        self::assertEquals(207, $server->httpResponse->getStatus(), $bodyAsString);
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],

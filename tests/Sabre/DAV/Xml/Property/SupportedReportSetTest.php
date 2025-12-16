@@ -36,7 +36,7 @@ class SupportedReportSetTest extends DAV\AbstractServerTestCase
         $this->sendPROPFIND($xml);
 
         $bodyAsString = $this->response->getBodyAsString();
-        self::assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->getStatus(), 'We expected a multi-status response. Full response body: '.$bodyAsString);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);
@@ -77,7 +77,7 @@ class SupportedReportSetTest extends DAV\AbstractServerTestCase
         $this->sendPROPFIND($xml);
 
         $bodyAsString = $this->response->getBodyAsString();
-        self::assertEquals(207, $this->response->status, 'We expected a multi-status response. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->getStatus(), 'We expected a multi-status response. Full response body: '.$bodyAsString);
 
         $body = preg_replace("/xmlns(:[A-Za-z0-9_])?=(\"|\')DAV:(\"|\')/", 'xmlns\\1="urn:DAV"', $bodyAsString);
         $xml = simplexml_load_string($body);

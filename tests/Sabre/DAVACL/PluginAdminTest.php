@@ -37,14 +37,14 @@ class PluginAdminTest extends \PHPUnit\Framework\TestCase
             'REQUEST_URI' => '/adminonly',
         ]);
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
 
         $this->server->exec();
 
-        self::assertEquals(403, $response->status);
+        self::assertEquals(403, $response->getStatus());
     }
 
     /**
@@ -64,13 +64,13 @@ class PluginAdminTest extends \PHPUnit\Framework\TestCase
             'REQUEST_URI' => '/adminonly',
         ]);
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
 
         $this->server->exec();
 
-        self::assertEquals(200, $response->status);
+        self::assertEquals(200, $response->getStatus());
     }
 }

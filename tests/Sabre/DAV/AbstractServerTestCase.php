@@ -6,13 +6,13 @@ namespace Sabre\DAV;
 
 use PHPUnit\Framework\TestCase;
 use Sabre\HTTP;
-use Sabre\HTTP\ResponseMock;
+use Sabre\HTTP\Response;
 use Sabre\TestUtil;
 
 abstract class AbstractServerTestCase extends TestCase
 {
     /**
-     * @var ResponseMock
+     * @var Response
      */
     protected $response;
     protected $request;
@@ -24,7 +24,7 @@ abstract class AbstractServerTestCase extends TestCase
 
     public function setup(): void
     {
-        $this->response = new ResponseMock();
+        $this->response = new Response();
         $this->server = new Server($this->getRootNode());
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->httpResponse = $this->response;

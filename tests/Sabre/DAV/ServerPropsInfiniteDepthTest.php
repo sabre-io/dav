@@ -49,7 +49,7 @@ class ServerPropsInfiniteDepthTest extends AbstractServerTestCase
         $this->sendRequest('');
 
         $bodyAsString = $this->response->getBodyAsString();
-        self::assertEquals(207, $this->response->status, 'Incorrect status received. Full response body: '.$bodyAsString);
+        self::assertEquals(207, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$bodyAsString);
 
         self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],

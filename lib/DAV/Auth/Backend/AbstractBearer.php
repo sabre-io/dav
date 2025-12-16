@@ -89,7 +89,7 @@ abstract class AbstractBearer implements BackendInterface
             $response
         );
 
-        $bearerToken = $auth->getToken($request);
+        $bearerToken = $auth->getToken();
         if (!$bearerToken) {
             return [false, "No 'Authorization: Bearer' header found. Either the client didn't send one, or the server is mis-configured"];
         }

@@ -176,6 +176,7 @@ class TreeDirectoryTester extends SimpleCollection
     public function createFile($name, $data = null)
     {
         $this->newFiles[$name] = $data;
+        return null;
     }
 
     public function getChild($name)

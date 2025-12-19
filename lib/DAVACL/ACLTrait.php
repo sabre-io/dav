@@ -52,7 +52,7 @@ trait ACLTrait
      *   * 'protected' (optional), indicating that this ACE is not allowed to
      *      be updated.
      *
-     * @return array
+     * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
     public function getACL()
     {
@@ -69,6 +69,8 @@ trait ACLTrait
      * Updates the ACL.
      *
      * This method will receive a list of new ACE's as an array argument.
+     *
+     * @param list<array{principal: string, privilege: string, protected?: bool}> $acl
      */
     public function setACL(array $acl)
     {

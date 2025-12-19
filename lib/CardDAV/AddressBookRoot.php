@@ -19,17 +19,13 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection
 {
     /**
      * Principal Backend.
-     *
-     * @var DAVACL\PrincipalBackend\BackendInterface
      */
-    protected $principalBackend;
+    protected DAVACL\PrincipalBackend\BackendInterface $principalBackend;
 
     /**
      * CardDAV backend.
-     *
-     * @var Backend\BackendInterface
      */
-    protected $carddavBackend;
+    protected Backend\BackendInterface $carddavBackend;
 
     /**
      * Constructor.
@@ -40,10 +36,8 @@ class AddressBookRoot extends DAVACL\AbstractPrincipalCollection
      * principals in the 'principals' collection. If your main principals are
      * actually located in a different path, use the $principalPrefix argument
      * to override this.
-     *
-     * @param string $principalPrefix
      */
-    public function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend, Backend\BackendInterface $carddavBackend, $principalPrefix = 'principals')
+    public function __construct(DAVACL\PrincipalBackend\BackendInterface $principalBackend, Backend\BackendInterface $carddavBackend, string $principalPrefix = 'principals')
     {
         $this->carddavBackend = $carddavBackend;
         parent::__construct($principalBackend, $principalPrefix);

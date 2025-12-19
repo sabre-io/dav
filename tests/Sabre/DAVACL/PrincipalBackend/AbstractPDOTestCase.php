@@ -77,7 +77,7 @@ abstract class AbstractPDOTestCase extends TestCase
         ];
 
         self::assertEquals($expected, $backend->getPrincipalByPath('principals/user'));
-        self::assertEquals(null, $backend->getPrincipalByPath('foo'));
+        self::assertEquals([], $backend->getPrincipalByPath('foo'));
     }
 
     public function testGetGroupMemberSet(): void

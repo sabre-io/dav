@@ -199,7 +199,7 @@ class Plugin extends ServerPlugin
      *
      * We need to add a number of privileges for scheduling purposes.
      */
-    public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)
+    public function getSupportedPrivilegeSet(INode $node, array & $supportedPrivilegeSet)
     {
         if ($node instanceof ISharedNode) {
             $supportedPrivilegeSet['{DAV:}share'] = [
@@ -238,7 +238,7 @@ class Plugin extends ServerPlugin
      *
      * @return bool|null
      */
-    public function htmlActionsPanel(INode $node, &$output, $path)
+    public function htmlActionsPanel(INode $node, & $output, $path)
     {
         if (!$node instanceof ISharedNode) {
             return;

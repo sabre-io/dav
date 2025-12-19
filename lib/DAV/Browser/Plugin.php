@@ -490,7 +490,7 @@ HTML;
      *
      * @param string $path
      */
-    public function htmlActionsPanel(DAV\INode $node, &$output, $path)
+    public function htmlActionsPanel(DAV\INode $node, & $output, $path)
     {
         if (!$node instanceof DAV\ICollection) {
             return;

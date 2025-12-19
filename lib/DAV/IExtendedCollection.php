@@ -35,9 +35,7 @@ interface IExtendedCollection extends ICollection
      * plugins (such as the propertystorage plugin) to handle storing the
      * property for you.
      *
-     * @param string $name
-     *
      * @throws Exception\InvalidResourceType
      */
-    public function createExtendedCollection($name, MkCol $mkCol);
+    public function createExtendedCollection(string $name, MkCol $mkCol);
 }

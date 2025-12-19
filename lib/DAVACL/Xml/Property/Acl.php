@@ -32,17 +32,15 @@ class Acl implements Element, HtmlOutput
     /**
      * List of privileges.
      *
-     * @var array
+     * @var array{privilege: string, principal: string, protected?: bool, ...}
      */
-    protected $privileges;
+    protected array $privileges;
 
     /**
      * Whether or not the server base url is required to be prefixed when
      * serializing the property.
-     *
-     * @var bool
      */
-    protected $prefixBaseUrl;
+    protected bool $prefixBaseUrl;
 
     /**
      * Constructor.
@@ -50,7 +48,7 @@ class Acl implements Element, HtmlOutput
      * This object requires a structure similar to the return value from
      * Sabre\DAVACL\Plugin::getACL().
      *
-     * Each privilege is a an array with at least a 'privilege' property, and a
+     * Each privilege is an array with at least a 'privilege' property, and a
      * 'principal' property. A privilege may have a 'protected' property as
      * well.
      *
@@ -58,9 +56,9 @@ class Acl implements Element, HtmlOutput
      * are already full urls. If this is kept to true, the servers base url
      * will automatically be prefixed.
      *
-     * @param bool $prefixBaseUrl
+     * @param array{privilege: string, principal: string, protected?: bool, ...} $privileges
      */
-    public function __construct(array $privileges, $prefixBaseUrl = true)
+    public function __construct(array $privileges, bool $prefixBaseUrl = true)
     {
         $this->privileges = $privileges;
         $this->prefixBaseUrl = $prefixBaseUrl;
@@ -69,9 +67,9 @@ class Acl implements Element, HtmlOutput
     /**
      * Returns the list of privileges for this property.
      *
-     * @return array
+     * @return array{privilege: string, principal: string, protected?: bool, ...}
      */
-    public function getPrivileges()
+    public function getPrivileges(): array
     {
         return $this->privileges;
     }
@@ -109,10 +107,8 @@ class Acl implements Element, HtmlOutput
      *
      * The baseUri parameter is a url to the root of the application, and can
      * be used to construct local links.
-     *
-     * @return string
      */
-    public function toHtml(HtmlOutputHelper $html)
+    public function toHtml(HtmlOutputHelper $html): string
     {
         ob_start();
         echo '<table>';
@@ -156,7 +152,7 @@ class Acl implements Element, HtmlOutput
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $elementMap = [
             '{DAV:}ace' => Element\KeyValue::class,

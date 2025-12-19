@@ -26,13 +26,13 @@ abstract class Collection extends Node implements ICollection
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @param string $name
+     * @throws Exception\NotFound
      *
      * @return INode
      *
      * @throws Exception\NotFound
      */
-    public function getChild($name)
+    public function getChild(string $name)
     {
         foreach ($this->getChildren() as $child) {
             if ($child->getName() === $name) {
@@ -47,11 +47,9 @@ abstract class Collection extends Node implements ICollection
      *
      * It is generally a good idea to try and override this. Usually it can be optimized.
      *
-     * @param string $name
-     *
      * @return bool
      */
-    public function childExists($name)
+    public function childExists(string $name)
     {
         try {
             $this->getChild($name);

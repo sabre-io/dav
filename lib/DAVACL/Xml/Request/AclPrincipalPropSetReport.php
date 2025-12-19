@@ -21,7 +21,7 @@ use Sabre\Xml\XmlDeserializable;
  */
 class AclPrincipalPropSetReport implements XmlDeserializable
 {
-    public $properties = [];
+    public array $properties = [];
 
     /**
      * The deserialize method is called during xml parsing.
@@ -41,7 +41,7 @@ class AclPrincipalPropSetReport implements XmlDeserializable
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $reader->pushContext();
         $reader->elementMap['{DAV:}prop'] = 'Sabre\Xml\Deserializer\enum';

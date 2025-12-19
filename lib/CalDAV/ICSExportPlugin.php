@@ -60,7 +60,7 @@ class ICSExportPlugin extends DAV\ServerPlugin
     {
         $this->server = $server;
         $server->on('method:GET', [$this, 'httpGet'], 90);
-        $server->on('browserButtonActions', function ($path, $node, &$actions) {
+        $server->on('browserButtonActions', function ($path, $node, & $actions) {
             if ($node instanceof ICalendar) {
                 $actions .= '<a href="'.htmlspecialchars($path, ENT_QUOTES, 'UTF-8').'?export"><span class="oi" data-glyph="calendar"></span></a>';
             }

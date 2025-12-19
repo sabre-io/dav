@@ -40,7 +40,7 @@ class PrincipalSearchPropertySetReport implements XmlDeserializable
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         if (!$reader->isEmptyElement) {
             throw new BadRequest('The {DAV:}principal-search-property-set element must be empty');

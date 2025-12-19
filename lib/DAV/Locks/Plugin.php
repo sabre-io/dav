@@ -386,7 +386,7 @@ class Plugin extends DAV\ServerPlugin
      * must be present in the request, and reject requests without the proper
      * tokens.
      */
-    public function validateTokens(RequestInterface $request, &$conditions)
+    public function validateTokens(RequestInterface $request, & $conditions)
     {
         // First we need to gather a list of locks that must be satisfied.
         $mustLocks = [];

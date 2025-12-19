@@ -711,7 +711,7 @@ class Plugin extends DAV\ServerPlugin
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified)
+    public function beforeWriteContent($path, DAV\IFile $node, & $data, & $modified)
     {
         if (!$node instanceof ICalendarObject) {
             return;
@@ -748,7 +748,7 @@ class Plugin extends DAV\ServerPlugin
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified)
+    public function beforeCreateFile($path, & $data, DAV\ICollection $parentNode, & $modified)
     {
         if (!$parentNode instanceof ICalendar) {
             return;
@@ -777,7 +777,7 @@ class Plugin extends DAV\ServerPlugin
      * @param ResponseInterface $response the http response
      * @param bool              $isNew    is the item a new one, or an update
      */
-    protected function validateICalendar(&$data, $path, &$modified, RequestInterface $request, ResponseInterface $response, $isNew)
+    protected function validateICalendar(& $data, $path, & $modified, RequestInterface $request, ResponseInterface $response, $isNew)
     {
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -913,7 +913,7 @@ class Plugin extends DAV\ServerPlugin
      * This method is triggered whenever a subsystem requests the privileges
      * that are supported on a particular node.
      */
-    public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)
+    public function getSupportedPrivilegeSet(INode $node, array & $supportedPrivilegeSet)
     {
         if ($node instanceof ICalendar) {
             $supportedPrivilegeSet['{DAV:}read']['aggregates']['{'.self::NS_CALDAV.'}read-free-busy'] = [
@@ -932,7 +932,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(INode $node, &$output)
+    public function htmlActionsPanel(INode $node, & $output)
     {
         if (!$node instanceof CalendarHome) {
             return;

@@ -40,14 +40,12 @@ interface ICollection extends INode
      *
      * @return string|null
      */
-    public function createFile($name, $data = null);
+    public function createFile(string $name, $data = null);
 
     /**
      * Creates a new subdirectory.
-     *
-     * @param string $name
      */
-    public function createDirectory($name);
+    public function createDirectory(string $name);
 
     /**
      * Returns a specific child node, referenced by its name.
@@ -55,11 +53,9 @@ interface ICollection extends INode
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @param string $name
-     *
      * @return INode
      */
-    public function getChild($name);
+    public function getChild(string $name);
 
     /**
      * Returns an array with all the child nodes.
@@ -71,9 +67,7 @@ interface ICollection extends INode
     /**
      * Checks if a child-node with the specified name exists.
      *
-     * @param string $name
-     *
      * @return bool
      */
-    public function childExists($name);
+    public function childExists(string $name);
 }

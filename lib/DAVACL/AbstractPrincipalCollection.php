@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
+use Sabre\DAV\INode;
 use Sabre\Uri;
 
 /**
@@ -23,17 +24,13 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
 {
     /**
      * Principal backend.
-     *
-     * @var PrincipalBackend\BackendInterface
      */
-    protected $principalBackend;
+    protected PrincipalBackend\BackendInterface $principalBackend;
 
     /**
      * The path to the principals we're listing from.
-     *
-     * @var string
      */
-    protected $principalPrefix;
+    protected string $principalPrefix;
 
     /**
      * If this value is set to true, it effectively disables listing of users
@@ -50,10 +47,8 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * filter all principals from a specified prefix ($principalPrefix). The
      * default is 'principals', if your principals are stored in a different
      * collection, override $principalPrefix
-     *
-     * @param string $principalPrefix
      */
-    public function __construct(PrincipalBackend\BackendInterface $principalBackend, $principalPrefix = 'principals')
+    public function __construct(PrincipalBackend\BackendInterface $principalBackend, string $principalPrefix = 'principals')
     {
         $this->principalPrefix = $principalPrefix;
         $this->principalBackend = $principalBackend;
@@ -85,7 +80,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * Return the list of users.
      *
-     * @return array
+     * @return list<INode>
      */
     public function getChildren()
     {
@@ -103,13 +98,11 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * Returns a child object, by its name.
      *
-     * @param string $name
-     *
      * @return DAV\INode
      *
      * @throws DAV\Exception\NotFound
      */
-    public function getChild($name)
+    public function getChild(string $name)
     {
         $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix.'/'.$name);
         if (!$principalInfo) {

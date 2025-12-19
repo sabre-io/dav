@@ -38,9 +38,7 @@ interface IProperties extends INode
      * conforming to the list of requested properties.
      * The Server class will filter out the extra.
      *
-     * @param array $properties
-     *
      * @return array
      */
-    public function getProperties($properties);
+    public function getProperties(array $properties);
 }

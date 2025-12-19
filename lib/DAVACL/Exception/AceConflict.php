@@ -21,7 +21,7 @@ class AceConflict extends DAV\Exception\Conflict
      *
      * This method adds the {DAV:}no-ace-conflict element as defined in rfc3744
      */
-    public function serialize(DAV\Server $server, \DOMElement $errorNode)
+    public function serialize(DAV\Server $server, \DOMElement $errorNode): void
     {
         $doc = $errorNode->ownerDocument;
 

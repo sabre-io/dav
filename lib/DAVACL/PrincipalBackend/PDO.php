@@ -125,12 +125,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * Returns a specific principal, specified by it's path.
      * The returned structure should be the exact same as from
      * getPrincipalsByPrefix.
-     *
-     * @param string $path
-     *
-     * @return array
      */
-    public function getPrincipalByPath($path)
+    public function getPrincipalByPath(string $path): array
     {
         $fields = [
             'id',
@@ -145,7 +141,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
 
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$row) {
-            return;
+            return [];
         }
 
         $principal = [
@@ -172,10 +168,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param string $path
      */
-    public function updatePrincipal($path, DAV\PropPatch $propPatch)
+    public function updatePrincipal(string $path, DAV\PropPatch $propPatch): void
     {
         $propPatch->handle(array_keys($this->fieldMap), function ($properties) use ($path) {
             $query = 'UPDATE '.$this->tableName.' SET ';
@@ -228,10 +222,9 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * searching at all, but keep in mind that this may stop certain features
      * from working.
      *
-     * @param string $prefixPath
-     * @param string $test
+     * @param array<string, string> $searchProperties
      *
-     * @return array
+     * @return list<string>
      */
     public function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof')
     {
@@ -288,13 +281,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      *
      * This method must return a relative principal path, or null, if the
      * principal was not found or you refuse to find it.
-     *
-     * @param string $uri
-     * @param string $principalPrefix
-     *
-     * @return string
      */
-    public function findByUri($uri, $principalPrefix)
+    public function findByUri(string $uri, string $principalPrefix): ?string
     {
         $uriParts = Uri\parse($uri);
 
@@ -344,11 +332,9 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
     /**
      * Returns the list of members for a group-principal.
      *
-     * @param string $principal
-     *
-     * @return array
+     * @return list<string>
      */
-    public function getGroupMemberSet($principal)
+    public function getGroupMemberSet(string $principal): array
     {
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) {
@@ -368,11 +354,9 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
     /**
      * Returns the list of groups a principal is a member of.
      *
-     * @param string $principal
-     *
-     * @return array
+     * @return list<string>
      */
-    public function getGroupMembership($principal)
+    public function getGroupMembership(string $principal): array
     {
         $principal = $this->getPrincipalByPath($principal);
         if (!$principal) {
@@ -393,10 +377,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * Updates the list of group members for a group principal.
      *
      * The principals should be passed as a list of uri's.
-     *
-     * @param string $principal
      */
-    public function setGroupMemberSet($principal, array $members)
+    public function setGroupMemberSet(string $principal, array $members): void
     {
         // Grabbing the list of principal id's.
         $stmt = $this->pdo->prepare('SELECT id, uri FROM '.$this->tableName.' WHERE uri IN (? '.str_repeat(', ? ', count($members)).');');
@@ -431,10 +413,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * This method receives a full path for the new principal. The mkCol object
      * contains any additional webdav properties specified during the creation
      * of the principal.
-     *
-     * @param string $path
      */
-    public function createPrincipal($path, MkCol $mkCol)
+    public function createPrincipal(string $path, MkCol $mkCol)
     {
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->tableName.' (uri) VALUES (?)');
         $stmt->execute([$path]);

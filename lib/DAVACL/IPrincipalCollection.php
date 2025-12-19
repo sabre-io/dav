@@ -37,11 +37,11 @@ interface IPrincipalCollection extends DAV\ICollection
      * This method should simply return a list of 'child names', which may be
      * used to call $this->getChild in the future.
      *
-     * @param string $test
+     * @param array<string, string> $searchProperties
      *
-     * @return array
+     * @return array<string, string>
      */
-    public function searchPrincipals(array $searchProperties, $test = 'allof');
+    public function searchPrincipals(array $searchProperties, string $test = 'allof');
 
     /**
      * Finds a principal by its URI.
@@ -56,9 +56,7 @@ interface IPrincipalCollection extends DAV\ICollection
      * This method must return a relative principal path, or null, if the
      * principal was not found or you refuse to find it.
      *
-     * @param string $uri
-     *
      * @return string
      */
-    public function findByUri($uri);
+    public function findByUri(string $uri);
 }

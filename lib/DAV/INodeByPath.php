@@ -24,13 +24,11 @@ interface INodeByPath
      * Returns the INode object for the requested path.
      *
      * In case where this collection can not retrieve the requested node
-     * but also can not determine that the node does not exists,
+     * but also can not determine that the node does not exist,
      * null should be returned to signal that the caller should fallback
      * to walking the directory tree.
      *
-     * @param string $path
-     *
      * @return INode|null
      */
-    public function getNodeForPath($path);
+    public function getNodeForPath(string $path);
 }

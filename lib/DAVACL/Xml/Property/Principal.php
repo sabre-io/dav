@@ -57,11 +57,8 @@ class Principal extends DAV\Xml\Property\Href
      * The 'type' argument must be one of the type constants defined in this class.
      *
      * 'href' is only required for the HREF type.
-     *
-     * @param int         $type
-     * @param string|null $href
      */
-    public function __construct($type, $href = null)
+    public function __construct(int $type, ?string $href = null)
     {
         $this->type = $type;
         if (self::HREF === $type && is_null($href)) {
@@ -75,10 +72,8 @@ class Principal extends DAV\Xml\Property\Href
 
     /**
      * Returns the principal type.
-     *
-     * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -127,10 +122,8 @@ class Principal extends DAV\Xml\Property\Href
      *
      * The baseUri parameter is a url to the root of the application, and can
      * be used to construct local links.
-     *
-     * @return string
      */
-    public function toHtml(HtmlOutputHelper $html)
+    public function toHtml(HtmlOutputHelper $html): string
     {
         switch ($this->type) {
             case self::UNAUTHENTICATED:
@@ -164,7 +157,7 @@ class Principal extends DAV\Xml\Property\Href
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $tree = $reader->parseInnerTree()[0];
 

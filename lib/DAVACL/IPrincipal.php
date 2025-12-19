@@ -22,7 +22,7 @@ interface IPrincipal extends DAV\INode
      *
      * This can for example be an email address, or ldap url.
      *
-     * @return array
+     * @return list<string>
      */
     public function getAlternateUriSet();
 
@@ -39,7 +39,7 @@ interface IPrincipal extends DAV\INode
      * If this principal is a group, this function should return
      * all member principal uri's for the group.
      *
-     * @return array
+     * @return list<string>
      */
     public function getGroupMemberSet();
 
@@ -49,7 +49,7 @@ interface IPrincipal extends DAV\INode
      * If this principal is a member of a (list of) groups, this function
      * should return a list of principal uri's for it's members.
      *
-     * @return array
+     * @return list<string>
      */
     public function getGroupMembership();
 
@@ -60,6 +60,8 @@ interface IPrincipal extends DAV\INode
      * The list of members is always overwritten, never appended to.
      *
      * This method should throw an exception if the members could not be set.
+     *
+     * @param list<string> $principals
      */
     public function setGroupMemberSet(array $principals);
 

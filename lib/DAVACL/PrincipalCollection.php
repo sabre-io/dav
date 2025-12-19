@@ -31,7 +31,7 @@ class PrincipalCollection extends AbstractPrincipalCollection implements IExtend
      *
      * @return \Sabre\DAV\INode
      */
-    public function getChildForPrincipal(array $principal)
+    public function getChildForPrincipal(array $principal): Principal
     {
         return new Principal($this->principalBackend, $principal);
     }
@@ -55,11 +55,9 @@ class PrincipalCollection extends AbstractPrincipalCollection implements IExtend
      * plugins (such as the propertystorage plugin) to handle storing the
      * property for you.
      *
-     * @param string $name
-     *
      * @throws InvalidResourceType
      */
-    public function createExtendedCollection($name, MkCol $mkCol)
+    public function createExtendedCollection(string $name, MkCol $mkCol)
     {
         if (!$mkCol->hasResourceType('{DAV:}principal')) {
             throw new InvalidResourceType('Only resources of type {DAV:}principal may be created here');
@@ -81,9 +79,9 @@ class PrincipalCollection extends AbstractPrincipalCollection implements IExtend
      *   * 'protected' (optional), indicating that this ACE is not allowed to
      *      be updated.
      *
-     * @return array
+     * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
-    public function getACL()
+    public function getACL(): array
     {
         return [
             [

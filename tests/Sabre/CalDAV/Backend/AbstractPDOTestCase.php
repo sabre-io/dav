@@ -903,6 +903,72 @@ abstract class AbstractPDOTestCase extends TestCase
         self::assertTrue(in_array('event2', $result));
     }
 
+    public function testCalendarQueryGH1000()
+    {
+        $backend = new PDO($this->pdo);
+        $backend->createCalendarObject([1, 1], 'event1', <<<EOF
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            BEGIN:VEVENT
+            UID:event1
+            DTSTAMP:20120418T152519Z
+            DTSTART;VALUE=DATE:20120330
+            DTEND;VALUE=DATE:20120531
+            SEQUENCE:1
+            SUMMARY:Birthday1
+            BEGIN:VALARM
+            ACTION:EMAIL
+            ATTENDEE:MAILTO:xxx@domain.de
+            TRIGGER;VALUE=DATE-TIME:20120329T060000Z
+            END:VALARM
+            END:VEVENT
+            END:VCALENDAR
+            EOF
+        );
+        $backend->createCalendarObject([1, 1], 'event2', <<<EOF
+            BEGIN:VCALENDAR
+            VERSION:2.0
+            BEGIN:VEVENT
+            UID:event2
+            DTSTAMP:20120418T152519Z
+            DTSTART;VALUE=DATE:20120330
+            DTEND;VALUE=DATE:20120531
+            SEQUENCE:1
+            SUMMARY:Birthday2
+            END:VEVENT
+            END:VCALENDAR
+            EOF
+        );
+
+        $filters = [
+            'name' => 'VCALENDAR',
+            'is-not-defined' => false,
+            'comp-filters' => [
+                [
+                    'name' => 'VEVENT',
+                    'is-not-defined' => false,
+                    'comp-filters' => [
+                        [
+                            'name' => 'VALARM',
+                            'is-not-defined' => true,
+                            'comp-filters' => [],
+                            'prop-filters' => [],
+                            'time-range' => null,
+                        ],
+                    ],
+                    'prop-filters' => [],
+                    'time-range' => false,
+                ],
+            ],
+            'prop-filters' => [],
+            'time-range' => null,
+        ];
+
+        $result = $backend->calendarQuery([1, 1], $filters);
+        self::assertFalse(in_array('event1', $result));
+        self::assertTrue(in_array('event2', $result));
+    }
+
     public function testGetChanges()
     {
         $backend = new PDO($this->pdo);

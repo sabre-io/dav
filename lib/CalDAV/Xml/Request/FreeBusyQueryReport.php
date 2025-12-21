@@ -75,12 +75,18 @@ class FreeBusyQueryReport implements XmlDeserializable
         if (!$start && !$end) {
             throw new BadRequest('The freebusy report must have a time-range element');
         }
-        if ($start) {
-            $start = DateTimeParser::parseDateTime($start);
+
+        try {
+            if ($start) {
+                $start = DateTimeParser::parseDateTime($start);
+            }
+            if ($end) {
+                $end = DateTimeParser::parseDateTime($end);
+            }
+        } catch (\Throwable $e) {
+            throw new BadRequest($e->getMessage(), $e->getCode(), $e);
         }
-        if ($end) {
-            $end = DateTimeParser::parseDateTime($end);
-        }
+
         $result = new self();
         $result->start = $start;
         $result->end = $end;

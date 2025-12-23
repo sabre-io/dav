@@ -73,7 +73,7 @@ class PropFindQuotaTest extends AbstractDAVServerTestCase
 
         self::assertSame(207, $response->getStatus());
         $expected = '<d:propstat><d:prop><d:quota-used-bytes/><d:quota-available-bytes/></d:prop>'
-            . '<d:status>HTTP/1.1 404 Not Found</d:status></d:propstat>';
+            .'<d:status>HTTP/1.1 404 Not Found</d:status></d:propstat>';
         self::assertTrue(strpos($xml, $expected) > 0);
     }
 }

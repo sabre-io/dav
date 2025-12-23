@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-Use Sabre\AbstractDAVServerTestCase;
+use Sabre\AbstractDAVServerTestCase;
 use Sabre\Http;
 
 class PropFindQuotaTest extends AbstractDAVServerTestCase

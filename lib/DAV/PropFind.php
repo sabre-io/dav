@@ -53,8 +53,6 @@ class PropFind
                 '{DAV:}getlastmodified',
                 '{DAV:}getcontentlength',
                 '{DAV:}resourcetype',
-                '{DAV:}quota-used-bytes',
-                '{DAV:}quota-available-bytes',
                 '{DAV:}getetag',
                 '{DAV:}getcontenttype',
             ];

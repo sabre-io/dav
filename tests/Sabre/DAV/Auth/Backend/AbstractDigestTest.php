@@ -130,5 +130,7 @@ class AbstractDigestMock extends AbstractDigest
             case 'array': return [];
             case 'user': return 'HELLO';
         }
+
+        return null;
     }
 }

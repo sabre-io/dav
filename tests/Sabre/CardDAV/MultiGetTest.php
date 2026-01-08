@@ -27,7 +27,7 @@ class MultiGetTest extends AbstractPluginTestCase
 </c:addressbook-multiget>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -35,7 +35,7 @@ class MultiGetTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -70,7 +70,7 @@ class MultiGetTest extends AbstractPluginTestCase
 </c:addressbook-multiget>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -78,7 +78,7 @@ class MultiGetTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);

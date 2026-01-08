@@ -36,7 +36,7 @@ class Plugin extends ServerPlugin
      * This is useful if you want to allow both authenticated and
      * unauthenticated access to your server.
      *
-     * @param bool
+     * @var bool
      */
     public $autoRequireLogin = true;
 

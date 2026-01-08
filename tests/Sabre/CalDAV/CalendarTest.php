@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
+use Sabre\CalDAV;
 use Sabre\DAV\PropPatch;
 
 class CalendarTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\CalDAV\Backend\PDO
+     * @var CalDAV\Backend\PDO
      */
     protected $backend;
     protected $principalBackend;
     /**
-     * @var Sabre\CalDAV\Calendar
+     * @var CalDAV\Calendar
      */
     protected $calendar;
     /**

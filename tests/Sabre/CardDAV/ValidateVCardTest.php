@@ -37,7 +37,7 @@ class ValidateVCardTest extends \PHPUnit\Framework\TestCase
         $plugin = new Plugin();
         $this->server->addPlugin($plugin);
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
         $this->server->httpResponse = $response;
     }
 
@@ -72,7 +72,7 @@ class ValidateVCardTest extends \PHPUnit\Framework\TestCase
 
         $response = $this->request($request);
 
-        self::assertEquals(415, $response->status);
+        self::assertEquals(415, $response->getStatus());
     }
 
     public function testCreateFileValid()
@@ -238,7 +238,7 @@ VCF;
 
         $response = $this->request($request);
 
-        self::assertEquals(201, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
+        self::assertEquals(201, $response->getStatus(), 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
 
         $foo = $this->cardBackend->getCard('addressbook1', 'blabla.vcf');
         self::assertEquals("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:foo\r\nFN:FirstName LastName\r\nEND:VCARD\r\n", $foo['carddata']);
@@ -254,7 +254,7 @@ VCF;
 
         $response = $this->request($request);
 
-        self::assertEquals(415, $response->status, 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
+        self::assertEquals(415, $response->getStatus(), 'Incorrect status returned! Full response body: '.$response->getBodyAsString());
     }
 
     public function testUpdateFile()

@@ -16,7 +16,7 @@ class PDO extends AbstractDigest
     /**
      * Reference to PDO connection.
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 

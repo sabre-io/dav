@@ -77,7 +77,7 @@ interface IFile extends INode
     /**
      * Returns the size of the node, in bytes.
      *
-     * @return int
+     * @return int|float
      */
     public function getSize();
 }

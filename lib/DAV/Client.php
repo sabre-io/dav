@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
+use Sabre\DAV\Xml\Response\MultiStatus;
 use Sabre\HTTP;
 use Sabre\Uri;
 
@@ -472,6 +473,7 @@ class Client extends HTTP\Client
      */
     public function parseMultiStatus($body)
     {
+        /** @var MultiStatus $multistatus */
         $multistatus = $this->xml->expect('{DAV:}multistatus', $body);
 
         $result = [];

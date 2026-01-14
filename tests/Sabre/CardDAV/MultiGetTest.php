@@ -96,4 +96,59 @@ class MultiGetTest extends AbstractPluginTestCase
             ],
         ], $result);
     }
+
+    public function testMultiGet404()
+    {
+        $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD' => 'REPORT',
+            'REQUEST_URI' => '/addressbooks/user1/book1',
+        ]);
+
+        $request->setBody(
+            '<?xml version="1.0"?>
+<c:addressbook-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:carddav">
+    <d:prop>
+      <d:getetag />
+      <c:address-data />
+    </d:prop>
+    <d:href>/addressbooks/user1/unknown/card1</d:href>
+    <d:href>/addressbooks/user1/book1/card1</d:href>
+    <d:href>/addressbooks/user1/book1/unknown-card</d:href>
+</c:addressbook-multiget>'
+        );
+
+        $response = new HTTP\ResponseMock();
+
+        $this->server->httpRequest = $request;
+        $this->server->httpResponse = $response;
+
+        $this->server->exec();
+
+        $this->assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$response->body);
+
+        $this->assertXmlStringEqualsXmlString('<?xml version="1.0"?>
+<d:multistatus xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns" xmlns:card="urn:ietf:params:xml:ns:carddav">
+ <d:response>
+  <d:href>/addressbooks/user1/unknown/card1</d:href>
+  <d:status>HTTP/1.1 404 Not Found</d:status>
+ </d:response>
+ <d:response>
+  <d:href>/addressbooks/user1/book1/card1</d:href>
+    <d:propstat>
+      <d:prop>
+        <d:getetag>"ffe3b42186ba156c84fc1581c273f01c"</d:getetag>
+        <card:address-data>BEGIN:VCARD
+VERSION:3.0
+UID:12345
+END:VCARD</card:address-data>
+      </d:prop>
+      <d:status>HTTP/1.1 200 OK</d:status>
+    </d:propstat>
+ </d:response>
+ <d:response>
+  <d:href>/addressbooks/user1/book1/unknown-card</d:href>
+  <d:status>HTTP/1.1 404 Not Found</d:status>
+ </d:response>
+</d:multistatus>', $response->body);
+    }
 }

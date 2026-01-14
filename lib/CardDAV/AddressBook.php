@@ -102,8 +102,10 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
         $objs = $this->carddavBackend->getMultipleCards($this->addressBookInfo['id'], $paths);
         $children = [];
         foreach ($objs as $obj) {
-            $obj['acl'] = $this->getChildACL();
-            $children[] = new Card($this->carddavBackend, $this->addressBookInfo, $obj);
+            if (is_array($obj)) {
+                $obj['acl'] = $this->getChildACL();
+                $children[] = new Card($this->carddavBackend, $this->addressBookInfo, $obj);
+            }
         }
 
         return $children;

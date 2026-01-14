@@ -129,8 +129,12 @@ class IMipPlugin extends DAV\ServerPlugin
         if (DAV\Server::$exposeVersion) {
             $headers[] = 'X-Sabre-Version: '.DAV\Version::VERSION;
         }
+
+        preg_match_all("/[\._a-zA-Z0-9-]+@[\._a-zA-Z0-9-]+/i", $recipient, $matches);
+        $recipient_email = $matches[0][0];
+
         $this->mail(
-            $recipient,
+            $recipient_email,
             $subject,
             $iTipMessage->message->serialize(),
             $headers

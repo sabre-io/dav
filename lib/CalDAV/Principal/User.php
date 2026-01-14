@@ -131,6 +131,22 @@ class User extends DAVACL\Principal implements DAV\ICollection
             'protected' => true,
         ];
 
+        /**
+         * Members of shared calendars needs to be able to read information about the owner.
+         * 
+         * The Principal has no knowledge about the calendars and therefore it is not 
+         * possible to limit the access to members of a shared calendar 
+         * in DAVACL/Plugin.php getCurrentUserPrivilegeSet.
+         * 
+         * As workaround all authenticated users are getting the read privilege for other users.
+         */
+
+         $acl[] = [
+            'privilege' => '{DAV:}read',
+            'principal' => '{DAV:}authenticated',
+            'protected' => true,
+        ];
+
         return $acl;
     }
 }

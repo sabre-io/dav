@@ -216,4 +216,16 @@ class SharedCalendar extends Calendar implements ISharedCalendar
 
         return $acl;
     }
+
+    /**
+     * Returns the 'original owner principal' for this shared resource.
+     *
+     * This must be a url to a principal, or null if there's no owner
+     *
+     * @return string|null
+     */
+    public function getOwnerPrincipal()
+    {
+        return isset($this->calendarInfo['owner-principal']) ? $this->calendarInfo['owner-principal'] : $this->getOwner();
+    }
 }

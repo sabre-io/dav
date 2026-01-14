@@ -407,7 +407,37 @@ class Plugin extends DAV\ServerPlugin
                 throw new ReportNotSupported('The addressbook-query report is not supported on this url with Depth: 0');
             }
         } else {
-            $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
+            $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());
+            if ($node instanceof IAddressBookObjectContainer) {
+                $candidateNodes = $node->addressBookQuery($report);
+                $validNodes = $this->server->tree->getMultipleNodes(array_map(function (string $path) {
+                    return $this->server->getRequestUri() . '/' . $path;
+                }, $candidateNodes));
+            } else {
+                $candidateNodes = $this->server->tree->getChildren($this->server->getRequestUri());
+                $validNodes = [];
+                foreach ($candidateNodes as $node) {
+                    if (!$node instanceof ICard) {
+                        continue;
+                    }
+
+                    $blob = $node->get();
+                    if (is_resource($blob)) {
+                        $blob = stream_get_contents($blob);
+                    }
+
+                    if (!$this->validateFilters($blob, $report->filters, $report->test)) {
+                        continue;
+                    }
+
+                    $validNodes[] = $node;
+
+                    if ($report->limit && $report->limit <= count($validNodes)) {
+                        // We hit the maximum number of items, we can stop now.
+                        break;
+                    }
+                }
+            }
         }
 
         $contentType = $report->contentType;
@@ -418,29 +448,6 @@ class Plugin extends DAV\ServerPlugin
         $vcardType = $this->negotiateVCard(
             $contentType
         );
-
-        $validNodes = [];
-        foreach ($candidateNodes as $node) {
-            if (!$node instanceof ICard) {
-                continue;
-            }
-
-            $blob = $node->get();
-            if (is_resource($blob)) {
-                $blob = stream_get_contents($blob);
-            }
-
-            if (!$this->validateFilters($blob, $report->filters, $report->test)) {
-                continue;
-            }
-
-            $validNodes[] = $node;
-
-            if ($report->limit && $report->limit <= count($validNodes)) {
-                // We hit the maximum number of items, we can stop now.
-                break;
-            }
-        }
 
         $result = [];
         foreach ($validNodes as $validNode) {

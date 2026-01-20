@@ -188,13 +188,13 @@ abstract class AbstractBackend implements BackendInterface
                         [
                             'name' => 'VEVENT',
                             'is-not-defined' => false,
-                            'time-range' => null,
+                            'time-range' => [],
                             'comp-filters' => [],
                             'prop-filters' => [
                                 [
                                     'name' => 'UID',
                                     'is-not-defined' => false,
-                                    'time-range' => null,
+                                    'time-range' => [],
                                     'text-match' => [
                                         'value' => $uid,
                                         'negate-condition' => false,

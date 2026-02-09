@@ -243,6 +243,27 @@ abstract class AbstractPDOTestCase extends TestCase
         ], $row);
     }
 
+    /**
+     * @see https://github.com/sabre-io/dav/issues/1587
+     */
+    public function testCreateCalendarObjectWithIcsEscapes()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        // ICS data with escaped comma (\,) and newline (\n) in DESCRIPTION.
+        // These are standard RFC 5545 TEXT escapes but trigger PostgreSQL
+        // "invalid input syntax for type bytea" when calendardata is BYTEA
+        // and the parameter is bound as PARAM_STR instead of PARAM_LOB.
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDESCRIPTION:Hello\\, world\\nSecond line\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'ics-escapes-id', $object);
+
+        // Verify round-trip: read it back and compare
+        $result = $backend->getCalendarObject($returnedId, 'ics-escapes-id');
+        self::assertEquals($object, $result['calendardata']);
+    }
+
     public function testGetMultipleObjects()
     {
         $backend = new PDO($this->pdo);

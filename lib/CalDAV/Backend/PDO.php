@@ -466,7 +466,7 @@ SQL
             'lastmodified' => (int) $row['lastmodified'],
             'etag' => '"'.$row['etag'].'"',
             'size' => (int) $row['size'],
-            'calendardata' => is_resource($row['calendardata']) ? stream_get_contents($row['calendardata']) : $row['calendardata'],
+            'calendardata' => $row['calendardata'],
             'component' => strtolower($row['componenttype']),
          ];
     }
@@ -507,7 +507,7 @@ SQL
                     'lastmodified' => (int) $row['lastmodified'],
                     'etag' => '"'.$row['etag'].'"',
                     'size' => (int) $row['size'],
-                    'calendardata' => is_resource($row['calendardata']) ? stream_get_contents($row['calendardata']) : $row['calendardata'],
+                    'calendardata' => $row['calendardata'],
                     'component' => strtolower($row['componenttype']),
                 ];
             }
@@ -839,9 +839,6 @@ SQL
         $result = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             if ($requirePostFilter) {
-                if (isset($row['calendardata']) && is_resource($row['calendardata'])) {
-                    $row['calendardata'] = stream_get_contents($row['calendardata']);
-                }
                 if (!$this->validateFilterForObject($row, $filters)) {
                     continue;
                 }
@@ -1266,7 +1263,7 @@ SQL;
 
         return [
             'uri' => $row['uri'],
-            'calendardata' => is_resource($row['calendardata']) ? stream_get_contents($row['calendardata']) : $row['calendardata'],
+            'calendardata' => $row['calendardata'],
             'lastmodified' => $row['lastmodified'],
             'etag' => '"'.$row['etag'].'"',
             'size' => (int) $row['size'],
@@ -1293,7 +1290,7 @@ SQL;
         $result = [];
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $result[] = [
-                'calendardata' => is_resource($row['calendardata']) ? stream_get_contents($row['calendardata']) : $row['calendardata'],
+                'calendardata' => $row['calendardata'],
                 'uri' => $row['uri'],
                 'lastmodified' => $row['lastmodified'],
                 'etag' => '"'.$row['etag'].'"',

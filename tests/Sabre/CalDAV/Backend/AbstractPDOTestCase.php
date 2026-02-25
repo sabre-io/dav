@@ -261,6 +261,9 @@ abstract class AbstractPDOTestCase extends TestCase
 
         // Verify round-trip: read it back and compare
         $result = $backend->getCalendarObject($returnedId, 'ics-escapes-id');
+        if (is_resource($result['calendardata'])) {
+            $result['calendardata'] = stream_get_contents($result['calendardata']);
+        }
         self::assertEquals($object, $result['calendardata']);
     }
 

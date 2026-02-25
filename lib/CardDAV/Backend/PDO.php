@@ -253,9 +253,6 @@ class PDO extends AbstractBackend implements SyncSupport
 
         $result['etag'] = '"'.$result['etag'].'"';
         $result['lastmodified'] = (int) $result['lastmodified'];
-        if (is_resource($result['carddata'])) {
-            $result['carddata'] = stream_get_contents($result['carddata']);
-        }
 
         return $result;
     }
@@ -285,9 +282,6 @@ class PDO extends AbstractBackend implements SyncSupport
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $row['etag'] = '"'.$row['etag'].'"';
             $row['lastmodified'] = (int) $row['lastmodified'];
-            if (is_resource($row['carddata'])) {
-                $row['carddata'] = stream_get_contents($row['carddata']);
-            }
             $result[] = $row;
         }
 

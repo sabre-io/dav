@@ -375,6 +375,36 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
             self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
+
+    public function testEmptyRequestProperties()
+    {
+        $xml = '<?xml version="1.0"?>
+<d:principal-property-search xmlns:d="DAV:">
+  <d:property-search>
+     <d:prop>
+       <d:displayname />
+     </d:prop>
+     <d:match>1</d:match>
+  </d:property-search>
+</d:principal-property-search>';
+
+        $serverVars = [
+            'REQUEST_METHOD' => 'REPORT',
+            'HTTP_DEPTH' => '0',
+            'REQUEST_URI' => '/principals',
+        ];
+
+        $request = HTTP\Sapi::createFromServerArray($serverVars);
+        $request->setBody($xml);
+
+        $server = $this->getServer();
+        $server->httpRequest = $request;
+
+        $server->exec();
+
+        self::assertEquals(207, $server->httpResponse->getStatus());
+        self::assertStringContainsString('/principals/user1/', $server->httpResponse->getBodyAsString());
+    }
 }
 
 class MockPlugin extends Plugin

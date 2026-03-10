@@ -90,7 +90,7 @@ BLA;
 
         $response = $this->request($request);
 
-        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
@@ -152,7 +152,7 @@ BLA;
 
         $response = $this->request($request);
 
-        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse($response->getBodyAsString());
 
@@ -211,7 +211,7 @@ BLA;
 
         $response = $this->request($request);
 
-        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
@@ -266,7 +266,7 @@ BLA;
 
         $response = $this->request($request);
 
-        self::assertEquals(207, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(207, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
 
         $multiStatus = $this->server->xml->parse(
             $response->getBodyAsString()
@@ -323,7 +323,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoSyncCollection()
@@ -351,7 +351,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncInvalidToken()
@@ -380,7 +380,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(403, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncInvalidTokenNoPrefix()
@@ -409,7 +409,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(403, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(403, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoSyncToken()
@@ -436,7 +436,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(400, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testSyncNoProp()
@@ -462,7 +462,7 @@ BLA;
 
         // The default state has no sync-token, so this report should not yet
         // be supported.
-        self::assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(400, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testIfConditions()
@@ -478,7 +478,7 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        self::assertEquals(403, $response->status);
+        self::assertEquals(403, $response->getStatus());
     }
 
     public function testIfConditionsNot()
@@ -494,7 +494,7 @@ BLA;
         // If a 403 is thrown this works correctly. The file in questions
         // doesn't allow itself to be deleted.
         // If the If conditions failed, it would have been a 412 instead.
-        self::assertEquals(403, $response->status);
+        self::assertEquals(403, $response->getStatus());
     }
 
     public function testIfConditionsNoSyncToken()
@@ -507,6 +507,6 @@ BLA;
         ]);
         $response = $this->request($request);
 
-        self::assertEquals(412, $response->status);
+        self::assertEquals(412, $response->getStatus());
     }
 }

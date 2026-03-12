@@ -18,7 +18,7 @@ use Sabre\DAVACL;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class ProxyWrite implements IProxyWrite
+class ProxyWrite implements DAVACL\IACL ,IProxyWrite
 {
     /**
      * Parent principal information.
@@ -157,5 +157,62 @@ class ProxyWrite implements IProxyWrite
     public function getDisplayName()
     {
         return $this->getName();
+    }
+
+
+    /**
+     * Returns a list of ACE's for this node.
+     *
+     * Each ACE has the following properties:
+     *   * 'privilege', a string such as {DAV:}read or {DAV:}write. These are
+     *     currently the only supported privileges
+     *   * 'principal', a url to the principal who owns the node
+     *   * 'protected' (optional), indicating that this ACE is not allowed to
+     *      be updated.
+     *
+     * @return array
+     */
+    public function getACL()
+    {
+        return [
+            [
+                'privilege' => '{DAV:}read',
+                'principal' => $this->principalInfo['uri'],
+                'protected' => true,
+            ],
+            [
+                'privilege' => '{DAV:}write',
+                'principal' => $this->principalInfo['uri'],
+                'protected' => true,
+            ],
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getGroup() {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getOwner() {
+        return $this->principalInfo['uri'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSupportedPrivilegeSet() {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setACL(array $acl) {
+        throw new DAV\Exception\Forbidden('Setting ACL is not allowed here');
     }
 }

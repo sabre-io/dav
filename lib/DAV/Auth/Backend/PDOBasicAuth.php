@@ -95,6 +95,14 @@ class PDOBasicAuth extends AbstractBasic
         $stmt->execute([$username]);
         $result = $stmt->fetchAll();
 
+        // Email local/domain lookups should be case-insensitive.
+        // Keep exact-match behavior for non-email usernames to avoid changing existing semantics.
+        if (!count($result) && false !== strpos($username, '@')) {
+            $stmt = $this->pdo->prepare('SELECT '.$this->digestColumn.' FROM '.$this->tableName.' WHERE lower('.$this->uuidColumn.') = lower(?)');
+            $stmt->execute([$username]);
+            $result = $stmt->fetchAll();
+        }
+
         if (!count($result)) {
             return false;
         } else {

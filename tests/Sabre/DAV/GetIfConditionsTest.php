@@ -83,6 +83,29 @@ class GetIfConditionsTest extends AbstractServerTestCase
         self::assertEquals($compare, $conditions);
     }
 
+    public function testUppercaseNotLockTokenWithTab()
+    {
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(NOT\t<opaquelocktoken:token1>)',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'bla',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
+                    ],
+                ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
     public function testLockTokenUrl()
     {
         $request = new HTTP\Request('GET', '/bla', [
@@ -231,6 +254,29 @@ class GetIfConditionsTest extends AbstractServerTestCase
     {
         $request = new HTTP\Request('GET', '/foo', [
             'If' => '(Not["etag1"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                 ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testUppercaseNotEtagWithTab()
+    {
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(NOT\t["etag1"])',
         ]);
 
         $conditions = $this->server->getIfConditions($request);

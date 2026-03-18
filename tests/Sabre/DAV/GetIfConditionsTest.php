@@ -86,7 +86,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
     public function testUppercaseNotLockTokenWithTab()
     {
         $request = new HTTP\Request('GET', '/bla', [
-            'If' => '(NOT\t<opaquelocktoken:token1>)',
+            'If' => "(NOT\t<opaquelocktoken:token1>)",
         ]);
 
         $conditions = $this->server->getIfConditions($request);
@@ -276,7 +276,7 @@ class GetIfConditionsTest extends AbstractServerTestCase
     public function testUppercaseNotEtagWithTab()
     {
         $request = new HTTP\Request('GET', '/foo', [
-            'If' => '(NOT\t["etag1"])',
+            'If' => "(NOT\t[\"etag1\"])",
         ]);
 
         $conditions = $this->server->getIfConditions($request);

@@ -60,6 +60,29 @@ class GetIfConditionsTest extends AbstractServerTestCase
         self::assertEquals($compare, $conditions);
     }
 
+    public function testNotLockTokenWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(Not<opaquelocktoken:token1>)',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'bla',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
+                    ],
+                ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
     public function testLockTokenUrl()
     {
         $request = new HTTP\Request('GET', '/bla', [

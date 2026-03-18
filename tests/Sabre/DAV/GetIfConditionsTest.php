@@ -227,6 +227,29 @@ class GetIfConditionsTest extends AbstractServerTestCase
         self::assertEquals($compare, $conditions);
     }
 
+    public function testNotEtagWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(Not["etag1"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                 ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
     public function test2Etags()
     {
         $request = new HTTP\Request('GET', '/foo', [

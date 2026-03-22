@@ -256,7 +256,7 @@ CREATE TABLE calendarsubscriptions (
     striptodos TINYINT(1) NULL,
     stripalarms TINYINT(1) NULL,
     stripattachments TINYINT(1) NULL,
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     UNIQUE(principaluri, uri)
 );
             ");
@@ -360,7 +360,7 @@ CREATE TABLE cards (
     addressbookid INT(11) UNSIGNED NOT NULL,
     carddata MEDIUMBLOB,
     uri VARCHAR(200),
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

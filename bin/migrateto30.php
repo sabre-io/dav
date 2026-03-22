@@ -149,7 +149,7 @@ $stmt1 = $pdo->prepare('INSERT INTO propertystorage (path, name, valuetype, valu
 while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
     // Inserting the new record
     $stmt1->execute([
-        'addressbooks/'.basename($row['uri']),
+        'addressbooks/'.\Sabre\Uri\split($row['uri'])[1],
         '{http://calendarserver.org/ns/}me-card',
         serialize(new Sabre\DAV\Xml\Property\Href($row['vcardurl'])),
     ]);

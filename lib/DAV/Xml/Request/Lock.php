@@ -61,7 +61,7 @@ class Lock implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $reader->pushContext();
-        $reader->elementMap['{DAV:}owner'] = 'Sabre\\Xml\\Element\\XmlFragment';
+        $reader->elementMap['{DAV:}owner'] = \Sabre\Xml\Element\XmlFragment::class;
 
         $values = KeyValue::xmlDeserialize($reader);
 

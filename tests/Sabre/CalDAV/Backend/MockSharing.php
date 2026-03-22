@@ -74,7 +74,7 @@ class MockSharing extends Mock implements NotificationSupport, SharingSupport
     }
 
     /**
-     * This deletes a specific notifcation.
+     * This deletes a specific notification.
      *
      * This may be called by a client once it deems a notification handled.
      *

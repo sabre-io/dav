@@ -55,7 +55,7 @@ class Plugin extends DAV\ServerPlugin
     {
         $this->server = $server;
 
-        $this->server->xml->elementMap['{DAV:}lockinfo'] = 'Sabre\\DAV\\Xml\\Request\\Lock';
+        $this->server->xml->elementMap['{DAV:}lockinfo'] = \Sabre\DAV\Xml\Request\Lock::class;
 
         $server->on('method:LOCK', [$this, 'httpLock']);
         $server->on('method:UNLOCK', [$this, 'httpUnlock']);
@@ -179,7 +179,6 @@ class Plugin extends DAV\ServerPlugin
             }
         } else {
             // Gonna check if this was a lock refresh.
-            $existingLocks = $this->getLocks($uri);
             $conditions = $this->server->getIfConditions($request);
             $found = null;
 

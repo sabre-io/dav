@@ -208,7 +208,7 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarIncorrectComponentSet()
     {
-        $this->expectException('Sabre\DAV\Exception');
+        $this->expectException(\Sabre\DAV\Exception::class);
         $backend = new PDO($this->pdo);
 
         //Creating a new calendar
@@ -241,6 +241,30 @@ abstract class AbstractPDOTestCase extends TestCase
             'lastoccurence' => strtotime('20120101') + (3600 * 24),
             'componenttype' => 'VEVENT',
         ], $row);
+    }
+
+    /**
+     * @see https://github.com/sabre-io/dav/issues/1587
+     */
+    public function testCreateCalendarObjectWithIcsEscapes()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        // ICS data with escaped comma (\,) and newline (\n) in DESCRIPTION.
+        // These are standard RFC 5545 TEXT escapes but trigger PostgreSQL
+        // "invalid input syntax for type bytea" when calendardata is BYTEA
+        // and the parameter is bound as PARAM_STR instead of PARAM_LOB.
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDESCRIPTION:Hello\\, world\\nSecond line\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'ics-escapes-id', $object);
+
+        // Verify round-trip: read it back and compare
+        $result = $backend->getCalendarObject($returnedId, 'ics-escapes-id');
+        if (is_resource($result['calendardata'])) {
+            $result['calendardata'] = stream_get_contents($result['calendardata']);
+        }
+        self::assertEquals($object, $result['calendardata']);
     }
 
     public function testGetMultipleObjects()
@@ -309,7 +333,7 @@ abstract class AbstractPDOTestCase extends TestCase
      */
     public function testCreateCalendarObjectNoComponent()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $backend = new PDO($this->pdo);
         $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
 
@@ -956,7 +980,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
         $result = $backend->getChangesForCalendar($id, $currentToken, 1, 2);
 
-        // according to RFC6578 Section 3.6, the result including syncToken must correpsond to one time (syncToken=8 here)
+        // according to RFC6578 Section 3.6, the result including syncToken must correspond to one time (syncToken=8 here)
         self::assertEquals([
             'syncToken' => 8,
             'modified' => [],
@@ -1025,7 +1049,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testCreateSubscriptionFail()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $props = [
         ];
 
@@ -1510,7 +1534,7 @@ abstract class AbstractPDOTestCase extends TestCase
 
     public function testSetPublishStatus()
     {
-        $this->expectException('Sabre\DAV\Exception\NotImplemented');
+        $this->expectException(\Sabre\DAV\Exception\NotImplemented::class);
         $backend = new PDO($this->pdo);
         $backend->setPublishStatus([1, 1], true);
     }

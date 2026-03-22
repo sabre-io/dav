@@ -73,7 +73,7 @@ class PDO extends AbstractBackend implements SyncSupport
                 '{DAV:}displayname' => $row['displayname'],
                 '{'.CardDAV\Plugin::NS_CARDDAV.'}addressbook-description' => $row['description'],
                 '{http://calendarserver.org/ns/}getctag' => $row['synctoken'],
-                '{http://sabredav.org/ns}sync-token' => $row['synctoken'] ? $row['synctoken'] : '0',
+                '{http://sabredav.org/ns}sync-token' => $row['synctoken'] ?: '0',
             ];
         }
 
@@ -205,7 +205,7 @@ class PDO extends AbstractBackend implements SyncSupport
      *   * size - The size of the card in bytes.
      *
      * If these last two properties are provided, less time will be spent
-     * calculating them. If they are specified, you can also ommit carddata.
+     * calculating them. If they are specified, you can also omit carddata.
      * This may speed up certain requests, especially with large cards.
      *
      * @param mixed $addressbookId
@@ -316,18 +316,18 @@ class PDO extends AbstractBackend implements SyncSupport
      */
     public function createCard($addressBookId, $cardUri, $cardData)
     {
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->cardsTableName.' (carddata, uri, lastmodified, addressbookid, size, etag) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->cardsTableName.' (carddata, uri, lastmodified, addressbookid, size, etag) VALUES (:carddata, :uri, :lastmodified, :addressbookid, :size, :etag)');
 
         $etag = md5($cardData);
-
-        $stmt->execute([
-            $cardData,
-            $cardUri,
-            time(),
-            $addressBookId,
-            strlen($cardData),
-            $etag,
-        ]);
+        $lastmodified = time();
+        $size = strlen($cardData);
+        $stmt->bindParam('carddata', $cardData, \PDO::PARAM_LOB);
+        $stmt->bindParam('uri', $cardUri, \PDO::PARAM_STR);
+        $stmt->bindParam('lastmodified', $lastmodified, \PDO::PARAM_INT);
+        $stmt->bindParam('addressbookid', $addressBookId, \PDO::PARAM_INT);
+        $stmt->bindParam('size', $size, \PDO::PARAM_INT);
+        $stmt->bindParam('etag', $etag, \PDO::PARAM_STR);
+        $stmt->execute();
 
         $this->addChange($addressBookId, $cardUri, 1);
 
@@ -362,17 +362,18 @@ class PDO extends AbstractBackend implements SyncSupport
      */
     public function updateCard($addressBookId, $cardUri, $cardData)
     {
-        $stmt = $this->pdo->prepare('UPDATE '.$this->cardsTableName.' SET carddata = ?, lastmodified = ?, size = ?, etag = ? WHERE uri = ? AND addressbookid =?');
+        $stmt = $this->pdo->prepare('UPDATE '.$this->cardsTableName.' SET carddata = :carddata, lastmodified = :lastmodified, size = :size, etag = :etag WHERE uri = :uri AND addressbookid = :addressbookid');
 
         $etag = md5($cardData);
-        $stmt->execute([
-            $cardData,
-            time(),
-            strlen($cardData),
-            $etag,
-            $cardUri,
-            $addressBookId,
-        ]);
+        $lastmodified = time();
+        $size = strlen($cardData);
+        $stmt->bindParam('carddata', $cardData, \PDO::PARAM_LOB);
+        $stmt->bindParam('lastmodified', $lastmodified, \PDO::PARAM_INT);
+        $stmt->bindParam('size', $size, \PDO::PARAM_INT);
+        $stmt->bindParam('etag', $etag, \PDO::PARAM_STR);
+        $stmt->bindParam('uri', $cardUri, \PDO::PARAM_STR);
+        $stmt->bindParam('addressbookid', $addressBookId, \PDO::PARAM_INT);
+        $stmt->execute();
 
         $this->addChange($addressBookId, $cardUri, 2);
 

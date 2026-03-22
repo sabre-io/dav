@@ -435,7 +435,7 @@ class Calendar implements ICalendar, DAV\IProperties, DAV\Sync\ISyncCollection, 
      * return null.
      *
      * The limit is 'suggestive'. You are free to ignore it.
-     * TODO: RFC6578 Setion 3.7 says that the server must fail when the server
+     * TODO: RFC6578 Section 3.7 says that the server must fail when the server
      * cannot truncate according to the limit, so it may not be just suggestive.
      *
      * @param string $syncToken

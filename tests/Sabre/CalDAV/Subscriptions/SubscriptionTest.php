@@ -84,7 +84,7 @@ class SubscriptionTest extends \PHPUnit\Framework\TestCase
 
     public function testSetACL()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $sub = $this->getSub();
         $sub->setACL([]);
     }

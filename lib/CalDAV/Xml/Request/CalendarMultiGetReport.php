@@ -48,7 +48,7 @@ class CalendarMultiGetReport implements XmlDeserializable
     public $expand = null;
 
     /**
-     * The mimetype of the content that should be returend. Usually
+     * The mimetype of the content that should be returned. Usually
      * text/calendar.
      *
      * @var string
@@ -86,8 +86,8 @@ class CalendarMultiGetReport implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = $reader->parseInnerTree([
-            '{urn:ietf:params:xml:ns:caldav}calendar-data' => 'Sabre\\CalDAV\\Xml\\Filter\\CalendarData',
-            '{DAV:}prop' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{urn:ietf:params:xml:ns:caldav}calendar-data' => \Sabre\CalDAV\Xml\Filter\CalendarData::class,
+            '{DAV:}prop' => \Sabre\Xml\Element\KeyValue::class,
         ]);
 
         $newProps = [

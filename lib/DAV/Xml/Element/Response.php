@@ -184,7 +184,7 @@ class Response implements Element
     {
         $reader->pushContext();
 
-        $reader->elementMap['{DAV:}propstat'] = 'Sabre\\Xml\\Element\\KeyValue';
+        $reader->elementMap['{DAV:}propstat'] = \Sabre\Xml\Element\KeyValue::class;
 
         // We are overriding the parser for {DAV:}prop. This deserializer is
         // almost identical to the one for Sabre\Xml\Element\KeyValue.

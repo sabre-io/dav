@@ -585,6 +585,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $request = new HTTP\Request('COPY', '/dir/child.txt', [
             'Destination' => '/dir/child2.txt',
+            'Depth' => 'infinity',
         ]);
 
         $this->server->httpRequest = $request;
@@ -619,6 +620,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
         $request = new HTTP\Request('COPY', '/dir/child.txt', [
             'Destination' => '/dir/child2.txt',
+            'Depth' => 'infinity',
         ]);
         $this->server->httpRequest = $request;
         $this->server->exec();
@@ -914,7 +916,7 @@ class PluginTest extends DAV\AbstractServerTestCase
 
     public function testGetTimeoutHeaderInvalid()
     {
-        $this->expectException('Sabre\DAV\Exception\BadRequest');
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
         $request = new HTTP\Request('GET', '/', ['Timeout' => 'yourmom']);
 
         $this->server->httpRequest = $request;

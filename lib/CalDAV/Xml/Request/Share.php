@@ -62,8 +62,8 @@ class Share implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = $reader->parseGetElements([
-            '{'.Plugin::NS_CALENDARSERVER.'}set' => 'Sabre\\Xml\\Element\\KeyValue',
-            '{'.Plugin::NS_CALENDARSERVER.'}remove' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{'.Plugin::NS_CALENDARSERVER.'}set' => \Sabre\Xml\Element\KeyValue::class,
+            '{'.Plugin::NS_CALENDARSERVER.'}remove' => \Sabre\Xml\Element\KeyValue::class,
         ]);
 
         $sharees = [];

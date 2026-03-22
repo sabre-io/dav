@@ -83,8 +83,8 @@ class SharingPlugin extends DAV\ServerPlugin
             '{'.Plugin::NS_CALENDARSERVER.'}shared-url'
         );
 
-        $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}share'] = 'Sabre\\CalDAV\\Xml\\Request\\Share';
-        $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}invite-reply'] = 'Sabre\\CalDAV\\Xml\\Request\\InviteReply';
+        $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}share'] = \Sabre\CalDAV\Xml\Request\Share::class;
+        $this->server->xml->elementMap['{'.Plugin::NS_CALENDARSERVER.'}invite-reply'] = \Sabre\CalDAV\Xml\Request\InviteReply::class;
 
         $this->server->on('propFind', [$this, 'propFindEarly']);
         $this->server->on('propFind', [$this, 'propFindLate'], 150);
@@ -136,7 +136,7 @@ class SharingPlugin extends DAV\ServerPlugin
     }
 
     /**
-     * This method is trigged when a user attempts to update a node's
+     * This method is triggered when a user attempts to update a node's
      * properties.
      *
      * A previous draft of the sharing spec stated that it was possible to use

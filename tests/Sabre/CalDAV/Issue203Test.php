@@ -113,7 +113,7 @@ END:VCALENDAR
             ],
         ];
 
-        // try to match agains $expectedEvents array
+        // try to match against $expectedEvents array
         foreach ($expectedEvents as $expectedEvent) {
             $matching = false;
 

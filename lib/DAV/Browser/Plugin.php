@@ -258,7 +258,7 @@ class Plugin extends DAV\ServerPlugin
      */
     public function generateDirectoryIndex($path)
     {
-        $html = $this->generateHeader($path ? $path : '/', $path);
+        $html = $this->generateHeader($path ?: '/', $path);
 
         $node = $this->server->tree->getNodeForPath($path);
         if ($node instanceof DAV\ICollection) {
@@ -499,7 +499,7 @@ HTML;
 
         // We also know fairly certain that if an object is a non-extended
         // SimpleCollection, we won't need to show the panel either.
-        if ('Sabre\\DAV\\SimpleCollection' === get_class($node)) {
+        if (\Sabre\DAV\SimpleCollection::class === get_class($node)) {
             return;
         }
 
@@ -522,7 +522,7 @@ HTML;
 
     /**
      * This method takes a path/name of an asset and turns it into url
-     * suiteable for http access.
+     * suitable for http access.
      *
      * @param string $assetName
      *

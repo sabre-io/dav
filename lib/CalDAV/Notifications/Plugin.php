@@ -68,7 +68,7 @@ class Plugin extends ServerPlugin
         $server->on('propFind', [$this, 'propFind']);
 
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Notifications\\ICollection'] = '{'.self::NS_CALENDARSERVER.'}notification';
+        $server->resourceTypeMapping[\Sabre\CalDAV\Notifications\ICollection::class] = '{'.self::NS_CALENDARSERVER.'}notification';
 
         array_push($server->protectedProperties,
             '{'.self::NS_CALENDARSERVER.'}notification-URL',

@@ -143,8 +143,6 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
     /**
      * Deletes all files in this directory, and then itself.
-     *
-     * @return bool
      */
     public function delete()
     {
@@ -155,8 +153,6 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
         // Removing the directory itself
         rmdir($this->path);
-
-        return true;
     }
 
     /**

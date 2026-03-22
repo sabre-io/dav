@@ -200,18 +200,18 @@ class Plugin extends DAV\ServerPlugin
         $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';
         $server->xml->namespaceMap[self::NS_CALENDARSERVER] = 'cs';
 
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-query'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarQueryReport';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-multiget'] = 'Sabre\\CalDAV\\Xml\\Request\\CalendarMultiGetReport';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}free-busy-query'] = 'Sabre\\CalDAV\\Xml\\Request\\FreeBusyQueryReport';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}mkcalendar'] = 'Sabre\\CalDAV\\Xml\\Request\\MkCalendar';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}schedule-calendar-transp'] = 'Sabre\\CalDAV\\Xml\\Property\\ScheduleCalendarTransp';
-        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = 'Sabre\\CalDAV\\Xml\\Property\\SupportedCalendarComponentSet';
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-query'] = \Sabre\CalDAV\Xml\Request\CalendarQueryReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-multiget'] = \Sabre\CalDAV\Xml\Request\CalendarMultiGetReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}free-busy-query'] = \Sabre\CalDAV\Xml\Request\FreeBusyQueryReport::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}mkcalendar'] = \Sabre\CalDAV\Xml\Request\MkCalendar::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}schedule-calendar-transp'] = \Sabre\CalDAV\Xml\Property\ScheduleCalendarTransp::class;
+        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set'] = \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet::class;
 
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\ICalendar'] = '{urn:ietf:params:xml:ns:caldav}calendar';
+        $server->resourceTypeMapping[\Sabre\CalDAV\ICalendar::class] = '{urn:ietf:params:xml:ns:caldav}calendar';
 
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyRead'] = '{http://calendarserver.org/ns/}calendar-proxy-read';
-        $server->resourceTypeMapping['\\Sabre\\CalDAV\\Principal\\IProxyWrite'] = '{http://calendarserver.org/ns/}calendar-proxy-write';
+        $server->resourceTypeMapping[\Sabre\CalDAV\Principal\IProxyRead::class] = '{http://calendarserver.org/ns/}calendar-proxy-read';
+        $server->resourceTypeMapping[\Sabre\CalDAV\Principal\IProxyWrite::class] = '{http://calendarserver.org/ns/}calendar-proxy-write';
 
         array_push($server->protectedProperties,
             '{'.self::NS_CALDAV.'}supported-calendar-component-set',
@@ -720,7 +720,7 @@ class Plugin extends DAV\ServerPlugin
             return;
         }
 
-        // We're onyl interested in ICalendarObject nodes that are inside of a
+        // We're only interested in ICalendarObject nodes that are inside of a
         // real calendar. This is to avoid triggering validation and scheduling
         // for non-calendars (such as an inbox).
         list($parent) = Uri\split($path);
@@ -913,7 +913,7 @@ class Plugin extends DAV\ServerPlugin
     }
 
     /**
-     * This method is triggered whenever a subsystem reqeuests the privileges
+     * This method is triggered whenever a subsystem requests the privileges
      * that are supported on a particular node.
      */
     public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)

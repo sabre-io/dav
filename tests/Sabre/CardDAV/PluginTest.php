@@ -10,7 +10,7 @@ class PluginTest extends AbstractPluginTestCase
 {
     public function testConstruct()
     {
-        self::assertEquals('{'.Plugin::NS_CARDDAV.'}addressbook', $this->server->resourceTypeMapping['Sabre\\CardDAV\\IAddressBook']);
+        self::assertEquals('{'.Plugin::NS_CARDDAV.'}addressbook', $this->server->resourceTypeMapping[\Sabre\CardDAV\IAddressBook::class]);
 
         self::assertContains('addressbook', $this->plugin->getFeatures());
         self::assertEquals('carddav', $this->plugin->getPluginInfo()['name']);
@@ -73,11 +73,11 @@ class PluginTest extends AbstractPluginTestCase
         $this->plugin->propFindEarly($propFind, $node);
 
         self::assertInstanceOf(
-            'Sabre\\CardDAV\\Xml\\Property\\SupportedAddressData',
+            \Sabre\CardDAV\Xml\Property\SupportedAddressData::class,
             $propFind->get($ns.'supported-address-data')
         );
         self::assertInstanceOf(
-            'Sabre\\CardDAV\\Xml\\Property\\SupportedCollationSet',
+            \Sabre\CardDAV\Xml\Property\SupportedCollationSet::class,
             $propFind->get($ns.'supported-collation-set')
         );
     }

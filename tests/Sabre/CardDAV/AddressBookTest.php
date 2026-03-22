@@ -38,13 +38,13 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
     public function testGetChild()
     {
         $card = $this->ab->getChild('card1');
-        self::assertInstanceOf('Sabre\\CardDAV\\Card', $card);
+        self::assertInstanceOf(\Sabre\CardDAV\Card::class, $card);
         self::assertEquals('card1', $card->getName());
     }
 
     public function testGetChildNotFound()
     {
-        $this->expectException('Sabre\DAV\Exception\NotFound');
+        $this->expectException(\Sabre\DAV\Exception\NotFound::class);
         $card = $this->ab->getChild('card3');
     }
 
@@ -59,7 +59,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testCreateDirectory()
     {
-        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
+        $this->expectException(\Sabre\DAV\Exception\MethodNotAllowed::class);
         $this->ab->createDirectory('name');
     }
 
@@ -81,7 +81,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testSetName()
     {
-        $this->expectException('Sabre\DAV\Exception\MethodNotAllowed');
+        $this->expectException(\Sabre\DAV\Exception\MethodNotAllowed::class);
         $this->ab->setName('foo');
     }
 
@@ -124,7 +124,7 @@ class AddressBookTest extends \PHPUnit\Framework\TestCase
 
     public function testSetACL()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $this->ab->setACL([]);
     }
 

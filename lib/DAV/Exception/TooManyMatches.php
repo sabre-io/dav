@@ -9,7 +9,7 @@ use Sabre\DAV;
 /**
  * TooManyMatches.
  *
- * This exception is emited for the {DAV:}number-of-matches-within-limits
+ * This exception is emitted for the {DAV:}number-of-matches-within-limits
  * post-condition, as defined in rfc6578, section 3.2.
  *
  * http://tools.ietf.org/html/rfc6578#section-3.2

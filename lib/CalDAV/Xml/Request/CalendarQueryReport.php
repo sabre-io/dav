@@ -48,7 +48,7 @@ class CalendarQueryReport implements XmlDeserializable
     public $expand = null;
 
     /**
-     * The mimetype of the content that should be returend. Usually
+     * The mimetype of the content that should be returned. Usually
      * text/calendar.
      *
      * @var string
@@ -86,11 +86,11 @@ class CalendarQueryReport implements XmlDeserializable
     public static function xmlDeserialize(Reader $reader)
     {
         $elems = $reader->parseInnerTree([
-            '{urn:ietf:params:xml:ns:caldav}comp-filter' => 'Sabre\\CalDAV\\Xml\\Filter\\CompFilter',
-            '{urn:ietf:params:xml:ns:caldav}prop-filter' => 'Sabre\\CalDAV\\Xml\\Filter\\PropFilter',
-            '{urn:ietf:params:xml:ns:caldav}param-filter' => 'Sabre\\CalDAV\\Xml\\Filter\\ParamFilter',
-            '{urn:ietf:params:xml:ns:caldav}calendar-data' => 'Sabre\\CalDAV\\Xml\\Filter\\CalendarData',
-            '{DAV:}prop' => 'Sabre\\Xml\\Element\\KeyValue',
+            '{urn:ietf:params:xml:ns:caldav}comp-filter' => \Sabre\CalDAV\Xml\Filter\CompFilter::class,
+            '{urn:ietf:params:xml:ns:caldav}prop-filter' => \Sabre\CalDAV\Xml\Filter\PropFilter::class,
+            '{urn:ietf:params:xml:ns:caldav}param-filter' => \Sabre\CalDAV\Xml\Filter\ParamFilter::class,
+            '{urn:ietf:params:xml:ns:caldav}calendar-data' => \Sabre\CalDAV\Xml\Filter\CalendarData::class,
+            '{DAV:}prop' => \Sabre\Xml\Element\KeyValue::class,
         ]);
 
         $newProps = [

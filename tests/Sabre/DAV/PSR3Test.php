@@ -10,7 +10,7 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
     {
         $server = new Server();
         self::assertInstanceOf(
-            'Psr\Log\LoggerAwareInterface',
+            \Psr\Log\LoggerAwareInterface::class,
             $server
         );
     }
@@ -19,7 +19,7 @@ class PSR3Test extends \PHPUnit\Framework\TestCase
     {
         $server = new Server();
         self::assertInstanceOf(
-            'Psr\Log\NullLogger',
+            \Psr\Log\NullLogger::class,
             $server->getLogger()
         );
     }

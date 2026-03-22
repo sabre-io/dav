@@ -215,7 +215,7 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
 
     public function testSetACL()
     {
-        $this->expectException('Sabre\DAV\Exception\Forbidden');
+        $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $children = $this->calendar->getChildren();
         self::assertTrue($children[0] instanceof CalendarObject);
 

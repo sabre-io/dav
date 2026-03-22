@@ -152,7 +152,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var array
      */
     public $resourceTypeMapping = [
-        'Sabre\\DAV\\ICollection' => '{DAV:}collection',
+        \Sabre\DAV\ICollection::class => '{DAV:}collection',
     ];
 
     /**
@@ -211,7 +211,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @throws Exception
      */
-    public function __construct($treeOrNode = null, HTTP\Sapi $sapi = null)
+    public function __construct($treeOrNode = null, ?HTTP\Sapi $sapi = null)
     {
         if ($treeOrNode instanceof Tree) {
             $this->tree = $treeOrNode;
@@ -580,9 +580,10 @@ class Server implements LoggerAwareInterface, EmitterInterface
     /**
      * Returns the HTTP depth header.
      *
-     * This method returns the contents of the HTTP depth request header. If the depth header was 'infinity' it will return the Sabre\DAV\Server::DEPTH_INFINITY object
+     * This method returns the contents of the HTTP depth request header. If the depth header was 'infinity' it will return the Sabre\DAV\Server::DEPTH_INFINITY constant.
      * It is possible to supply a default depth value, which is used when the depth header has invalid content, or is completely non-existent
      *
+     * @param mixed $default default value to use if no header is set or has invalid value
      * @param mixed $default
      *
      * @return int
@@ -624,8 +625,14 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function getHTTPRange()
     {
-        $range = $this->httpRequest->getHeader('range');
+        $range = $this->httpRequest->getHeader('Range');
         if (is_null($range)) {
+            return null;
+        }
+
+        // MUST ignore Range on non-GET requests (RFC 7233 §3.1)
+        $method = $this->httpRequest->getHeader('X-Sabre-Original-Method') ?: $this->httpRequest->getMethod();
+        if ('GET' !== strtoupper($method)) {
             return null;
         }
 
@@ -725,10 +732,18 @@ class Server implements LoggerAwareInterface, EmitterInterface
             throw new Exception\BadRequest('The destination header was not supplied');
         }
         $destination = $this->calculateUri($request->getHeader('Destination'));
-        $overwrite = $request->getHeader('Overwrite');
-        if (!$overwrite) {
-            $overwrite = 'T';
+
+        // Depth of infinity is valid for MOVE and COPY. If it is not set the RFC requires to act like it was 'infinity'.
+        $depth = $request->getHeader('Depth') ?? 'infinity';
+        if ('infinity' === strtolower($depth)) {
+            $depth = self::DEPTH_INFINITY;
+        } elseif (!ctype_digit($depth) || ((int) $depth) < 0) {
+            throw new Exception\BadRequest('The HTTP Depth header may only be "infinity", 0 or a positive integer');
+        } else {
+            $depth = (int) $depth;
         }
+
+        $overwrite = $request->getHeader('Overwrite') ?? 'T';
         if ('T' == strtoupper($overwrite)) {
             $overwrite = true;
         } elseif ('F' == strtoupper($overwrite)) {
@@ -773,6 +788,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
         // These are the three relevant properties we need to return
         return [
+            'depth' => $depth,
             'destination' => $destination,
             'destinationExists' => (bool) $destinationNode,
             'destinationNode' => $destinationNode,
@@ -882,7 +898,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @return \Traversable
      */
-    private function generatePathNodes(PropFind $propFind, array $yieldFirst = null)
+    private function generatePathNodes(PropFind $propFind, ?array $yieldFirst = null)
     {
         if (null !== $yieldFirst) {
             yield $yieldFirst;
@@ -1635,6 +1651,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function generateMultiStatus($fileProperties, $strip404s = false)
     {
+        $this->emit('beforeMultiStatus', [&$fileProperties]);
+
         $w = $this->xml->getWriter();
         if (self::$streamMultiStatus) {
             return function () use ($fileProperties, $strip404s, $w) {

@@ -11,7 +11,7 @@ class CalendarTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Sabre\CalDAV\Backend\PDO
      */
-    protected $backend;
+    private $backend;
     protected $principalBackend;
     /**
      * @var Sabre\CalDAV\Calendar

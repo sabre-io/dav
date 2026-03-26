@@ -22,7 +22,7 @@ class PDO extends AbstractBackend implements SyncSupport
     /**
      * PDO connection.
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 

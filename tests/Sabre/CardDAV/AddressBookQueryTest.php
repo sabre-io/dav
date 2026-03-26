@@ -29,7 +29,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -37,7 +37,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -78,7 +78,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -86,7 +86,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -122,7 +122,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -130,7 +130,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -161,7 +161,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -169,7 +169,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -203,7 +203,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -211,7 +211,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -248,7 +248,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
             );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -256,7 +256,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);
@@ -293,14 +293,14 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
         );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
 
         $this->server->exec();
 
-        self::assertEquals(415, $response->status, 'Incorrect status code. Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->getStatus(), 'Incorrect status code. Full response body:'.$response->getBodyAsString());
     }
 
     public function testAddressBookProperties()
@@ -324,7 +324,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
 </c:addressbook-query>'
         );
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         $this->server->httpRequest = $request;
         $this->server->httpResponse = $response;
@@ -332,7 +332,7 @@ class AddressBookQueryTest extends AbstractPluginTestCase
         $this->server->exec();
 
         $bodyAsString = $response->getBodyAsString();
-        self::assertEquals(207, $response->status, 'Incorrect status code. Full response body:'.$bodyAsString);
+        self::assertEquals(207, $response->getStatus(), 'Incorrect status code. Full response body:'.$bodyAsString);
 
         // using the client for parsing
         $client = new DAV\Client(['baseUri' => '/']);

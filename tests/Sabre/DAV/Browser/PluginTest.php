@@ -70,7 +70,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        self::assertEquals(200, $this->response->status, 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(200, $this->response->getStatus(), 'Incorrect status received. Full response body: '.$this->response->getBodyAsString());
         self::assertEquals(
             [
                 'X-Sabre-Version' => [DAV\Version::VERSION],
@@ -101,7 +101,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->getStatus());
     }
 
     public function testPostNoContentType()
@@ -110,7 +110,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->getStatus());
     }
 
     public function testPostNoSabreAction()
@@ -120,7 +120,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->getStatus());
     }
 
     public function testPostMkCol()
@@ -140,7 +140,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertEquals(302, $this->response->status);
+        self::assertEquals(302, $this->response->getStatus());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Location' => ['/'],

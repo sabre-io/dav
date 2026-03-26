@@ -6,7 +6,7 @@ namespace Sabre\DAV\PartialUpdate;
 
 use Sabre\DAV;
 
-class FileMock implements IPatchSupport
+class FileMock implements DAV\IFile, IPatchSupport
 {
     protected $data = '';
 

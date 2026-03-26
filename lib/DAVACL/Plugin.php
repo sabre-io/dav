@@ -1427,7 +1427,7 @@ class Plugin extends DAV\ServerPlugin
         }
         $result = $this->principalSearch(
             $report->searchProperties,
-            $report->properties,
+            (array) $report->properties,
             $path,
             $report->test
         );

@@ -1587,15 +1587,43 @@ class Server implements LoggerAwareInterface, EmitterInterface
         $conditions = [];
 
         foreach ($matches as $match) {
+            $negate = $match['not'] ? true : false;
+            $token = $match['token'];
+            $etag = isset($match['etag']) ? $match['etag'] : '';
+
+            // Build the token entries. Per RFC 4918, 'Not' applies only to
+            // the immediately following resource (token or etag). When both
+            // a token and an etag appear in the same list and 'Not' is
+            // present, we must split them so that the negation applies only
+            // to the token, not the etag.
+            $tokenEntries = [];
+            if ($negate && $token && $etag) {
+                // (Not <token> [etag]) means: NOT token AND etag
+                $tokenEntries[] = [
+                    'negate' => true,
+                    'token' => $token,
+                    'etag' => '',
+                ];
+                $tokenEntries[] = [
+                    'negate' => false,
+                    'token' => '',
+                    'etag' => $etag,
+                ];
+            } else {
+                $tokenEntries[] = [
+                    'negate' => $negate,
+                    'token' => $token,
+                    'etag' => $etag,
+                ];
+            }
+
             // If there was no uri specified in this match, and there were
             // already conditions parsed, we add the condition to the list of
             // conditions for the previous uri.
             if (!$match['uri'] && count($conditions)) {
-                $conditions[count($conditions) - 1]['tokens'][] = [
-                    'negate' => $match['not'] ? true : false,
-                    'token' => $match['token'],
-                    'etag' => isset($match['etag']) ? $match['etag'] : '',
-                ];
+                foreach ($tokenEntries as $entry) {
+                    $conditions[count($conditions) - 1]['tokens'][] = $entry;
+                }
             } else {
                 if (!$match['uri']) {
                     $realUri = $request->getPath();
@@ -1605,13 +1633,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
                 $conditions[] = [
                     'uri' => $realUri,
-                    'tokens' => [
-                        [
-                            'negate' => $match['not'] ? true : false,
-                            'token' => $match['token'],
-                            'etag' => isset($match['etag']) ? $match['etag'] : '',
-                        ],
-                    ],
+                    'tokens' => $tokenEntries,
                 ];
             }
         }

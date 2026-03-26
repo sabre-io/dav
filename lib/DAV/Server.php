@@ -1581,7 +1581,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
         $matches = [];
 
-        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>Not\s)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im';
+        $regex = '/(?:\<(?P<uri>.*?)\>\s)?\((?P<not>not\b[\x20\t]*)?(?:\<(?P<token>[^\>]*)\>)?(?:\s?)(?:\[(?P<etag>[^\]]*)\])?\)/im';
         preg_match_all($regex, $header, $matches, PREG_SET_ORDER);
 
         $conditions = [];

@@ -60,6 +60,75 @@ class GetIfConditionsTest extends AbstractServerTestCase
         self::assertEquals($compare, $conditions);
     }
 
+    public function testNotLockTokenWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(Not<opaquelocktoken:token1>)',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'bla',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
+                    ],
+                ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testUppercaseNotLockTokenWithTab()
+    {
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => "(NOT\t<opaquelocktoken:token1>)",
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'bla',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
+                    ],
+                ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testUppercaseNotLockTokenWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/bla', [
+            'If' => '(NOT<opaquelocktoken:token1>)',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'bla',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'opaquelocktoken:token1',
+                        'etag' => '',
+                    ],
+                ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
     public function testLockTokenUrl()
     {
         $request = new HTTP\Request('GET', '/bla', [
@@ -195,6 +264,75 @@ class GetIfConditionsTest extends AbstractServerTestCase
                 'tokens' => [
                     [
                         'negate' => false,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                 ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testNotEtagWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(Not["etag1"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                 ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testUppercaseNotEtagWithTab()
+    {
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => "(NOT\t[\"etag1\"])",
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                 ],
+            ],
+        ];
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testUppercaseNotEtagWithoutSpace()
+    {
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(NOT["etag1"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
                         'token' => '',
                         'etag' => '"etag1"',
                     ],

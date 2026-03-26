@@ -9,11 +9,11 @@ class CalendarObjectTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Sabre\CalDAV\Backend_PDO
      */
-    protected $backend;
+    private $backend;
     /**
      * @var Sabre\CalDAV\Calendar
      */
-    protected $calendar;
+    private $calendar;
     protected $principalBackend;
 
     public function setup(): void

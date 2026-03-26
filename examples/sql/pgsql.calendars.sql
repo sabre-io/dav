@@ -3,12 +3,12 @@ CREATE TABLE calendarobjects (
     calendardata BYTEA,
     uri VARCHAR(200),
     calendarid INTEGER NOT NULL,
-    lastmodified INTEGER,
+    lastmodified BIGINT,
     etag VARCHAR(32),
     size INTEGER NOT NULL,
     componenttype VARCHAR(8),
-    firstoccurence INTEGER,
-    lastoccurence INTEGER,
+    firstoccurence BIGINT,
+    lastoccurence BIGINT,
     uid VARCHAR(200)
 );
 
@@ -71,7 +71,7 @@ CREATE TABLE calendarsubscriptions (
     striptodos SMALLINT NULL,
     stripalarms SMALLINT NULL,
     stripattachments SMALLINT NULL,
-    lastmodified INTEGER
+    lastmodified BIGINT
 );
 
 ALTER TABLE ONLY calendarsubscriptions
@@ -99,7 +99,7 @@ CREATE TABLE schedulingobjects (
     principaluri VARCHAR(255),
     calendardata BYTEA,
     uri VARCHAR(200),
-    lastmodified INTEGER,
+    lastmodified BIGINT,
     etag VARCHAR(32),
     size INTEGER NOT NULL
 );

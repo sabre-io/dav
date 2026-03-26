@@ -18,7 +18,7 @@ CREATE TABLE cards (
     addressbookid INTEGER NOT NULL,
     carddata BYTEA,
     uri VARCHAR(200),
-    lastmodified INTEGER,
+    lastmodified BIGINT,
     etag VARCHAR(32),
     size INTEGER NOT NULL
 );

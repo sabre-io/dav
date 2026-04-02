@@ -412,7 +412,7 @@ class Client extends HTTP\Client
      * @param string               $url
      * @param string|resource|null $body
      *
-     * @throws clientException, in case a curl error occurred
+     * @throws HTTP\ClientException, in case a curl error occurred
      *
      * @return array
      */

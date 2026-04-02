@@ -42,7 +42,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         ]);
         $response = $this->request($request);
 
-        self::assertEquals(400, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(400, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testPatchNotSupported()
@@ -54,7 +54,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         );
         $response = $this->request($request);
 
-        self::assertEquals(405, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(405, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testPatchNoContentType()
@@ -66,7 +66,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         );
         $response = $this->request($request);
 
-        self::assertEquals(415, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(415, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testPatchBadRange()
@@ -78,7 +78,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         );
         $response = $this->request($request);
 
-        self::assertEquals(416, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(416, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testPatchNoLength()
@@ -90,7 +90,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         );
         $response = $this->request($request);
 
-        self::assertEquals(411, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(411, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
     }
 
     public function testPatchSuccess()
@@ -102,7 +102,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         );
         $response = $this->request($request);
 
-        self::assertEquals(204, $response->status, 'Full response body:'.$response->getBodyAsString());
+        self::assertEquals(204, $response->getStatus(), 'Full response body:'.$response->getBodyAsString());
         self::assertEquals('aaabbbaa', $this->node->get());
     }
 

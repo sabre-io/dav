@@ -19,7 +19,7 @@ class FreeBusyRequestTest extends \PHPUnit\Framework\TestCase
     protected $authPlugin;
     protected $caldavBackend;
     /**
-     * @var HTTP\ResponseMock
+     * @var HTTP\Response
      */
     private $response;
 
@@ -74,7 +74,7 @@ END:VCALENDAR',
         $this->request = new HTTP\Request('GET', '/', [
             'Content-Type' => 'text/calendar',
         ]);
-        $this->response = new HTTP\ResponseMock();
+        $this->response = new HTTP\Response();
 
         $this->server = new DAV\Server($tree);
         $this->server->httpRequest = $this->request;
@@ -277,7 +277,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -340,7 +340,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -392,7 +392,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -444,7 +444,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());
@@ -511,7 +511,7 @@ ICS;
             $this->plugin->httpPost($this->server->httpRequest, $this->response)
         );
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals([
             'Content-Type' => ['application/xml'],
         ], $this->response->getHeaders());

@@ -13,7 +13,7 @@ CREATE TABLE cards (
     addressbookid INT(11) UNSIGNED NOT NULL,
     carddata MEDIUMBLOB,
     uri VARBINARY(200),
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -674,6 +674,12 @@ SQL
                     $lastOccurence = $end->getTimeStamp();
                 }
             }
+
+            // Ensure Occurence values are positive
+             if (date_diff($firstOccurence, $lastOccurence)->invert) {
+                 throw new \Sabre\DAV\Exception('Calendar firstOccurence and lastOccurence must be consecutive');
+             }
+
         }
 
         // Destroy circular references to PHP will GC the object.

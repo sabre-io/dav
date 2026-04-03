@@ -232,6 +232,67 @@ class GetIfConditionsTest extends AbstractServerTestCase
         self::assertEquals($compare, $conditions);
     }
 
+    public function testNotWithTokenAndEtag()
+    {
+        // Per RFC 4918, (Not <token> [etag]) means: NOT token AND etag
+        // The Not applies only to the token, not the etag.
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '(Not <DAV:no-lock> ["c3d40b11121145ec31f5c1acc078b658"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => 'foo',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'DAV:no-lock',
+                        'etag' => '',
+                    ],
+                    [
+                        'negate' => false,
+                        'token' => '',
+                        'etag' => '"c3d40b11121145ec31f5c1acc078b658"',
+                    ],
+                ],
+            ],
+        ];
+
+        self::assertEquals($compare, $conditions);
+    }
+
+    public function testNotWithTokenAndEtagUrl()
+    {
+        // Same test but with a URI prefix
+        $request = new HTTP\Request('GET', '/foo', [
+            'If' => '<http://www.example.org/> (Not <DAV:no-lock> ["etag1"])',
+        ]);
+
+        $conditions = $this->server->getIfConditions($request);
+
+        $compare = [
+            [
+                'uri' => '',
+                'tokens' => [
+                    [
+                        'negate' => true,
+                        'token' => 'DAV:no-lock',
+                        'etag' => '',
+                    ],
+                    [
+                        'negate' => false,
+                        'token' => '',
+                        'etag' => '"etag1"',
+                    ],
+                ],
+            ],
+        ];
+
+        self::assertEquals($compare, $conditions);
+    }
+
     public function testComplexIf()
     {
         $request = new HTTP\Request('GET', '/foo', [

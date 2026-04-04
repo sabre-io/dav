@@ -676,12 +676,10 @@ SQL
             }
 
             // Ensure Occurence values are positive
-            if ($firstOccurence < 0) {
-                $firstOccurence = 0;
-            }
-            if ($lastOccurence < 0) {
-                $lastOccurence = 0;
-            }
+             if (date_diff($firstOccurence, $lastOccurence)->invert) {
+                 throw new \Sabre\DAV\Exception('Calendar firstOccurence and lastOccurence must be consecutive');
+             }
+
         }
 
         // Destroy circular references to PHP will GC the object.

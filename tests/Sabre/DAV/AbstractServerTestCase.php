@@ -25,7 +25,7 @@ abstract class AbstractServerTestCase extends TestCase
     public function setup(): void
     {
         $this->response = new ResponseMock();
-        $this->server = new Server($this->getRootNode());
+        $this->server = new ServerMock($this->getRootNode());
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->httpResponse = $this->response;
         $this->server->debugExceptions = true;

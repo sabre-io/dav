@@ -3,12 +3,12 @@ CREATE TABLE calendarobjects (
     calendardata MEDIUMBLOB,
     uri VARBINARY(200),
     calendarid INTEGER UNSIGNED NOT NULL,
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL,
     componenttype VARBINARY(8),
-    firstoccurence INT(11) UNSIGNED,
-    lastoccurence INT(11) UNSIGNED,
+    firstoccurence BIGINT(11) UNSIGNED,
+    lastoccurence BIGINT(11) UNSIGNED,
     uid VARBINARY(200),
     UNIQUE(calendarid, uri),
     INDEX calendarid_time (calendarid, firstoccurence)
@@ -61,7 +61,7 @@ CREATE TABLE calendarsubscriptions (
     striptodos TINYINT(1) NULL,
     stripalarms TINYINT(1) NULL,
     stripattachments TINYINT(1) NULL,
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     UNIQUE(principaluri, uri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -70,7 +70,7 @@ CREATE TABLE schedulingobjects (
     principaluri VARBINARY(255),
     calendardata MEDIUMBLOB,
     uri VARBINARY(200),
-    lastmodified INT(11) UNSIGNED,
+    lastmodified BIGINT(11) UNSIGNED,
     etag VARBINARY(32),
     size INT(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

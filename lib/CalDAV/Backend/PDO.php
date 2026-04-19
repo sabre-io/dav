@@ -31,7 +31,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * in 2038-01-19 to avoid problems when the date is converted
      * to a unix timestamp.
      */
-    const MAX_DATE = '2038-01-01';
+	//2026-MAR-22 buckaroo-labs increase maximum date on 64-bit system (see MAX_DATE usage below).
+	const MAX_DATE = '2038-01-01';
 
     /**
      * pdo.
@@ -662,7 +663,11 @@ SQL
                 }
             } else {
                 $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
-                $maxDate = new \DateTime(self::MAX_DATE);
+
+				//2026-MAR-22 buckaroo-labs increase MAX_DATE on 64-bit system.
+				if (PHP_INT_SIZE<8) $maxDate = new \DateTime(self::MAX_DATE);
+				else $maxDate = new \DateTime('5000-01-01');
+
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();
                 } else {

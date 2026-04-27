@@ -236,11 +236,7 @@ class ICSExportPlugin extends DAV\ServerPlugin
             if (isset($tzResult[$tzProp])) {
                 // This property contains a VCALENDAR with a single
                 // VTIMEZONE.
-                $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
-                $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
-                // Destroy circular references to PHP will GC the object.
-                $vtimezoneObj->destroy();
-                unset($vtimezoneObj);
+                $calendarTimeZone = new DateTimeZone($tzResult[$tzProp]);
             } else {
                 // Defaulting to UTC.
                 $calendarTimeZone = new DateTimeZone('UTC');

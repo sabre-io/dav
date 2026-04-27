@@ -449,8 +449,7 @@ class Plugin extends DAV\ServerPlugin
                         if (isset($tzResult[$tzProp])) {
                             // This property contains a VCALENDAR with a single
                             // VTIMEZONE.
-                            $vtimezoneObj = VObject\Reader::read($tzResult[$tzProp]);
-                            $timeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();
+                            $calendarTimeZone = new DateTimeZone($tzResult[$tzProp]);
                         } else {
                             // Defaulting to UTC.
                             $timeZone = new DateTimeZone('UTC');

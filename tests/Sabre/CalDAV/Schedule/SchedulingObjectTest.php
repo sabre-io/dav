@@ -11,7 +11,7 @@ class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Sabre\CalDAV\Backend_PDO
      */
-    protected $backend;
+    private $backend;
     /**
      * @var Sabre\CalDAV\Calendar
      */
@@ -19,7 +19,7 @@ class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
     /**
      * @var Inbox
      */
-    protected $inbox;
+    private $inbox;
     protected $principalBackend;
 
     protected $data;

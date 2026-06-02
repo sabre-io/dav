@@ -123,6 +123,22 @@ abstract class AbstractPDOTestCase extends TestCase
             self::assertArrayHasKey($name, $calendars[0]);
             self::assertEquals($value, $calendars[0][$name]);
         }
+
+        // Round-trip the other direction. Regression: prior to the fix,
+        // the pgsql PDO driver rejected this with
+        //   SQLSTATE[22P02]: invalid input syntax for type smallint: ""
+        // because updateCalendar bound a PHP bool (false) instead of int 0.
+        $propPatch = new PropPatch([
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('opaque'),
+        ]);
+        $backend->updateCalendar($newId, $propPatch);
+        self::assertTrue($propPatch->commit());
+
+        $calendars = $backend->getCalendarsForUser('principals/user2');
+        self::assertEquals(
+            new CalDAV\Xml\Property\ScheduleCalendarTransp('opaque'),
+            $calendars[0]['{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp']
+        );
     }
 
     /**

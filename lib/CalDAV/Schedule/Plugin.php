@@ -257,9 +257,12 @@ class Plugin extends ServerPlugin
                 }
             });
 
-            // The server currently reports every principal to be of type
-            // 'INDIVIDUAL'
-            $propFind->handle('{'.self::NS_CALDAV.'}calendar-user-type', function () {
+            $propFind->handle('{'.self::NS_CALDAV.'}calendar-user-type', function () use ($node) {
+                $propertyName = '{'.self::NS_CALDAV.'}calendar-user-type';
+                $type = $node->getProperties([$propertyName]);
+                if(!empty($type[$propertyName])) {
+                    return $type[$propertyName];
+                }
                 return 'INDIVIDUAL';
             });
         }

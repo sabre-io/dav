@@ -102,12 +102,10 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
 
     /**
      * Delete the current file.
-     *
-     * @return bool
      */
     public function delete()
     {
-        return unlink($this->path);
+        unlink($this->path);
     }
 
     /**

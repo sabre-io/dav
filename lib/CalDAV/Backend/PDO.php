@@ -544,19 +544,19 @@ SQL
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (?,?,?,?,?,?,?,?,?,?)');
-        $stmt->execute([
-            $calendarId,
-            $objectUri,
-            $calendarData,
-            time(),
-            $extraData['etag'],
-            $extraData['size'],
-            $extraData['componentType'],
-            $extraData['firstOccurence'],
-            $extraData['lastOccurence'],
-            $extraData['uid'],
-        ]);
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->calendarObjectTableName.' (calendarid, uri, calendardata, lastmodified, etag, size, componenttype, firstoccurence, lastoccurence, uid) VALUES (:calendarid, :uri, :calendardata, :lastmodified, :etag, :size, :componenttype, :firstoccurence, :lastoccurence, :uid)');
+        $lastmodified = time();
+        $stmt->bindParam('calendarid', $calendarId, \PDO::PARAM_INT);
+        $stmt->bindParam('uri', $objectUri, \PDO::PARAM_STR);
+        $stmt->bindParam('calendardata', $calendarData, \PDO::PARAM_LOB);
+        $stmt->bindParam('lastmodified', $lastmodified, \PDO::PARAM_INT);
+        $stmt->bindParam('etag', $extraData['etag'], \PDO::PARAM_STR);
+        $stmt->bindParam('size', $extraData['size'], \PDO::PARAM_INT);
+        $stmt->bindParam('componenttype', $extraData['componentType'], \PDO::PARAM_STR);
+        $stmt->bindParam('firstoccurence', $extraData['firstOccurence'], \PDO::PARAM_INT);
+        $stmt->bindParam('lastoccurence', $extraData['lastOccurence'], \PDO::PARAM_INT);
+        $stmt->bindParam('uid', $extraData['uid'], \PDO::PARAM_STR);
+        $stmt->execute();
         $this->addChange($calendarId, $objectUri, 1);
 
         return '"'.$extraData['etag'].'"';
@@ -590,8 +590,19 @@ SQL
 
         $extraData = $this->getDenormalizedData($calendarData);
 
-        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = ?, lastmodified = ?, etag = ?, size = ?, componenttype = ?, firstoccurence = ?, lastoccurence = ?, uid = ? WHERE calendarid = ? AND uri = ?');
-        $stmt->execute([$calendarData, time(), $extraData['etag'], $extraData['size'], $extraData['componentType'], $extraData['firstOccurence'], $extraData['lastOccurence'], $extraData['uid'], $calendarId, $objectUri]);
+        $stmt = $this->pdo->prepare('UPDATE '.$this->calendarObjectTableName.' SET calendardata = :calendardata, lastmodified = :lastmodified, etag = :etag, size = :size, componenttype = :componenttype, firstoccurence = :firstoccurence, lastoccurence = :lastoccurence, uid = :uid WHERE calendarid = :calendarid AND uri = :uri');
+        $lastmodified = time();
+        $stmt->bindParam('calendardata', $calendarData, \PDO::PARAM_LOB);
+        $stmt->bindParam('lastmodified', $lastmodified, \PDO::PARAM_INT);
+        $stmt->bindParam('etag', $extraData['etag'], \PDO::PARAM_STR);
+        $stmt->bindParam('size', $extraData['size'], \PDO::PARAM_INT);
+        $stmt->bindParam('componenttype', $extraData['componentType'], \PDO::PARAM_STR);
+        $stmt->bindParam('firstoccurence', $extraData['firstOccurence'], \PDO::PARAM_INT);
+        $stmt->bindParam('lastoccurence', $extraData['lastOccurence'], \PDO::PARAM_INT);
+        $stmt->bindParam('uid', $extraData['uid'], \PDO::PARAM_STR);
+        $stmt->bindParam('calendarid', $calendarId, \PDO::PARAM_INT);
+        $stmt->bindParam('uri', $objectUri, \PDO::PARAM_STR);
+        $stmt->execute();
 
         $this->addChange($calendarId, $objectUri, 2);
 
@@ -1311,13 +1322,22 @@ SQL;
      */
     public function createSchedulingObject($principalUri, $objectUri, $objectData)
     {
-        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (:principaluri, :calendardata, :uri, :lastmodified, :etag, :size)');
 
         if (is_resource($objectData)) {
             $objectData = stream_get_contents($objectData);
         }
 
-        $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData)]);
+        $lastmodified = time();
+        $etag = md5($objectData);
+        $size = strlen($objectData);
+        $stmt->bindParam('principaluri', $principalUri, \PDO::PARAM_STR);
+        $stmt->bindParam('calendardata', $objectData, \PDO::PARAM_LOB);
+        $stmt->bindParam('uri', $objectUri, \PDO::PARAM_STR);
+        $stmt->bindParam('lastmodified', $lastmodified, \PDO::PARAM_INT);
+        $stmt->bindParam('etag', $etag, \PDO::PARAM_STR);
+        $stmt->bindParam('size', $size, \PDO::PARAM_INT);
+        $stmt->execute();
     }
 
     /**

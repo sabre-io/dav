@@ -15,7 +15,7 @@ use Sabre\Xml\XmlDeserializable;
  * This class parses the {urn:ietf:params:xml:ns:caldav}calendar-query
  * REPORT, as defined in:
  *
- * https://tools.ietf.org/html/rfc4791#section-7.9
+ * https://tools.ietf.org/html/rfc4791#section-7.8
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://www.rooftopsolutions.nl/)

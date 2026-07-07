@@ -625,8 +625,14 @@ class Server implements LoggerAwareInterface, EmitterInterface
      */
     public function getHTTPRange()
     {
-        $range = $this->httpRequest->getHeader('range');
+        $range = $this->httpRequest->getHeader('Range');
         if (is_null($range)) {
+            return null;
+        }
+
+        // MUST ignore Range on non-GET requests (RFC 7233 §3.1)
+        $method = $this->httpRequest->getHeader('X-Sabre-Original-Method') ?: $this->httpRequest->getMethod();
+        if ('GET' !== strtoupper($method)) {
             return null;
         }
 

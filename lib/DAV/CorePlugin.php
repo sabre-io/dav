@@ -589,6 +589,11 @@ class CorePlugin extends ServerPlugin
 
         $moveInfo = $this->server->getCopyAndMoveInfo($request);
 
+        // MOVE does only allow "infinity" every other header value is considered invalid
+        if (Server::DEPTH_INFINITY !== $moveInfo['depth']) {
+            throw new BadRequest('The HTTP Depth header must only contain "infinity" for MOVE');
+        }
+
         if ($moveInfo['destinationExists']) {
             if (!$this->server->emit('beforeUnbind', [$moveInfo['destination']])) {
                 return false;
@@ -645,7 +650,7 @@ class CorePlugin extends ServerPlugin
         if (!$this->server->emit('beforeBind', [$copyInfo['destination']])) {
             return false;
         }
-        if (!$this->server->emit('beforeCopy', [$path, $copyInfo['destination']])) {
+        if (!$this->server->emit('beforeCopy', [$path, $copyInfo['destination'], $copyInfo['depth']])) {
             return false;
         }
 
@@ -656,8 +661,8 @@ class CorePlugin extends ServerPlugin
             $this->server->tree->delete($copyInfo['destination']);
         }
 
-        $this->server->tree->copy($path, $copyInfo['destination']);
-        $this->server->emit('afterCopy', [$path, $copyInfo['destination']]);
+        $this->server->tree->copy($path, $copyInfo['destination'], $copyInfo['depth']);
+        $this->server->emit('afterCopy', [$path, $copyInfo['destination'], $copyInfo['depth']]);
         $this->server->emit('afterBind', [$copyInfo['destination']]);
 
         // If a resource was overwritten we should send a 204, otherwise a 201

@@ -1,6 +1,20 @@
 ChangeLog
 =========
 
+4.7.1 (2026-07-07)
+-------------------------
+* #1561 Refactor ternary to elvis operator where possible (@ChristophWurst)
+* #1562 refactor: Change class strings to ::class constants (@ChristophWurst)
+* #1595 Check for instanceof INode instead of Node (@CarlSchwan)
+* #1598 docs(caldav): fix RFC section for calendar query report (@ChristophWurst)
+* #1495 fix: Handle Depth header for COPY as this is required by RFC (@provokateurin)
+* #1604 Remove redundant getLocks() call on a lock refresh (@alecpl)
+* #1610 No return from delete() according to INode::delete() (@alecpl)
+* #1612 Use Uri\Split() instead of basename() (@alecpl)
+* #1623 Fix PDO::PARAM_LOB binding for BYTEA columns in CalDAV and CardDAV (@sylvinus)
+* #1625 Fix error on a HEAD request with a Range header (@alecpl)
+* #1637 fix(CalDAV/Backend/PDO): bind transparent as int in updateCalendar (@sylvinus)
+
 4.7.0 (2024-10-29)
 -------------------------
 * #1074 Add event to allow inspecting and changing multipart responses (@icewind1991)

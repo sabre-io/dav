@@ -306,7 +306,7 @@ SQL
                 switch ($propertyName) {
                     case '{'.CalDAV\Plugin::NS_CALDAV.'}schedule-calendar-transp':
                         $fieldName = 'transparent';
-                        $newValues[$fieldName] = 'transparent' === $propertyValue->getValue();
+                        $newValues[$fieldName] = 'transparent' === $propertyValue->getValue() ? 1 : 0;
                         break;
                     default:
                         $fieldName = $this->propertyMap[$propertyName];

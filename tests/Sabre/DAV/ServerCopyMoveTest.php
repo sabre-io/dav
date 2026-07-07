@@ -7,7 +7,7 @@ namespace Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\HTTP;
 
-class ServerCopyMoveTest extends AbstractServerTestCase
+class ServerCopyMoveTest extends AbstractServer
 {
     public function testMissingDestinationHeader()
     {

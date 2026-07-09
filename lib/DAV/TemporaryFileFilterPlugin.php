@@ -103,8 +103,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
      *
      * This method intercepts any GET, DELETE, PUT and PROPFIND calls to
      * filenames that are known to match the 'temporary file' regex.
-     *
-     * @return bool
      */
     public function beforeMethod(RequestInterface $request, ResponseInterface $response)
     {
@@ -134,8 +132,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
      * @param resource $data
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
-     *
-     * @return bool
      */
     public function beforeCreateFile($uri, $data, ICollection $parent, $modified)
     {
@@ -143,8 +139,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
             $hR = $this->server->httpResponse;
             $hR->setHeader('X-Sabre-Temp', 'true');
             file_put_contents($tempPath, $data);
-
-            return false;
         }
     }
 

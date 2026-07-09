@@ -70,7 +70,7 @@ class Issue33Test extends \PHPUnit\Framework\TestCase
 
         $request->setBody('');
 
-        $response = new HTTP\ResponseMock();
+        $response = new HTTP\Response();
 
         // Server setup
         mkdir(\Sabre\TestUtil::SABRE_TEMPDIR.'/issue33');

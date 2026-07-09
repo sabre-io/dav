@@ -85,7 +85,7 @@ class PluginTest extends AbstractPluginTestCase
     public function testGetTransform()
     {
         $request = new \Sabre\HTTP\Request('GET', '/addressbooks/user1/book1/card1', ['Accept' => 'application/vcard+json']);
-        $response = new \Sabre\HTTP\ResponseMock();
+        $response = new \Sabre\HTTP\Response();
         $this->server->invokeMethod($request, $response);
 
         self::assertEquals(200, $response->getStatus());
@@ -94,7 +94,7 @@ class PluginTest extends AbstractPluginTestCase
     public function testGetWithoutContentType()
     {
         $request = new \Sabre\HTTP\Request('GET', '/');
-        $response = new \Sabre\HTTP\ResponseMock();
+        $response = new \Sabre\HTTP\Response();
         $this->plugin->httpAfterGet($request, $response);
         self::assertTrue(true);
     }

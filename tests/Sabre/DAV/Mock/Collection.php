@@ -118,7 +118,7 @@ class Collection extends DAV\Collection
      */
     public function getChildren()
     {
-        return $this->children;
+        return $this->children ?? [];
     }
 
     /**

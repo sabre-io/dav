@@ -25,6 +25,7 @@ abstract class AbstractPDOTestCaseCase extends TestCase
     {
         $pdo = $this->getPDO();
         $backend = new PDO($pdo);
+
         self::assertTrue($backend instanceof PDO);
     }
 
@@ -37,9 +38,6 @@ abstract class AbstractPDOTestCaseCase extends TestCase
         $backend = new PDO($pdo);
 
         self::assertNull($backend->getDigestHash('realm', 'blabla'));
-
-        $expected = 'hash';
-
-        self::assertEquals($expected, $backend->getDigestHash('realm', 'user'));
+        self::assertEquals('hash', $backend->getDigestHash('realm', 'user'));
     }
 }

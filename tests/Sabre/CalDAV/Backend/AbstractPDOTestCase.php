@@ -123,6 +123,22 @@ abstract class AbstractPDOTestCase extends TestCase
             self::assertArrayHasKey($name, $calendars[0]);
             self::assertEquals($value, $calendars[0][$name]);
         }
+
+        // Round-trip the other direction. Regression: prior to the fix,
+        // the pgsql PDO driver rejected this with
+        //   SQLSTATE[22P02]: invalid input syntax for type smallint: ""
+        // because updateCalendar bound a PHP bool (false) instead of int 0.
+        $propPatch = new PropPatch([
+            '{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp' => new CalDAV\Xml\Property\ScheduleCalendarTransp('opaque'),
+        ]);
+        $backend->updateCalendar($newId, $propPatch);
+        self::assertTrue($propPatch->commit());
+
+        $calendars = $backend->getCalendarsForUser('principals/user2');
+        self::assertEquals(
+            new CalDAV\Xml\Property\ScheduleCalendarTransp('opaque'),
+            $calendars[0]['{urn:ietf:params:xml:ns:caldav}schedule-calendar-transp']
+        );
     }
 
     /**
@@ -241,6 +257,30 @@ abstract class AbstractPDOTestCase extends TestCase
             'lastoccurence' => strtotime('20120101') + (3600 * 24),
             'componenttype' => 'VEVENT',
         ], $row);
+    }
+
+    /**
+     * @see https://github.com/sabre-io/dav/issues/1587
+     */
+    public function testCreateCalendarObjectWithIcsEscapes()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        // ICS data with escaped comma (\,) and newline (\n) in DESCRIPTION.
+        // These are standard RFC 5545 TEXT escapes but trigger PostgreSQL
+        // "invalid input syntax for type bytea" when calendardata is BYTEA
+        // and the parameter is bound as PARAM_STR instead of PARAM_LOB.
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20120101\r\nDESCRIPTION:Hello\\, world\\nSecond line\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'ics-escapes-id', $object);
+
+        // Verify round-trip: read it back and compare
+        $result = $backend->getCalendarObject($returnedId, 'ics-escapes-id');
+        if (is_resource($result['calendardata'])) {
+            $result['calendardata'] = stream_get_contents($result['calendardata']);
+        }
+        self::assertEquals($object, $result['calendardata']);
     }
 
     public function testGetMultipleObjects()

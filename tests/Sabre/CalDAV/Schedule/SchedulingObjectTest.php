@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
+use Sabre\CalDAV;
 use Sabre\CalDAV\Backend;
 
 class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Sabre\CalDAV\Backend_PDO
+     * @var CalDAV\Backend\PDO
      */
-    protected $backend;
+    private $backend;
     /**
-     * @var Sabre\CalDAV\Calendar
+     * @var CalDAV\Calendar
      */
     protected $calendar;
     /**
      * @var Inbox
      */
-    protected $inbox;
+    private $inbox;
     protected $principalBackend;
 
     protected $data;

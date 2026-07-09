@@ -27,7 +27,7 @@ class MapGetToPropFindTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = ($request);
         $this->server->exec();
 
-        self::assertEquals(207, $this->response->status, 'Incorrect status response received. Full response body: '.$this->response->getBodyAsString());
+        self::assertEquals(207, $this->response->getStatus(), 'Incorrect status response received. Full response body: '.$this->response->getBodyAsString());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],

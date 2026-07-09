@@ -24,7 +24,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
     public function testPostWithoutContentType()
     {
         $request = new \Sabre\HTTP\Request('POST', '/');
-        $response = new \Sabre\HTTP\ResponseMock();
+        $response = new \Sabre\HTTP\Response();
 
         $this->sharingPlugin->httpPost($request, $response);
         self::assertTrue(true);

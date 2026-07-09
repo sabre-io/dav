@@ -28,7 +28,7 @@ class PDO extends AbstractBackend
     /**
      * The PDO connection object.
      *
-     * @var pdo
+     * @var \PDO
      */
     protected $pdo;
 

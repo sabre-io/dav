@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sabre\DAV\Mock;
 
 use Sabre\DAV\Sharing\ISharedNode;
-use Sabre\DAV\Sharing\Sharee;
+use Sabre\DAV\Xml\Element\Sharee;
 
 class SharedNode extends \Sabre\DAV\Node implements ISharedNode
 {

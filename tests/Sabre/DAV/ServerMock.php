@@ -16,7 +16,7 @@ class ServerMock extends Server
     /**
      * Starts the DAV Server making sure the mocked response state is reset.
      */
-    public function start()
+    public function start(): void
     {
         $this->httpResponse->reset();
 

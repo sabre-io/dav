@@ -518,7 +518,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(204, $this->response->getStatus());
-        self::assertNull($this->response->body);
+        self::assertSame('', $this->response->getBodyAsString());
     }
 
     /**
@@ -592,7 +592,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(201, $this->response->getStatus(), 'Copy must succeed if only the source is locked, but not the destination');
-        self::assertNull($this->response->body);
+        self::assertSame('', $this->response->getBodyAsString());
     }
 
     /**
@@ -761,7 +761,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->exec();
 
         self::assertEquals(201, $this->response->getStatus(), 'We locked the parent of both the source and destination, but the move didn\'t succeed.');
-        self::assertNull($this->response->body);
+        self::assertSame('', $this->response->getBodyAsString());
     }
 
     /**
@@ -794,7 +794,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertNull($this->response->body);
+        self::assertSame('', $this->response->getBodyAsString());
         self::assertFalse($this->response->hasHeader('Lock-Token'), 'Unexpected Lock-Token header');
 
         self::assertEquals(204, $this->response->getStatus());
@@ -832,7 +832,7 @@ class PluginTest extends DAV\AbstractServerTestCase
         $this->server->httpRequest = $request;
         $this->server->exec();
 
-        self::assertNull($this->response->body);
+        self::assertSame('', $this->response->getBodyAsString());
         self::assertFalse($this->response->hasHeader('Lock-Token'), 'Unexpected Lock-Token header');
 
         self::assertEquals(204, $this->response->getStatus());

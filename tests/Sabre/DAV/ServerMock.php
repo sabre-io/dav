@@ -14,11 +14,17 @@ namespace Sabre\DAV;
 class ServerMock extends Server
 {
     /**
-     * Starts the DAV Server making sure the mocked response state is reset.
+     * Starts the DAV Server making sure the response state is reset.
      */
     public function start(): void
     {
-        $this->httpResponse->reset();
+        // TODO: Set statusText property via setStatus() or Reflection
+        $this->httpResponse->setStatus(500);
+        $this->httpResponse->setBody('');
+
+        foreach (array_keys($this->httpResponse->getHeaders()) as $header) {
+            $this->httpResponse->removeHeader($header);
+        }
 
         parent::start();
     }

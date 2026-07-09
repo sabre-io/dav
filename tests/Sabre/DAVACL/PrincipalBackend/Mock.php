@@ -84,9 +84,8 @@ class Mock extends AbstractBackend
                 // We have a match for this searchProperty!
                 if ('allof' === $test) {
                     continue;
-                } else {
-                    break;
                 }
+                break;
             }
             $matches[] = $principal['uri'];
         }

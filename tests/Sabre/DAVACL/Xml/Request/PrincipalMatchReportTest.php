@@ -9,7 +9,7 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class PrincipalMatchReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{DAV:}principal-match' => \Sabre\DAVACL\Xml\Request\PrincipalMatchReport::class,
+        '{DAV:}principal-match' => PrincipalMatchReport::class,
     ];
 
     public function testDeserialize()

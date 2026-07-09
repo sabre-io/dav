@@ -141,9 +141,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
             if ($calendar['uri'] === $name) {
                 if ($this->caldavBackend instanceof Backend\SharingSupport) {
                     return new SharedCalendar($this->caldavBackend, $calendar);
-                } else {
-                    return new Calendar($this->caldavBackend, $calendar);
                 }
+
+                return new Calendar($this->caldavBackend, $calendar);
             }
         }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sabre\CalDAV\Xml\Notification;
 
 use Sabre\CalDAV;
-use Sabre\CalDAV\SharingPlugin as SharingPlugin;
+use Sabre\CalDAV\SharingPlugin;
 use Sabre\DAV;
 use Sabre\Xml\Writer;
 
@@ -214,7 +214,7 @@ class Invite implements NotificationInterface
 
         $writer->writeElement($cs.'hosturl', [
             '{DAV:}href' => $writer->contextUri.$this->hostUrl,
-            ]);
+        ]);
 
         if ($this->summary) {
             $writer->writeElement($cs.'summary', $this->summary);

@@ -51,7 +51,7 @@ class Subscription extends Collection implements ISubscription, IACL
             'uri',
             'principaluri',
             'source',
-            ];
+        ];
 
         foreach ($required as $r) {
             if (!isset($subscriptionInfo[$r])) {

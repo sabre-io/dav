@@ -104,7 +104,7 @@ class SharedNode extends \Sabre\DAV\Node implements ISharedNode
      *
      * * $properties
      *
-     * @return \Sabre\DAV\Xml\Element\Sharee[]
+     * @return Sharee[]
      */
     public function getInvites()
     {

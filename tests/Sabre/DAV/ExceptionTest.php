@@ -15,8 +15,8 @@ class ExceptionTest extends \PHPUnit\Framework\TestCase
     public function testExceptionStatuses()
     {
         $c = [
-            \Sabre\DAV\Exception\NotAuthenticated::class => 401,
-            \Sabre\DAV\Exception\InsufficientStorage::class => 507,
+            Exception\NotAuthenticated::class => 401,
+            Exception\InsufficientStorage::class => 507,
         ];
 
         foreach ($c as $class => $status) {

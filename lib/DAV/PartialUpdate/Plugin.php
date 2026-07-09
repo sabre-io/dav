@@ -24,9 +24,9 @@ use Sabre\HTTP\ResponseInterface;
  */
 class Plugin extends DAV\ServerPlugin
 {
-    const RANGE_APPEND = 1;
-    const RANGE_START = 2;
-    const RANGE_END = 3;
+    public const RANGE_APPEND = 1;
+    public const RANGE_START = 2;
+    public const RANGE_END = 3;
 
     /**
      * Reference to server.
@@ -205,8 +205,8 @@ class Plugin extends DAV\ServerPlugin
             return [self::RANGE_APPEND];
         } elseif (strlen($matches[2]) > 0) {
             return [self::RANGE_START, (int) $matches[2], (int) $matches[3] ?: null];
-        } else {
-            return [self::RANGE_END, (int) $matches[4]];
         }
+
+        return [self::RANGE_END, (int) $matches[4]];
     }
 }

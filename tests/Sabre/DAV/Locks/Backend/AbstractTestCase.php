@@ -10,8 +10,6 @@ use Sabre\DAV;
 abstract class AbstractTestCase extends TestCase
 {
     /**
-     * @abstract
-     *
      * @return AbstractBackend
      */
     abstract public function getBackend();
@@ -19,7 +17,7 @@ abstract class AbstractTestCase extends TestCase
     public function testSetup()
     {
         $backend = $this->getBackend();
-        self::assertInstanceOf(\Sabre\DAV\Locks\Backend\AbstractBackend::class, $backend);
+        self::assertInstanceOf(AbstractBackend::class, $backend);
     }
 
     /**

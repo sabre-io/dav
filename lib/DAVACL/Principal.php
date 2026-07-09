@@ -144,9 +144,9 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
     {
         if (isset($this->principalProperties['{DAV:}displayname'])) {
             return $this->principalProperties['{DAV:}displayname'];
-        } else {
-            return $this->getName();
         }
+
+        return $this->getName();
     }
 
     /**

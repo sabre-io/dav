@@ -61,14 +61,14 @@ class Inbox extends DAV\Collection implements IInbox
     /**
      * Returns an array with all the child nodes.
      *
-     * @return \Sabre\DAV\INode[]
+     * @return DAV\INode[]
      */
     public function getChildren()
     {
         $objs = $this->caldavBackend->getSchedulingObjects($this->principalUri);
         $children = [];
         foreach ($objs as $obj) {
-            //$obj['acl'] = $this->getACL();
+            // $obj['acl'] = $this->getACL();
             $obj['principaluri'] = $this->principalUri;
             $children[] = new SchedulingObject($this->caldavBackend, $obj);
         }

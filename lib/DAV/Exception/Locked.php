@@ -20,7 +20,7 @@ class Locked extends DAV\Exception
     /**
      * Lock information.
      *
-     * @var \Sabre\DAV\Locks\LockInfo
+     * @var DAV\Locks\LockInfo
      */
     protected $lock;
 
@@ -29,8 +29,6 @@ class Locked extends DAV\Exception
      *
      * A LockInfo object should be passed if the user should be informed
      * which lock actually has the file locked.
-     *
-     * @param DAV\Locks\LockInfo $lock
      */
     public function __construct(?DAV\Locks\LockInfo $lock = null)
     {

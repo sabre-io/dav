@@ -53,7 +53,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
     /**
      * A reference to the main Server class.
      *
-     * @var \Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
 
@@ -122,8 +122,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
             case 'DELETE':
                 return $this->httpDelete($request, $response, $tempLocation);
         }
-
-        return;
     }
 
     /**
@@ -148,8 +146,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
 
             return false;
         }
-
-        return;
     }
 
     /**
@@ -216,7 +212,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
 
         $newFile = !file_exists($tempLocation);
 
-        if (!$newFile && ($this->server->httpRequest->getHeader('If-None-Match'))) {
+        if (!$newFile && $this->server->httpRequest->getHeader('If-None-Match')) {
             throw new Exception\PreconditionFailed('The resource already exists, and an If-None-Match header was supplied');
         }
 

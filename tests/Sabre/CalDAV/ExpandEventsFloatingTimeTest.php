@@ -49,7 +49,7 @@ END:VCALENDAR',
 
     protected $caldavCalendarObjects = [
         1 => [
-           'event.ics' => [
+            'event.ics' => [
                 'calendardata' => 'BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -108,9 +108,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var Sabre\VObject\Component\VEvent $vevent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var Sabre\VObject\Property $child */
                 if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     self::assertEquals('20141108T043000Z', $child->getValue());
@@ -157,9 +157,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var Sabre\VObject\Component\VEvent $vevent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var Sabre\VObject\Property $child */
                 if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     self::assertEquals($child->getValue(), '20141108T043000Z');
@@ -194,9 +194,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var Sabre\VObject\Component\VEvent $vevent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var Sabre\VObject\Property $child */
                 if ('DTSTART' == $child->name) {
                     // DTSTART should be the UTC equivalent of given floating time
                     self::assertEquals('20141108T043000Z', $child->getValue());

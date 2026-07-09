@@ -70,7 +70,7 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             1,
             count($inbox->getChildren())
         );
-        self::assertInstanceOf(\Sabre\CalDAV\Schedule\SchedulingObject::class, $inbox->getChildren()[0]);
+        self::assertInstanceOf(SchedulingObject::class, $inbox->getChildren()[0]);
         self::assertEquals(
             'schedule1.ics',
             $inbox->getChildren()[0]->getName()
@@ -97,7 +97,7 @@ class InboxTest extends \PHPUnit\Framework\TestCase
             1,
             count($inbox->getChildren())
         );
-        self::assertInstanceOf(\Sabre\CalDAV\Schedule\SchedulingObject::class, $inbox->getChildren()[0]);
+        self::assertInstanceOf(SchedulingObject::class, $inbox->getChildren()[0]);
         self::assertEquals(
             'schedule1.ics',
             $inbox->getChildren()[0]->getName()

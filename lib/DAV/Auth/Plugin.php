@@ -55,8 +55,6 @@ class Plugin extends ServerPlugin
 
     /**
      * Creates the authentication plugin.
-     *
-     * @param Backend\BackendInterface $authBackend
      */
     public function __construct(?Backend\BackendInterface $authBackend = null)
     {
@@ -187,6 +185,7 @@ class Plugin extends ServerPlugin
 
             if ($result[0]) {
                 $this->currentPrincipal = $result[1];
+
                 // Exit early
                 return [true, $result[1]];
             }

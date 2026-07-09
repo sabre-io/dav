@@ -9,7 +9,7 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class AddressBookQueryReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{urn:ietf:params:xml:ns:carddav}addressbook-query' => \Sabre\CardDAV\Xml\Request\AddressBookQueryReport::class,
+        '{urn:ietf:params:xml:ns:carddav}addressbook-query' => AddressBookQueryReport::class,
     ];
 
     public function testDeserialize()

@@ -12,6 +12,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
     /**
      * @param array  $notification
      * @param string $expected
+     *
      * @dataProvider dataProvider
      */
     public function testSerializers($notification, $expected)
@@ -65,7 +66,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
                     'type' => DAV\Sharing\Plugin::INVITE_ACCEPTED,
                     'hostUrl' => 'calendar',
                 ],
-<<<FOO
+                <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
@@ -80,7 +81,7 @@ class InviteReplyTest extends \PHPUnit\Framework\TestCase
   </cs:invite-reply>
 </cs:root>
 
-FOO
+FOO,
             ],
             [
                 [
@@ -93,7 +94,7 @@ FOO
                     'hostUrl' => 'calendar',
                     'summary' => 'Summary!',
                 ],
-<<<FOO
+                <<<FOO
 <?xml version="1.0" encoding="UTF-8"?>
 <cs:root xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:">
   <cs:dtstamp>20120101T000000Z</cs:dtstamp>
@@ -109,7 +110,7 @@ FOO
   </cs:invite-reply>
 </cs:root>
 
-FOO
+FOO,
             ],
         ];
     }

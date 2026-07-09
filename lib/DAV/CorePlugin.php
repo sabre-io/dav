@@ -197,6 +197,7 @@ class CorePlugin extends ServerPlugin
             $response->setStatus(200);
             $response->setBody($body);
         }
+
         // Sending back false will interrupt the event chain and tell the server
         // we've handled this method.
         return false;
@@ -439,7 +440,7 @@ class CorePlugin extends ServerPlugin
 
                Reference: http://tools.ietf.org/html/rfc7231#section-4.3.4
             */
-            throw new Exception\BadRequest('Content-Range on PUT requests are forbidden.');
+            throw new BadRequest('Content-Range on PUT requests are forbidden.');
         }
 
         // Intercepting the Finder problem
@@ -486,7 +487,7 @@ class CorePlugin extends ServerPlugin
             $node = $this->server->tree->getNodeForPath($path);
 
             // If the node is a collection, we'll deny it
-            if (!($node instanceof IFile)) {
+            if (!$node instanceof IFile) {
                 throw new Exception\Conflict('PUT is not allowed on non-files.');
             }
             if (!$this->server->updateFile($path, $body, $etag)) {
@@ -539,14 +540,14 @@ class CorePlugin extends ServerPlugin
 
             try {
                 $mkcol = $this->server->xml->expect('{DAV:}mkcol', $requestBody);
-            } catch (\Sabre\Xml\ParseException $e) {
-                throw new Exception\BadRequest($e->getMessage(), 0, $e);
+            } catch (ParseException $e) {
+                throw new BadRequest($e->getMessage(), 0, $e);
             }
 
             $properties = $mkcol->getProperties();
 
             if (!isset($properties['{DAV:}resourcetype'])) {
-                throw new Exception\BadRequest('The mkcol request must include a {DAV:}resourcetype property');
+                throw new BadRequest('The mkcol request must include a {DAV:}resourcetype property');
             }
             $resourceType = $properties['{DAV:}resourcetype']->getValue();
             unset($properties['{DAV:}resourcetype']);
@@ -866,7 +867,7 @@ class CorePlugin extends ServerPlugin
     public function exception($e)
     {
         $logLevel = \Psr\Log\LogLevel::CRITICAL;
-        if ($e instanceof \Sabre\DAV\Exception) {
+        if ($e instanceof Exception) {
             // If it's a standard sabre/dav exception, it means we have a http
             // status code available.
             $code = $e->getHTTPCode();

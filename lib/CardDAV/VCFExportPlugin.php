@@ -60,7 +60,7 @@ class VCFExportPlugin extends DAV\ServerPlugin
 
         $node = $this->server->tree->getNodeForPath($path);
 
-        if (!($node instanceof IAddressBook)) {
+        if (!$node instanceof IAddressBook) {
             return;
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-$config = PhpCsFixer\Config::create();
+$config = new PhpCsFixer\Config();
 $config->getFinder()
     ->exclude('vendor')
     ->in(__DIR__);

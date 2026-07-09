@@ -37,4 +37,4 @@ build.properties
 docs/api
 docs/wikidocs
 
-.php_cs.cache
+.php-cs-fixer.cache

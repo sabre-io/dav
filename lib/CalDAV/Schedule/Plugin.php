@@ -314,7 +314,7 @@ class Plugin extends ServerPlugin
      * @param mixed             $modified     the iCalendar object has been touched
      * @param mixed             $isNew        Whether this was a new item or we're updating one
      */
-    public function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, &$modified, $isNew)
+    public function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, & $modified, $isNew)
     {
         if (!$this->scheduleReply($this->server->httpRequest)) {
             return;

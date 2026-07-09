@@ -30,6 +30,8 @@ class PropPatch
     /**
      * A list of properties and the result of the update. The result is in the
      * form of an HTTP status code.
+     *
+     * @var array<string, int>
      */
     protected array $result = [];
 
@@ -48,7 +50,7 @@ class PropPatch
     /**
      * Constructor.
      *
-     * @param array $mutations A list of updates
+     * @param array<string, mixed> $mutations A list of updates
      */
     public function __construct(array $mutations)
     {
@@ -157,7 +159,7 @@ class PropPatch
      *
      * This method returns a list of property names, but not its values.
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getRemainingMutations(): array
     {
@@ -175,6 +177,8 @@ class PropPatch
      * Returns the list of properties that don't have a result code yet.
      *
      * This method returns list of properties and their values.
+     *
+     * @return array<string, mixed>
      */
     public function getRemainingValues(): array
     {
@@ -302,6 +306,8 @@ class PropPatch
 
     /**
      * Returns the result of the operation.
+     *
+     * @return array<string, int>
      */
     public function getResult(): array
     {
@@ -310,6 +316,8 @@ class PropPatch
 
     /**
      * Returns the full list of mutations.
+     *
+     * @return array<string, mixed>
      */
     public function getMutations(): array
     {

@@ -36,6 +36,8 @@ class PropFind
 
     /**
      * Creates the PROPFIND object.
+     *
+     * @param self::NORMAL|self::ALLPROPS|self::PROPNAME $requestType
      */
     public function __construct(string $path, array $properties, int $depth = 0, int $requestType = self::NORMAL)
     {
@@ -185,7 +187,7 @@ class PropFind
      * Returns all propertynames that have a 404 status, and thus don't have a
      * value yet.
      *
-     * @return array
+     * @return list<string>
      */
     public function get404Properties()
     {
@@ -272,11 +274,15 @@ class PropFind
 
     /**
      * The type of request. See the TYPE constants.
+     *
+     * @var self::NORMAL|self::ALLPROPS|self::PROPNAME
      */
-    protected $requestType;
+    protected int $requestType;
 
     /**
      * A list of requested properties.
+     *
+     * @var list<string>
      */
     protected array $properties = [];
 
@@ -293,14 +299,14 @@ class PropFind
      *    "{DAV:}owner" : [404],
      *    "{DAV:}displayname" : [200, "Admin"]
      * ]
+     *
+     * @var array<string, array{int, mixed}>
      */
     protected array $result = [];
 
     /**
      * This is used as an internal counter for the number of properties that do
      * not yet have a value.
-     *
-     * @var int
      */
-    protected $itemsLeft;
+    protected int $itemsLeft;
 }

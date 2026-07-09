@@ -85,7 +85,7 @@ abstract class Collection extends Node implements ICollection
      *
      * @return string|null
      */
-    public function createFile($name, $data = null)
+    public function createFile(string $name, $data = null)
     {
         throw new Exception\Forbidden('Permission denied to create file (filename '.$name.')');
     }
@@ -93,11 +93,9 @@ abstract class Collection extends Node implements ICollection
     /**
      * Creates a new subdirectory.
      *
-     * @param string $name
-     *
      * @throws Exception\Forbidden
      */
-    public function createDirectory($name)
+    public function createDirectory(string $name)
     {
         throw new Exception\Forbidden('Permission denied to create directory');
     }

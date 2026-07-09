@@ -241,7 +241,7 @@ class Plugin extends ServerPlugin
      * The description key in the returned array may contain html and will not
      * be sanitized.
      *
-     * @return array
+     * @return array{name: string, description: string, link: string}
      */
     public function getPluginInfo()
     {

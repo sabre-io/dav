@@ -23,10 +23,8 @@ class UUIDUtil
      * This function is based on a comment by Andrew Moore on php.net
      *
      * @see http://www.php.net/manual/en/function.uniqid.php#94959
-     *
-     * @return string
      */
-    public static function getUUID()
+    public static function getUUID(): string
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
@@ -51,12 +49,8 @@ class UUIDUtil
 
     /**
      * Checks if a string is a valid UUID.
-     *
-     * @param string $uuid
-     *
-     * @return bool
      */
-    public static function validateUUID($uuid)
+    public static function validateUUID(string $uuid): bool
     {
         return 0 !== preg_match(
             '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i',

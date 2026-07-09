@@ -37,5 +37,5 @@ interface ICopyTarget extends ICollection
      *
      * @return bool
      */
-    public function copyInto($targetName, $sourcePath, INode $sourceNode, int $depth);
+    public function copyInto(string $targetName, string $sourcePath, INode $sourceNode, int $depth);
 }

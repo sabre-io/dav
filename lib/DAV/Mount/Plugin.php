@@ -64,7 +64,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string $uri absolute uri
      */
-    public function davMount(ResponseInterface $response, $uri)
+    public function davMount(ResponseInterface $response, string $uri)
     {
         $response->setStatus(200);
         $response->setHeader('Content-Type', 'application/davmount+xml');

@@ -236,7 +236,7 @@ class Plugin extends DAV\ServerPlugin
      */
     public function getCurrentUserPrincipal()
     {
-        /** @var $authPlugin \Sabre\DAV\Auth\Plugin */
+        /** @var DAV\Auth\Plugin $authPlugin */
         $authPlugin = $this->server->getPlugin('auth');
         if (!$authPlugin) {
             return null;

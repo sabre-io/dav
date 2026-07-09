@@ -60,11 +60,11 @@ class SpecificationTest extends \PHPUnit\Framework\TestCase
 
         $request->setBody('----');
         $this->server->httpRequest = $request;
-        $this->server->httpResponse = new HTTP\ResponseMock();
+        $this->server->httpResponse = new HTTP\Response();
         $this->server->sapi = new HTTP\SapiMock();
         $this->server->exec();
 
-        self::assertEquals($httpStatus, $this->server->httpResponse->status, 'Incorrect http status received: '.$this->server->httpResponse->body);
+        self::assertEquals($httpStatus, $this->server->httpResponse->getStatus(), 'Incorrect http status received: '.$this->server->httpResponse->getBody());
         if (!is_null($endResult)) {
             self::assertEquals($endResult, file_get_contents(\Sabre\TestUtil::SABRE_TEMPDIR.'/foobar.txt'));
         }

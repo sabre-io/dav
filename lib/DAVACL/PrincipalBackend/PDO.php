@@ -37,7 +37,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
     /**
      * pdo.
      *
-     * @var PDO
+     * @var \PDO
      */
     protected $pdo;
 

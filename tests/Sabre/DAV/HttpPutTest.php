@@ -129,7 +129,7 @@ class HttpPutTest extends AbstractDAVServerTestCase
 
         $response = $this->request($request);
 
-        self::assertEquals(204, $response->status);
+        self::assertEquals(204, $response->getStatus());
 
         self::assertEquals(
             'hello',

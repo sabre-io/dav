@@ -39,7 +39,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals('', $this->response->getBodyAsString());
     }
 
@@ -59,7 +59,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             'X-Sabre-Version' => [Version::VERSION],
         ], $this->response->getHeaders());
 
-        self::assertEquals(200, $this->response->status);
+        self::assertEquals(200, $this->response->getStatus());
         self::assertEquals('', $this->response->getBodyAsString());
     }
 
@@ -79,7 +79,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        self::assertEquals(501, $this->response->status);
+        self::assertEquals(501, $this->response->getStatus());
     }
 
     public function testBaseUri()
@@ -106,8 +106,8 @@ class ServerSimpleTest extends AbstractServerTestCase
             $this->response->getHeaders()
          );
 
-        self::assertEquals(200, $this->response->status);
-        self::assertEquals('Test contents', stream_get_contents($this->response->body));
+        self::assertEquals(200, $this->response->getStatus());
+        self::assertEquals('Test contents', stream_get_contents($this->response->getBody()));
     }
 
     public function testBaseUriAddSlash()
@@ -340,7 +340,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             'Content-Type' => ['application/xml; charset=utf-8'],
         ], $this->response->getHeaders());
 
-        self::assertEquals(500, $this->response->status);
+        self::assertEquals(500, $this->response->getStatus());
     }
 
     public function exceptionTrigger($request, $response)
@@ -367,7 +367,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             $this->response->getHeaders()
          );
 
-        self::assertEquals(415, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
+        self::assertEquals(415, $this->response->getStatus(), 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function testReportIntercepted()
@@ -390,7 +390,7 @@ class ServerSimpleTest extends AbstractServerTestCase
             $this->response->getHeaders()
         );
 
-        self::assertEquals(418, $this->response->status, 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
+        self::assertEquals(418, $this->response->getStatus(), 'We got an incorrect status back. Full response body follows: '.$this->response->getBodyAsString());
     }
 
     public function reportHandler($reportName, $result, $path)

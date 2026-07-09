@@ -44,7 +44,7 @@ class ServerPropsTest extends AbstractServerTestCase
     public function testPropFindEmptyBody()
     {
         $this->sendRequest('');
-        self::assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->getStatus());
 
         self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
@@ -73,7 +73,7 @@ class ServerPropsTest extends AbstractServerTestCase
         });
 
         $this->sendRequest('', '/', ['Depth' => 1]);
-        self::assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->getStatus());
 
         self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],
@@ -98,7 +98,7 @@ class ServerPropsTest extends AbstractServerTestCase
     public function testPropFindEmptyBodyFile()
     {
         $this->sendRequest('', '/test2.txt', []);
-        self::assertEquals(207, $this->response->status);
+        self::assertEquals(207, $this->response->getStatus());
 
         self::assertEquals([
                 'X-Sabre-Version' => [Version::VERSION],

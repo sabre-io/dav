@@ -31,7 +31,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
         $fakeServer = new DAV\Server($tree);
         $fakeServer->sapi = new HTTP\SapiMock();
         $fakeServer->debugExceptions = true;
-        $fakeServer->httpResponse = new HTTP\ResponseMock();
+        $fakeServer->httpResponse = new HTTP\Response();
         $plugin = new Plugin();
         $plugin->allowUnauthenticatedAccess = false;
         // Anyone can do anything
@@ -73,7 +73,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(207, $server->httpResponse->status, 'Incorrect status code received. Full body: '.$server->httpResponse->getBodyAsString());
+        self::assertEquals(207, $server->httpResponse->getStatus(), 'Incorrect status code received. Full body: '.$server->httpResponse->getBodyAsString());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -134,7 +134,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(207, $server->httpResponse->status, 'Incorrect response status received. Full response body: '.$server->httpResponse->getBodyAsString());
+        self::assertEquals(207, $server->httpResponse->getStatus(), 'Incorrect response status received. Full response body: '.$server->httpResponse->getBodyAsString());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -197,7 +197,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(207, $server->httpResponse->status);
+        self::assertEquals(207, $server->httpResponse->getStatus());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],
@@ -263,7 +263,7 @@ class ExpandPropertiesTest extends \PHPUnit\Framework\TestCase
 
         $server->exec();
 
-        self::assertEquals(207, $server->httpResponse->status);
+        self::assertEquals(207, $server->httpResponse->getStatus());
         self::assertEquals([
             'X-Sabre-Version' => [DAV\Version::VERSION],
             'Content-Type' => ['application/xml; charset=utf-8'],

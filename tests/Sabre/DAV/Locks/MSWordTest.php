@@ -25,7 +25,7 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $locksPlugin = new Plugin($locksBackend);
         $server->addPlugin($locksPlugin);
 
-        $response1 = new HTTP\ResponseMock();
+        $response1 = new HTTP\Response();
 
         $server->httpRequest = $this->getLockRequest();
         $server->httpResponse = $response1;
@@ -33,28 +33,28 @@ class MSWordTest extends \PHPUnit\Framework\TestCase
         $server->exec();
 
         self::assertEquals(201, $server->httpResponse->getStatus(), 'Full response body:'.$response1->getBodyAsString());
-        self::assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
+        self::assertTrue((bool) $server->httpResponse->getHeader('Lock-Token'));
         $lockToken = $server->httpResponse->getHeader('Lock-Token');
 
         //sleep(10);
 
-        $response2 = new HTTP\ResponseMock();
+        $response2 = new HTTP\Response();
 
         $server->httpRequest = $this->getLockRequest2();
         $server->httpResponse = $response2;
         $server->exec();
 
-        self::assertEquals(201, $server->httpResponse->status);
-        self::assertTrue((bool) $server->httpResponse->getHeaders('Lock-Token'));
+        self::assertEquals(201, $server->httpResponse->getStatus());
+        self::assertTrue((bool) $server->httpResponse->getHeader('Lock-Token'));
 
         //sleep(10);
 
-        $response3 = new HTTP\ResponseMock();
+        $response3 = new HTTP\Response();
         $server->httpRequest = $this->getPutRequest($lockToken);
         $server->httpResponse = $response3;
         $server->exec();
 
-        self::assertEquals(204, $server->httpResponse->status);
+        self::assertEquals(204, $server->httpResponse->getStatus());
     }
 
     public function getLockRequest()

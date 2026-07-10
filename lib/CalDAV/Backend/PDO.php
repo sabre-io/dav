@@ -192,9 +192,13 @@ SQL
             $calendar['share-access'] = (int) $row['access'];
             // 1 = owner, 2 = readonly, 3 = readwrite
             if ($row['access'] > 1) {
-                // We need to find more information about the original owner.
-                //$stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
-                //$stmt2->execute([$row['id']]);
+                $ownerStmt = $this->pdo->prepare("SELECT principaluri FROM {$this->calendarInstancesTableName} WHERE access = 1 AND calendarid = ?");
+                $ownerStmt->execute([$row['calendarid']]);
+
+                $ownerRow = $ownerStmt->fetch(\PDO::FETCH_ASSOC);
+                if ($ownerRow && is_array($ownerRow) && array_key_exists('principaluri', $ownerRow)) {
+                    $calendar['owner-principal'] = $ownerRow['principaluri'];
+                }
 
                 // read-only is for backwards compatibility. Might go away in
                 // the future.

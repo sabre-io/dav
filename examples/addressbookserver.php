@@ -1,11 +1,8 @@
 <?php
 
 /*
-
 Addressbook/CardDAV server example
-
 This server features CardDAV support
-
 */
 
 // settings
@@ -13,10 +10,11 @@ date_default_timezone_set('Canada/Eastern');
 
 // Make sure this setting is turned on and reflect the root url for your WebDAV server.
 // This can be for example the root / or a complete path to your server script
-$baseUri = '/';
+$baseUri = '/dav/addressbookserver.php';
 
 /* Database */
-$pdo = new PDO('sqlite:data/db.sqlite');
+//$pdo = new PDO('sqlite:data/db.sqlite');
+$pdo = new PDO('mysql:dbname=sabredav;host=127.0.0.1', 'username', 'password');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Autoloader
@@ -27,6 +25,7 @@ $authBackend = new Sabre\DAV\Auth\Backend\PDO($pdo);
 $principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
 $carddavBackend = new Sabre\CardDAV\Backend\PDO($pdo);
 //$caldavBackend    = new Sabre\CalDAV\Backend\PDO($pdo);
+$authBackend->setRealm('SabreDAV');
 
 // Setting up the directory tree //
 $nodes = [
@@ -48,4 +47,4 @@ $server->addPlugin(new Sabre\DAVACL\Plugin());
 $server->addPlugin(new Sabre\DAV\Sync\Plugin());
 
 // And off we go!
-$server->start();
+$server->exec();

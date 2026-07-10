@@ -1,11 +1,8 @@
 <?php
 
 /*
-
 CalendarServer example
-
 This server features CalDAV support
-
 */
 
 // settings
@@ -13,10 +10,11 @@ date_default_timezone_set('Canada/Eastern');
 
 // If you want to run the SabreDAV server in a custom location (using mod_rewrite for instance)
 // You can override the baseUri here.
-// $baseUri = '/';
+$baseUri = '/dav/calendarserver.php';
 
 /* Database */
-$pdo = new PDO('sqlite:data/db.sqlite');
+//$pdo = new PDO('sqlite:data/db.sqlite');
+$pdo = new PDO('mysql:dbname=sabredav;host=127.0.0.1', 'username', 'password');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Files we need
@@ -26,6 +24,7 @@ require_once 'vendor/autoload.php';
 $authBackend = new Sabre\DAV\Auth\Backend\PDO($pdo);
 $calendarBackend = new Sabre\CalDAV\Backend\PDO($pdo);
 $principalBackend = new Sabre\DAVACL\PrincipalBackend\PDO($pdo);
+$authBackend->setRealm('SabreDAV');
 
 // Directory structure
 $tree = [
@@ -72,4 +71,4 @@ $browser = new Sabre\DAV\Browser\Plugin();
 $server->addPlugin($browser);
 
 // And off we go!
-$server->start();
+$server->exec();

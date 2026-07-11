@@ -22,10 +22,8 @@ class Collection extends DAVACL\PrincipalCollection
 {
     /**
      * Returns a child object based on principal information.
-     *
-     * @return User
      */
-    public function getChildForPrincipal(array $principalInfo)
+    public function getChildForPrincipal(array $principalInfo): User
     {
         return new User($this->principalBackend, $principalInfo);
     }

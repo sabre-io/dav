@@ -128,7 +128,7 @@ class Inbox extends DAV\Collection implements IInbox
      *   * 'protected' (optional), indicating that this ACE is not allowed to
      *      be updated.
      *
-     * @return array
+     * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
     public function getACL()
     {

@@ -27,10 +27,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput
 {
     /**
      * privileges.
-     *
-     * @var array
      */
-    protected $privileges;
+    protected array $privileges;
 
     /**
      * Constructor.
@@ -42,10 +40,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput
 
     /**
      * Returns the privilege value.
-     *
-     * @return array
      */
-    public function getValue()
+    public function getValue(): array
     {
         return $this->privileges;
     }
@@ -81,10 +77,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput
      *
      * The baseUri parameter is a url to the root of the application, and can
      * be used to construct local links.
-     *
-     * @return string
      */
-    public function toHtml(HtmlOutputHelper $html)
+    public function toHtml(HtmlOutputHelper $html): string
     {
         $traverse = function ($privName, $priv) use (&$traverse, $html) {
             echo '<li>';
@@ -117,11 +111,8 @@ class SupportedPrivilegeSet implements XmlSerializable, HtmlOutput
      * Serializes a property.
      *
      * This is a recursive function.
-     *
-     * @param string $privName
-     * @param array  $privilege
      */
-    private function serializePriv(Writer $writer, $privName, $privilege)
+    private function serializePriv(Writer $writer, string $privName, array $privilege): void
     {
         $writer->startElement('{DAV:}supported-privilege');
 

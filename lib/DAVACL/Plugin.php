@@ -64,9 +64,9 @@ class Plugin extends DAV\ServerPlugin
      * List of urls containing principal collections.
      * Modify this if your principals are located elsewhere.
      *
-     * @var array
+     * @var list<string>
      */
-    public $principalCollectionSet = [
+    public array $principalCollectionSet = [
         'principals',
     ];
 
@@ -76,10 +76,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * In certain cases it's desirable to hide inaccessible nodes. Setting this
      * to true will cause these nodes to be hidden from directory listings.
-     *
-     * @var bool
      */
-    public $hideNodesFromListings = false;
+    public bool $hideNodesFromListings = false;
 
     /**
      * This list of properties are the properties a client can search on using
@@ -98,10 +96,8 @@ class Plugin extends DAV\ServerPlugin
      * Any principal uri's added here, will automatically be added to the list
      * of ACL's. They will effectively receive {DAV:}all privileges, as a
      * protected privilege.
-     *
-     * @var array
      */
-    public $adminPrincipals = [];
+    public array $adminPrincipals = [];
 
     /**
      * The ACL plugin allows privileges to be assigned to users that are not
@@ -110,17 +106,15 @@ class Plugin extends DAV\ServerPlugin
      *
      * Unauthenticated access can be considered a security concern, so it's
      * possible to turn this feature off to harden the server's security.
-     *
-     * @var bool
      */
-    public $allowUnauthenticatedAccess = true;
+    public bool $allowUnauthenticatedAccess = true;
 
     /**
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
      *
-     * @return array
+     * @return list<string>
      */
     public function getFeatures()
     {
@@ -130,11 +124,9 @@ class Plugin extends DAV\ServerPlugin
     /**
      * Returns a list of available methods for a given url.
      *
-     * @param string $uri
-     *
-     * @return array
+     * @return list<string>
      */
-    public function getMethods($uri)
+    public function getMethods(string $uri)
     {
         return ['ACL'];
     }
@@ -144,10 +136,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'acl';
     }
@@ -161,9 +151,9 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string $uri
      *
-     * @return array
+     * @return list<string>
      */
-    public function getSupportedReportSet($uri)
+    public function getSupportedReportSet($uri): array
     {
         return [
             '{DAV:}expand-property',
@@ -180,9 +170,7 @@ class Plugin extends DAV\ServerPlugin
      * This method will throw an exception if the privilege is not available
      * and return true otherwise.
      *
-     * @param string       $uri
      * @param array|string $privileges
-     * @param int          $recursion
      * @param bool         $throwExceptions if set to false, this method won't throw exceptions
      *
      * @return bool
@@ -190,7 +178,7 @@ class Plugin extends DAV\ServerPlugin
      * @throws NeedPrivileges
      * @throws NotAuthenticated
      */
-    public function checkPrivileges($uri, $privileges, $recursion = self::R_PARENT, $throwExceptions = true)
+    public function checkPrivileges(string $uri, $privileges, int $recursion = self::R_PARENT, bool $throwExceptions = true)
     {
         if (!is_array($privileges)) {
             $privileges = [$privileges];
@@ -269,8 +257,10 @@ class Plugin extends DAV\ServerPlugin
      * Sets the default ACL rules.
      *
      * These rules are used for all nodes that don't implement the IACL interface.
+     *
+     * @param list<array{principal: string, protected?: bool, privilege: string}> $acl
      */
-    public function setDefaultAcl(array $acl)
+    public function setDefaultAcl(array $acl): void
     {
         $this->defaultAcl = $acl;
     }
@@ -280,9 +270,9 @@ class Plugin extends DAV\ServerPlugin
      *
      * These rules are used for all nodes that don't implement the IACL interface.
      *
-     * @return array
+     * @return list<array{principal: string, protected?: bool, privilege: string}> $acl
      */
-    public function getDefaultAcl()
+    public function getDefaultAcl(): array
     {
         return $this->defaultAcl;
     }
@@ -294,9 +284,9 @@ class Plugin extends DAV\ServerPlugin
      * set of rules allow anyone to do anything, as long as they are
      * authenticated.
      *
-     * @var array
+     * @var list<array{principal: string, protected?: bool, privilege: string}>
      */
-    protected $defaultAcl = [
+    protected array $defaultAcl = [
         [
             'principal' => '{DAV:}authenticated',
             'protected' => true,
@@ -307,19 +297,15 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This array holds a cache for all the principals that are associated with
      * a single principal.
-     *
-     * @var array
      */
-    protected $principalMembershipCache = [];
+    protected array $principalMembershipCache = [];
 
     /**
      * Returns all the principal groups the specified principal is a member of.
      *
-     * @param string $mainPrincipal
-     *
      * @return array
      */
-    public function getPrincipalMembership($mainPrincipal)
+    public function getPrincipalMembership(string $mainPrincipal)
     {
         // First check our cache
         if (isset($this->principalMembershipCache[$mainPrincipal])) {
@@ -366,12 +352,9 @@ class Plugin extends DAV\ServerPlugin
      * If the second argument is not passed, we will use the current user
      * principal.
      *
-     * @param string $checkPrincipal
-     * @param string $currentPrincipal
-     *
      * @return bool
      */
-    public function principalMatchesPrincipal($checkPrincipal, $currentPrincipal = null)
+    public function principalMatchesPrincipal(string $checkPrincipal, ?string $currentPrincipal = null)
     {
         if (is_null($currentPrincipal)) {
             $currentPrincipal = $this->getCurrentUserPrincipal();
@@ -427,7 +410,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param string|INode $node
      *
-     * @return array
+     * @return list<array{privilege: string, abstract: bool, aggregates: list<array>|}>
      */
     public function getSupportedPrivilegeSet($node)
     {
@@ -505,7 +488,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * This is much easier to parse.
      *
-     * The returned list will be index by privilege name.
+     * The returned list will be indexed by privilege name.
      * The value is a struct containing the following properties:
      *   - aggregates
      *   - abstract

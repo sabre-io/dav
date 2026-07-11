@@ -24,26 +24,22 @@ class PrincipalPropertySearchReport implements XmlDeserializable
 {
     /**
      * The requested properties.
-     *
-     * @var array|null
      */
-    public $properties;
+    public ?array $properties = null;
 
     /**
      * searchProperties.
      *
-     * @var array
+     * @var list<string>
      */
-    public $searchProperties = [];
+    public array $searchProperties = [];
 
     /**
      * By default the property search will be conducted on the url of the http
      * request. If this is set to true, it will be applied to the principal
      * collection set instead.
-     *
-     * @var bool
      */
-    public $applyToPrincipalCollectionSet = false;
+    public bool $applyToPrincipalCollectionSet = false;
 
     /**
      * Search for principals matching ANY of the properties (OR) or a ALL of
@@ -51,9 +47,9 @@ class PrincipalPropertySearchReport implements XmlDeserializable
      *
      * This property is either "anyof" or "allof".
      *
-     * @var string
+     * @var 'allof'|'anyof'
      */
-    public $test;
+    public string $test = 'allof';
 
     /**
      * The deserialize method is called during xml parsing.
@@ -73,7 +69,7 @@ class PrincipalPropertySearchReport implements XmlDeserializable
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $self = new self();
 

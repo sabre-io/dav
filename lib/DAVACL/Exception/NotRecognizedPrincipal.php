@@ -21,7 +21,7 @@ class NotRecognizedPrincipal extends DAV\Exception\PreconditionFailed
      *
      * This method adds the {DAV:}recognized-principal element as defined in rfc3744
      */
-    public function serialize(DAV\Server $server, \DOMElement $errorNode)
+    public function serialize(DAV\Server $server, \DOMElement $errorNode): void
     {
         $doc = $errorNode->ownerDocument;
 

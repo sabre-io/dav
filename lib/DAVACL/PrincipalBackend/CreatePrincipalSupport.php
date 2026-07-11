@@ -22,8 +22,6 @@ interface CreatePrincipalSupport extends BackendInterface
      * This method receives a full path for the new principal. The mkCol object
      * contains any additional webdav properties specified during the creation
      * of the principal.
-     *
-     * @param string $path
      */
-    public function createPrincipal($path, MkCol $mkCol);
+    public function createPrincipal(string $path, MkCol $mkCol);
 }

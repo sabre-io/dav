@@ -29,10 +29,8 @@ class ExpandPropertyReport implements XmlDeserializable
      * If the value is an array though, it means the property must be expanded.
      * Within the array, the sub-properties, which themselves may be null or
      * arrays.
-     *
-     * @var array
      */
-    public $properties;
+    public array $properties;
 
     /**
      * The deserialize method is called during xml parsing.
@@ -52,7 +50,7 @@ class ExpandPropertyReport implements XmlDeserializable
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $elems = $reader->parseInnerTree();
 
@@ -65,12 +63,8 @@ class ExpandPropertyReport implements XmlDeserializable
     /**
      * This method is used by deserializeXml, to recursively parse the
      * {DAV:}property elements.
-     *
-     * @param array $elems
-     *
-     * @return array
      */
-    private static function traverse($elems)
+    private static function traverse(array $elems): array
     {
         $result = [];
 

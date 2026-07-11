@@ -23,29 +23,25 @@ interface BackendInterface
      * This prefix will often contain something like 'principals'. You are only
      * expected to return principals that are in this base path.
      *
-     * You are expected to return at least a 'uri' for every user, you can
+     * You are expected to return at least an 'uri' for every user, you can
      * return any additional properties if you wish so. Common properties are:
      *   {DAV:}displayname
      *   {http://sabredav.org/ns}email-address - This is a custom SabreDAV
      *     field that's actually injected in a number of other properties. If
      *     you have an email address, use this property.
      *
-     * @param string $prefixPath
-     *
-     * @return array
+     * @return array{uri: string, ...}
      */
-    public function getPrincipalsByPrefix($prefixPath);
+    public function getPrincipalsByPrefix(string $prefixPath);
 
     /**
      * Returns a specific principal, specified by it's path.
      * The returned structure should be the exact same as from
      * getPrincipalsByPrefix.
      *
-     * @param string $path
-     *
-     * @return array
+     * @return array<string, string>
      */
-    public function getPrincipalByPath($path);
+    public function getPrincipalByPath(string $path);
 
     /**
      * Updates one or more webdav properties on a principal.
@@ -58,10 +54,8 @@ interface BackendInterface
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param string $path
      */
-    public function updatePrincipal($path, \Sabre\DAV\PropPatch $propPatch);
+    public function updatePrincipal(string $path, \Sabre\DAV\PropPatch $propPatch);
 
     /**
      * This method is used to search for principals matching a set of
@@ -87,12 +81,11 @@ interface BackendInterface
      * searching at all, but keep in mind that this may stop certain features
      * from working.
      *
-     * @param string $prefixPath
-     * @param string $test
+     * @param array<string, string> $searchProperties
      *
-     * @return array
+     * @return list<string>
      */
-    public function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof');
+    public function searchPrincipals(string $prefixPath, array $searchProperties, string $test = 'allof');
 
     /**
      * Finds a principal by its URI.
@@ -107,37 +100,28 @@ interface BackendInterface
      * This method must return a relative principal path, or null, if the
      * principal was not found or you refuse to find it.
      *
-     * @param string $uri
-     * @param string $principalPrefix
-     *
      * @return string|null
      */
-    public function findByUri($uri, $principalPrefix);
+    public function findByUri(string $uri, string $principalPrefix);
 
     /**
      * Returns the list of members for a group-principal.
      *
-     * @param string $principal
-     *
-     * @return array
+     * @return list<string>
      */
-    public function getGroupMemberSet($principal);
+    public function getGroupMemberSet(string $principal);
 
     /**
      * Returns the list of groups a principal is a member of.
      *
-     * @param string $principal
-     *
-     * @return array
+     * @return list<string>
      */
-    public function getGroupMembership($principal);
+    public function getGroupMembership(string $principal);
 
     /**
      * Updates the list of group members for a group principal.
      *
      * The principals should be passed as a list of uri's.
-     *
-     * @param string $principal
      */
-    public function setGroupMemberSet($principal, array $members);
+    public function setGroupMemberSet(string $principal, array $members);
 }

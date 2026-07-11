@@ -28,20 +28,18 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
 
     /**
      * Struct with principal information.
-     *
-     * @var array
      */
-    protected $principalProperties;
+    protected array $principalProperties;
 
     /**
      * Principal backend.
-     *
-     * @var PrincipalBackend\BackendInterface
      */
-    protected $principalBackend;
+    protected PrincipalBackend\BackendInterface $principalBackend;
 
     /**
      * Creates the principal object.
+     *
+     * @param array{uri: string, ...} $principalProperties
      */
     public function __construct(PrincipalBackend\BackendInterface $principalBackend, array $principalProperties = [])
     {
@@ -54,10 +52,8 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
 
     /**
      * Returns the full principal url.
-     *
-     * @return string
      */
-    public function getPrincipalUrl()
+    public function getPrincipalUrl(): string
     {
         return $this->principalProperties['uri'];
     }
@@ -67,9 +63,9 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
      *
      * This can for example be an email address, or ldap url.
      *
-     * @return array
+     * @return list<string>
      */
-    public function getAlternateUriSet()
+    public function getAlternateUriSet(): array
     {
         $uris = [];
         if (isset($this->principalProperties['{DAV:}alternate-URI-set'])) {
@@ -89,7 +85,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
      * If this principal is a group, this function should return
      * all member principal uri's for the group.
      *
-     * @return array
+     * @return list<string>
      */
     public function getGroupMemberSet()
     {
@@ -102,7 +98,7 @@ class Principal extends DAV\Node implements IPrincipal, DAV\IProperties, IACL
      * If this principal is a member of a (list of) groups, this function
      * should return a list of principal uri's for it's members.
      *
-     * @return array
+     * @return list<string>
      */
     public function getGroupMembership()
     {

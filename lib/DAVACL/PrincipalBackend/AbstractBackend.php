@@ -29,18 +29,13 @@ abstract class AbstractBackend implements BackendInterface
      *
      * This method must return a relative principal path, or null, if the
      * principal was not found or you refuse to find it.
-     *
-     * @param string $uri
-     * @param string $principalPrefix
-     *
-     * @return string|null
      */
-    public function findByUri($uri, $principalPrefix)
+    public function findByUri(string $uri, string $principalPrefix): ?string
     {
         // Note that the default implementation here is a bit slow and could
         // likely be optimized.
         if ('mailto:' !== substr($uri, 0, 7)) {
-            return;
+            return null;
         }
         $result = $this->searchPrincipals(
             $principalPrefix,
@@ -50,5 +45,7 @@ abstract class AbstractBackend implements BackendInterface
         if ($result) {
             return $result[0];
         }
+
+        return null;
     }
 }

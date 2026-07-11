@@ -192,11 +192,9 @@ class AddressBook extends DAV\Collection implements IAddressBook, DAV\IPropertie
      *
      * If the array is empty, it means 'all properties' were requested.
      *
-     * @param array $properties
-     *
      * @return array
      */
-    public function getProperties($properties)
+    public function getProperties(array $properties)
     {
         $response = [];
         foreach ($properties as $propertyName) {

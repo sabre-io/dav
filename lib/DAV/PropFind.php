@@ -37,11 +37,9 @@ class PropFind
     /**
      * Creates the PROPFIND object.
      *
-     * @param string $path
-     * @param int    $depth
-     * @param int    $requestType
+     * @param self::NORMAL|self::ALLPROPS|self::PROPNAME $requestType
      */
-    public function __construct($path, array $properties, $depth = 0, $requestType = self::NORMAL)
+    public function __construct(string $path, array $properties, int $depth = 0, int $requestType = self::NORMAL)
     {
         $this->path = $path;
         $this->properties = $properties;
@@ -84,10 +82,8 @@ class PropFind
      * value is ignored.
      *
      * It's also possible to not pass a callback, but immediately pass a value
-     *
-     * @param string $propertyName
      */
-    public function handle($propertyName, $valueOrCallBack)
+    public function handle(string $propertyName, $valueOrCallBack)
     {
         if ($this->itemsLeft && isset($this->result[$propertyName]) && 404 === $this->result[$propertyName][0]) {
             if (is_callable($valueOrCallBack)) {
@@ -107,11 +103,8 @@ class PropFind
      *
      * If status is not supplied, the status will default to 200 for non-null
      * properties, and 404 for null properties.
-     *
-     * @param string $propertyName
-     * @param int    $status
      */
-    public function set($propertyName, $value, $status = null)
+    public function set(string $propertyName, $value, ?int $status = null)
     {
         if (is_null($status)) {
             $status = is_null($value) ? 404 : 200;
@@ -135,10 +128,8 @@ class PropFind
 
     /**
      * Returns the current value for a property.
-     *
-     * @param string $propertyName
      */
-    public function get($propertyName)
+    public function get(string $propertyName)
     {
         return isset($this->result[$propertyName]) ? $this->result[$propertyName][1] : null;
     }
@@ -149,21 +140,17 @@ class PropFind
      * If the property does not appear in the list of requested properties,
      * null will be returned.
      *
-     * @param string $propertyName
-     *
      * @return int|null
      */
-    public function getStatus($propertyName)
+    public function getStatus(string $propertyName)
     {
         return isset($this->result[$propertyName]) ? $this->result[$propertyName][0] : null;
     }
 
     /**
      * Updates the path for this PROPFIND.
-     *
-     * @param string $path
      */
-    public function setPath($path)
+    public function setPath(string $path)
     {
         $this->path = $path;
     }
@@ -190,10 +177,8 @@ class PropFind
 
     /**
      * Updates the depth of this propfind request.
-     *
-     * @param int $depth
      */
-    public function setDepth($depth)
+    public function setDepth(int $depth)
     {
         $this->depth = $depth;
     }
@@ -202,7 +187,7 @@ class PropFind
      * Returns all propertynames that have a 404 status, and thus don't have a
      * value yet.
      *
-     * @return array
+     * @return list<string>
      */
     public function get404Properties()
     {
@@ -276,32 +261,30 @@ class PropFind
 
     /**
      * The path that we're fetching properties for.
-     *
-     * @var string
      */
-    protected $path;
+    protected string $path = '';
 
     /**
      * The Depth of the request.
      *
      * 0 means only the current item. 1 means the current item + its children.
      * It can also be DEPTH_INFINITY if this is enabled in the server.
-     *
-     * @var int
      */
-    protected $depth = 0;
+    protected int $depth = 0;
 
     /**
      * The type of request. See the TYPE constants.
+     *
+     * @var self::NORMAL|self::ALLPROPS|self::PROPNAME
      */
-    protected $requestType;
+    protected int $requestType;
 
     /**
      * A list of requested properties.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $properties = [];
+    protected array $properties = [];
 
     /**
      * The result of the operation.
@@ -317,15 +300,13 @@ class PropFind
      *    "{DAV:}displayname" : [200, "Admin"]
      * ]
      *
-     * @var array
+     * @var array<string, array{int, mixed}>
      */
-    protected $result = [];
+    protected array $result = [];
 
     /**
      * This is used as an internal counter for the number of properties that do
      * not yet have a value.
-     *
-     * @var int
      */
-    protected $itemsLeft;
+    protected int $itemsLeft;
 }

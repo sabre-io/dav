@@ -14,7 +14,7 @@ use Sabre\Xml\Writer;
  * CurrentUserPrivilegeSet.
  *
  * This class represents the current-user-privilege-set property. When
- * requested, it contain all the privileges a user has on a specific node.
+ * requested, it contains all the privileges a user has on a specific node.
  *
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
@@ -24,10 +24,8 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
 {
     /**
      * List of privileges.
-     *
-     * @var array
      */
-    private $privileges;
+    private array $privileges;
 
     /**
      * Creates the object.
@@ -67,22 +65,16 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
     /**
      * Returns true or false, whether the specified principal appears in the
      * list.
-     *
-     * @param string $privilegeName
-     *
-     * @return bool
      */
-    public function has($privilegeName)
+    public function has(string $privilegeName): bool
     {
         return in_array($privilegeName, $this->privileges);
     }
 
     /**
      * Returns the list of privileges.
-     *
-     * @return array
      */
-    public function getValue()
+    public function getValue(): array
     {
         return $this->privileges;
     }
@@ -105,7 +97,7 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): self
     {
         $result = [];
 
@@ -130,10 +122,8 @@ class CurrentUserPrivilegeSet implements Element, HtmlOutput
      *
      * The baseUri parameter is a url to the root of the application, and can
      * be used to construct local links.
-     *
-     * @return string
      */
-    public function toHtml(HtmlOutputHelper $html)
+    public function toHtml(HtmlOutputHelper $html): string
     {
         return implode(
             ', ',

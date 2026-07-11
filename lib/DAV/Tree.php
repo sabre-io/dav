@@ -20,18 +20,16 @@ class Tree implements INodeByPath
 {
     /**
      * The root node.
-     *
-     * @var ICollection
      */
-    protected $rootNode;
+    protected ICollection $rootNode;
 
     /**
      * This is the node cache. Accessed nodes are stored here.
      * Arrays keys are path names, values are the actual nodes.
      *
-     * @var array
+     * @var array<string, INode>
      */
-    protected $cache = [];
+    protected array $cache = [];
 
     /**
      * Creates the object.
@@ -46,11 +44,9 @@ class Tree implements INodeByPath
     /**
      * Returns the INode object for the requested path.
      *
-     * @param string $path
-     *
      * @return INode
      */
-    public function getNodeForPath($path)
+    public function getNodeForPath(string $path)
     {
         $path = trim($path, '/');
         if (isset($this->cache[$path])) {
@@ -107,11 +103,9 @@ class Tree implements INodeByPath
      * Implementors of this class should override this method to make
      * it cheaper.
      *
-     * @param string $path
-     *
      * @return bool
      */
-    public function nodeExists($path)
+    public function nodeExists(string $path)
     {
         try {
             // The root always exists
@@ -141,7 +135,7 @@ class Tree implements INodeByPath
      *                                The value can be 'infinity' (\Sabre\DAV\Server::DEPTH_INFINITY) or a positive integer, including zero.
      *                                Zero means only copy the collection without children but with its properties.
      */
-    public function copy($sourcePath, $destinationPath, int $depth = Server::DEPTH_INFINITY)
+    public function copy(string $sourcePath, string $destinationPath, int $depth = Server::DEPTH_INFINITY)
     {
         $sourceNode = $this->getNodeForPath($sourcePath);
 
@@ -163,7 +157,7 @@ class Tree implements INodeByPath
      * @param string $sourcePath      The path to the file which should be moved
      * @param string $destinationPath The full destination path, so not just the destination parent node
      */
-    public function move($sourcePath, $destinationPath)
+    public function move(string $sourcePath, string $destinationPath)
     {
         list($sourceDir) = Uri\split($sourcePath);
         list($destinationDir, $destinationName) = Uri\split($destinationPath);
@@ -193,9 +187,9 @@ class Tree implements INodeByPath
     /**
      * Deletes a node from the tree.
      *
-     * @param string $path
+     * @return void
      */
-    public function delete($path)
+    public function delete(string $path)
     {
         $node = $this->getNodeForPath($path);
         $node->delete();
@@ -207,11 +201,9 @@ class Tree implements INodeByPath
     /**
      * Returns a list of childnodes for a given path.
      *
-     * @param string $path
-     *
      * @return \Traversable
      */
-    public function getChildren($path)
+    public function getChildren(string $path)
     {
         $node = $this->getNodeForPath($path);
         $basePath = trim($path, '/');
@@ -244,9 +236,9 @@ class Tree implements INodeByPath
      *
      * If a path is passed, it is assumed that the entire subtree is dirty
      *
-     * @param string $path
+     * @return void
      */
-    public function markDirty($path)
+    public function markDirty(string $path)
     {
         // We don't care enough about sub-paths
         // flushing the entire cache
@@ -269,9 +261,9 @@ class Tree implements INodeByPath
      * This method returns an array with the found nodes. It's keys are the
      * original paths. The result may be out of order.
      *
-     * @param array $paths list of nodes that must be fetched
+     * @param list<string> $paths list of nodes that must be fetched
      *
-     * @return array
+     * @return array<string, INode>
      */
     public function getMultipleNodes($paths)
     {

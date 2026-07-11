@@ -26,13 +26,12 @@ abstract class Collection extends Node implements ICollection
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @param string $name
-     *
      * @return INode
      *
      * @throws Exception\NotFound
+     * @throws Exception\NotFound
      */
-    public function getChild($name)
+    public function getChild(string $name)
     {
         foreach ($this->getChildren() as $child) {
             if ($child->getName() === $name) {
@@ -47,11 +46,9 @@ abstract class Collection extends Node implements ICollection
      *
      * It is generally a good idea to try and override this. Usually it can be optimized.
      *
-     * @param string $name
-     *
      * @return bool
      */
-    public function childExists($name)
+    public function childExists(string $name)
     {
         try {
             $this->getChild($name);
@@ -87,7 +84,7 @@ abstract class Collection extends Node implements ICollection
      *
      * @return string|null
      */
-    public function createFile($name, $data = null)
+    public function createFile(string $name, $data = null)
     {
         throw new Exception\Forbidden('Permission denied to create file (filename '.$name.')');
     }
@@ -95,11 +92,9 @@ abstract class Collection extends Node implements ICollection
     /**
      * Creates a new subdirectory.
      *
-     * @param string $name
-     *
      * @throws Exception\Forbidden
      */
-    public function createDirectory($name)
+    public function createDirectory(string $name)
     {
         throw new Exception\Forbidden('Permission denied to create directory');
     }

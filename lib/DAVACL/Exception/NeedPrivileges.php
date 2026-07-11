@@ -20,24 +20,18 @@ class NeedPrivileges extends DAV\Exception\Forbidden
 {
     /**
      * The relevant uri.
-     *
-     * @var string
      */
-    protected $uri;
+    protected string $uri;
 
     /**
      * The privileges the user didn't have.
-     *
-     * @var array
      */
-    protected $privileges;
+    protected array $privileges;
 
     /**
      * Constructor.
-     *
-     * @param string $uri
      */
-    public function __construct($uri, array $privileges)
+    public function __construct(string $uri, array $privileges)
     {
         $this->uri = $uri;
         $this->privileges = $privileges;

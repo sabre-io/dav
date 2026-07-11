@@ -42,5 +42,5 @@ interface IMoveTarget extends ICollection
      *
      * @return bool
      */
-    public function moveInto($targetName, $sourcePath, INode $sourceNode);
+    public function moveInto(string $targetName, string $sourcePath, INode $sourceNode);
 }

@@ -21,7 +21,7 @@ class NotSupportedPrivilege extends DAV\Exception\PreconditionFailed
      *
      * This method adds the {DAV:}not-supported-privilege element as defined in rfc3744
      */
-    public function serialize(DAV\Server $server, \DOMElement $errorNode)
+    public function serialize(DAV\Server $server, \DOMElement $errorNode): void
     {
         $doc = $errorNode->ownerDocument;
 

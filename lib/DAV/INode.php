@@ -15,6 +15,8 @@ interface INode
 {
     /**
      * Deleted the current node.
+     *
+     * @return void
      */
     public function delete();
 
@@ -32,7 +34,7 @@ interface INode
      *
      * @param string $name The new name
      */
-    public function setName($name);
+    public function setName(string $name);
 
     /**
      * Returns the last modification time, as a unix timestamp. Return null

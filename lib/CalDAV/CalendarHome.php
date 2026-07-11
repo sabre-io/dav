@@ -28,24 +28,18 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
 
     /**
      * CalDAV backend.
-     *
-     * @var Backend\BackendInterface
      */
-    protected $caldavBackend;
+    protected Backend\BackendInterface $caldavBackend;
 
     /**
      * Principal information.
-     *
-     * @var array
      */
-    protected $principalInfo;
+    protected array $principalInfo;
 
     /**
      * Constructor.
-     *
-     * @param array $principalInfo
      */
-    public function __construct(Backend\BackendInterface $caldavBackend, $principalInfo)
+    public function __construct(Backend\BackendInterface $caldavBackend, array $principalInfo)
     {
         $this->caldavBackend = $caldavBackend;
         $this->principalInfo = $principalInfo;
@@ -65,10 +59,8 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
 
     /**
      * Updates the name of this object.
-     *
-     * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         throw new DAV\Exception\Forbidden();
     }
@@ -96,10 +88,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
      *
      * This is currently not allowed
      *
-     * @param string   $name
      * @param resource $data
      */
-    public function createFile($name, $data = null)
+    public function createFile(string $name, $data = null)
     {
         throw new DAV\Exception\MethodNotAllowed('Creating new files in this collection is not supported');
     }
@@ -108,10 +99,8 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
      * Creates a new directory under this object.
      *
      * This is currently not allowed.
-     *
-     * @param string $filename
      */
-    public function createDirectory($filename)
+    public function createDirectory(string $filename)
     {
         throw new DAV\Exception\MethodNotAllowed('Creating new collections in this collection is not supported');
     }
@@ -119,11 +108,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
     /**
      * Returns a single calendar, by name.
      *
-     * @param string $name
-     *
      * @return Calendar
      */
-    public function getChild($name)
+    public function getChild(string $name)
     {
         // Special nodes
         if ('inbox' === $name && $this->caldavBackend instanceof Backend\SchedulingSupport) {
@@ -161,11 +148,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
     /**
      * Checks if a calendar exists.
      *
-     * @param string $name
-     *
      * @return bool
      */
-    public function childExists($name)
+    public function childExists(string $name)
     {
         try {
             return (bool) $this->getChild($name);
@@ -214,11 +199,9 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
     /**
      * Creates a new calendar or subscription.
      *
-     * @param string $name
-     *
      * @throws DAV\Exception\InvalidResourceType
      */
-    public function createExtendedCollection($name, MkCol $mkCol)
+    public function createExtendedCollection(string $name, MkCol $mkCol)
     {
         $isCalendar = false;
         $isSubscription = false;
@@ -274,7 +257,7 @@ class CalendarHome implements DAV\IExtendedCollection, DAVACL\IACL
      *   * 'protected' (optional), indicating that this ACE is not allowed to
      *      be updated.
      *
-     * @return array
+     * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
     public function getACL()
     {

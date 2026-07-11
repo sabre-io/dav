@@ -26,10 +26,9 @@ abstract class Collection extends Node implements ICollection
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @throws Exception\NotFound
-     *
      * @return INode
      *
+     * @throws Exception\NotFound
      * @throws Exception\NotFound
      */
     public function getChild(string $name)

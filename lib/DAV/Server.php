@@ -1079,7 +1079,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @return bool
      */
-    public function createFile($uri, $data, & $etag = null)
+    public function createFile($uri, $data, &$etag = null)
     {
         list($dir, $name) = Uri\split($uri);
 
@@ -1132,7 +1132,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @return bool
      */
-    public function updateFile($uri, $data, & $etag = null)
+    public function updateFile($uri, $data, &$etag = null)
     {
         $node = $this->tree->getNodeForPath($uri);
 

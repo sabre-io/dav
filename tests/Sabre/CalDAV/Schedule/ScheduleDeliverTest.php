@@ -560,7 +560,7 @@ ICS;
 
     protected $calendarObjectUri;
 
-    public function deliver($oldObject, & $newObject, $disableScheduling = false, $method = 'PUT')
+    public function deliver($oldObject, &$newObject, $disableScheduling = false, $method = 'PUT')
     {
         $this->server->httpRequest->setMethod($method);
         $this->server->httpRequest->setUrl($this->calendarObjectUri);

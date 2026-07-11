@@ -266,7 +266,7 @@ class Plugin extends DAV\ServerPlugin
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeWriteContent($path, DAV\IFile $node, & $data, & $modified)
+    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified)
     {
         if (!$node instanceof ICard) {
             return;
@@ -286,7 +286,7 @@ class Plugin extends DAV\ServerPlugin
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeCreateFile($path, & $data, DAV\ICollection $parentNode, & $modified)
+    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified)
     {
         if (!$parentNode instanceof IAddressBook) {
             return;
@@ -304,7 +304,7 @@ class Plugin extends DAV\ServerPlugin
      * @param bool            $modified should be set to true, if this event handler
      *                                  changed &$data
      */
-    protected function validateVCard(& $data, & $modified)
+    protected function validateVCard(&$data, &$modified)
     {
         // If it's a stream, we convert it to a string first.
         if (is_resource($data)) {
@@ -694,7 +694,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(DAV\INode $node, & $output)
+    public function htmlActionsPanel(DAV\INode $node, &$output)
     {
         if (!$node instanceof AddressBookHome) {
             return;
@@ -752,7 +752,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return string
      */
-    protected function negotiateVCard($input, & $mimeType = null)
+    protected function negotiateVCard($input, &$mimeType = null)
     {
         $result = HTTP\negotiateContentType(
             $input,

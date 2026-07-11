@@ -506,7 +506,7 @@ class Plugin extends DAV\ServerPlugin
         ];
 
         $fpsTraverse = null;
-        $fpsTraverse = function ($privName, $privInfo, $concrete, & $flat) use (&$fpsTraverse) {
+        $fpsTraverse = function ($privName, $privInfo, $concrete, &$flat) use (&$fpsTraverse) {
             $myPriv = [
                 'privilege' => $privName,
                 'abstract' => isset($privInfo['abstract']) && $privInfo['abstract'],
@@ -765,7 +765,7 @@ class Plugin extends DAV\ServerPlugin
         $server->on('report', [$this, 'report']);
         $server->on('method:ACL', [$this, 'httpAcl']);
         $server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel']);
-        $server->on('getPrincipalByUri', function ($principal, & $uri) {
+        $server->on('getPrincipalByUri', function ($principal, &$uri) {
             $uri = $this->getPrincipalByUri($principal);
 
             // Break event chain
@@ -1485,7 +1485,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return bool
      */
-    public function htmlActionsPanel(INode $node, & $output)
+    public function htmlActionsPanel(INode $node, &$output)
     {
         if (!$node instanceof PrincipalCollection) {
             return;

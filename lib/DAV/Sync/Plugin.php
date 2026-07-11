@@ -205,7 +205,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @param array $conditions
      */
-    public function validateTokens(RequestInterface $request, & $conditions)
+    public function validateTokens(RequestInterface $request, &$conditions)
     {
         foreach ($conditions as $kk => $condition) {
             foreach ($condition['tokens'] as $ii => $token) {

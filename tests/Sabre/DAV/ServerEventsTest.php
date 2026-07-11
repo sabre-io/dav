@@ -195,7 +195,7 @@ class ServerEventsTest extends AbstractServerTestCase
         self::assertTrue($k >= 2 && $k <= 3);
     }
 
-    public function multiStatusHandler(& $fileProperties)
+    public function multiStatusHandler(&$fileProperties)
     {
         $this->fileProperties = $fileProperties;
         $fileProperties = array_slice($fileProperties, 0, 1);

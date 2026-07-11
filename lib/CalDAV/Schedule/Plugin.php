@@ -314,7 +314,7 @@ class Plugin extends ServerPlugin
      * @param mixed             $modified     the iCalendar object has been touched
      * @param mixed             $isNew        Whether this was a new item or we're updating one
      */
-    public function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, & $modified, $isNew)
+    public function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, &$modified, $isNew)
     {
         if (!$this->scheduleReply($this->server->httpRequest)) {
             return;
@@ -545,7 +545,7 @@ class Plugin extends ServerPlugin
      *
      * We need to add a number of privileges for scheduling purposes.
      */
-    public function getSupportedPrivilegeSet(INode $node, array & $supportedPrivilegeSet)
+    public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)
     {
         $ns = '{'.self::NS_CALDAV.'}';
         if ($node instanceof IOutbox) {
@@ -608,7 +608,7 @@ class Plugin extends ServerPlugin
      * @param array                 $ignore    any addresses to not send messages to
      * @param bool                  $modified  a marker to indicate that the original object modified by this process
      */
-    protected function processICalendarChange($oldObject, VCalendar $newObject, array $addresses, array $ignore = [], & $modified = false)
+    protected function processICalendarChange($oldObject, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false)
     {
         $broker = $this->createITipBroker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);

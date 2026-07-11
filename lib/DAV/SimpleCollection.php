@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use InvalidArgumentException;
-
 /**
  * SimpleCollection.
  *
@@ -50,7 +48,7 @@ class SimpleCollection extends Collection
             } elseif (is_array($child)) {
                 $child = new self($key, $child);
             } elseif (!$child instanceof INode) {
-                throw new InvalidArgumentException('Children must be specified as strings, arrays or instances of Sabre\DAV\INode');
+                throw new \InvalidArgumentException('Children must be specified as strings, arrays or instances of Sabre\DAV\INode');
             }
             $this->addChild($child);
         }
@@ -85,9 +83,9 @@ class SimpleCollection extends Collection
      *
      * @param string $name
      *
-     * @throws Exception\NotFound
-     *
      * @return INode
+     *
+     * @throws Exception\NotFound
      */
     public function getChild($name)
     {

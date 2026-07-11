@@ -118,9 +118,9 @@ END:VCALENDAR
             $matching = false;
 
             foreach ($vObject->VEVENT as $vevent) {
-                /** @var $vevent Sabre\VObject\Component\VEvent */
+                /** @var Sabre\VObject\Component\VEvent $vevent */
                 foreach ($vevent->children() as $child) {
-                    /** @var $child Sabre\VObject\Property */
+                    /** @var Sabre\VObject\Property $child */
                     if (isset($expectedEvent[$child->name])) {
                         if ($expectedEvent[$child->name] != $child->getValue()) {
                             continue 2;

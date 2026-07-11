@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV;
 
-use DateTime;
 use Sabre\VObject;
 
 /**
@@ -38,8 +37,8 @@ class CalendarQueryValidator
         }
 
         return
-            $this->validateCompFilters($vObject, $filters['comp-filters']) &&
-            $this->validatePropFilters($vObject, $filters['prop-filters']);
+            $this->validateCompFilters($vObject, $filters['comp-filters'])
+            && $this->validatePropFilters($vObject, $filters['prop-filters']);
     }
 
     /**
@@ -59,9 +58,8 @@ class CalendarQueryValidator
             if ($filter['is-not-defined']) {
                 if ($isDefined) {
                     return false;
-                } else {
-                    continue;
                 }
+                continue;
             }
             if (!$isDefined) {
                 return false;
@@ -93,8 +91,8 @@ class CalendarQueryValidator
             // for which the subfilters hold true.
             foreach ($parent->{$filter['name']} as $subComponent) {
                 if (
-                    $this->validateCompFilters($subComponent, $filter['comp-filters']) &&
-                    $this->validatePropFilters($subComponent, $filter['prop-filters'])) {
+                    $this->validateCompFilters($subComponent, $filter['comp-filters'])
+                    && $this->validatePropFilters($subComponent, $filter['prop-filters'])) {
                     // We had a match, so this comp-filter succeeds
                     continue 2;
                 }
@@ -128,9 +126,8 @@ class CalendarQueryValidator
             if ($filter['is-not-defined']) {
                 if ($isDefined) {
                     return false;
-                } else {
-                    continue;
                 }
+                continue;
             }
             if (!$isDefined) {
                 return false;
@@ -162,8 +159,8 @@ class CalendarQueryValidator
             // for which the subfilters hold true.
             foreach ($parent->{$filter['name']} as $subComponent) {
                 if (
-                    $this->validateParamFilters($subComponent, $filter['param-filters']) &&
-                    (!$filter['text-match'] || $this->validateTextMatch($subComponent, $filter['text-match']))
+                    $this->validateParamFilters($subComponent, $filter['param-filters'])
+                    && (!$filter['text-match'] || $this->validateTextMatch($subComponent, $filter['text-match']))
                 ) {
                     // We had a match, so this prop-filter succeeds
                     continue 2;
@@ -198,9 +195,8 @@ class CalendarQueryValidator
             if ($filter['is-not-defined']) {
                 if ($isDefined) {
                     return false;
-                } else {
-                    continue;
                 }
+                continue;
             }
             if (!$isDefined) {
                 return false;
@@ -256,18 +252,18 @@ class CalendarQueryValidator
      * This is all based on the rules specified in rfc4791, which are quite
      * complex.
      *
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
      *
      * @return bool
      */
     protected function validateTimeRange(VObject\Node $component, $start, $end)
     {
         if (is_null($start)) {
-            $start = new DateTime('1900-01-01');
+            $start = new \DateTime('1900-01-01');
         }
         if (is_null($end)) {
-            $end = new DateTime('3000-01-01');
+            $end = new \DateTime('3000-01-01');
         }
 
         switch ($component->name) {
@@ -331,11 +327,10 @@ class CalendarQueryValidator
                     }
 
                     return false;
-                } else {
-                    return $component->isInTimeRange($start, $end);
                 }
 
-                // no break
+                return $component->isInTimeRange($start, $end);
+
             case 'VFREEBUSY':
                 throw new \Sabre\DAV\Exception\NotImplemented('time-range filters are currently not supported on '.$component->name.' components');
             case 'COMPLETED':

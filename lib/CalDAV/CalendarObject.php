@@ -141,9 +141,9 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     {
         if (isset($this->objectData['etag'])) {
             return $this->objectData['etag'];
-        } else {
-            return '"'.md5($this->get()).'"';
         }
+
+        return '"'.md5($this->get()).'"';
     }
 
     /**
@@ -165,9 +165,9 @@ class CalendarObject extends \Sabre\DAV\File implements ICalendarObject, \Sabre\
     {
         if (array_key_exists('size', $this->objectData)) {
             return $this->objectData['size'];
-        } else {
-            return strlen($this->get());
         }
+
+        return strlen($this->get());
     }
 
     /**

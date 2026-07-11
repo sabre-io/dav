@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use PDO;
-use PDOException;
 use Sabre\TestUtil;
 
 class DbCache
@@ -18,12 +16,12 @@ trait DbTestHelperTrait
     /**
      * Should be "mysql", "pgsql", "sqlite".
      */
-    public $driver = null;
+    public $driver;
 
     /**
      * Returns a fully configured PDO object.
      *
-     * @return PDO
+     * @return \PDO
      */
     public function getDb()
     {
@@ -52,10 +50,10 @@ trait DbTestHelperTrait
                         DbCache::$cache[$this->driver] = null;
                         $this->markTestSkipped('SABRE_MYSQLDSN not set');
                     }
-                    $pdo = new PDO($dsn, $user, $pass);
+                    $pdo = new \PDO($dsn, $user, $pass);
                     break;
                 case 'sqlite':
-                    $pdo = new PDO('sqlite:'.TestUtil::SABRE_TEMPDIR.'/testdb');
+                    $pdo = new \PDO('sqlite:'.TestUtil::SABRE_TEMPDIR.'/testdb');
                     break;
                 case 'pgsql':
                     $dsn = getenv('SABRE_PGSQLDSN');
@@ -63,7 +61,7 @@ trait DbTestHelperTrait
                         DbCache::$cache[$this->driver] = null;
                         $this->markTestSkipped('SABRE_PGSQLDSN not set');
                     }
-                    $pdo = new PDO($dsn);
+                    $pdo = new \PDO($dsn);
                     $version = $pdo->query('SELECT VERSION()')->fetchColumn();
                     preg_match('|([0-9\.]){5,}|', $version, $matches);
                     $version = $matches[0];
@@ -78,8 +76,8 @@ trait DbTestHelperTrait
                 $this->markTestSkipped($this->driver.' was not recognised');
             }
 
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        } catch (\PDOException $e) {
             $this->markTestSkipped($this->driver.' was not enabled or not correctly configured. Error message: '.$e->getMessage());
         }
 
@@ -91,7 +89,7 @@ trait DbTestHelperTrait
     /**
      * Alias for getDb.
      *
-     * @return PDO
+     * @return \PDO
      */
     public function getPDO()
     {

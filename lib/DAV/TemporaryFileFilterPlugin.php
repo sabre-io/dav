@@ -53,7 +53,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
     /**
      * A reference to the main Server class.
      *
-     * @var \Sabre\DAV\Server
+     * @var Server
      */
     protected $server;
 
@@ -103,8 +103,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
      *
      * This method intercepts any GET, DELETE, PUT and PROPFIND calls to
      * filenames that are known to match the 'temporary file' regex.
-     *
-     * @return bool
      */
     public function beforeMethod(RequestInterface $request, ResponseInterface $response)
     {
@@ -122,8 +120,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
             case 'DELETE':
                 return $this->httpDelete($request, $response, $tempLocation);
         }
-
-        return;
     }
 
     /**
@@ -136,8 +132,6 @@ class TemporaryFileFilterPlugin extends ServerPlugin
      * @param resource $data
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
-     *
-     * @return bool
      */
     public function beforeCreateFile($uri, $data, ICollection $parent, $modified)
     {
@@ -145,11 +139,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
             $hR = $this->server->httpResponse;
             $hR->setHeader('X-Sabre-Temp', 'true');
             file_put_contents($tempPath, $data);
-
-            return false;
         }
-
-        return;
     }
 
     /**
@@ -216,7 +206,7 @@ class TemporaryFileFilterPlugin extends ServerPlugin
 
         $newFile = !file_exists($tempLocation);
 
-        if (!$newFile && ($this->server->httpRequest->getHeader('If-None-Match'))) {
+        if (!$newFile && $this->server->httpRequest->getHeader('If-None-Match')) {
             throw new Exception\PreconditionFailed('The resource already exists, and an If-None-Match header was supplied');
         }
 

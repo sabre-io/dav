@@ -125,15 +125,14 @@ class Card extends DAV\File implements ICard, DAVACL\IACL
     {
         if (isset($this->cardData['etag'])) {
             return $this->cardData['etag'];
-        } else {
-            $data = $this->get();
-            if (is_string($data)) {
-                return '"'.md5($data).'"';
-            } else {
-                // We refuse to calculate the md5 if it's a stream.
-                return null;
-            }
         }
+        $data = $this->get();
+        if (is_string($data)) {
+            return '"'.md5($data).'"';
+        }
+
+        // We refuse to calculate the md5 if it's a stream.
+        return null;
     }
 
     /**
@@ -155,9 +154,9 @@ class Card extends DAV\File implements ICard, DAVACL\IACL
     {
         if (array_key_exists('size', $this->cardData)) {
             return $this->cardData['size'];
-        } else {
-            return strlen($this->get());
         }
+
+        return strlen($this->get());
     }
 
     /**

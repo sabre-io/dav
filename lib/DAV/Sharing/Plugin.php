@@ -28,16 +28,16 @@ use Sabre\HTTP\ResponseInterface;
  */
 class Plugin extends ServerPlugin
 {
-    const ACCESS_NOTSHARED = 0;
-    const ACCESS_SHAREDOWNER = 1;
-    const ACCESS_READ = 2;
-    const ACCESS_READWRITE = 3;
-    const ACCESS_NOACCESS = 4;
+    public const ACCESS_NOTSHARED = 0;
+    public const ACCESS_SHAREDOWNER = 1;
+    public const ACCESS_READ = 2;
+    public const ACCESS_READWRITE = 3;
+    public const ACCESS_NOACCESS = 4;
 
-    const INVITE_NORESPONSE = 1;
-    const INVITE_ACCEPTED = 2;
-    const INVITE_DECLINED = 3;
-    const INVITE_INVALID = 4;
+    public const INVITE_NORESPONSE = 1;
+    public const INVITE_ACCEPTED = 2;
+    public const INVITE_DECLINED = 3;
+    public const INVITE_INVALID = 4;
 
     /**
      * Reference to SabreDAV server object.

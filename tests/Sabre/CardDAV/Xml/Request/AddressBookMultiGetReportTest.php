@@ -7,13 +7,11 @@ use Sabre\DAV\Xml\AbstractXmlTestCase;
 class AddressBookMultiGetReportTest extends AbstractXmlTestCase
 {
     protected $elementMap = [
-        '{urn:ietf:params:xml:ns:carddav}addressbook-multiget' => \Sabre\CardDAV\Xml\Request\AddressBookMultiGetReport::class,
+        '{urn:ietf:params:xml:ns:carddav}addressbook-multiget' => AddressBookMultiGetReport::class,
     ];
 
     /**
      * @dataProvider providesAddressDataXml
-     *
-     * @param $xml
      */
     public function testDeserialize($xml, $expectedProps, $expectedVersion = '3.0')
     {

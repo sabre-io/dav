@@ -59,7 +59,7 @@ class PropertiesCollection extends Collection implements IProperties
 
                     return $r;
                 case 'updatepropsobj':
-                    return new \STDClass();
+                    return new \stdClass();
             }
         });
     }

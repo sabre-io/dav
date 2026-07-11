@@ -94,7 +94,7 @@ class HttpMoveTest extends AbstractDAVServerTestCase
     {
         $this->server->on('beforeUnbind', function ($path) {
             if ('file1' === $path) {
-                throw new \Sabre\DAV\Exception\Forbidden('uh oh');
+                throw new Exception\Forbidden('uh oh');
             }
         });
         $request = new HTTP\Request('MOVE', '/file1', [

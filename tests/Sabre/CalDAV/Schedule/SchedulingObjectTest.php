@@ -10,7 +10,7 @@ use Sabre\CalDAV\Backend;
 class SchedulingObjectTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var CalDAV\Backend\PDO
+     * @var Backend\PDO
      */
     private $backend;
     /**

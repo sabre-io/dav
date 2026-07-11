@@ -29,7 +29,7 @@ class ServerPluginTest extends AbstractServerTestCase
         self::assertEquals([], $p->getHTTPMethods(''));
         self::assertEquals(
             [
-                'name' => \Sabre\DAV\ServerPluginMock::class,
+                'name' => ServerPluginMock::class,
                 'description' => null,
                 'link' => null,
             ], $p->getPluginInfo()
@@ -44,7 +44,7 @@ class ServerPluginTest extends AbstractServerTestCase
         ];
 
         $request = HTTP\Sapi::createFromServerArray($serverVars);
-        $this->server->httpRequest = ($request);
+        $this->server->httpRequest = $request;
         $this->server->exec();
 
         self::assertEquals([

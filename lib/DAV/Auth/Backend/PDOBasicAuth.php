@@ -97,18 +97,17 @@ class PDOBasicAuth extends AbstractBasic
 
         if (!count($result)) {
             return false;
-        } else {
-            $digest = $result[0][$this->digestColumn];
-
-            if (isset($this->digestPrefix)) {
-                $digest = substr($digest, strlen($this->digestPrefix));
-            }
-
-            if (password_verify($password, $digest)) {
-                return true;
-            }
-
-            return false;
         }
+        $digest = $result[0][$this->digestColumn];
+
+        if (isset($this->digestPrefix)) {
+            $digest = substr($digest, strlen($this->digestPrefix));
+        }
+
+        if (password_verify($password, $digest)) {
+            return true;
+        }
+
+        return false;
     }
 }

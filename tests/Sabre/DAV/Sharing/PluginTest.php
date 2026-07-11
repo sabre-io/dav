@@ -70,7 +70,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
 
     public function testHtmlActionsPanel()
     {
-        $node = new \Sabre\DAV\Mock\Collection('foo');
+        $node = new Mock\Collection('foo');
         $html = '';
 
         self::assertNull(
@@ -82,7 +82,7 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
             $html
         );
 
-        $node = new \Sabre\DAV\Mock\SharedNode('foo', \Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER);
+        $node = new Mock\SharedNode('foo', Plugin::ACCESS_SHAREDOWNER);
         $html = '';
 
         self::assertNull(
@@ -117,8 +117,8 @@ class PluginTest extends \Sabre\AbstractDAVServerTestCase
         $expected = [
             new \Sabre\DAV\Xml\Element\Sharee([
                 'href' => 'mailto:foo@example.org',
-                'access' => \Sabre\DAV\Sharing\Plugin::ACCESS_READ,
-                'inviteStatus' => \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                'access' => Plugin::ACCESS_READ,
+                'inviteStatus' => Plugin::INVITE_NORESPONSE,
             ]),
         ];
         self::assertEquals(

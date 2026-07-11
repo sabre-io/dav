@@ -31,7 +31,7 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * in 2038-01-19 to avoid problems when the date is converted
      * to a unix timestamp.
      */
-    const MAX_DATE = '2038-01-01';
+    public const MAX_DATE = '2038-01-01';
 
     /**
      * pdo.
@@ -193,12 +193,12 @@ SQL
             // 1 = owner, 2 = readonly, 3 = readwrite
             if ($row['access'] > 1) {
                 // We need to find more information about the original owner.
-                //$stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
-                //$stmt2->execute([$row['id']]);
+                // $stmt2 = $this->pdo->prepare('SELECT principaluri FROM ' . $this->calendarInstancesTableName . ' WHERE access = 1 AND id = ?');
+                // $stmt2->execute([$row['id']]);
 
                 // read-only is for backwards compatibility. Might go away in
                 // the future.
-                $calendar['read-only'] = \Sabre\DAV\Sharing\Plugin::ACCESS_READ === (int) $row['access'];
+                $calendar['read-only'] = DAV\Sharing\Plugin::ACCESS_READ === (int) $row['access'];
             }
 
             foreach ($this->propertyMap as $xmlName => $dbName) {
@@ -241,7 +241,7 @@ SQL
             // Default value
             $components = 'VEVENT,VTODO';
         } else {
-            if (!($properties[$sccs] instanceof CalDAV\Xml\Property\SupportedCalendarComponentSet)) {
+            if (!$properties[$sccs] instanceof CalDAV\Xml\Property\SupportedCalendarComponentSet) {
                 throw new DAV\Exception('The '.$sccs.' property must be of type: \Sabre\CalDAV\Xml\Property\SupportedCalendarComponentSet');
             }
             $components = implode(',', $properties[$sccs]->getValue());
@@ -287,8 +287,6 @@ SQL
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param mixed $calendarId
      */
     public function updateCalendar($calendarId, PropPatch $propPatch)
     {
@@ -331,8 +329,6 @@ SQL
 
     /**
      * Delete a calendar and all it's objects.
-     *
-     * @param mixed $calendarId
      */
     public function deleteCalendar($calendarId)
     {
@@ -345,7 +341,7 @@ SQL
         $stmt->execute([$instanceId]);
         $access = (int) $stmt->fetchColumn();
 
-        if (\Sabre\DAV\Sharing\Plugin::ACCESS_SHAREDOWNER === $access) {
+        if (DAV\Sharing\Plugin::ACCESS_SHAREDOWNER === $access) {
             /**
              * If the user is the owner of the calendar, we delete all data and all
              * instances.
@@ -399,8 +395,6 @@ SQL
      * used/fetched to determine these numbers. If both are specified the
      * amount of times this is needed is reduced by a great degree.
      *
-     * @param mixed $calendarId
-     *
      * @return array
      */
     public function getCalendarObjects($calendarId)
@@ -440,7 +434,6 @@ SQL
      *
      * This method must return null if the object did not exist.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      *
      * @return array|null
@@ -468,7 +461,7 @@ SQL
             'size' => (int) $row['size'],
             'calendardata' => $row['calendardata'],
             'component' => strtolower($row['componenttype']),
-         ];
+        ];
     }
 
     /**
@@ -478,8 +471,6 @@ SQL
      * return all the calendar objects in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */
@@ -529,7 +520,6 @@ SQL
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *
@@ -575,7 +565,6 @@ SQL
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      * @param string $calendarData
      *
@@ -641,7 +630,7 @@ SQL
             }
         }
         if (!$componentType) {
-            throw new \Sabre\DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
+            throw new DAV\Exception\BadRequest('Calendar objects must have a VJOURNAL, VEVENT or VTODO component');
         }
         if ('VEVENT' === $componentType) {
             $firstOccurence = $component->DTSTART->getDateTime()->getTimeStamp();
@@ -702,7 +691,6 @@ SQL
      *
      * The object uri is only the basename, or filename and not a full path.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      */
     public function deleteCalendarObject($calendarId, $objectUri)
@@ -765,8 +753,6 @@ SQL
      *
      * This specific implementation (for the PDO) backend optimizes filters on
      * specific components, and VEVENT time-ranges.
-     *
-     * @param mixed $calendarId
      *
      * @return array
      */
@@ -945,7 +931,6 @@ SQL;
      *
      * The limit is 'suggestive'. You are free to ignore it.
      *
-     * @param mixed  $calendarId
      * @param string $syncToken
      * @param int    $syncLevel
      * @param int    $limit
@@ -1042,9 +1027,8 @@ SQL;
     /**
      * Adds a change record to the calendarchanges table.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
-     * @param int    $operation  1 = add, 2 = modify, 3 = delete
+     * @param int    $operation 1 = add, 2 = modify, 3 = delete
      */
     protected function addChange($calendarId, $objectUri, $operation)
     {
@@ -1139,8 +1123,6 @@ SQL;
      *
      * @param string $principalUri
      * @param string $uri
-     *
-     * @return mixed
      */
     public function createSubscription($principalUri, $uri, array $properties)
     {
@@ -1188,8 +1170,6 @@ SQL;
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param mixed $subscriptionId
      */
     public function updateSubscription($subscriptionId, PropPatch $propPatch)
     {
@@ -1225,8 +1205,6 @@ SQL;
 
     /**
      * Deletes a subscription.
-     *
-     * @param mixed $subscriptionId
      */
     public function deleteSubscription($subscriptionId)
     {
@@ -1267,7 +1245,7 @@ SQL;
             'lastmodified' => $row['lastmodified'],
             'etag' => '"'.$row['etag'].'"',
             'size' => (int) $row['size'],
-         ];
+        ];
     }
 
     /**
@@ -1343,8 +1321,7 @@ SQL;
     /**
      * Updates the list of shares.
      *
-     * @param mixed                           $calendarId
-     * @param \Sabre\DAV\Xml\Element\Sharee[] $sharees
+     * @param Sharee[] $sharees
      */
     public function updateInvites($calendarId, array $sharees)
     {
@@ -1391,7 +1368,7 @@ INSERT INTO '.$this->calendarInstancesTableName.'
     FROM '.$this->calendarInstancesTableName.' WHERE id = ?');
 
         foreach ($sharees as $sharee) {
-            if (\Sabre\DAV\Sharing\Plugin::ACCESS_NOACCESS === $sharee->access) {
+            if (DAV\Sharing\Plugin::ACCESS_NOACCESS === $sharee->access) {
                 // if access was set no NOACCESS, it means access for an
                 // existing sharee was removed.
                 $removeStmt->execute([$calendarId, $sharee->href]);
@@ -1401,11 +1378,11 @@ INSERT INTO '.$this->calendarInstancesTableName.'
             if (is_null($sharee->principal)) {
                 // If the server could not determine the principal automatically,
                 // we will mark the invite status as invalid.
-                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_INVALID;
+                $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_INVALID;
             } else {
                 // Because sabre/dav does not yet have an invitation system,
                 // every invite is automatically accepted for now.
-                $sharee->inviteStatus = \Sabre\DAV\Sharing\Plugin::INVITE_ACCEPTED;
+                $sharee->inviteStatus = DAV\Sharing\Plugin::INVITE_ACCEPTED;
             }
 
             foreach ($currentInvites as $oldSharee) {
@@ -1430,10 +1407,10 @@ INSERT INTO '.$this->calendarInstancesTableName.'
                 $calendarId,
                 $sharee->principal,
                 $sharee->access,
-                \Sabre\DAV\UUIDUtil::getUUID(),
+                DAV\UUIDUtil::getUUID(),
                 $sharee->href,
                 isset($sharee->properties['{DAV:}displayname']) ? $sharee->properties['{DAV:}displayname'] : null,
-                $sharee->inviteStatus ?: \Sabre\DAV\Sharing\Plugin::INVITE_NORESPONSE,
+                $sharee->inviteStatus ?: DAV\Sharing\Plugin::INVITE_NORESPONSE,
                 $instanceId,
             ]);
         }
@@ -1451,9 +1428,7 @@ INSERT INTO '.$this->calendarInstancesTableName.'
      * and optionally:
      *   $properties
      *
-     * @param mixed $calendarId
-     *
-     * @return \Sabre\DAV\Xml\Element\Sharee[]
+     * @return Sharee[]
      */
     public function getInvites($calendarId)
     {
@@ -1482,7 +1457,7 @@ SQL;
             $result[] = new Sharee([
                 'href' => isset($row['share_href']) ? $row['share_href'] : \Sabre\HTTP\encodePath($row['principaluri']),
                 'access' => (int) $row['access'],
-                /// Everyone is always immediately accepted, for now.
+                // / Everyone is always immediately accepted, for now.
                 'inviteStatus' => (int) $row['share_invitestatus'],
                 'properties' => !empty($row['share_displayname'])
                     ? ['{DAV:}displayname' => $row['share_displayname']]
@@ -1497,8 +1472,7 @@ SQL;
     /**
      * Publishes a calendar.
      *
-     * @param mixed $calendarId
-     * @param bool  $value
+     * @param bool $value
      */
     public function setPublishStatus($calendarId, $value)
     {

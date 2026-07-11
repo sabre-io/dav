@@ -29,7 +29,7 @@ class ExpandEventsDTSTARTandDTENDTest extends \Sabre\AbstractDAVServerTestCase
 
     protected $caldavCalendarObjects = [
         1 => [
-           'event.ics' => [
+            'event.ics' => [
                 'calendardata' => 'BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
@@ -98,9 +98,9 @@ END:VCALENDAR
 
         // check if DTSTARTs and DTENDs are correct
         foreach ($vObject->VEVENT as $vevent) {
-            /** @var $vevent Sabre\VObject\Component\VEvent */
+            /** @var Sabre\VObject\Component\VEvent $vevent */
             foreach ($vevent->children() as $child) {
-                /** @var $child Sabre\VObject\Property */
+                /** @var Sabre\VObject\Property $child */
                 if ('DTSTART' == $child->name) {
                     // DTSTART has to be one of three valid values
                     self::assertContains($child->getValue(), ['20120207T171500Z', '20120208T171500Z', '20120209T171500Z'], 'DTSTART is not a valid value: '.$child->getValue());

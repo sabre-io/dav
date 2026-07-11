@@ -67,9 +67,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota
      *
      * @param string $name
      *
-     * @throws DAV\Exception\NotFound
-     *
      * @return DAV\INode
+     *
+     * @throws DAV\Exception\NotFound
      */
     public function getChild($name)
     {
@@ -80,9 +80,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota
         }
         if (is_dir($path)) {
             return new self($path);
-        } else {
-            return new File($path);
         }
+
+        return new File($path);
     }
 
     /**

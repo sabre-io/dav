@@ -34,7 +34,7 @@ php {$argv[0]} sqlite:data/sabredav.db
 
 HELLO;
 
-    exit();
+    exit;
 }
 
 // There's a bunch of places where the autoloader could be, so we'll try all of
@@ -402,7 +402,7 @@ CREATE TABLE cards (
     echo "Reading all old vcards and populating etag and size fields.\n";
     $result = $pdo->query('SELECT id, carddata FROM cards');
     $stmt = $pdo->prepare('UPDATE cards SET etag = ?, size = ? WHERE id = ?');
-    while ($row = $result->fetch(\PDO::FETCH_ASSOC)) {
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $stmt->execute([
             md5($row['carddata']),
             strlen($row['carddata']),

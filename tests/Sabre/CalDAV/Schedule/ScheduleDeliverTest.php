@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
-use Sabre\HTTP\Request;
 use Sabre\Uri;
 use Sabre\VObject;
 
@@ -633,7 +632,7 @@ ICS;
             $childNode->put($data);
         } else {*/
         $parentNode->createFile($base, $data);
-        //}
+        // }
     }
 
     public function assertItemsInInbox($user, $count)

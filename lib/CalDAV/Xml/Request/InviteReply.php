@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sabre\CalDAV\Xml\Request;
 
 use Sabre\CalDAV\Plugin;
-use Sabre\CalDAV\SharingPlugin;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Element\KeyValue;
@@ -97,8 +96,6 @@ class InviteReply implements XmlDeserializable
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {

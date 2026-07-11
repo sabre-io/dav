@@ -79,8 +79,8 @@ class StringUtil
     {
         if (!mb_check_encoding($input, 'UTF-8') && mb_check_encoding($input, 'ISO-8859-1')) {
             return mb_convert_encoding($input, 'UTF-8', 'ISO-8859-1');
-        } else {
-            return $input;
         }
+
+        return $input;
     }
 }

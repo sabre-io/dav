@@ -14,7 +14,7 @@ $tasks = [
     ],
     'init' => [],
     'composerupdate' => [],
- ];
+];
 
 $default = 'buildzip';
 
@@ -52,10 +52,9 @@ while (count($oldTaskList) > 0) {
             if (isset($newTaskList[$dependency])) {
                 // Already in the fulfilled task list.
                 continue;
-            } else {
-                $oldTaskList[$dependency] = true;
-                $fullFilled = false;
             }
+            $oldTaskList[$dependency] = true;
+            $fullFilled = false;
         }
         if ($fullFilled) {
             unset($oldTaskList[$task]);

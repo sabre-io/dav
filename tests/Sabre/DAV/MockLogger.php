@@ -21,7 +21,6 @@ class MockLogger extends AbstractLogger
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed  $level
      * @param string $message
      */
     public function log($level, $message, array $context = []): void

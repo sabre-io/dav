@@ -213,9 +213,9 @@ class NodeByPathTester extends SimpleCollection implements INodeByPath
     {
         if (isset($this->children[$path])) {
             return $this->children[$path];
-        } else {
-            return null;
         }
+
+        return null;
     }
 }
 

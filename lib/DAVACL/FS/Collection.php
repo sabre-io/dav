@@ -57,9 +57,9 @@ class Collection extends BaseCollection implements IACL
      *
      * @param string $name
      *
-     * @throws NotFound
-     *
      * @return \Sabre\DAV\INode
+     *
+     * @throws NotFound
      */
     public function getChild($name)
     {
@@ -73,9 +73,9 @@ class Collection extends BaseCollection implements IACL
         }
         if (is_dir($path)) {
             return new self($path, $this->acl, $this->owner);
-        } else {
-            return new File($path, $this->acl, $this->owner);
         }
+
+        return new File($path, $this->acl, $this->owner);
     }
 
     /**

@@ -78,7 +78,7 @@ class Tree implements INodeByPath
         } while ('' !== $remainingPath);
 
         while (count($parts)) {
-            if (!($node instanceof ICollection)) {
+            if (!$node instanceof ICollection) {
                 throw new Exception\NotFound('Could not find node at path: '.$path);
             }
 
@@ -310,8 +310,7 @@ class Tree implements INodeByPath
     /**
      * copyNode.
      *
-     * @param string $destinationName
-     * @param int    $depth           How many children of the node to copy
+     * @param int $depth How many children of the node to copy
      */
     protected function copyNode(INode $source, ICollection $destinationParent, ?string $destinationName = null, int $depth = Server::DEPTH_INFINITY)
     {

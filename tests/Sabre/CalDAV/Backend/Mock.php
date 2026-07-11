@@ -93,8 +93,6 @@ class Mock extends AbstractBackend
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
-     *
-     * @param mixed $calendarId
      */
     public function updateCalendar($calendarId, PropPatch $propPatch)
     {
@@ -181,7 +179,6 @@ class Mock extends AbstractBackend
      *
      * This method must return null if the object did not exist.
      *
-     * @param mixed  $calendarId
      * @param string $objectUri
      *
      * @return array|null

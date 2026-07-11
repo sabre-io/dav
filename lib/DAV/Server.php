@@ -31,12 +31,12 @@ class Server implements LoggerAwareInterface, EmitterInterface
     /**
      * Infinity is used for some request supporting the HTTP Depth header and indicates that the operation should traverse the entire tree.
      */
-    const DEPTH_INFINITY = -1;
+    public const DEPTH_INFINITY = -1;
 
     /**
      * XML namespace for all SabreDAV related elements.
      */
-    const NS_SABREDAV = 'http://sabredav.org/ns';
+    public const NS_SABREDAV = 'http://sabredav.org/ns';
 
     /**
      * The tree object.
@@ -50,7 +50,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @var string
      */
-    protected $baseUri = null;
+    protected $baseUri;
 
     /**
      * httpResponse.
@@ -152,7 +152,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * @var array
      */
     public $resourceTypeMapping = [
-        \Sabre\DAV\ICollection::class => '{DAV:}collection',
+        ICollection::class => '{DAV:}collection',
     ];
 
     /**
@@ -552,9 +552,9 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *
      * @param string $uri
      *
-     * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
-     *
      * @return string
+     *
+     * @throws Exception\Forbidden A permission denied exception is thrown whenever there was an attempt to supply a uri outside of the base uri
      */
     public function calculateUri($uri)
     {
@@ -572,9 +572,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
         // slash, we'll accept it as well.
         } elseif ($uri.'/' === $baseUri) {
             return '';
-        } else {
-            throw new Exception\Forbidden('Requested uri ('.$uri.') is out of base uri ('.$this->getBaseUri().')');
         }
+        throw new Exception\Forbidden('Requested uri ('.$uri.') is out of base uri ('.$this->getBaseUri().')');
     }
 
     /**
@@ -584,7 +583,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
      * It is possible to supply a default depth value, which is used when the depth header has invalid content, or is completely non-existent
      *
      * @param mixed $default default value to use if no header is set or has invalid value
-     * @param mixed $default
      *
      * @return int
      */
@@ -713,6 +711,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *   * destination - Destination path
      *   * destinationExists - Whether or not the destination is an existing url (and should therefore be overwritten)
      *
+     * @return array
+     *
      * @throws Exception\BadRequest           upon missing or broken request headers
      * @throws Exception\UnsupportedMediaType when trying to copy into a
      *                                        non-collection
@@ -722,8 +722,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
      *                                        identical
      * @throws Exception\Conflict             when trying to copy a node into its own
      *                                        subtree
-     *
-     * @return array
      */
     public function getCopyAndMoveInfo(RequestInterface $request)
     {
@@ -757,7 +755,7 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
         try {
             $destinationParent = $this->tree->getNodeForPath($destinationDir);
-            if (!($destinationParent instanceof ICollection)) {
+            if (!$destinationParent instanceof ICollection) {
                 throw new Exception\UnsupportedMediaType('The destination node is not a collection');
             }
         } catch (Exception\NotFound $e) {
@@ -816,9 +814,9 @@ class Server implements LoggerAwareInterface, EmitterInterface
         $result = $this->getPropertiesForPath($path, $propertyNames, 0);
         if (isset($result[0][200])) {
             return $result[0][200];
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**
@@ -893,8 +891,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
 
     /**
      * Small helper to support PROPFIND with DEPTH_INFINITY.
-     *
-     * @param array $yieldFirst
      *
      * @return \Traversable
      */
@@ -1389,9 +1385,8 @@ class Server implements LoggerAwareInterface, EmitterInterface
                         $response->setStatus(304);
 
                         return false;
-                    } else {
-                        throw new Exception\PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).', 'If-None-Match');
                     }
+                    throw new Exception\PreconditionFailed('An If-None-Match header was specified, but the ETag matched (or * was specified).', 'If-None-Match');
                 }
             }
         }
@@ -1667,9 +1662,6 @@ class Server implements LoggerAwareInterface, EmitterInterface
         return $w->outputMemory();
     }
 
-    /**
-     * @param $fileProperties
-     */
     private function writeMultiStatus(Writer $w, $fileProperties, bool $strip404s)
     {
         $w->contextUri = $this->baseUri;

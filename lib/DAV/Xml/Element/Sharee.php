@@ -152,14 +152,12 @@ class Sharee implements Element
      *
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
-     *
-     * @return mixed
      */
     public static function xmlDeserialize(Reader $reader)
     {
         // Temporarily override configuration
         $reader->pushContext();
-        $reader->elementMap['{DAV:}share-access'] = \Sabre\DAV\Xml\Property\ShareAccess::class;
+        $reader->elementMap['{DAV:}share-access'] = ShareAccess::class;
         $reader->elementMap['{DAV:}prop'] = 'Sabre\Xml\Deserializer\keyValue';
 
         $elems = Deserializer\keyValue($reader, 'DAV:');

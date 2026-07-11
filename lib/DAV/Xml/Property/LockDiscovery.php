@@ -86,8 +86,8 @@ class LockDiscovery implements XmlSerializable
                 $writer->writeElement('{DAV:}href', $writer->contextUri.$lock->uri);
                 $writer->endElement(); // {DAV:}lockroot
             }
-            $writer->writeElement('{DAV:}depth', (DAV\Server::DEPTH_INFINITY == $lock->depth ? 'infinity' : $lock->depth));
-            $writer->writeElement('{DAV:}timeout', (LockInfo::TIMEOUT_INFINITE === $lock->timeout ? 'Infinite' : 'Second-'.$lock->timeout));
+            $writer->writeElement('{DAV:}depth', DAV\Server::DEPTH_INFINITY == $lock->depth ? 'infinity' : $lock->depth);
+            $writer->writeElement('{DAV:}timeout', LockInfo::TIMEOUT_INFINITE === $lock->timeout ? 'Infinite' : 'Second-'.$lock->timeout);
 
             // optional according to https://tools.ietf.org/html/rfc4918#section-6.5
             if (null !== $lock->token && '' !== $lock->token) {

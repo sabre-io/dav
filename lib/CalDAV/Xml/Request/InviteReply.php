@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sabre\CalDAV\Xml\Request;
 
 use Sabre\CalDAV\Plugin;
-use Sabre\CalDAV\SharingPlugin;
 use Sabre\DAV;
 use Sabre\DAV\Exception\BadRequest;
 use Sabre\Xml\Element\KeyValue;

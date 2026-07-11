@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\DAV;
 
-use PDO;
 use Sabre\TestUtil;
 
 class DbCache

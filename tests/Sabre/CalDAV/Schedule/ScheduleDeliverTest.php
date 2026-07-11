@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Schedule;
 
-use Sabre\HTTP\Request;
 use Sabre\Uri;
 use Sabre\VObject;
 

@@ -23,7 +23,6 @@ use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\VObject;
 use Sabre\VObject\Component\VCalendar;
-use Sabre\VObject\ITip;
 use Sabre\VObject\ITip\Broker;
 use Sabre\VObject\ITip\Message;
 use Sabre\VObject\Reader;

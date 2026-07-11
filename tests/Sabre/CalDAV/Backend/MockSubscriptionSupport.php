@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sabre\CalDAV\Backend;
 
-use Sabre\CalDAV;
 use Sabre\DAV;
 
 /**

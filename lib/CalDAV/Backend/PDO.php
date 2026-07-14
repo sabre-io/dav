@@ -650,7 +650,11 @@ SQL
                     $lastOccurence = $firstOccurence;
                 }
             } else {
-                $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
+                try {
+                    $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
+                } catch (VObject\Recur\NoInstancesException $e) {
+                    throw new Forbidden($e->getMessage());
+                }
                 $maxDate = new \DateTime(self::MAX_DATE);
                 if ($it->isInfinite()) {
                     $lastOccurence = $maxDate->getTimeStamp();

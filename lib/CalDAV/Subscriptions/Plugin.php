@@ -29,7 +29,7 @@ class Plugin extends ServerPlugin
      *
      * This method should set up the required event subscriptions.
      */
-    public function initialize(Server $server)
+    public function initialize(Server $server): void
     {
         $server->resourceTypeMapping[ISubscription::class] =
             '{http://calendarserver.org/ns/}subscribed';
@@ -45,10 +45,8 @@ class Plugin extends ServerPlugin
      *
      * This is for example 'versioning' and is added to the DAV: header
      * in an OPTIONS response.
-     *
-     * @return array
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['calendarserver-subscribed'];
     }
@@ -56,7 +54,7 @@ class Plugin extends ServerPlugin
     /**
      * Triggered after properties have been fetched.
      */
-    public function propFind(PropFind $propFind, INode $node)
+    public function propFind(PropFind $propFind, INode $node): void
     {
         // There's a bunch of properties that must appear as a self-closing
         // xml-element. This event handler ensures that this will be the case.
@@ -78,10 +76,8 @@ class Plugin extends ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using \Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'subscriptions';
     }
@@ -94,10 +90,8 @@ class Plugin extends ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

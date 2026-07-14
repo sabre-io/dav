@@ -51,10 +51,8 @@ class Plugin extends ServerPlugin
      *
      * This is for example 'versioning' and is added to the DAV: header
      * in an OPTIONS response.
-     *
-     * @return array
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['resource-sharing'];
     }
@@ -64,10 +62,8 @@ class Plugin extends ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using \Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'sharing';
     }
@@ -80,7 +76,7 @@ class Plugin extends ServerPlugin
      *
      * This method should set up the required event subscriptions.
      */
-    public function initialize(Server $server)
+    public function initialize(Server $server): void
     {
         $this->server = $server;
 
@@ -104,10 +100,9 @@ class Plugin extends ServerPlugin
      * The sharees  array is a list of people that are to be added modified
      * or removed in the list of shares.
      *
-     * @param string   $path
      * @param Sharee[] $sharees
      */
-    public function shareResource($path, array $sharees)
+    public function shareResource(string $path, array $sharees)
     {
         $node = $this->server->tree->getNodeForPath($path);
 
@@ -138,7 +133,7 @@ class Plugin extends ServerPlugin
      *
      * This allows us to inject any sharings-specific properties.
      */
-    public function propFind(PropFind $propFind, INode $node)
+    public function propFind(PropFind $propFind, INode $node): void
     {
         if ($node instanceof ISharedNode) {
             $propFind->handle('{DAV:}share-access', function () use ($node) {
@@ -156,19 +151,19 @@ class Plugin extends ServerPlugin
     /**
      * We intercept this to handle POST requests on shared resources.
      *
-     * @return bool|null
+     * @return false|null
      */
     public function httpPost(RequestInterface $request, ResponseInterface $response)
     {
         $path = $request->getPath();
         $contentType = $request->getHeader('Content-Type');
         if (null === $contentType) {
-            return;
+            return null;
         }
 
         // We're only interested in the davsharing content type.
         if (false === strpos($contentType, 'application/davsharing+xml')) {
-            return;
+            return null;
         }
 
         $message = $this->server->xml->parse(
@@ -191,6 +186,8 @@ class Plugin extends ServerPlugin
             default:
                 throw new BadRequest('Unexpected document type: '.$documentType.' for this Content-Type');
         }
+
+        return null;
     }
 
     /**
@@ -199,7 +196,7 @@ class Plugin extends ServerPlugin
      *
      * We need to add a number of privileges for scheduling purposes.
      */
-    public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet)
+    public function getSupportedPrivilegeSet(INode $node, array &$supportedPrivilegeSet): void
     {
         if ($node instanceof ISharedNode) {
             $supportedPrivilegeSet['{DAV:}share'] = [
@@ -217,10 +214,8 @@ class Plugin extends ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

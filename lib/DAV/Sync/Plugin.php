@@ -36,10 +36,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using \Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'sync';
     }

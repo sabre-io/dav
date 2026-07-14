@@ -29,20 +29,16 @@ class SharingPlugin extends DAV\ServerPlugin
 {
     /**
      * Reference to SabreDAV server object.
-     *
-     * @var DAV\Server
      */
-    protected $server;
+    protected DAV\Server $server;
 
     /**
      * This method should return a list of server-features.
      *
      * This is for example 'versioning' and is added to the DAV: header
      * in an OPTIONS response.
-     *
-     * @return array
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['calendarserver-sharing'];
     }
@@ -52,10 +48,8 @@ class SharingPlugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'caldav-sharing';
     }
@@ -68,7 +62,7 @@ class SharingPlugin extends DAV\ServerPlugin
      *
      * This method should set up the required event subscriptions.
      */
-    public function initialize(DAV\Server $server)
+    public function initialize(DAV\Server $server): void
     {
         $this->server = $server;
 
@@ -98,7 +92,7 @@ class SharingPlugin extends DAV\ServerPlugin
      *
      * This allows us to inject any properties early.
      */
-    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFindEarly(DAV\PropFind $propFind, DAV\INode $node): void
     {
         if ($node instanceof ISharedCalendar) {
             $propFind->handle('{'.Plugin::NS_CALENDARSERVER.'}invite', function () use ($node) {
@@ -114,7 +108,7 @@ class SharingPlugin extends DAV\ServerPlugin
      * This allows us to inject the correct resourcetype for calendars that
      * have been shared.
      */
-    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node)
+    public function propFindLate(DAV\PropFind $propFind, DAV\INode $node): void
     {
         if ($node instanceof ISharedCalendar) {
             $shareAccess = $node->getShareAccess();
@@ -145,10 +139,8 @@ class SharingPlugin extends DAV\ServerPlugin
      *
      * Even though this is no longer in the current spec, we keep this around
      * because OS X 10.7 may still make use of this feature.
-     *
-     * @param string $path
      */
-    public function propPatch($path, DAV\PropPatch $propPatch)
+    public function propPatch(string $path, DAV\PropPatch $propPatch): void
     {
         $node = $this->server->tree->getNodeForPath($path);
         if (!$node instanceof ISharedCalendar) {
@@ -332,10 +324,8 @@ class SharingPlugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

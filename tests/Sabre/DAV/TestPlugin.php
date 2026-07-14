@@ -11,17 +11,17 @@ class TestPlugin extends ServerPlugin
 {
     public $beforeMethod;
 
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['drinking'];
     }
 
-    public function getHTTPMethods($uri)
+    public function getHTTPMethods(string $uri): array
     {
         return ['BEER', 'WINE'];
     }
 
-    public function initialize(Server $server)
+    public function initialize(Server $server): void
     {
         $server->on('beforeMethod:*', [$this, 'beforeMethod']);
     }

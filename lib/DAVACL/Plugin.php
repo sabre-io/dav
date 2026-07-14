@@ -113,20 +113,16 @@ class Plugin extends DAV\ServerPlugin
      * Returns a list of features added by this plugin.
      *
      * This list is used in the response of a HTTP OPTIONS request.
-     *
-     * @return list<string>
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['access-control', 'calendarserver-principal-property-search'];
     }
 
     /**
      * Returns a list of available methods for a given url.
-     *
-     * @return list<string>
      */
-    public function getMethods(string $uri)
+    public function getMethods(string $uri): array
     {
         return ['ACL'];
     }

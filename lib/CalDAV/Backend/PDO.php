@@ -228,12 +228,14 @@ SQL
             'principaluri',
             'uri',
             'transparent',
+            'access',
             'calendarid',
         ];
         $values = [
             ':principaluri' => $principalUri,
             ':uri' => $calendarUri,
             ':transparent' => 0,
+            ':access' => 1,
         ];
 
         $sccs = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';

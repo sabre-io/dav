@@ -241,7 +241,7 @@ class Plugin extends ServerPlugin
      *
      * @return array{name: string, description: string, link: string}
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

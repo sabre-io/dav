@@ -808,7 +808,7 @@ class Plugin extends ServerPlugin
      *
      * @param string $email address
      *
-     * @return array{calendar-data: VObject\Component, request-status: string, href: string}
+     * @return array{calendar-data?: VObject\Component, request-status: string, href: string}
      */
     protected function getFreeBusyForEmail(string $email, \DateTimeInterface $start, \DateTimeInterface $end, VObject\Component $request): array
     {

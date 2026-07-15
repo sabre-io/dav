@@ -75,10 +75,8 @@ class Plugin extends DAV\ServerPlugin
      * implement them
      *
      * @param string $uri
-     *
-     * @return array
      */
-    public function getSupportedReportSet($uri)
+    public function getSupportedReportSet($uri): array
     {
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof ISyncCollection && $node->getSyncToken()) {
@@ -233,10 +231,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

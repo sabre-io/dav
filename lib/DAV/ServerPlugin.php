@@ -33,7 +33,7 @@ abstract class ServerPlugin
      *
      * @return list<non-empty-string>
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return [];
     }
@@ -47,7 +47,7 @@ abstract class ServerPlugin
      *
      * @return list<non-empty-string>
      */
-    public function getHTTPMethods(string $path)
+    public function getHTTPMethods(string $path): array
     {
         return [];
     }
@@ -60,7 +60,7 @@ abstract class ServerPlugin
      *
      * @return non-empty-string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return get_class($this);
     }
@@ -71,10 +71,8 @@ abstract class ServerPlugin
      * This will be used in the {DAV:}supported-report-set property.
      * Note that you still need to subscribe to the 'report' event to actually
      * implement them
-     *
-     * @return array
      */
-    public function getSupportedReportSet(string $uri)
+    public function getSupportedReportSet(string $uri): array
     {
         return [];
     }
@@ -90,7 +88,7 @@ abstract class ServerPlugin
      *
      * @return array{name: non-empty-string, description: ?string, link: ?string}
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

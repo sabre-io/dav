@@ -73,7 +73,7 @@ class Href implements Element, HtmlOutput
      *
      * @return list<string>
      */
-    public function getHrefs()
+    public function getHrefs(): array
     {
         return $this->hrefs;
     }

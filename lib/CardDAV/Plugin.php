@@ -169,7 +169,7 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This functions handles REPORT requests specific to CardDAV.
      *
-     * @psalm Xml\Request\AddressBookMultiGetReport $dom
+     * @param Xml\Request\AddressBookMultiGetReport|Xml\Request\AddressBookQueryReport $dom
      *
      * @return false|void
      */
@@ -855,10 +855,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

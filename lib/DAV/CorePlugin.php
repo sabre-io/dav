@@ -20,15 +20,13 @@ class CorePlugin extends ServerPlugin
 {
     /**
      * Reference to server object.
-     *
-     * @var Server
      */
-    protected $server;
+    protected Server $server;
 
     /**
      * Sets up the plugin.
      */
-    public function initialize(Server $server)
+    public function initialize(Server $server): void
     {
         $this->server = $server;
         $server->on('method:GET', [$this, 'httpGet']);
@@ -897,10 +895,8 @@ class CorePlugin extends ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

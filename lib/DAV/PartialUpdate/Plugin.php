@@ -30,10 +30,8 @@ class Plugin extends DAV\ServerPlugin
 
     /**
      * Reference to server.
-     *
-     * @var DAV\Server
      */
-    protected $server;
+    protected DAV\Server $server;
 
     /**
      * Initializes the plugin.
@@ -51,10 +49,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'partialupdate';
     }
@@ -69,12 +65,8 @@ class Plugin extends DAV\ServerPlugin
      * We claim to support PATCH method (partirl update) if and only if
      *     - the node exist
      *     - the node implements our partial update interface
-     *
-     * @param string $uri
-     *
-     * @return array
      */
-    public function getHTTPMethods($uri)
+    public function getHTTPMethods(string $uri): array
     {
         $tree = $this->server->tree;
 
@@ -90,10 +82,8 @@ class Plugin extends DAV\ServerPlugin
 
     /**
      * Returns a list of features for the HTTP OPTIONS Dav: header.
-     *
-     * @return array
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['sabredav-partialupdate'];
     }

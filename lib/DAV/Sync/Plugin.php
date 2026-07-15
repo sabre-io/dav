@@ -36,10 +36,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using \Sabre\DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'sync';
     }
@@ -77,10 +75,8 @@ class Plugin extends DAV\ServerPlugin
      * implement them
      *
      * @param string $uri
-     *
-     * @return array
      */
-    public function getSupportedReportSet($uri)
+    public function getSupportedReportSet($uri): array
     {
         $node = $this->server->tree->getNodeForPath($uri);
         if ($node instanceof ISyncCollection && $node->getSyncToken()) {
@@ -235,10 +231,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

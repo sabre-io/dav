@@ -65,12 +65,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
-     *
-     * @param string $uri
-     *
-     * @return array
      */
-    public function getHTTPMethods($uri)
+    public function getHTTPMethods(string $uri): array
     {
         // The MKCALENDAR is only available on unmapped uri's, whose
         // parents extend IExtendedCollection
@@ -100,11 +96,9 @@ class Plugin extends DAV\ServerPlugin
      * This function should return null in case a principal did not have
      * a calendar home.
      *
-     * @param string $principalUrl
-     *
-     * @return string
+     * @return string|void
      */
-    public function getCalendarHomeForPrincipal($principalUrl)
+    public function getCalendarHomeForPrincipal(string $principalUrl)
     {
         // The default behavior for most sabre/dav servers is that there is a
         // principals root node, which contains users directly under it.
@@ -126,10 +120,8 @@ class Plugin extends DAV\ServerPlugin
 
     /**
      * Returns a list of features for the DAV: HTTP header.
-     *
-     * @return array
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['calendar-access', 'calendar-proxy'];
     }
@@ -139,10 +131,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * Using this name other plugins will be able to access other plugins
      * using DAV\Server::getPlugin
-     *
-     * @return string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return 'caldav';
     }
@@ -154,11 +144,9 @@ class Plugin extends DAV\ServerPlugin
      * Note that you still need to subscribe to the 'report' event to actually
      * implement them
      *
-     * @param string $uri
-     *
-     * @return array
+     * @return list<non-empty-string>
      */
-    public function getSupportedReportSet($uri)
+    public function getSupportedReportSet(string $uri): array
     {
         $node = $this->server->tree->getNodeForPath($uri);
 
@@ -183,7 +171,7 @@ class Plugin extends DAV\ServerPlugin
     /**
      * Initializes the plugin.
      */
-    public function initialize(DAV\Server $server)
+    public function initialize(DAV\Server $server): void
     {
         $this->server = $server;
 
@@ -238,11 +226,11 @@ class Plugin extends DAV\ServerPlugin
     /**
      * This functions handles REPORT requests specific to CalDAV.
      *
-     * @param string $reportName
+     * @param Xml\Request\CalendarQueryReport|CalendarMultiGetReport|Xml\Request\FreeBusyQueryReport $report
      *
-     * @return bool|null
+     * @return false|null
      */
-    public function report($reportName, $report, $path)
+    public function report(string $reportName, $report, $path): ?bool
     {
         switch ($reportName) {
             case '{'.self::NS_CALDAV.'}calendar-multiget':
@@ -261,6 +249,8 @@ class Plugin extends DAV\ServerPlugin
 
                 return false;
         }
+
+        return null;
     }
 
     /**
@@ -416,10 +406,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * This report is used by the client to fetch the content of a series
      * of urls. Effectively avoiding a lot of redundant requests.
-     *
-     * @param CalendarMultiGetReport $report
      */
-    public function calendarMultiGetReport($report)
+    public function calendarMultiGetReport(CalendarMultiGetReport $report): void
     {
         $needsJson = 'application/calendar+json' === $report->contentType;
 
@@ -483,10 +471,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * This report is used by clients to request calendar objects based on
      * complex conditions.
-     *
-     * @param Xml\Request\CalendarQueryReport $report
      */
-    public function calendarQueryReport($report)
+    public function calendarQueryReport(Xml\Request\CalendarQueryReport $report): void
     {
         $path = $this->server->getRequestUri();
 
@@ -631,7 +617,7 @@ class Plugin extends DAV\ServerPlugin
      * This method is responsible for parsing the request and generating the
      * response for the CALDAV:free-busy-query REPORT.
      */
-    protected function freeBusyQueryReport(Xml\Request\FreeBusyQueryReport $report)
+    protected function freeBusyQueryReport(Xml\Request\FreeBusyQueryReport $report): void
     {
         $uri = $this->server->getRequestUri();
 
@@ -706,12 +692,11 @@ class Plugin extends DAV\ServerPlugin
      * This plugin uses this method to ensure that CalDAV objects receive
      * valid calendar data.
      *
-     * @param string   $path
      * @param resource $data
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeWriteContent($path, DAV\IFile $node, &$data, &$modified)
+    public function beforeWriteContent(string $path, DAV\IFile $node, &$data, bool &$modified): void
     {
         if (!$node instanceof ICalendarObject) {
             return;
@@ -743,12 +728,11 @@ class Plugin extends DAV\ServerPlugin
      * This plugin uses this method to ensure that newly created calendar
      * objects contain valid calendar data.
      *
-     * @param string   $path
      * @param resource $data
      * @param bool     $modified should be set to true, if this event handler
      *                           changed &$data
      */
-    public function beforeCreateFile($path, &$data, DAV\ICollection $parentNode, &$modified)
+    public function beforeCreateFile(string $path, &$data, DAV\ICollection $parentNode, bool &$modified): void
     {
         if (!$parentNode instanceof ICalendar) {
             return;
@@ -994,10 +978,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

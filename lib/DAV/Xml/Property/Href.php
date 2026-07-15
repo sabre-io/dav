@@ -30,9 +30,9 @@ class Href implements Element, HtmlOutput
     /**
      * List of uris.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $hrefs;
+    protected array $hrefs;
 
     /**
      * Automatically prefix the url with the server base directory.
@@ -42,17 +42,15 @@ class Href implements Element, HtmlOutput
      * that has this property saved.
      * See discussion in issue:
      * https://github.com/sabre-io/Baikal/issues/1154.
-     *
-     * @var bool
      */
-    protected $autoPrefix = true;
+    protected bool $autoPrefix = true;
 
     /**
      * Constructor.
      *
      * You must either pass a string for a single href, or an array of hrefs.
      *
-     * @param string|string[] $hrefs
+     * @param string|list<string> $hrefs
      */
     public function __construct($hrefs)
     {
@@ -64,10 +62,8 @@ class Href implements Element, HtmlOutput
 
     /**
      * Returns the first Href.
-     *
-     * @return string|null
      */
-    public function getHref()
+    public function getHref(): ?string
     {
         return $this->hrefs[0] ?? null;
     }
@@ -75,9 +71,9 @@ class Href implements Element, HtmlOutput
     /**
      * Returns the hrefs as an array.
      *
-     * @return array
+     * @return list<string>
      */
-    public function getHrefs()
+    public function getHrefs(): array
     {
         return $this->hrefs;
     }
@@ -147,7 +143,7 @@ class Href implements Element, HtmlOutput
      * $reader->parseInnerTree() will parse the entire sub-tree, and advance to
      * the next element.
      */
-    public static function xmlDeserialize(Reader $reader)
+    public static function xmlDeserialize(Reader $reader): ?self
     {
         $hrefs = [];
         foreach ((array) $reader->parseInnerTree() as $elem) {
@@ -160,5 +156,7 @@ class Href implements Element, HtmlOutput
         if ($hrefs) {
             return new self($hrefs);
         }
+
+        return null;
     }
 }

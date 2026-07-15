@@ -30,7 +30,7 @@ class JCalTransformTest extends \Sabre\AbstractDAVServerTestCase
         ],
     ];
 
-    public function testGet()
+    public function testGet(): void
     {
         $headers = [
             'Accept' => 'application/calendar+json',
@@ -62,7 +62,7 @@ class JCalTransformTest extends \Sabre\AbstractDAVServerTestCase
         );
     }
 
-    public function testMultiGet()
+    public function testMultiGet(): void
     {
         $xml = <<<XML
 <?xml version="1.0"?>
@@ -109,7 +109,7 @@ XML;
         );
     }
 
-    public function testCalendarQueryDepth1()
+    public function testCalendarQueryDepth1(): void
     {
         $xml = <<<XML
 <?xml version="1.0"?>
@@ -160,7 +160,7 @@ XML;
         );
     }
 
-    public function testCalendarQueryDepth0()
+    public function testCalendarQueryDepth0(): void
     {
         $xml = <<<XML
 <?xml version="1.0"?>
@@ -211,7 +211,7 @@ XML;
         );
     }
 
-    public function testValidateICalendar()
+    public function testValidateICalendar(): void
     {
         $input = [
             'vcalendar',
@@ -228,6 +228,7 @@ XML;
             ],
         ];
         $input = json_encode($input);
+        $modified = false;
         $this->caldavPlugin->beforeWriteContent(
             'calendars/user1/foo/bar.ics',
             $this->server->tree->getNodeForPath('calendars/user1/foo/bar.ics'),

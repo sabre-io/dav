@@ -116,7 +116,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return list<string>
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return ['access-control', 'calendarserver-principal-property-search'];
     }
@@ -126,7 +126,7 @@ class Plugin extends DAV\ServerPlugin
      *
      * @return list<string>
      */
-    public function getMethods(string $uri)
+    public function getMethods(string $uri): array
     {
         return ['ACL'];
     }
@@ -1513,10 +1513,8 @@ class Plugin extends DAV\ServerPlugin
      *
      * The description key in the returned array may contain html and will not
      * be sanitized.
-     *
-     * @return array
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

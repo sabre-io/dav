@@ -31,9 +31,9 @@ abstract class ServerPlugin
      * This is for example 'versioning' and is added to the DAV: header
      * in an OPTIONS response.
      *
-     * @return array
+     * @return list<non-empty-string>
      */
-    public function getFeatures()
+    public function getFeatures(): array
     {
         return [];
     }
@@ -45,11 +45,9 @@ abstract class ServerPlugin
      * This method is passed a uri. It should only return HTTP methods that are
      * available for the specified uri.
      *
-     * @param string $path
-     *
-     * @return array
+     * @return list<non-empty-string>
      */
-    public function getHTTPMethods($path)
+    public function getHTTPMethods(string $path): array
     {
         return [];
     }
@@ -60,9 +58,9 @@ abstract class ServerPlugin
      * Using this name other plugins will be able to access other plugins
      * using \Sabre\DAV\Server::getPlugin
      *
-     * @return string
+     * @return non-empty-string
      */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return get_class($this);
     }
@@ -73,12 +71,8 @@ abstract class ServerPlugin
      * This will be used in the {DAV:}supported-report-set property.
      * Note that you still need to subscribe to the 'report' event to actually
      * implement them
-     *
-     * @param string $uri
-     *
-     * @return array
      */
-    public function getSupportedReportSet($uri)
+    public function getSupportedReportSet(string $uri): array
     {
         return [];
     }
@@ -92,9 +86,9 @@ abstract class ServerPlugin
      * The description key in the returned array may contain html and will not
      * be sanitized.
      *
-     * @return array
+     * @return array{name: non-empty-string, description: ?string, link: ?string}
      */
-    public function getPluginInfo()
+    public function getPluginInfo(): array
     {
         return [
             'name' => $this->getPluginName(),

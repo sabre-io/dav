@@ -119,12 +119,12 @@ class PropPatch
         foreach ($properties as $propertyName) {
             // HTTP Accepted
             $this->result[$propertyName] = 202;
-
-            $this->propertyUpdateCallbacks[] = [
-                $properties,
-                $callback,
-            ];
         }
+
+        $this->propertyUpdateCallbacks[] = [
+            $properties,
+            $callback,
+        ];
     }
 
     /**

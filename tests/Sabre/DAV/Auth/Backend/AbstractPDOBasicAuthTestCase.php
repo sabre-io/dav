@@ -24,6 +24,9 @@ abstract class AbstractPDOBasicAuthTestCase extends TestCase
         $this->getPDO()->query(
             "INSERT INTO users (username,digesta1) VALUES ('prefix_user','bcrypt\$\$2b\$12\$IwetRH4oj6.AWFGGVy8fpet7Pgp1TafspB6iq1/fiLDxfsGZfi2jS')"
         );
+        $this->getPDO()->query(
+            "INSERT INTO users (username,digesta1) VALUES ('user@example.org','\$2b\$12\$IwetRH4oj6.AWFGGVy8fpet7Pgp1TafspB6iq1/fiLDxfsGZfi2jS')"
+        );
     }
 
     public function testConstruct()
@@ -140,6 +143,29 @@ abstract class AbstractPDOBasicAuthTestCase extends TestCase
         $backend = new PDOBasicAuth($pdo, $options);
         self::assertEquals(
             [true, 'principals/prefix_user'],
+            $backend->check($request, $response)
+        );
+    }
+
+    public function testEmailCaseInsensitiveSuccess()
+    {
+        $request = HTTP\Sapi::createFromServerArray([
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/',
+            'PHP_AUTH_USER' => 'USER@EXAMPLE.ORG',
+            'PHP_AUTH_PW' => 'password',
+        ]);
+        $response = new HTTP\Response();
+
+        $options = [
+            'tableName' => 'users',
+            'digestColumn' => 'digesta1',
+            'uuidColumn' => 'username',
+        ];
+        $pdo = $this->getPDO();
+        $backend = new PDOBasicAuth($pdo, $options);
+        self::assertEquals(
+            [true, 'principals/USER@EXAMPLE.ORG'],
             $backend->check($request, $response)
         );
     }

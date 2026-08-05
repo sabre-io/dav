@@ -153,12 +153,9 @@ abstract class AbstractBackend implements BackendInterface
      * any calendars owned by other principals that also appear in this
      * collection should be ignored.
      *
-     * @param string $principalUri
-     * @param string $uid
-     *
      * @return string|null
      */
-    public function getCalendarObjectByUID($principalUri, $uid)
+    public function getCalendarObjectByUID(string $principalUri, string $uid)
     {
         // Note: this is a super slow naive implementation of this method. You
         // are highly recommended to optimize it, if your backend allows it.

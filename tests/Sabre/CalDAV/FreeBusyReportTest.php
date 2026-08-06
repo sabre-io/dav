@@ -155,4 +155,19 @@ XML;
         $report = $this->server->xml->parse($reportXML, null, $rootElem);
         $this->plugin->report($rootElem, $report, null);
     }
+
+    public function testFreeBusyReportInvalidTimeRange()
+    {
+        $reportXML = <<<XML
+<?xml version="1.0"?>
+<c:free-busy-query xmlns:c="urn:ietf:params:xml:ns:caldav">
+    <c:time-range start="19900101" end="20400101"/>
+</c:free-busy-query>
+XML;
+        $this->expectException(\Sabre\DAV\Exception\BadRequest::class);
+        $this->expectExceptionMessage('The supplied iCalendar datetime value is incorrect: 19900101');
+
+        $report = $this->server->xml->parse($reportXML, null, $rootElem);
+        $this->plugin->report($rootElem, $report, null);
+    }
 }

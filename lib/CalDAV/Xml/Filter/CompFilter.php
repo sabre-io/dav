@@ -51,7 +51,7 @@ class CompFilter implements XmlDeserializable
             'is-not-defined' => false,
             'comp-filters' => [],
             'prop-filters' => [],
-            'time-range' => false,
+            'time-range' => [],
         ];
 
         $att = $reader->parseAttributes();

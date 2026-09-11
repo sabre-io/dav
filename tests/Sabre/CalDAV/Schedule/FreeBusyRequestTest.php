@@ -80,7 +80,29 @@ END:VCALENDAR',
         $this->server->httpRequest = $this->request;
         $this->server->httpResponse = $this->response;
 
-        $this->aclPlugin = new DAVACL\Plugin();
+        $this->aclPlugin = new class extends DAVACL\Plugin {
+            /**
+             * Restricts inboxes the way an installation would to keep
+             * free-busy private: invites and replies, but no free-busy.
+             *
+             * @var bool
+             */
+            public $privateFreeBusy = false;
+
+            public function getAcl($node)
+            {
+                $acl = parent::getAcl($node);
+                if (!$this->privateFreeBusy || !$node instanceof IInbox) {
+                    return $acl;
+                }
+                $caldavNS = '{'.CalDAV\Plugin::NS_CALDAV.'}';
+                $acl = array_filter($acl, fn ($ace) => $caldavNS.'schedule-deliver' !== $ace['privilege']);
+                $acl[] = ['principal' => '{DAV:}authenticated', 'privilege' => $caldavNS.'schedule-deliver-invite'];
+                $acl[] = ['principal' => '{DAV:}authenticated', 'privilege' => $caldavNS.'schedule-deliver-reply'];
+
+                return $acl;
+            }
+        };
         $this->aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin($this->aclPlugin);
 
@@ -315,6 +337,18 @@ ICS;
     public function testSucceedWithoutAdminWithHiddenNodes()
     {
         $this->aclPlugin->hideNodesFromListings = true;
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    /**
+     * The principal lookup ignores the ACL, but the recipient's inbox still
+     * decides whether its free-busy may be queried.
+     */
+    public function testFailWithoutFreeBusyPrivilege()
+    {
+        $this->aclPlugin->privateFreeBusy = true;
+
+        $this->expectException(DAVACL\Exception\NeedPrivileges::class);
         $this->assertFreeBusyWithoutAdmin();
     }
 

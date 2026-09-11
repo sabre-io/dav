@@ -140,4 +140,22 @@ class PluginPropertiesTest extends \Sabre\AbstractDAVServerTestCase
             $this->server->getProperties($path, [$oldProp])
         );
     }
+
+    /**
+     * macOS Calendar reads an inbox's availability with Prefer: return=minimal.
+     * With nothing saved it must come back empty rather than 404: the 404 is
+     * left out of a minimal response, and Calendar then treats availability as
+     * unreadable and offers no way to set it.
+     */
+    public function testAvailabilityEmptyWhenUnset()
+    {
+        $oldProp = '{http://calendarserver.org/ns/}calendar-availability';
+
+        $props = $this->server->getPropertiesForPath('calendars/user1/inbox', [$oldProp]);
+        self::assertSame('', $props[0][200][$oldProp] ?? null);
+
+        // Only an inbox carries availability.
+        $props = $this->server->getPropertiesForPath('calendars/user1/default', [$oldProp]);
+        self::assertArrayHasKey($oldProp, $props[0][404]);
+    }
 }

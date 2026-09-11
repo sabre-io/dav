@@ -304,6 +304,56 @@ ICS;
     }
 
     /**
+     * A user that is not an admin can't read another user's principal, but
+     * may still ask for its free-busy (issue #1185).
+     */
+    public function testSucceedWithoutAdmin()
+    {
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    public function testSucceedWithoutAdminWithHiddenNodes()
+    {
+        $this->aclPlugin->hideNodesFromListings = true;
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    private function assertFreeBusyWithoutAdmin()
+    {
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
+        $this->server->httpRequest->setBody(<<<ICS
+BEGIN:VCALENDAR
+METHOD:REQUEST
+BEGIN:VFREEBUSY
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+DTSTART:20110101T080000Z
+DTEND:20110101T180000Z
+END:VFREEBUSY
+END:VCALENDAR
+ICS
+        );
+
+        self::assertFalse(
+            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+        );
+
+        $body = $this->response->getBodyAsString();
+        self::assertStringContainsString('<cal:request-status>2.0;Success</cal:request-status>', $body);
+        self::assertStringContainsString('FREEBUSY:20110101T120000Z/20110101T130000Z', $body);
+
+        // The lookup must not leave the ACL switched off.
+        self::assertSame(
+            [],
+            $this->server->getProperties('principals/user2', ['{'.CalDAV\Plugin::NS_CALDAV.'}calendar-home-set'])
+        );
+    }
+
+    /**
      * Testing if the freebusy request still works, even if there are no
      * calendars in the target users' account.
      */

@@ -582,6 +582,51 @@ XML;
     }
 
     /**
+     * @dataProvider missingCalendarObjectsProvider
+     */
+    public function testCalendarMultiGetReportWithMissingObjects(bool $includeExisting)
+    {
+        $path = '/calendars/user1/UUID-123467/';
+        $body =
+            '<?xml version="1.0"?>'.
+            '<c:calendar-multiget xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:d="DAV:">'.
+            '<d:prop><c:calendar-data /><d:getetag /></d:prop>'.
+            '<d:href>'.$path.'missing-first.ics</d:href>'.
+            ($includeExisting ? '<d:href>'.$path.'UUID-2345</d:href>' : '').
+            '<d:href>'.$path.'missing-last.ics</d:href>'.
+            '</c:calendar-multiget>';
+
+        $request = new HTTP\Request('REPORT', '/calendars/user1', ['Depth' => '1']);
+        $request->setBody($body);
+        $this->server->httpRequest = $request;
+        $this->server->exec();
+
+        self::assertSame(207, $this->response->getStatus(), $this->response->getBodyAsString());
+
+        $document = new \DOMDocument();
+        $document->loadXML($this->response->getBodyAsString());
+        $xpath = new \DOMXPath($document);
+        $xpath->registerNamespace('d', 'DAV:');
+        $xpath->registerNamespace('c', 'urn:ietf:params:xml:ns:caldav');
+
+        self::assertSame($includeExisting ? 1 : 0, $xpath->query('/d:multistatus/d:response')->length);
+        if ($includeExisting) {
+            $responsePath = '/d:multistatus/d:response[d:href="'.$path.'UUID-2345"]/d:propstat';
+            self::assertSame('HTTP/1.1 200 OK', $xpath->evaluate('string('.$responsePath.'/d:status)'));
+            self::assertSame(TestUtil::getTestCalendarData(), $xpath->evaluate('string('.$responsePath.'/d:prop/c:calendar-data)'));
+            self::assertSame('"e207e33c10e5fb9c12cfb35b5d9116e1"', $xpath->evaluate('string('.$responsePath.'/d:prop/d:getetag)'));
+        }
+    }
+
+    public static function missingCalendarObjectsProvider(): array
+    {
+        return [
+            'mixed objects' => [true],
+            'all objects missing' => [false],
+        ];
+    }
+
+    /**
      * @depends testCalendarMultiGetReport
      */
     public function testCalendarMultiGetReportExpand()

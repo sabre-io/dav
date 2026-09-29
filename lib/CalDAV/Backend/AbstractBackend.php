@@ -46,9 +46,15 @@ abstract class AbstractBackend implements BackendInterface
      */
     public function getMultipleCalendarObjects($calendarId, array $uris)
     {
-        return array_map(function ($uri) use ($calendarId) {
-            return $this->getCalendarObject($calendarId, $uri);
-        }, $uris);
+        $objects = [];
+        foreach ($uris as $uri) {
+            $object = $this->getCalendarObject($calendarId, $uri);
+            if (null !== $object) {
+                $objects[] = $object;
+            }
+        }
+
+        return $objects;
     }
 
     /**

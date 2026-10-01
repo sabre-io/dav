@@ -86,6 +86,39 @@ class AbstractTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals($expected, $result);
     }
+
+    public function testGetMultipleCalendarObjectsWithMissingObjects()
+    {
+        $abstract = new AbstractMock();
+
+        self::assertSame([
+            $abstract->getCalendarObject(1, 'task1.ics'),
+            $abstract->getCalendarObject(1, 'event1.ics'),
+        ], $abstract->getMultipleCalendarObjects(1, [
+            'missing-first.ics',
+            'task1.ics',
+            'missing-middle.ics',
+            'event1.ics',
+            'missing-last.ics',
+        ]));
+    }
+
+    public function testGetMultipleCalendarObjectsAllMissing()
+    {
+        $abstract = new AbstractMock();
+
+        self::assertSame([], $abstract->getMultipleCalendarObjects(1, [
+            'missing-first.ics',
+            'missing-last.ics',
+        ]));
+    }
+
+    public function testGetMultipleCalendarObjectsEmpty()
+    {
+        $abstract = new AbstractMock();
+
+        self::assertSame([], $abstract->getMultipleCalendarObjects(1, []));
+    }
 }
 
 class AbstractMock extends AbstractBackend

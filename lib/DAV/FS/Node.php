@@ -21,28 +21,21 @@ abstract class Node implements INode
 {
     /**
      * The path to the current node.
-     *
-     * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * The overridden name of the node.
-     *
-     * @var string
      */
-    protected $overrideName;
+    protected ?string $overrideName;
 
     /**
      * Sets up the node, expects a full path name.
      *
      * If $overrideName is set, this node shows up in the tree under a
      * different name. In this case setName() will be disabled.
-     *
-     * @param string $path
-     * @param string $overrideName
      */
-    public function __construct($path, $overrideName = null)
+    public function __construct(string $path, ?string $overrideName = null)
     {
         $this->path = $path;
         $this->overrideName = $overrideName;
@@ -50,10 +43,8 @@ abstract class Node implements INode
 
     /**
      * Returns the name of the node.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         if ($this->overrideName) {
             return $this->overrideName;
@@ -69,7 +60,7 @@ abstract class Node implements INode
      *
      * @param string $name The new name
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         if ($this->overrideName) {
             throw new Forbidden('This node cannot be renamed');
@@ -86,10 +77,8 @@ abstract class Node implements INode
 
     /**
      * Returns the last modification time, as a unix timestamp.
-     *
-     * @return int
      */
-    public function getLastModified()
+    public function getLastModified(): int
     {
         return filemtime($this->path);
     }

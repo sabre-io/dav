@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sabre\DAVACL;
 
 use Sabre\DAV;
-use Sabre\DAV\INode;
+use Sabre\DAV\ICollection;
 use Sabre\Uri;
 
 /**
@@ -35,10 +35,8 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * If this value is set to true, it effectively disables listing of users
      * it still allows user to find other users if they have an exact url.
-     *
-     * @var bool
      */
-    public $disableListing = false;
+    public bool $disableListing = false;
 
     /**
      * Creates the object.
@@ -61,7 +59,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * at least contain a uri item. Other properties may or may not be
      * supplied by the authentication backend.
      *
-     * @return INode
+     * @return IPrincipal|ICollection
      */
     abstract public function getChildForPrincipal(array $principalInfo);
 
@@ -80,7 +78,7 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * Return the list of users.
      *
-     * @return list<INode>
+     * @return list<IPrincipal|ICollection>
      */
     public function getChildren()
     {
@@ -98,14 +96,14 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
     /**
      * Returns a child object, by its name.
      *
-     * @return INode
+     * @return IPrincipal
      *
      * @throws DAV\Exception\NotFound
      */
     public function getChild(string $name)
     {
         $principalInfo = $this->principalBackend->getPrincipalByPath($this->principalPrefix.'/'.$name);
-        if (!$principalInfo) {
+        if ([] === $principalInfo) {
             throw new DAV\Exception\NotFound('Principal with name '.$name.' not found');
         }
 
@@ -131,11 +129,9 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * This method should simply return a list of 'child names', which may be
      * used to call $this->getChild in the future.
      *
-     * @param string $test
-     *
-     * @return array
+     * @return list<string>
      */
-    public function searchPrincipals(array $searchProperties, $test = 'allof')
+    public function searchPrincipals(array $searchProperties, string $test = 'allof')
     {
         $result = $this->principalBackend->searchPrincipals($this->principalPrefix, $searchProperties, $test);
         $r = [];
@@ -160,11 +156,9 @@ abstract class AbstractPrincipalCollection extends DAV\Collection implements IPr
      * This method must return a relative principal path, or null, if the
      * principal was not found or you refuse to find it.
      *
-     * @param string $uri
-     *
      * @return string
      */
-    public function findByUri($uri)
+    public function findByUri(string $uri)
     {
         return $this->principalBackend->findByUri($uri, $this->principalPrefix);
     }

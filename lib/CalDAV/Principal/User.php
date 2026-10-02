@@ -55,7 +55,7 @@ class User extends DAVACL\Principal implements DAV\ICollection
     public function getChild($name)
     {
         $principal = $this->principalBackend->getPrincipalByPath($this->getPrincipalURL().'/'.$name);
-        if (!$principal) {
+        if ([] === $principal) {
             throw new DAV\Exception\NotFound('Node with name '.$name.' was not found');
         }
         if ('calendar-proxy-read' === $name) {
@@ -77,10 +77,10 @@ class User extends DAVACL\Principal implements DAV\ICollection
     public function getChildren()
     {
         $r = [];
-        if ($this->principalBackend->getPrincipalByPath($this->getPrincipalURL().'/calendar-proxy-read')) {
+        if ([] !== $this->principalBackend->getPrincipalByPath($this->getPrincipalURL().'/calendar-proxy-read')) {
             $r[] = new ProxyRead($this->principalBackend, $this->principalProperties);
         }
-        if ($this->principalBackend->getPrincipalByPath($this->getPrincipalURL().'/calendar-proxy-write')) {
+        if ([] !== $this->principalBackend->getPrincipalByPath($this->getPrincipalURL().'/calendar-proxy-write')) {
             $r[] = new ProxyWrite($this->principalBackend, $this->principalProperties);
         }
 

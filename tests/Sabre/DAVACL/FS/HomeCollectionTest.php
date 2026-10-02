@@ -10,13 +10,11 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * System under test.
-     *
-     * @var HomeCollection
      */
-    protected $sut;
+    protected HomeCollection $sut;
 
-    protected $path;
-    protected $name = 'thuis';
+    protected string $path;
+    protected string $name = 'thuis';
 
     public function setup(): void
     {
@@ -33,7 +31,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         \Sabre\TestUtil::clearTempDir();
     }
 
-    public function testGetName()
+    public function testGetName(): void
     {
         self::assertEquals(
             $this->name,
@@ -41,7 +39,7 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGetChild()
+    public function testGetChild(): void
     {
         $child = $this->sut->getChild('user1');
         self::assertInstanceOf(Collection::class, $child);
@@ -60,21 +58,21 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         self::assertEquals($owner, $child->getOwner());
     }
 
-    public function testGetOwner()
+    public function testGetOwner(): void
     {
         self::assertNull(
             $this->sut->getOwner()
         );
     }
 
-    public function testGetGroup()
+    public function testGetGroup(): void
     {
         self::assertNull(
             $this->sut->getGroup()
         );
     }
 
-    public function testGetACL()
+    public function testGetACL(): void
     {
         $acl = [
             [
@@ -90,13 +88,13 @@ class HomeCollectionTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testSetAcl()
+    public function testSetAcl(): void
     {
         $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $this->sut->setACL([]);
     }
 
-    public function testGetSupportedPrivilegeSet()
+    public function testGetSupportedPrivilegeSet(): void
     {
         self::assertNull(
             $this->sut->getSupportedPrivilegeSet()

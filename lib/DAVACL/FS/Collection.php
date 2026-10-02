@@ -23,17 +23,13 @@ class Collection extends BaseCollection implements IACL
 
     /**
      * A list of ACL rules.
-     *
-     * @var array
      */
-    protected $acl;
+    protected array $acl;
 
     /**
      * Owner uri, or null for no owner.
-     *
-     * @var string|null
      */
-    protected $owner;
+    protected ?string $owner;
 
     /**
      * Constructor.
@@ -42,7 +38,7 @@ class Collection extends BaseCollection implements IACL
      * @param array       $acl   ACL rules
      * @param string|null $owner principal owner string
      */
-    public function __construct($path, array $acl, $owner = null)
+    public function __construct(string $path, array $acl, ?string $owner = null)
     {
         parent::__construct($path);
         $this->acl = $acl;
@@ -55,13 +51,9 @@ class Collection extends BaseCollection implements IACL
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @param string $name
-     *
-     * @return \Sabre\DAV\INode
-     *
      * @throws NotFound
      */
-    public function getChild($name)
+    public function getChild(string $name): \Sabre\DAV\INode
     {
         $path = $this->path.'/'.$name;
 
@@ -82,10 +74,8 @@ class Collection extends BaseCollection implements IACL
      * Returns the owner principal.
      *
      * This must be a url to a principal, or null if there's no owner
-     *
-     * @return string|null
      */
-    public function getOwner()
+    public function getOwner(): ?string
     {
         return $this->owner;
     }
@@ -102,7 +92,7 @@ class Collection extends BaseCollection implements IACL
      *
      * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
-    public function getACL()
+    public function getACL(): array
     {
         return $this->acl;
     }

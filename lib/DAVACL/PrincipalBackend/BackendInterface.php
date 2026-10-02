@@ -54,6 +54,8 @@ interface BackendInterface
      * promise I can handle updating this property".
      *
      * Read the PropPatch documentation for more info and examples.
+     *
+     * @return void
      */
     public function updatePrincipal(string $path, \Sabre\DAV\PropPatch $propPatch);
 
@@ -122,6 +124,10 @@ interface BackendInterface
      * Updates the list of group members for a group principal.
      *
      * The principals should be passed as a list of uri's.
+     *
+     * @param list<string> $members
+     *
+     * @return void
      */
     public function setGroupMemberSet(string $principal, array $members);
 }

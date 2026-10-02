@@ -13,17 +13,21 @@ use Sabre\DAV;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends Node implements DAV\IFile
+class File extends Node implements DAV\IFile, DAV\PartialUpdate\IPatchSupport
 {
     /**
      * Updates the data.
      *
+     * Data is a readable stream resource.
+     *
      * @param resource $data
      */
-    public function put($data)
+    public function put($data): string
     {
         file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);
+
+        return $this->getETag();
     }
 
     /**
@@ -39,17 +43,15 @@ class File extends Node implements DAV\IFile
     /**
      * Delete the current file.
      */
-    public function delete()
+    public function delete(): void
     {
         unlink($this->path);
     }
 
     /**
      * Returns the size of the node, in bytes.
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         return filesize($this->path);
     }
@@ -62,7 +64,7 @@ class File extends Node implements DAV\IFile
      *
      * Return null if the ETag can not effectively be determined
      */
-    public function getETag()
+    public function getETag(): string
     {
         return '"'.sha1(
             fileinode($this->path).
@@ -76,8 +78,61 @@ class File extends Node implements DAV\IFile
      *
      * If null is returned, we'll assume application/octet-stream
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return null;
+    }
+
+    /**
+     * Updates the file based on a range specification.
+     *
+     * The first argument is the data, which is either a readable stream
+     * resource or a string.
+     *
+     * The second argument is the type of update we're doing.
+     * This is either:
+     * * 1. append (default)
+     * * 2. update based on a start byte
+     * * 3. update based on an end byte
+     *;
+     * The third argument is the start or end byte.
+     *
+     * After a successful put operation, you may choose to return an ETag. The
+     * ETAG must always be surrounded by double-quotes. These quotes must
+     * appear in the actual string you're returning.
+     *
+     * Clients may use the ETag from a PUT request to later on make sure that
+     * when they update the file, the contents haven't changed in the mean
+     * time.
+     *
+     * @param resource|string $data
+     */
+    public function patch($data, int $rangeType, ?int $offset = null): ?string
+    {
+        switch ($rangeType) {
+            case 1:
+                $f = fopen($this->path, 'a');
+                break;
+            case 2:
+                $f = fopen($this->path, 'c');
+                fseek($f, $offset);
+                break;
+            case 3:
+                $f = fopen($this->path, 'c');
+                fseek($f, $offset, SEEK_END);
+                break;
+            default:
+                $f = fopen($this->path, 'a');
+                break;
+        }
+        if (is_string($data)) {
+            fwrite($f, $data);
+        } else {
+            stream_copy_to_stream($data, $f);
+        }
+        fclose($f);
+        clearstatcache(true, $this->path);
+
+        return $this->getETag();
     }
 }

@@ -40,10 +40,8 @@ interface IPatchSupport extends DAV\IFile
      * time.
      *
      * @param resource|string $data
-     * @param int             $rangeType
-     * @param int             $offset
      *
      * @return string|null
      */
-    public function patch($data, $rangeType, $offset = null);
+    public function patch($data, int $rangeType, ?int $offset = null);
 }

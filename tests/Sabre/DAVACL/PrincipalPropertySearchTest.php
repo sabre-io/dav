@@ -374,6 +374,36 @@ class PrincipalPropertySearchTest extends \PHPUnit\Framework\TestCase
             self::assertEquals($count, count($result), 'we expected '.$count.' appearances of '.$xpath.' . We found '.count($result).'. Full response body: '.$server->httpResponse->getBodyAsString());
         }
     }
+
+    public function testSearchSkipsHiddenPrincipals()
+    {
+        $dir = new DAV\SimpleCollection('root');
+        $dir->addChild(new PrincipalCollection(new PrincipalBackend\Mock()));
+
+        $server = new DAV\Server($dir);
+        $server->sapi = new HTTP\SapiMock();
+        $server->httpResponse = new HTTP\Response();
+        $server->debugExceptions = true;
+
+        $plugin = new class extends Plugin {
+            public function getCurrentUserPrivilegeSet($node)
+            {
+                return 'principals/user2' === $node ? [] : ['{DAV:}read'];
+            }
+        };
+        $plugin->allowUnauthenticatedAccess = false;
+        $plugin->hideNodesFromListings = true;
+        $server->addPlugin($plugin);
+
+        $matches = $plugin->principalSearch(
+            ['{DAV:}displayname' => 'user'],
+            ['{DAV:}displayname'],
+            'principals'
+        );
+
+        self::assertCount(1, $matches);
+        self::assertEquals('principals/user1/', $matches[0]['href']);
+    }
 }
 
 class MockPlugin extends Plugin

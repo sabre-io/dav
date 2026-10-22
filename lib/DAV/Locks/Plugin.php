@@ -235,6 +235,13 @@ class Plugin extends DAV\ServerPlugin
         $path = $request->getPath();
         $locks = $this->getLocks($path);
 
+        // No locks at all. Treat as OK
+        if(!count($locks)) {
+            $response->setHeader('Content-Length', '0');
+            $response->setStatus(204);
+            return false;
+        }
+
         // Windows sometimes forgets to include < and > in the Lock-Token
         // header
         if ('<' !== $lockToken[0]) {

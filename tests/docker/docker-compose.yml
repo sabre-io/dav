@@ -1,0 +1,8 @@
+services:
+  sabre-dav-unit-tests:
+    entrypoint: bash -c "echo Execute docker run -ti sabre-dav-unit-tests to start"
+    container_name: sabre-dav-unit-tests
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: sabre-dav-unit-tests:latest

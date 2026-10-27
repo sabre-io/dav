@@ -45,6 +45,31 @@ class Response implements Element
     protected $httpStatus;
 
     /**
+     * The optional error element contains child elements that explains what
+     * went wrong, represented by a number of pre- or postcondition codes.
+     *
+     * @var array|null
+     */
+    protected $error;
+
+    /**
+     * The optional responsedescription element for a response. It
+     * provides additional information about the resource suitable
+     * to be presented to a user.
+     *
+     * @var string|null
+     */
+    protected $responseDescription;
+
+    /**
+     * The optional location element for a response. It is typically a
+     * new/alternative placement for the resource pointed to by the href Url.
+     *
+     * @var string|null
+     */
+    protected $location;
+
+    /**
      * The href argument is a url relative to the root of the server. This
      * class will calculate the full path.
      *
@@ -66,6 +91,30 @@ class Response implements Element
         $this->href = $href;
         $this->responseProperties = $responseProperties;
         $this->httpStatus = $httpStatus;
+    }
+
+    /**
+     * Set the error.
+     */
+    public function setError(array $error)
+    {
+        $this->error = $error;
+    }
+
+    /**
+     * Set the responseDescription.
+     */
+    public function setResponseDescription(string $responseDescription)
+    {
+        $this->responseDescription = $responseDescription;
+    }
+
+    /**
+     * Set the location.
+     */
+    public function setLocation(string $location)
+    {
+        $this->location = $location;
     }
 
     /**
@@ -149,14 +198,27 @@ class Response implements Element
                 * every DAV:response if there is no status.
                 * In some circumstances however, there are no properties to encode.
                 *
-                * In those cases we MUST specify at least one DAV:propstat anyway, with
-                * no properties.
+                * In those cases we can specify DAV:propstat anyway, with no properties
+        * and 200 OK as status
                 */
                 $writer->writeElement('{DAV:}propstat', [
                     '{DAV:}prop' => [],
-                    '{DAV:}status' => 'HTTP/1.1 418 '.\Sabre\HTTP\Response::$statusCodes[418],
+                    '{DAV:}status' => 'HTTP/1.1 200 '.\Sabre\HTTP\Response::$statusCodes[200],
                 ]);
             }
+        }
+
+        // Add error, responsedescription and location if specified
+        if ($this->error) {
+            $writer->writeELement('{DAV:}error', $this->error);
+        }
+
+        if ($this->responseDescription) {
+            $writer->writeELement('{DAV:}responsedescription', $this->responseDescription);
+        }
+
+        if ($this->location) {
+            $writer->writeELement('{DAV:}location', ['{DAV:}href' => $this->location]);
         }
     }
 

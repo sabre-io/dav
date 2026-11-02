@@ -399,7 +399,7 @@ class Plugin extends ServerPlugin
 
         $caldavNS = '{'.self::NS_CALDAV.'}';
 
-        $principalUri = $aclPlugin->getPrincipalByUri($iTipMessage->recipient);
+        $principalUri = $iTipMessage->recipient ? $aclPlugin->getPrincipalByUri($iTipMessage->recipient) : null;
         if (!$principalUri) {
             $iTipMessage->scheduleStatus = '3.7;Could not find principal.';
 

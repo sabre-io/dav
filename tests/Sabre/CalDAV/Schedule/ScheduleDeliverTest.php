@@ -222,6 +222,29 @@ ICS;
         self::assertItemsInInbox('user2', 1);
     }
 
+    /**
+     * An attendee deleting an event without an ORGANIZER results in a REPLY
+     * without a recipient. That must not fail the delete.
+     */
+    public function testDeletedInviteNoOrganizer()
+    {
+        $newObject = null;
+
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:foo
+DTSTART:20140811T230000Z
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->deliver($oldObject, $newObject);
+        self::assertItemsInInbox('user2', 0);
+    }
+
     public function testDeletedInviteSchedulingDisabled()
     {
         $newObject = null;

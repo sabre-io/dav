@@ -238,6 +238,35 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
     }
 
     /**
+     * Example where the error, responsedescription and location elements are
+     * in use.
+     */
+    public function testSerializeWithError()
+    {
+        $innerProps = [];
+
+        $property = new Response('container/resource3', $innerProps, 423);
+        $property->setError(['d:lock-token-submitted' => '']);
+        $property->setResponseDescription('There has been an access violation error.');
+        $property->setLocation('container/resource3-new-location');
+        $xml = $this->write(['{DAV:}multistatus' => ['{DAV:}response' => $property]]);
+        self::assertXmlStringEqualsXmlString(
+            '<?xml version="1.0" encoding="utf-8" ?>
+<d:multistatus xmlns:d="DAV:">
+  <d:response>
+    <d:href>/container/resource3</d:href>
+    <d:status>HTTP/1.1 423 Locked</d:status>
+    <d:error><d:lock-token-submitted/></d:error>
+    <d:responsedescription>There has been an access violation error.</d:responsedescription>
+    <d:location>
+      <d:href>container/resource3-new-location</d:href>
+    </d:location>
+  </d:response>
+</d:multistatus>
+', $xml);
+    }
+
+    /**
      * @depends testSerialize
      *
      * The WebDAV spec _requires_ at least one DAV:propstat to appear for
@@ -245,7 +274,10 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
      * In some circumstances however, there are no properties to encode.
      *
      * In those cases we MUST specify at least one DAV:propstat anyway, with
-     * no properties.
+     * no properties. And if there is no status element indicating an error,
+     * there should be property status 200 OK. Because, in situations where
+     * no properties were asked for, we should signal that the operation
+     * went well.
      */
     public function testSerializeNoProperties()
     {
@@ -261,7 +293,7 @@ class ResponseTest extends DAV\Xml\AbstractXmlTestCase
       <d:href>/uri</d:href>
       <d:propstat>
         <d:prop />
-        <d:status>HTTP/1.1 418 I\'m a teapot</d:status>
+        <d:status>HTTP/1.1 200 OK</d:status>
       </d:propstat>
   </d:response>
 </d:root>

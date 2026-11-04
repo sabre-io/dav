@@ -350,4 +350,86 @@ abstract class AbstractPDOTestCase extends TestCase
             'added' => ['card3.ics'],
         ], $result);
     }
+
+    public function testGetChangesWithLimit()
+    {
+        $backend = $this->backend;
+        $id = $backend->createAddressBook(
+            'principals/user1',
+            'bla',
+            []
+        );
+
+        $dummyCard = "BEGIN:VCARD\r\nEND:VCARD\r\n";
+
+        $backend->createCard($id, 'card1.ics', $dummyCard);
+        $backend->createCard($id, 'card2.ics', $dummyCard);
+        $backend->createCard($id, 'card3.ics', $dummyCard);
+
+        $currentToken = $backend->getChangesForAddressBook($id, null, 1)['syncToken'];
+        self::assertEquals(4, $currentToken);
+
+        $backend->deleteCard($id, 'card1.ics');
+        $backend->deleteCard($id, 'card2.ics');
+        $backend->deleteCard($id, 'card3.ics');
+
+        $deleted = [];
+        $iterations = 0;
+        do {
+            $result = $backend->getChangesForAddressBook($id, $currentToken, 1, 1);
+            self::assertEquals([], $result['added']);
+            self::assertEquals([], $result['modified']);
+            self::assertLessThanOrEqual(1, count($result['deleted']));
+            $deleted = array_merge($deleted, $result['deleted']);
+            $currentToken = $result['syncToken'];
+            ++$iterations;
+        } while (!empty($result['result_truncated']) && $iterations < 10);
+
+        self::assertEquals(['card1.ics', 'card2.ics', 'card3.ics'], $deleted);
+        self::assertEquals(7, $currentToken);
+
+        // Final request is up to date and not truncated.
+        self::assertEquals([
+            'syncToken' => 7,
+            'added' => [],
+            'modified' => [],
+            'deleted' => [],
+        ], $backend->getChangesForAddressBook($id, $currentToken, 1, 1));
+    }
+
+    public function testGetChangesWithLimitAndDuplicates()
+    {
+        $backend = $this->backend;
+        $id = $backend->createAddressBook(
+            'principals/user1',
+            'bla',
+            []
+        );
+
+        $dummyCard = "BEGIN:VCARD\r\nEND:VCARD\r\n";
+
+        // Changes: card1@1, card1@2, card2@3
+        $backend->createCard($id, 'card1.ics', $dummyCard);
+        $backend->updateCard($id, 'card1.ics', $dummyCard);
+        $backend->createCard($id, 'card2.ics', $dummyCard);
+
+        // The first two changes are merged, so fewer results than the limit
+        // are returned, but the result is still truncated.
+        $result = $backend->getChangesForAddressBook($id, 1, 1, 2);
+        self::assertEquals([
+            'syncToken' => 3,
+            'added' => [],
+            'modified' => ['card1.ics'],
+            'deleted' => [],
+            'result_truncated' => true,
+        ], $result);
+
+        $result = $backend->getChangesForAddressBook($id, $result['syncToken'], 1, 2);
+        self::assertEquals([
+            'syncToken' => 4,
+            'added' => ['card2.ics'],
+            'modified' => [],
+            'deleted' => [],
+        ], $result);
+    }
 }

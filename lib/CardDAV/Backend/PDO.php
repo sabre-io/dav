@@ -466,9 +466,10 @@ class PDO extends AbstractBackend implements SyncSupport
         ];
 
         if ($syncToken) {
-            $query = 'SELECT uri, operation FROM '.$this->addressBookChangesTableName.' WHERE synctoken >= ? AND synctoken < ? AND addressbookid = ? ORDER BY synctoken';
+            $query = 'SELECT uri, operation, synctoken FROM '.$this->addressBookChangesTableName.' WHERE synctoken >= ? AND synctoken < ? AND addressbookid = ? ORDER BY synctoken';
             if ($limit > 0) {
-                $query .= ' LIMIT '.(int) $limit;
+                // Fetch one more row to detect result truncation
+                $query .= ' LIMIT '.((int) $limit + 1);
             }
 
             // Fetching all changes
@@ -476,10 +477,20 @@ class PDO extends AbstractBackend implements SyncSupport
             $stmt->execute([$syncToken, $currentToken, $addressBookId]);
 
             $changes = [];
+            $result_count = 0;
 
             // This loop ensures that any duplicates are overwritten, only the
             // last change on a node is relevant.
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                if ($limit > 0 && $result_count >= $limit) {
+                    $result['result_truncated'] = true;
+                    // The first change we do not report determines the
+                    // syncToken, so the client can continue from there.
+                    $result['syncToken'] = $row['synctoken'];
+                    break;
+                }
+
+                ++$result_count;
                 $changes[$row['uri']] = $row['operation'];
             }
 

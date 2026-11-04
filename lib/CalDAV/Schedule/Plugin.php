@@ -267,10 +267,19 @@ class Plugin extends ServerPlugin
                 $node
             );
 
+            $value = $subPropFind->get($availProp);
+            $status = $subPropFind->getStatus($availProp);
+            // Nothing saved yet: answer empty rather than 404. Under
+            // Prefer: return=minimal the 404 is left out, and macOS Calendar
+            // reads what remains as an error and offers no way to set it.
+            if (404 === $status && $node instanceof IInbox) {
+                $value = '';
+                $status = 200;
+            }
             $propFind->set(
                 '{http://calendarserver.org/ns/}calendar-availability',
-                $subPropFind->get($availProp),
-                $subPropFind->getStatus($availProp)
+                $value,
+                $status
             );
         });
     }

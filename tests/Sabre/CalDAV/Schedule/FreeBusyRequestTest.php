@@ -80,7 +80,29 @@ END:VCALENDAR',
         $this->server->httpRequest = $this->request;
         $this->server->httpResponse = $this->response;
 
-        $this->aclPlugin = new DAVACL\Plugin();
+        $this->aclPlugin = new class extends DAVACL\Plugin {
+            /**
+             * Restricts inboxes the way an installation would to keep
+             * free-busy private: invites and replies, but no free-busy.
+             *
+             * @var bool
+             */
+            public $privateFreeBusy = false;
+
+            public function getAcl($node)
+            {
+                $acl = parent::getAcl($node);
+                if (!$this->privateFreeBusy || !$node instanceof IInbox) {
+                    return $acl;
+                }
+                $caldavNS = '{'.CalDAV\Plugin::NS_CALDAV.'}';
+                $acl = array_filter($acl, fn ($ace) => $caldavNS.'schedule-deliver' !== $ace['privilege']);
+                $acl[] = ['principal' => '{DAV:}authenticated', 'privilege' => $caldavNS.'schedule-deliver-invite'];
+                $acl[] = ['principal' => '{DAV:}authenticated', 'privilege' => $caldavNS.'schedule-deliver-reply'];
+
+                return $acl;
+            }
+        };
         $this->aclPlugin->allowUnauthenticatedAccess = false;
         $this->server->addPlugin($this->aclPlugin);
 
@@ -300,6 +322,68 @@ ICS;
         self::assertTrue(
             false == strpos($this->response->getBodyAsString(), 'FREEBUSY;FBTYPE=BUSY:20110101T080000Z/20110101T090000Z'),
             'The response body did contain free busy info from a transparent calendar.'
+        );
+    }
+
+    /**
+     * A user that is not an admin can't read another user's principal, but
+     * may still ask for its free-busy (issue #1185).
+     */
+    public function testSucceedWithoutAdmin()
+    {
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    public function testSucceedWithoutAdminWithHiddenNodes()
+    {
+        $this->aclPlugin->hideNodesFromListings = true;
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    /**
+     * The principal lookup ignores the ACL, but the recipient's inbox still
+     * decides whether its free-busy may be queried.
+     */
+    public function testFailWithoutFreeBusyPrivilege()
+    {
+        $this->aclPlugin->privateFreeBusy = true;
+
+        $this->expectException(DAVACL\Exception\NeedPrivileges::class);
+        $this->assertFreeBusyWithoutAdmin();
+    }
+
+    private function assertFreeBusyWithoutAdmin()
+    {
+        $this->server->httpRequest = new HTTP\Request(
+            'POST',
+            '/calendars/user1/outbox',
+            ['Content-Type' => 'text/calendar']
+        );
+        $this->server->httpRequest->setBody(<<<ICS
+BEGIN:VCALENDAR
+METHOD:REQUEST
+BEGIN:VFREEBUSY
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE:mailto:user2.sabredav@sabredav.org
+DTSTART:20110101T080000Z
+DTEND:20110101T180000Z
+END:VFREEBUSY
+END:VCALENDAR
+ICS
+        );
+
+        self::assertFalse(
+            $this->plugin->httpPost($this->server->httpRequest, $this->response)
+        );
+
+        $body = $this->response->getBodyAsString();
+        self::assertStringContainsString('<cal:request-status>2.0;Success</cal:request-status>', $body);
+        self::assertStringContainsString('FREEBUSY:20110101T120000Z/20110101T130000Z', $body);
+
+        // The lookup must not leave the ACL switched off.
+        self::assertSame(
+            [],
+            $this->server->getProperties('principals/user2', ['{'.CalDAV\Plugin::NS_CALDAV.'}calendar-home-set'])
         );
     }
 

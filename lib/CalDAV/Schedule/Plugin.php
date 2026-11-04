@@ -819,15 +819,25 @@ class Plugin extends ServerPlugin
             $email = substr($email, 7);
         }
 
-        $result = $aclPlugin->principalSearch(
-            ['{http://sabredav.org/ns}email-address' => $email],
-            [
-                '{DAV:}principal-URL',
-                $caldavNS.'calendar-home-set',
-                $caldavNS.'schedule-inbox-URL',
-                '{http://sabredav.org/ns}email-address',
-            ]
-        );
+        // Only the principal itself (or an admin) may read its properties, so
+        // for anyone else the ACL hid the recipient's home and inbox and the
+        // lookup failed (#1185). Look them up without the ACL, as local
+        // delivery does; the schedule-query-freebusy check below still decides
+        // access.
+        $this->server->removeListener('propFind', [$aclPlugin, 'propFind']);
+        try {
+            $result = $aclPlugin->principalSearch(
+                ['{http://sabredav.org/ns}email-address' => $email],
+                [
+                    '{DAV:}principal-URL',
+                    $caldavNS.'calendar-home-set',
+                    $caldavNS.'schedule-inbox-URL',
+                    '{http://sabredav.org/ns}email-address',
+                ]
+            );
+        } finally {
+            $this->server->on('propFind', [$aclPlugin, 'propFind'], 20);
+        }
 
         if (!count($result)) {
             return [

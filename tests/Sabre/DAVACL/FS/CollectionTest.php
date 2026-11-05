@@ -20,7 +20,7 @@ class CollectionTest extends FileTest
         TestUtil::clearTempDir();
     }
 
-    public function testGetChildFile()
+    public function testGetChildFile(): void
     {
         file_put_contents(TestUtil::SABRE_TEMPDIR.'/file.txt', 'hello');
         $child = $this->sut->getChild('file.txt');
@@ -31,7 +31,7 @@ class CollectionTest extends FileTest
         self::assertEquals($this->owner, $child->getOwner());
     }
 
-    public function testGetChildDirectory()
+    public function testGetChildDirectory(): void
     {
         mkdir(TestUtil::SABRE_TEMPDIR.'/dir');
         $child = $this->sut->getChild('dir');

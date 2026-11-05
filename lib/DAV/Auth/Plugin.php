@@ -35,23 +35,21 @@ class Plugin extends ServerPlugin
      *
      * This is useful if you want to allow both authenticated and
      * unauthenticated access to your server.
-     *
-     * @var bool
      */
-    public $autoRequireLogin = true;
+    public bool $autoRequireLogin = true;
 
     /**
-     * authentication backends.
+     * Authentication backends.
+     *
+     * @var list<Backend\BackendInterface>
      */
-    protected $backends;
+    protected array $backends = [];
 
     /**
      * The currently logged in principal. Will be `null` if nobody is currently
      * logged in.
-     *
-     * @var string|null
      */
-    protected $currentPrincipal;
+    protected ?string $currentPrincipal = null;
 
     /**
      * Creates the authentication plugin.
@@ -99,10 +97,8 @@ class Plugin extends ServerPlugin
      * principals/users/username
      *
      * This method will return null if nobody is logged in.
-     *
-     * @return string|null
      */
-    public function getCurrentPrincipal()
+    public function getCurrentPrincipal(): ?string
     {
         return $this->currentPrincipal;
     }
@@ -110,7 +106,7 @@ class Plugin extends ServerPlugin
     /**
      * This method is called before any HTTP method and forces users to be authenticated.
      */
-    public function beforeMethod(RequestInterface $request, ResponseInterface $response)
+    public function beforeMethod(RequestInterface $request, ResponseInterface $response): void
     {
         if ($this->currentPrincipal) {
             // We already have authentication information. This means that the
@@ -163,11 +159,11 @@ class Plugin extends ServerPlugin
      * unsuccessful. For every auth backend there will be one reason, so usually
      * there's just one.
      *
-     * @return array
+     * @return array{0: true, 1: string}|array{0: false, 1: list<string>}
      */
-    public function check(RequestInterface $request, ResponseInterface $response)
+    public function check(RequestInterface $request, ResponseInterface $response): array
     {
-        if (!$this->backends) {
+        if ([] === $this->backends) {
             throw new \Sabre\DAV\Exception('No authentication backends were configured on this server.');
         }
         $reasons = [];
@@ -200,7 +196,7 @@ class Plugin extends ServerPlugin
      * WWW-Authorization header, indicating to the client that it should
      * authenticate.
      */
-    public function challenge(RequestInterface $request, ResponseInterface $response)
+    public function challenge(RequestInterface $request, ResponseInterface $response): void
     {
         foreach ($this->backends as $backend) {
             $backend->challenge($request, $response);
@@ -212,7 +208,7 @@ class Plugin extends ServerPlugin
      *
      * @var string[]|null
      */
-    protected $loginFailedReasons;
+    protected ?array $loginFailedReasons = null;
 
     /**
      * Returns a list of reasons why login was unsuccessful.
@@ -225,7 +221,7 @@ class Plugin extends ServerPlugin
      *
      * @return string[]|null
      */
-    public function getLoginFailedReasons()
+    public function getLoginFailedReasons(): ?array
     {
         return $this->loginFailedReasons;
     }

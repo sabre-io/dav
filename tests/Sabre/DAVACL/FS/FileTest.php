@@ -9,12 +9,12 @@ class FileTest extends \PHPUnit\Framework\TestCase
     /**
      * System under test.
      *
-     * @var File
+     * @var File|Collection
      */
     protected $sut;
 
-    protected $path = 'foo';
-    protected $acl = [
+    protected string $path = 'foo';
+    protected array $acl = [
         [
             'privilege' => '{DAV:}read',
             'principal' => '{DAV:}authenticated',
@@ -28,7 +28,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
         $this->sut = new File($this->path, $this->acl, $this->owner);
     }
 
-    public function testGetOwner()
+    public function testGetOwner(): void
     {
         self::assertEquals(
             $this->owner,
@@ -36,14 +36,14 @@ class FileTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGetGroup()
+    public function testGetGroup(): void
     {
         self::assertNull(
             $this->sut->getGroup()
         );
     }
 
-    public function testGetACL()
+    public function testGetACL(): void
     {
         self::assertEquals(
             $this->acl,
@@ -51,13 +51,13 @@ class FileTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testSetAcl()
+    public function testSetAcl(): void
     {
         $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $this->sut->setACL([]);
     }
 
-    public function testGetSupportedPrivilegeSet()
+    public function testGetSupportedPrivilegeSet(): void
     {
         self::assertNull(
             $this->sut->getSupportedPrivilegeSet()

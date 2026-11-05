@@ -9,19 +9,19 @@ namespace Sabre\DAV\FS;
  */
 class NodeTest extends \PHPUnit\Framework\TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $node = new File(__FILE__);
         self::assertEquals('NodeTest.php', $node->getName());
     }
 
-    public function testConstructOverrideName()
+    public function testConstructOverrideName(): void
     {
         $node = new File(__FILE__, 'foo.txt');
         self::assertEquals('foo.txt', $node->getName());
     }
 
-    public function testOverrideNameSetName()
+    public function testOverrideNameSetName(): void
     {
         $this->expectException(\Sabre\DAV\Exception\Forbidden::class);
         $node = new File(__FILE__, 'foo.txt');

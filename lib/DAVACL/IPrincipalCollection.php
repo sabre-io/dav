@@ -15,6 +15,8 @@ use Sabre\DAV;
  * @copyright Copyright (C) fruux GmbH (https://fruux.com/)
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
+ *
+ * @template-extends DAV\ICollection<IPrincipal|DAV\ICollection>
  */
 interface IPrincipalCollection extends DAV\ICollection
 {
@@ -39,7 +41,7 @@ interface IPrincipalCollection extends DAV\ICollection
      *
      * @param array<string, string> $searchProperties
      *
-     * @return array<string, string>
+     * @return list<string>
      */
     public function searchPrincipals(array $searchProperties, string $test = 'allof');
 

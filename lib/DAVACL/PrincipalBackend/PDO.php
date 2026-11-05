@@ -22,31 +22,23 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
 {
     /**
      * PDO table name for 'principals'.
-     *
-     * @var string
      */
-    public $tableName = 'principals';
+    public string $tableName = 'principals';
 
     /**
      * PDO table name for 'group members'.
-     *
-     * @var string
      */
-    public $groupMembersTableName = 'groupmembers';
+    public string $groupMembersTableName = 'groupmembers';
 
     /**
      * pdo.
-     *
-     * @var \PDO
      */
-    protected $pdo;
+    protected \PDO $pdo;
 
     /**
      * A list of additional fields to support.
-     *
-     * @var array
      */
-    protected $fieldMap = [
+    protected array $fieldMap = [
         /*
          * This property can be used to display the users' real name.
          */
@@ -82,12 +74,8 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      *   {http://sabredav.org/ns}email-address - This is a custom SabreDAV
      *     field that's actually injected in a number of other properties. If
      *     you have an email address, use this property.
-     *
-     * @param string $prefixPath
-     *
-     * @return array
      */
-    public function getPrincipalsByPrefix($prefixPath)
+    public function getPrincipalsByPrefix(string $prefixPath): array
     {
         $fields = [
             'uri',
@@ -226,7 +214,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      *
      * @return list<string>
      */
-    public function searchPrincipals($prefixPath, array $searchProperties, $test = 'allof')
+    public function searchPrincipals($prefixPath, array $searchProperties, string $test = 'allof'): array
     {
         if (0 == count($searchProperties)) {
             return [];
@@ -414,7 +402,7 @@ class PDO extends AbstractBackend implements CreatePrincipalSupport
      * contains any additional webdav properties specified during the creation
      * of the principal.
      */
-    public function createPrincipal(string $path, MkCol $mkCol)
+    public function createPrincipal(string $path, MkCol $mkCol): void
     {
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->tableName.' (uri) VALUES (?)');
         $stmt->execute([$path]);

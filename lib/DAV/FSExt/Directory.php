@@ -38,10 +38,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      *
      * @param string          $name Name of the file
      * @param resource|string $data Initial payload
-     *
-     * @return string|null
      */
-    public function createFile($name, $data = null)
+    public function createFile(string $name, $data = null): ?string
     {
         // We're not allowing dots
         if ('.' == $name || '..' == $name) {
@@ -60,10 +58,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
     /**
      * Creates a new subdirectory.
-     *
-     * @param string $name
      */
-    public function createDirectory($name)
+    public function createDirectory(string $name)
     {
         // We're not allowing dots
         if ('.' == $name || '..' == $name) {
@@ -80,13 +76,9 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      * This method must throw Sabre\DAV\Exception\NotFound if the node does not
      * exist.
      *
-     * @param string $name
-     *
-     * @return DAV\INode
-     *
      * @throws DAV\Exception\NotFound
      */
-    public function getChild($name)
+    public function getChild(string $name): DAV\INode
     {
         $path = $this->path.'/'.$name;
 
@@ -105,12 +97,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
     /**
      * Checks if a child exists.
-     *
-     * @param string $name
-     *
-     * @return bool
      */
-    public function childExists($name)
+    public function childExists(string $name): bool
     {
         if ('.' == $name || '..' == $name) {
             throw new DAV\Exception\Forbidden('Permission denied to . and ..');
@@ -125,7 +113,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      *
      * @return DAV\INode[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         $nodes = [];
         $iterator = new \FilesystemIterator(
@@ -144,7 +132,7 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
     /**
      * Deletes all files in this directory, and then itself.
      */
-    public function delete()
+    public function delete(): void
     {
         // Deleting all children
         foreach ($this->getChildren() as $child) {
@@ -157,13 +145,13 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
 
     /**
      * Returns available diskspace information.
-     *
-     * @return array
      */
-    public function getQuotaInfo()
+    public function getQuotaInfo(): array
     {
-        $total = disk_total_space(realpath($this->path));
-        $free = disk_free_space(realpath($this->path));
+        $absolute = realpath($this->path);
+
+        $total = disk_total_space($absolute);
+        $free = disk_free_space($absolute);
 
         return [
             $total - $free,
@@ -189,10 +177,8 @@ class Directory extends Node implements DAV\ICollection, DAV\IQuota, DAV\IMoveTa
      * @param string    $targetName new local file/collection name
      * @param string    $sourcePath Full path to source node
      * @param DAV\INode $sourceNode Source node itself
-     *
-     * @return bool
      */
-    public function moveInto($targetName, $sourcePath, DAV\INode $sourceNode)
+    public function moveInto(string $targetName, string $sourcePath, DAV\INode $sourceNode): bool
     {
         // We only support FSExt\Directory or FSExt\File objects, so
         // anything else we want to quickly reject.

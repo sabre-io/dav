@@ -14,7 +14,7 @@ use Sabre\DAV\FS\Node;
  * @author Evert Pot (http://evertpot.com/)
  * @license http://sabre.io/license/ Modified BSD License
  */
-class File extends Node implements DAV\PartialUpdate\IPatchSupport
+class File extends Node implements DAV\IFile, DAV\PartialUpdate\IPatchSupport
 {
     /**
      * Updates the data.
@@ -22,10 +22,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      * Data is a readable stream resource.
      *
      * @param resource|string $data
-     *
-     * @return string
      */
-    public function put($data)
+    public function put($data): string
     {
         file_put_contents($this->path, $data);
         clearstatcache(true, $this->path);
@@ -56,12 +54,8 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      * time.
      *
      * @param resource|string $data
-     * @param int             $rangeType
-     * @param int             $offset
-     *
-     * @return string|null
      */
-    public function patch($data, $rangeType, $offset = null)
+    public function patch($data, int $rangeType, ?int $offset = null): ?string
     {
         switch ($rangeType) {
             case 1:
@@ -103,7 +97,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
     /**
      * Delete the current file.
      */
-    public function delete()
+    public function delete(): void
     {
         unlink($this->path);
     }
@@ -118,7 +112,7 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      *
      * @return string|null
      */
-    public function getETag()
+    public function getETag(): string
     {
         return '"'.sha1(
             fileinode($this->path).
@@ -131,20 +125,16 @@ class File extends Node implements DAV\PartialUpdate\IPatchSupport
      * Returns the mime-type for a file.
      *
      * If null is returned, we'll assume application/octet-stream
-     *
-     * @return string|null
      */
-    public function getContentType()
+    public function getContentType(): ?string
     {
         return null;
     }
 
     /**
      * Returns the size of the file, in bytes.
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         return filesize($this->path);
     }

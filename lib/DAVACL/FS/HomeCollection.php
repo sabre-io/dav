@@ -34,10 +34,8 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
 
     /**
      * Path to where the users' files are actually stored.
-     *
-     * @var string
      */
-    protected $storagePath;
+    protected string $storagePath;
 
     /**
      * Creates the home collection.
@@ -45,7 +43,7 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
      * @param string $storagePath     where the actual files are stored
      * @param string $principalPrefix list of principals to iterate
      */
-    public function __construct(BackendInterface $principalBackend, $storagePath, $principalPrefix = 'principals')
+    public function __construct(BackendInterface $principalBackend, string $storagePath, string $principalPrefix = 'principals')
     {
         parent::__construct($principalBackend, $principalPrefix);
         $this->storagePath = $storagePath;
@@ -55,10 +53,8 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
      * Returns the name of the node.
      *
      * This is used to generate the url.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->collectionName;
     }
@@ -69,10 +65,8 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
      * The passed array contains principal information, and is guaranteed to
      * at least contain a uri item. Other properties may or may not be
      * supplied by the authentication backend.
-     *
-     * @return \Sabre\DAV\INode
      */
-    public function getChildForPrincipal(array $principalInfo)
+    public function getChildForPrincipal(array $principalInfo): \Sabre\DAV\INode
     {
         $owner = $principalInfo['uri'];
         $acl = [
@@ -110,7 +104,7 @@ class HomeCollection extends AbstractPrincipalCollection implements IACL
      *
      * @return list<array{principal: string, privilege: string, protected?: bool}>
      */
-    public function getACL()
+    public function getACL(): array
     {
         return [
             [

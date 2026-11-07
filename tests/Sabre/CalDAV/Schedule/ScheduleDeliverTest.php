@@ -557,6 +557,97 @@ ICS;
             $newObject
         );
     }
+    
+    public function testUpdatedTodoDescriptionRemovesUnchangedAlternateDescription()
+    {
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:Old description
+X-ALT-DESC;FMTTYPE=text/html:<p>Old description</p>
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:New description
+X-ALT-DESC;FMTTYPE=text/html:<p>Old description</p>
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        $this->deliver($oldObject, $newObject);
+        
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:New description
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        self::assertVObjectEqualsVObject(
+            $expected,
+            $newObject
+            );
+    }
+    
+    public function testUpdatedTodoDescriptionKeepsChangedAlternateDescription()
+    {
+        $oldObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:Old description
+X-ALT-DESC;FMTTYPE=text/html:<p>Old description</p>
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        $newObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:New description
+X-ALT-DESC;FMTTYPE=text/html:<p>New description</p>
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        $this->deliver($oldObject, $newObject);
+        
+        $expected = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VTODO
+UID:foo
+DTSTAMP:20140811T230000Z
+DESCRIPTION:New description
+X-ALT-DESC;FMTTYPE=text/html:<p>New description</p>
+END:VTODO
+END:VCALENDAR
+ICS;
+        
+        self::assertVObjectEqualsVObject(
+            $expected,
+            $newObject
+            );
+    }
 
     protected $calendarObjectUri;
 

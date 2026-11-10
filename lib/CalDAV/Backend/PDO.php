@@ -35,65 +35,49 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
     /**
      * pdo.
-     *
-     * @var \PDO
      */
-    protected $pdo;
+    protected \PDO $pdo;
 
     /**
      * The table name that will be used for calendars.
-     *
-     * @var string
      */
-    public $calendarTableName = 'calendars';
+    public string $calendarTableName = 'calendars';
 
     /**
      * The table name that will be used for calendars instances.
      *
      * A single calendar can have multiple instances, if the calendar is
      * shared.
-     *
-     * @var string
      */
-    public $calendarInstancesTableName = 'calendarinstances';
+    public string $calendarInstancesTableName = 'calendarinstances';
 
     /**
      * The table name that will be used for calendar objects.
-     *
-     * @var string
      */
-    public $calendarObjectTableName = 'calendarobjects';
+    public string $calendarObjectTableName = 'calendarobjects';
 
     /**
      * The table name that will be used for tracking changes in calendars.
-     *
-     * @var string
      */
-    public $calendarChangesTableName = 'calendarchanges';
+    public string $calendarChangesTableName = 'calendarchanges';
 
     /**
      * The table name that will be used inbox items.
-     *
-     * @var string
      */
-    public $schedulingObjectTableName = 'schedulingobjects';
+    public string $schedulingObjectTableName = 'schedulingobjects';
 
     /**
      * The table name that will be used for calendar subscriptions.
-     *
-     * @var string
      */
-    public $calendarSubscriptionsTableName = 'calendarsubscriptions';
+    public string $calendarSubscriptionsTableName = 'calendarsubscriptions';
 
     /**
      * List of CalDAV properties, and how they map to database fieldnames
      * Add your own properties by simply adding on to this array.
      *
      * Note that only string-based properties are supported here.
-     *
-     * @var array
      */
-    public $propertyMap = [
+    public array $propertyMap = [
         '{DAV:}displayname' => 'displayname',
         '{urn:ietf:params:xml:ns:caldav}calendar-description' => 'description',
         '{urn:ietf:params:xml:ns:caldav}calendar-timezone' => 'timezone',
@@ -103,10 +87,8 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
 
     /**
      * List of subscription properties, and how they map to database fieldnames.
-     *
-     * @var array
      */
-    public $subscriptionPropertyMap = [
+    public array $subscriptionPropertyMap = [
         '{DAV:}displayname' => 'displayname',
         '{http://apple.com/ns/ical/}refreshrate' => 'refreshrate',
         '{http://apple.com/ns/ical/}calendar-order' => 'calendarorder',
@@ -145,11 +127,9 @@ class PDO extends AbstractBackend implements SyncSupport, SubscriptionSupport, S
      * If you return {http://sabredav.org/ns}read-only and set the value to 1,
      * ACL will automatically be put in read-only mode.
      *
-     * @param string $principalUri
-     *
      * @return array
      */
-    public function getCalendarsForUser($principalUri)
+    public function getCalendarsForUser(string $principalUri)
     {
         $fields = array_values($this->propertyMap);
         $fields[] = 'calendarid';
@@ -216,13 +196,8 @@ SQL
      *
      * If the creation was a success, an id must be returned that can be used
      * to reference this calendar in other methods, such as updateCalendar.
-     *
-     * @param string $principalUri
-     * @param string $calendarUri
-     *
-     * @return string
      */
-    public function createCalendar($principalUri, $calendarUri, array $properties)
+    public function createCalendar(string $principalUri, string $calendarUri, array $properties): array
     {
         $fieldNames = [
             'principaluri',
@@ -288,7 +263,7 @@ SQL
      *
      * Read the PropPatch documentation for more info and examples.
      */
-    public function updateCalendar($calendarId, PropPatch $propPatch)
+    public function updateCalendar($calendarId, PropPatch $propPatch): void
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -330,7 +305,7 @@ SQL
     /**
      * Delete a calendar and all it's objects.
      */
-    public function deleteCalendar($calendarId)
+    public function deleteCalendar($calendarId): void
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -394,10 +369,8 @@ SQL
      * If neither etag or size are specified, the calendardata will be
      * used/fetched to determine these numbers. If both are specified the
      * amount of times this is needed is reduced by a great degree.
-     *
-     * @return array
      */
-    public function getCalendarObjects($calendarId)
+    public function getCalendarObjects($calendarId): array
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -433,12 +406,8 @@ SQL
      * for getCalendarObjects.
      *
      * This method must return null if the object did not exist.
-     *
-     * @param string $objectUri
-     *
-     * @return array|null
      */
-    public function getCalendarObject($calendarId, $objectUri)
+    public function getCalendarObject($calendarId, string $objectUri): ?array
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -471,10 +440,8 @@ SQL
      * return all the calendar objects in the list as an array.
      *
      * If the backend supports this, it may allow for some speed-ups.
-     *
-     * @return array
      */
-    public function getMultipleCalendarObjects($calendarId, array $uris)
+    public function getMultipleCalendarObjects($calendarId, array $uris): array
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -519,13 +486,8 @@ SQL
      * However, you should only really return this ETag if you don't mangle the
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
-     *
-     * @param string $objectUri
-     * @param string $calendarData
-     *
-     * @return string|null
      */
-    public function createCalendarObject($calendarId, $objectUri, $calendarData)
+    public function createCalendarObject($calendarId, string $objectUri, string $calendarData): ?string
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -564,13 +526,8 @@ SQL
      * However, you should only really return this ETag if you don't mangle the
      * calendar-data. If the result of a subsequent GET to this object is not
      * the exact same as this request body, you should omit the ETag.
-     *
-     * @param string $objectUri
-     * @param string $calendarData
-     *
-     * @return string|null
      */
-    public function updateCalendarObject($calendarId, $objectUri, $calendarData)
+    public function updateCalendarObject($calendarId, string $objectUri, string $calendarData): ?string
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -610,11 +567,16 @@ SQL
      *   * lastOccurence
      *   * uid - value of the UID property
      *
-     * @param string $calendarData
-     *
-     * @return array
+     * @return array{
+     *     etag: string,
+     *     size: int,
+     *     componentType: 'VEVENT'|'VTODO'|'VJOURNAL',
+     *     firstOccurence: int,
+     *     lastOccurence: int,
+     *     uid: string,
+     * }
      */
-    protected function getDenormalizedData($calendarData)
+    protected function getDenormalizedData(string $calendarData): array
     {
         $vObject = VObject\Reader::read($calendarData);
         $componentType = null;
@@ -690,10 +652,8 @@ SQL
      * Deletes an existing calendar object.
      *
      * The object uri is only the basename, or filename and not a full path.
-     *
-     * @param string $objectUri
      */
-    public function deleteCalendarObject($calendarId, $objectUri)
+    public function deleteCalendarObject($calendarId, string $objectUri): void
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -753,10 +713,8 @@ SQL
      *
      * This specific implementation (for the PDO) backend optimizes filters on
      * specific components, and VEVENT time-ranges.
-     *
-     * @return array
      */
-    public function calendarQuery($calendarId, array $filters)
+    public function calendarQuery($calendarId, array $filters): array
     {
         if (!is_array($calendarId)) {
             throw new \InvalidArgumentException('The value passed to $calendarId is expected to be an array with a calendarId and an instanceId');
@@ -849,13 +807,8 @@ SQL
      * This method should only consider * objects that the principal owns, so
      * any calendars owned by other principals that also appear in this
      * collection should be ignored.
-     *
-     * @param string $principalUri
-     * @param string $uid
-     *
-     * @return string|null
      */
-    public function getCalendarObjectByUID($principalUri, $uid)
+    public function getCalendarObjectByUID(string $principalUri, string $uid): ?string
     {
         $query = <<<SQL
 SELECT
@@ -879,6 +832,8 @@ SQL;
         if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             return $row['calendaruri'].'/'.$row['objecturi'];
         }
+
+        return null;
     }
 
     /**

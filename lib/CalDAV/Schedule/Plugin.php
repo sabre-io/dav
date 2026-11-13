@@ -23,6 +23,7 @@ use Sabre\HTTP\RequestInterface;
 use Sabre\HTTP\ResponseInterface;
 use Sabre\VObject;
 use Sabre\VObject\Component\VCalendar;
+use Sabre\VObject\Component\VEvent;
 use Sabre\VObject\ITip\Broker;
 use Sabre\VObject\ITip\Message;
 use Sabre\VObject\Reader;
@@ -596,6 +597,16 @@ class Plugin extends ServerPlugin
      */
     protected function processICalendarChange($oldObject, VCalendar $newObject, array $addresses, array $ignore = [], &$modified = false): void
     {
+        if (is_string($oldObject)) {
+            $oldObject = Reader::read($oldObject);
+        }
+
+        // Do this before the messages are created, so that the attendees
+        // also receive the reset PARTSTAT.
+        if ($oldObject) {
+            $this->resetPartStatOnReschedule($oldObject, $newObject, $addresses);
+        }
+
         $broker = $this->createITipBroker();
         $messages = $broker->parseEvent($newObject, $addresses, $oldObject);
 
@@ -629,6 +640,311 @@ class Plugin extends ServerPlugin
                 }
             }
         }
+    }
+
+    /**
+     * Sets PARTSTAT to NEEDS-ACTION for every attendee, except the organizer,
+     * in each event that the organizer moved to another time.
+     *
+     * Attendees then have to accept or decline the new time again.
+     * See RFC 6638, Section 3.2.8.
+     *
+     * @param list<string> $addresses addresses of the user making the change
+     */
+    protected function resetPartStatOnReschedule(VCalendar $oldObject, VCalendar $newObject, array $addresses): void
+    {
+        // Only the organizer can reschedule.
+        if (!isset($newObject->VEVENT->ORGANIZER) || !in_array($newObject->VEVENT->ORGANIZER->getNormalizedValue(), $addresses)) {
+            return;
+        }
+
+        // A recurring event has one VEVENT for the series and one for each
+        // changed occurrence. We match them up by their RECURRENCE-ID.
+        $oldEvents = [];
+        foreach ($oldObject->select('VEVENT') as $event) {
+            $oldEvents[$this->getRecurrenceKey($event)] = $event;
+        }
+        $newMaster = $newObject->getBaseComponent('VEVENT');
+
+        foreach ($newObject->select('VEVENT') as $event) {
+            try {
+                $rescheduled = $this->isEventRescheduled($event, $oldEvents, $newMaster);
+            } catch (VObject\InvalidDataException $e) {
+                // We could not read the dates, so we cannot tell if the time
+                // changed. Ask the attendees again, to be on the safe side.
+                $rescheduled = true;
+            }
+            if (!$rescheduled) {
+                continue;
+            }
+
+            foreach ($event->select('ATTENDEE') as $attendee) {
+                // Do not touch the organizer, who may also be an attendee.
+                if (in_array($attendee->getNormalizedValue(), $addresses)) {
+                    continue;
+                }
+                // The server does not handle scheduling for this attendee.
+                if (isset($attendee['SCHEDULE-AGENT']) && 'SERVER' !== strtoupper((string) $attendee['SCHEDULE-AGENT'])) {
+                    continue;
+                }
+                $attendee['PARTSTAT'] = 'NEEDS-ACTION';
+            }
+        }
+    }
+
+    /**
+     * Returns the RECURRENCE-ID of an event as a timestamp, or 'master' for
+     * the main event.
+     *
+     * @return int|string
+     */
+    protected function getRecurrenceKey(VEvent $event)
+    {
+        if (!isset($event->{'RECURRENCE-ID'})) {
+            return 'master';
+        }
+
+        return $event->{'RECURRENCE-ID'}->getDateTime()->getTimestamp();
+    }
+
+    /**
+     * Checks if the organizer moved an event, or one occurrence of a series,
+     * to another time.
+     *
+     * @param VEvent[] $oldEvents the events before the change, by RECURRENCE-ID
+     */
+    protected function isEventRescheduled(VEvent $event, array $oldEvents, ?VEvent $newMaster): bool
+    {
+        $key = $this->getRecurrenceKey($event);
+        if (isset($oldEvents[$key])) {
+            return $this->isRescheduled($oldEvents[$key], $event);
+        }
+
+        // The RECURRENCE-ID is new. If an event had the same start and end
+        // before, only the RECURRENCE-ID was rewritten.
+        $startAndEnd = $this->getStartAndEnd($event);
+        foreach ($oldEvents as $oldEvent) {
+            if ($this->getStartAndEnd($oldEvent) === $startAndEnd) {
+                return false;
+            }
+        }
+
+        if (!isset($oldEvents['master'])) {
+            return false;
+        }
+        $oldMaster = $oldEvents['master'];
+
+        // If the series starts or ends at a different time, the occurrence
+        // was at a different time before.
+        if ($newMaster && $this->getStartAndEnd($oldMaster) !== $this->getStartAndEnd($newMaster)) {
+            return true;
+        }
+
+        return $this->isMovedOccurrence($oldMaster, $event);
+    }
+
+    /**
+     * Checks if the new version of an event starts or ends at a different
+     * time, or if its recurrence rules add occurrences.
+     */
+    protected function isRescheduled(VEvent $old, VEvent $new): bool
+    {
+        if ($this->getStartAndEnd($old) !== $this->getStartAndEnd($new)) {
+            return true;
+        }
+
+        // RDATE adds single occurrences. A new date is a new occurrence.
+        if (array_diff($this->getTimestamps($new, 'RDATE'), $this->getTimestamps($old, 'RDATE'))) {
+            return true;
+        }
+
+        // EXDATE removes single occurrences. If a date is no longer excluded,
+        // that occurrence comes back.
+        if (array_diff($this->getTimestamps($old, 'EXDATE'), $this->getTimestamps($new, 'EXDATE'))) {
+            return true;
+        }
+
+        return $this->ruleAddsOccurrences($old, $new);
+    }
+
+    /**
+     * Checks if a changed RRULE adds occurrences.
+     *
+     * If the rhythm of the rule changes (for example FREQ, INTERVAL or BYDAY),
+     * we always treat it as a reschedule. If only the end of the series
+     * changes (COUNT or UNTIL), only a later end adds occurrences.
+     */
+    protected function ruleAddsOccurrences(VEvent $old, VEvent $new): bool
+    {
+        if (!isset($new->RRULE)) {
+            // Without a rule there is nothing that could add occurrences.
+            // RDATE is checked separately.
+            return false;
+        }
+        if (!isset($old->RRULE)) {
+            return true;
+        }
+
+        $oldRule = $this->getRuleParts($old->RRULE);
+        $newRule = $this->getRuleParts($new->RRULE);
+        $oldEnd = $this->getRuleEnd($oldRule);
+        $newEnd = $this->getRuleEnd($newRule);
+
+        // Compare the rhythm of the rules without their end.
+        unset($oldRule['COUNT'], $oldRule['UNTIL'], $newRule['COUNT'], $newRule['UNTIL']);
+        if ($oldRule !== $newRule) {
+            return true;
+        }
+
+        // The rhythm is the same. Compare where the series ends.
+        if (null === $newEnd) {
+            // The series is now endless. It adds occurrences if it ended before.
+            return null !== $oldEnd;
+        }
+        if (null === $oldEnd) {
+            // The endless series now ends. This only removes occurrences.
+            return false;
+        }
+        if ($oldEnd['type'] !== $newEnd['type']) {
+            // Switching between COUNT and UNTIL. We cannot easily compare the
+            // two, so we treat it as a reschedule.
+            return true;
+        }
+
+        return $newEnd['value'] > $oldEnd['value'];
+    }
+
+    /**
+     * Returns the parts of an RRULE in a form that can be compared.
+     *
+     * @return array<string, string>
+     */
+    protected function getRuleParts(VObject\Property\ICalendar\Recur $rule): array
+    {
+        $parts = [];
+        foreach ($rule->getParts() as $name => $value) {
+            // The order of a list like BYDAY=MO,WE does not matter.
+            $values = (array) $value;
+            sort($values);
+            $parts[$name] = implode(',', $values);
+        }
+        // INTERVAL=1 is the default, so it does not matter if it is written.
+        if (isset($parts['INTERVAL']) && '1' === $parts['INTERVAL']) {
+            unset($parts['INTERVAL']);
+        }
+        ksort($parts);
+
+        return $parts;
+    }
+
+    /**
+     * Returns how the series ends: after a COUNT or at an UNTIL date. Returns
+     * null if the series has no end.
+     *
+     * @param array<string, string> $parts
+     */
+    protected function getRuleEnd(array $parts): ?array
+    {
+        if (isset($parts['COUNT'])) {
+            return ['type' => 'COUNT', 'value' => (int) $parts['COUNT']];
+        }
+        if (isset($parts['UNTIL'])) {
+            return ['type' => 'UNTIL', 'value' => VObject\DateTimeParser::parse($parts['UNTIL'])->getTimestamp()];
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks if a new exception for one occurrence of a recurring event has a
+     * different time than the occurrence it replaces.
+     */
+    protected function isMovedOccurrence(VEvent $master, VEvent $occurrence): bool
+    {
+        // The original occurrence starts at the RECURRENCE-ID and is as long
+        // as the main event.
+        $originalStart = $occurrence->{'RECURRENCE-ID'}->getDateTime();
+        $originalEnd = $this->getEnd($master, $originalStart);
+
+        return $this->getStartAndEnd($occurrence) !== [$originalStart->getTimestamp(), $originalEnd->getTimestamp()];
+    }
+
+    /**
+     * Returns the start and end of an event as timestamps.
+     *
+     * We compare points in time, so the same time written in another time
+     * zone does not count as a change.
+     *
+     * @return array{0: int, 1: int}
+     */
+    protected function getStartAndEnd(VEvent $event): array
+    {
+        $start = $event->DTSTART->getDateTime();
+        if (isset($event->DTEND)) {
+            $end = $event->DTEND->getDateTime();
+        } else {
+            $end = $this->getEnd($event, $start);
+        }
+
+        return [$start->getTimestamp(), $end->getTimestamp()];
+    }
+
+    /**
+     * Returns when an event, or one of its occurrences, ends if it starts at
+     * $start.
+     *
+     * This works the same way as VObject\Recur\EventIterator, so that we get
+     * the same times for occurrences that it creates.
+     */
+    protected function getEnd(VEvent $event, \DateTimeImmutable $start): \DateTimeImmutable
+    {
+        if (isset($event->DTEND)) {
+            $length = $event->DTEND->getDateTime()->getTimestamp() - $event->DTSTART->getDateTime()->getTimestamp();
+
+            // modify() keeps the time of day when the clocks change in
+            // between. Adding the seconds to the timestamp would not.
+            return $start->modify('+'.$length.' seconds');
+        }
+        if (isset($event->DURATION)) {
+            return $start->add($event->DURATION->getDateInterval());
+        }
+
+        // Without DTEND or DURATION, an event with a time ends when it starts,
+        // and an all-day event lasts one day (RFC 5545, Section 3.6.1).
+        return $event->DTSTART->hasTime() ? $start : $start->modify('+1 day');
+    }
+
+    /**
+     * Returns all dates of a property like RDATE or EXDATE as timestamps.
+     *
+     * For an RDATE with a period, we use the start of the period.
+     *
+     * @return list<int>
+     */
+    protected function getTimestamps(VEvent $event, string $name): array
+    {
+        $timestamps = [];
+        foreach ($event->select($name) as $property) {
+            if (!$property instanceof VObject\Property\ICalendar\Period) {
+                foreach ($property->getDateTimes() as $dateTime) {
+                    $timestamps[] = $dateTime->getTimestamp();
+                }
+                continue;
+            }
+
+            // A period looks like start/end. We only need the start.
+            if (isset($property['TZID'])) {
+                $timeZone = VObject\TimeZoneUtil::getTimeZone((string) $property['TZID'], $event->root);
+            } else {
+                $timeZone = $event->DTSTART->getDateTime()->getTimezone();
+            }
+            foreach ($property->getParts() as $period) {
+                list($start) = explode('/', $period);
+                $timestamps[] = VObject\DateTimeParser::parse($start, $timeZone)->getTimestamp();
+            }
+        }
+
+        return $timestamps;
     }
 
     /**

@@ -200,6 +200,149 @@ ICS;
         self::assertPartStat('ACCEPTED', $this->readStream($newObject), 'mailto:user2.sabredav@sabredav.org', '20261024T100000');
     }
 
+    public function testMovedSeriesResetsExistingOccurrences()
+    {
+        $oldSeries = $this->event('DTSTART:20261005T100000Z', 'DTEND:20261005T110000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $oldOccurrence = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261007T100000Z', 'DTEND:20261007T110000Z', 'LOCATION:Room B');
+
+        // The whole series starts two hours later. The changed occurrence
+        // moves with it.
+        $newSeries = $this->event('DTSTART:20261005T120000Z', 'DTEND:20261005T130000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $newOccurrence = $this->event('RECURRENCE-ID:20261007T120000Z', 'DTSTART:20261007T120000Z', 'DTEND:20261007T130000Z', 'LOCATION:Room B');
+
+        $result = $this->reschedule($oldSeries.$oldOccurrence, $newSeries.$newOccurrence);
+
+        self::assertPartStat('NEEDS-ACTION', $result['organizer']);
+        self::assertPartStat('NEEDS-ACTION', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T120000Z');
+    }
+
+    public function testOccurrenceThatStaysKeepsPartStatWhenSeriesMoves()
+    {
+        $oldSeries = $this->event('DTSTART:20261005T140000Z', 'DTEND:20261005T150000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $oldOccurrence = $this->event('RECURRENCE-ID:20261007T140000Z', 'DTSTART:20261007T140000Z', 'DTEND:20261007T150000Z', 'LOCATION:Room B');
+
+        // The whole series starts two hours later. The RECURRENCE-ID of the
+        // changed occurrence moves with it, but the occurrence stays at 14:00.
+        $newSeries = $this->event('DTSTART:20261005T160000Z', 'DTEND:20261005T170000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $newOccurrence = $this->event('RECURRENCE-ID:20261007T160000Z', 'DTSTART:20261007T140000Z', 'DTEND:20261007T150000Z', 'LOCATION:Room B');
+
+        $result = $this->reschedule($oldSeries.$oldOccurrence, $newSeries.$newOccurrence);
+
+        self::assertPartStat('NEEDS-ACTION', $result['organizer']);
+        self::assertPartStat('ACCEPTED', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T160000Z');
+    }
+
+    public function testMovedOccurrenceKeepsPartStatWhenSeriesMoves()
+    {
+        // This occurrence was moved to the next day before.
+        $occurrence = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261008T150000Z', 'DTEND:20261008T160000Z');
+
+        $oldSeries = $this->event('DTSTART:20261005T100000Z', 'DTEND:20261005T110000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $newSeries = $this->event('DTSTART:20261005T120000Z', 'DTEND:20261005T130000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+
+        $result = $this->reschedule($oldSeries.$occurrence, $newSeries.$occurrence);
+
+        self::assertPartStat('NEEDS-ACTION', $result['organizer']);
+        self::assertPartStat('ACCEPTED', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T100000Z');
+    }
+
+    public function testLongerSeriesKeepsPartStatOfOccurrences()
+    {
+        $occurrence = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261007T100000Z', 'DTEND:20261007T110000Z', 'LOCATION:Room B');
+
+        // The series gets three more dates. The changed occurrence stays.
+        $oldSeries = $this->event('DTSTART:20261005T100000Z', 'DTEND:20261005T110000Z', 'RRULE:FREQ=DAILY;COUNT=5');
+        $newSeries = $this->event('DTSTART:20261005T100000Z', 'DTEND:20261005T110000Z', 'RRULE:FREQ=DAILY;COUNT=8');
+
+        $result = $this->reschedule($oldSeries.$occurrence, $newSeries.$occurrence);
+
+        self::assertPartStat('NEEDS-ACTION', $result['organizer']);
+        self::assertPartStat('ACCEPTED', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T100000Z');
+        self::assertPartStat('NEEDS-ACTION', $result['inbox']);
+        self::assertPartStat('ACCEPTED', $result['inbox'], 'mailto:user2.sabredav@sabredav.org', '20261007T100000Z');
+    }
+
+    public function testRecurrenceIdInOtherTimezoneKeepsPartStat()
+    {
+        $series = $this->event('DTSTART;TZID=Europe/Berlin:20261005T120000', 'DTEND;TZID=Europe/Berlin:20261005T130000', 'RRULE:FREQ=DAILY;COUNT=10');
+        $oldOccurrence = $this->event('RECURRENCE-ID;TZID=Europe/Berlin:20261007T120000', 'DTSTART:20261007T150000Z', 'DTEND:20261007T160000Z');
+
+        // The RECURRENCE-ID is the same point in time, but written in UTC.
+        $newOccurrence = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261007T150000Z', 'DTEND:20261007T160000Z');
+
+        $result = $this->reschedule($series.$oldOccurrence, $series.$newOccurrence);
+
+        self::assertPartStat('ACCEPTED', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T100000Z');
+    }
+
+    public function testReplyForOneOccurrenceKeepsPartStat()
+    {
+        // The event is one day long. On the day summer time ends, this is 25
+        // hours.
+        $organizerObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:foo
+DTSTART;TZID=Europe/Berlin:20261020T100000
+DTEND;TZID=Europe/Berlin:20261021T100000
+RRULE:FREQ=DAILY;COUNT=10
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:user2.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user3.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        // user2 accepts a single occurrence.
+        $attendeeObject = <<<ICS
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:foo
+DTSTART;TZID=Europe/Berlin:20261020T100000
+DTEND;TZID=Europe/Berlin:20261021T100000
+RRULE:FREQ=DAILY;COUNT=10
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=NEEDS-ACTION:mailto:user2.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user3.sabredav@sabredav.org
+END:VEVENT
+BEGIN:VEVENT
+UID:foo
+RECURRENCE-ID;TZID=Europe/Berlin:20261024T100000
+DTSTART;TZID=Europe/Berlin:20261024T100000
+DTEND;TZID=Europe/Berlin:20261025T100000
+ORGANIZER:mailto:user1.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user2.sabredav@sabredav.org
+ATTENDEE;PARTSTAT=ACCEPTED:mailto:user3.sabredav@sabredav.org
+END:VEVENT
+END:VCALENDAR
+ICS;
+
+        $this->server->tree->getNodeForPath('calendars/user1/cal')->createFile('object.ics', $organizerObject);
+
+        $this->autoLogin('user2');
+        $this->calendarObjectUri = '/calendars/user2/cal/object.ics';
+        $this->deliver($organizerObject, $attendeeObject);
+
+        $organizerObject = $this->getCalendarObject('user1');
+        self::assertPartStat('ACCEPTED', $organizerObject, 'mailto:user2.sabredav@sabredav.org', '20261024T100000');
+        self::assertPartStat('ACCEPTED', $organizerObject, 'mailto:user3.sabredav@sabredav.org', '20261024T100000');
+    }
+
+    public function testEveryOccurrenceIsChecked()
+    {
+        // The same occurrence is in the object twice. Only the first one is
+        // moved.
+        $master = $this->event('DTSTART:20261005T100000Z', 'DTEND:20261005T110000Z', 'RRULE:FREQ=DAILY;COUNT=10');
+        $moved = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261007T140000Z', 'DTEND:20261007T150000Z');
+        $unmoved = $this->event('RECURRENCE-ID:20261007T100000Z', 'DTSTART:20261007T100000Z', 'DTEND:20261007T110000Z');
+
+        $result = $this->reschedule($master, $master.$moved.$unmoved);
+
+        self::assertPartStat('NEEDS-ACTION', $result['organizer'], 'mailto:user2.sabredav@sabredav.org', '20261007T100000Z');
+    }
+
     public function testTodoIsNotTouched()
     {
         // Only events are scheduled, so tasks keep their PARTSTAT.
@@ -447,7 +590,7 @@ ICS;
 
     /**
      * Saves $old as user1's event, then updates it with $new. Returns the
-     * organizer's object, the message in user2's inbox and user2's copy.
+     * organizer's object and the message in user2's inbox.
      */
     public function reschedule($old, $new)
     {
@@ -457,7 +600,6 @@ ICS;
         return [
             'organizer' => $this->readStream($new),
             'inbox' => $this->getInboxMessage('user2'),
-            'attendee' => $this->getCalendarObject('user2'),
         ];
     }
 

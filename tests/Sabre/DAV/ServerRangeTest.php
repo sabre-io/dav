@@ -127,6 +127,25 @@ class ServerRangeTest extends \Sabre\AbstractDAVServerTestCase
         self::assertEquals('contents', $response->getBodyAsString());
     }
 
+    public function testFirstByteRange()
+    {
+        $request = new HTTP\Request('GET', '/files/test.txt', ['Range' => 'bytes=0-0']);
+        $response = $this->request($request);
+
+        self::assertEquals([
+            'X-Sabre-Version' => [Version::VERSION],
+            'Content-Type' => ['application/octet-stream'],
+            'Content-Length' => [1],
+            'Content-Range' => ['bytes 0-0/13'],
+            'ETag' => ['"'.md5('Test contents').'"'],
+            'Last-Modified' => [$this->lastModified],
+        ],
+            $response->getHeaders()
+        );
+        self::assertEquals(206, $response->getStatus());
+        self::assertEquals('T', $response->getBodyAsString());
+    }
+
     /**
      * @depends testRange
      */

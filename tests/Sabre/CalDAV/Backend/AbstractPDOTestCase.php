@@ -515,6 +515,70 @@ abstract class AbstractPDOTestCase extends TestCase
     /**
      * @depends testCreateCalendarObject
      */
+    public function testCreateCalendarObjectRDate()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        // RDATE values are deliberately not in chronological order.
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRDATE:20120301T100000Z,20120201T100000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT firstoccurence, lastoccurence FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+
+        self::assertEquals([
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-03-01 11:00:00'),
+        ], $row);
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    public function testCreateCalendarObjectRDatePeriod()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRDATE;VALUE=PERIOD:20120301T100000Z/20120301T120000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT firstoccurence, lastoccurence FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+
+        self::assertEquals([
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-01-01 11:00:00'),
+        ], $row);
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    public function testCreateCalendarObjectRDateNoInstances()
+    {
+        $backend = new PDO($this->pdo);
+        $returnedId = $backend->createCalendar('principals/user2', 'somerandomid', []);
+
+        $object = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE-TIME:20120101T100000Z\r\nDTEND;VALUE=DATE-TIME:20120101T110000Z\r\nUID:foo\r\nRDATE:20120301T100000Z\r\nEXDATE:20120101T100000Z,20120301T100000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+
+        $backend->createCalendarObject($returnedId, 'random-id', $object);
+
+        $result = $this->pdo->query('SELECT firstoccurence, lastoccurence FROM calendarobjects WHERE uri = \'random-id\'');
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+
+        self::assertEquals([
+            'firstoccurence' => strtotime('2012-01-01 10:00:00'),
+            'lastoccurence' => strtotime('2012-01-01 11:00:00'),
+        ], $row);
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
     public function testCreateCalendarObjectTask()
     {
         $backend = new PDO($this->pdo);
@@ -820,6 +884,38 @@ abstract class AbstractPDOTestCase extends TestCase
 
         self::assertEquals([
             'event2',
+        ], $backend->calendarQuery([1, 1], $filters));
+    }
+
+    /**
+     * @depends testCreateCalendarObject
+     */
+    public function testCalendarQueryTimeRangeRDate()
+    {
+        $backend = new PDO($this->pdo);
+        $backend->createCalendarObject([1, 1], 'event', "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nUID:foo\r\nDTSTART:20120101T100000Z\r\nDTEND:20120101T110000Z\r\nRDATE:20120201T100000Z,20120301T100000Z\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n");
+
+        $filters = [
+            'name' => 'VCALENDAR',
+            'comp-filters' => [
+                [
+                    'name' => 'VEVENT',
+                    'comp-filters' => [],
+                    'prop-filters' => [],
+                    'is-not-defined' => false,
+                    'time-range' => [
+                        'start' => new \DateTime('20120301'),
+                        'end' => new \DateTime('20120302'),
+                    ],
+                ],
+            ],
+            'prop-filters' => [],
+            'is-not-defined' => false,
+            'time-range' => null,
+        ];
+
+        self::assertEquals([
+            'event',
         ], $backend->calendarQuery([1, 1], $filters));
     }
 

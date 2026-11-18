@@ -649,19 +649,19 @@ SQL
                 } else {
                     $lastOccurence = $firstOccurence;
                 }
-            } else {
-                $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
-                $maxDate = new \DateTime(self::MAX_DATE);
-                if ($it->isInfinite()) {
-                    $lastOccurence = $maxDate->getTimeStamp();
-                } else {
-                    $end = $it->getDtEnd();
-                    while ($it->valid() && $end < $maxDate) {
-                        $end = $it->getDtEnd();
-                        $it->next();
+                // RDATE adds instances after the first one.
+                if (isset($component->RDATE)) {
+                    try {
+                        $lastOccurence = max($lastOccurence, $this->getLastOccurenceOfRecurrence($vObject, $component));
+                    } catch (VObject\Recur\NoInstancesException|VObject\InvalidDataException $e) {
+                        // The iterator throws when EXDATE removes every
+                        // instance, and it cannot read RDATE;VALUE=PERIOD
+                        // (sabre-io/vobject#601). Keep the end of the first
+                        // instance then, so such objects can still be stored.
                     }
-                    $lastOccurence = $end->getTimeStamp();
                 }
+            } else {
+                $lastOccurence = $this->getLastOccurenceOfRecurrence($vObject, $component);
             }
 
             // Ensure Occurence values are positive
@@ -684,6 +684,32 @@ SQL
             'lastOccurence' => $lastOccurence,
             'uid' => $uid,
         ];
+    }
+
+    /**
+     * Returns the end of the last instance of a recurring event as a
+     * timestamp. Events that recur forever, or beyond MAX_DATE, get MAX_DATE.
+     *
+     * @return int
+     */
+    private function getLastOccurenceOfRecurrence(VObject\Component\VCalendar $vObject, VObject\Component $component)
+    {
+        $it = new VObject\Recur\EventIterator($vObject, (string) $component->UID);
+        $maxDate = new \DateTime(self::MAX_DATE);
+        if ($it->isInfinite()) {
+            return $maxDate->getTimeStamp();
+        }
+        $end = $it->getDtEnd();
+        while ($it->valid() && $end < $maxDate) {
+            // RDATE values do not have to be in chronological order, so keep
+            // the latest end rather than the end of the last instance.
+            if ($it->getDtEnd() > $end) {
+                $end = $it->getDtEnd();
+            }
+            $it->next();
+        }
+
+        return $end->getTimeStamp();
     }
 
     /**

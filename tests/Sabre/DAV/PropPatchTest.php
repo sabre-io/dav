@@ -121,6 +121,32 @@ class PropPatchTest extends \PHPUnit\Framework\TestCase
         self::assertTrue($hasRan);
     }
 
+    public function testHandleMultipleRemaining()
+    {
+        $cunCounter = 0;
+
+        $this->propPatch = new PropPatch([
+            '{DAV:}displayname' => 'foo',
+            'unittest' => 'bar',
+        ]);
+
+        $this->propPatch->handleRemaining(function ($mutations) use (&$cunCounter) {
+            ++$cunCounter;
+            self::assertCount(2, $mutations);
+
+            return true;
+        });
+
+        self::assertTrue($this->propPatch->commit());
+        $result = $this->propPatch->getResult();
+        self::assertEquals([
+            '{DAV:}displayname' => 200,
+            'unittest' => 200,
+        ], $result);
+
+        self::assertSame(1, $cunCounter);
+    }
+
     public function testHandleRemainingNothingToDo()
     {
         $hasRan = false;
